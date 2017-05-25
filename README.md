@@ -60,7 +60,25 @@ $ git clone git@github.com:jedireza/frame.git
 $ cd frame
 $ npm install
 ```
+### bcyrpt installation help
 
+Install node-gyp and dependencies
+```
+npm install -g node-gyp
+brew install make
+brew install gcc
+```
+use python 2.7
+get the python path with ```which python```
+set npm python config with python path
+```bash
+npm config set python [PATH]
+```
+
+install bcyrpt
+```bash
+npm i bcyrpt
+```
 
 ## Configuration
 
