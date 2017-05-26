@@ -13,106 +13,106 @@ const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
 
 lab.experiment('Account Class Methods', () => {
 
-    lab.before((done) => {
+  lab.before((done) => {
 
-        Account.connect(mongoUri, mongoOptions, (err, db) => {
+    Account.connect(mongoUri, mongoOptions, (err, db) => {
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.after((done) => {
+  lab.after((done) => {
 
-        Account.deleteMany({}, (err, count) => {
+    Account.deleteMany({}, (err, count) => {
 
-            Account.disconnect();
-            done(err);
-        });
+      Account.disconnect();
+      done(err);
     });
+  });
 
 
-    lab.test('it returns a new instance when create succeeds', (done) => {
+  lab.test('it returns a new instance when create succeeds', (done) => {
 
-        Account.create('Ren Höek', (err, result) => {
+    Account.create('Ren Höek', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.be.an.instanceOf(Account);
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(Account);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it correctly sets the middle name when create is called', (done) => {
+  lab.test('it correctly sets the middle name when create is called', (done) => {
 
-        Account.create('Stimpson J Cat', (err, account) => {
+    Account.create('Stimpson J Cat', (err, account) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(account).to.be.an.instanceOf(Account);
-            Code.expect(account.name.middle).to.equal('J');
+      Code.expect(err).to.not.exist();
+      Code.expect(account).to.be.an.instanceOf(Account);
+      Code.expect(account.name.middle).to.equal('J');
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when create fails', (done) => {
+  lab.test('it returns an error when create fails', (done) => {
 
-        const realInsertOne = Account.insertOne;
-        Account.insertOne = function () {
+    const realInsertOne = Account.insertOne;
+    Account.insertOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('insert failed'));
+      callback(Error('insert failed'));
+    };
+
+    Account.create('Stimpy Cat', (err, result) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
+
+      Account.insertOne = realInsertOne;
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns a result when finding by username', (done) => {
+
+    Async.auto({
+      account: function (cb) {
+
+        Account.create('Stimpson J Cat', cb);
+      },
+      accountUpdated: ['account', function (results, cb) {
+
+        const fieldsToUpdate = {
+          $set: {
+            user: {
+              id: '95EP150D35',
+              name: 'stimpy'
+            }
+          }
         };
 
-        Account.create('Stimpy Cat', (err, result) => {
+        Account.findByIdAndUpdate(results.account._id, fieldsToUpdate, cb);
+      }]
+    }, (err, results) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      if (err) {
+        return done(err);
+      }
 
-            Account.insertOne = realInsertOne;
+      Account.findByUsername('stimpy', (err, account) => {
 
-            done();
-        });
+        Code.expect(err).to.not.exist();
+        Code.expect(account).to.be.an.instanceOf(Account);
+
+        done();
+      });
     });
-
-
-    lab.test('it returns a result when finding by username', (done) => {
-
-        Async.auto({
-            account: function (cb) {
-
-                Account.create('Stimpson J Cat', cb);
-            },
-            accountUpdated: ['account', function (results, cb) {
-
-                const fieldsToUpdate = {
-                    $set: {
-                        user: {
-                            id: '95EP150D35',
-                            name: 'stimpy'
-                        }
-                    }
-                };
-
-                Account.findByIdAndUpdate(results.account._id, fieldsToUpdate, cb);
-            }]
-        }, (err, results) => {
-
-            if (err) {
-                return done(err);
-            }
-
-            Account.findByUsername('stimpy', (err, account) => {
-
-                Code.expect(err).to.not.exist();
-                Code.expect(account).to.be.an.instanceOf(Account);
-
-                done();
-            });
-        });
-    });
+  });
 });

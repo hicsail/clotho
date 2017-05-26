@@ -9,12 +9,12 @@ const lab = exports.lab = Lab.script();
 
 lab.experiment('Status Entry Class', () => {
 
-    lab.test('it instantiates an instance', (done) => {
+  lab.test('it instantiates an instance', (done) => {
 
-        const statusEntry = new StatusEntry({});
+    const statusEntry = new StatusEntry({});
 
-        Code.expect(statusEntry).to.be.an.instanceOf(StatusEntry);
+    Code.expect(statusEntry).to.be.an.instanceOf(StatusEntry);
 
-        done();
-    });
+    done();
+  });
 });
