@@ -3,7 +3,13 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
-class BioDesign extends MongoModels {
+//const SharableObjBase = require('org.clothocad.core.datums.SharableObjBase');
+//const Reference = require('org.clothocad.core.persistence.annotations.Reference');
+//const ReferenceCollection = require('org.clothocad.core.persistence.annotations.ReferenceCollection');
+
+//TODO: need to import js equivalent of hashset and set in java
+
+class BioDesign extends MongoModels {   // might also need to extend SharableObjBase
 
     module;
     parameters;
@@ -70,18 +76,36 @@ class BioDesign extends MongoModels {
         if (this.polynucleotides === null) {
             polynucleotide = new HashSet<Polynucleotide>();
         }
-        this.polynucleotides.add(polynucleotide)
+        this.polynucleotides.add(polynucleotide);
     }
 
     addStrain(strain) {
         if (this.strains === null) {
             strain = new HashSet<Strain>();
         }
-        this.strains
+        this.strains.add(strain);
+    }
+
+    addMedium(medium) {
+        if (this.media === null) {
+            medium = new HashSet<Medium>();
+        }
+        this.media.add(medium);
+    }
+
+    addSubDesign(subDesign) {
+        if (this.subDesigns === null) {
+            subDesign = new HashSet<BioDesign>();
+        }
+        this.subDesigns.add(subDesign);
     }
 
 }
 
 BioDesign.schema = Joi.object.keys ({
-
+    name: Joi.string().required(),
+    description: Joi.string(),
+    author: Joi.string().required()
 });
+
+module.exports = BioDesign;
