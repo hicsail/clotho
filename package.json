@@ -10,9 +10,13 @@
     "lint": "lab -dL"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hicsail/clotho"
+  },
   "license": "MIT",
   "engines": {
-    "node": ">=6.0.0"
+    "node": "6.7.0"
   },
   "dependencies": {
     "async": "2.x.x",
