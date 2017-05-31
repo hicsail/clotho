@@ -26,7 +26,7 @@ class BioDesign extends MongoModels {   // might also need to extend SharableObj
         const document = {
             name: name,
             description: description,
-            author: author
+            author_id: author_id
         };
 
         this.insertOne(document, (err, docs) => {
@@ -41,7 +41,7 @@ class BioDesign extends MongoModels {   // might also need to extend SharableObj
 
         const document = {
             name: name,
-            author: author
+            author_id: author_id
         };
 
         this.insertOne(document, (err, docs) => {

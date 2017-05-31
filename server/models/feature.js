@@ -7,16 +7,16 @@ const User = require('user');
 
 class Feature extends MongoModels {
 
-  static create(name, role, author, callback) {
-    return create(name, null, role, author, callback);
+  static create(name, role, author_id, callback) {
+    return create(name, null, role, author_id, callback);
   }
 
-  static create(name, description, role, author, callback) {
+  static create(name, description, role, author_id, callback) {
     const document = {
       name: name,
       description: description,
       role: role,
-      author:author
+      author_id: author_id
     };
 
     this.insertOne(document, (err, docs) => {
@@ -63,7 +63,7 @@ Feature.schema = Joi.object().keys({
   parentFeature: Feature.schema,
   name: Joi.string().required(),
   description: Joi.string(),
-  author: User.schema
+  author_id: Joi.string().required()
 });
 
 Feature.indexes = [];

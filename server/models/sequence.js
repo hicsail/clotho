@@ -7,16 +7,16 @@ const User = require('./user');
 
 class Sequence extends MongoModels {
 
-    static create(name, sequence, author, callback) {
-        return create(name, null, sequence, author, callback);
+    static create(name, sequence, author_id, callback) {
+        return create(name, null, sequence, author_id, callback);
     }
 
-    static create(name, description, sequence, author, callback) {
+    static create(name, description, sequence, author_id, callback) {
         const document = {
             name: name,
             description: description,
             sequence: sequence,
-            author: author
+            author_id: author_id
         };
 
     this.insertOne(document, (err, docs) => {
@@ -75,7 +75,7 @@ Sequence.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().optional(),
   sequence: Joi.string().required().regex("[ATUCGRYKMSWBDHVN]*", "nucleotide sequence"), // Case-insensitive.
-  author: User.schema,
+  author_id: Joi.string().required(),
   annotations: Joi.array().items(Annotation.schema),
   parentSequence: Sequence.schema, // Reference methods?
   icon: Joi.string() // In SharableObjBase.

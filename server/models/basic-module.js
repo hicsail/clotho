@@ -7,17 +7,17 @@ const ModuleRole = require('module-role');
 const User = require('user');
 
 class BasicModule extends MongoModels {
-  static create(name, modulerole, features, author, callback) {
-    return create(name, null, modulerole, features, author, callback);
+  static create(name, modulerole, features, author_id, callback) {
+    return create(name, null, modulerole, features, author_id, callback);
   }
 
-  static create(name, description, modulerole, features, author, callback) {
+  static create(name, description, modulerole, features, author_id, callback) {
     const document = {
       name: name,
       description: description,
       modulerole: modulerole,
       features: features,
-      author: author
+      author_id: author_id
     };
 
     this.insertOne(document, (err, docs) => {
@@ -36,6 +36,14 @@ class BasicModule extends MongoModels {
 //   features.add(feature);
 // }
 
+//
+// @NotNull
+// @Size(min=1)
+// @Getter
+// @Setter
+// @ReferenceCollection
+// protected Set<Feature> features;
+
 
 
 BasicModule.collection = 'basicmodules';
@@ -46,7 +54,7 @@ BasicModule.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string(),
   role: ModuleRole.schema,
-  author: User.schema
+  author_id: Joi.string().required()
 });
 
 BasicModule.indexes = [];
