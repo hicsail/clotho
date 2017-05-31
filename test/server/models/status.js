@@ -12,57 +12,57 @@ const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
 
 lab.experiment('Status Class Methods', () => {
 
-    lab.before((done) => {
+  lab.before((done) => {
 
-        Status.connect(mongoUri, mongoOptions, (err, db) => {
+    Status.connect(mongoUri, mongoOptions, (err, db) => {
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.after((done) => {
+  lab.after((done) => {
 
-        Status.deleteMany({}, (err, count) => {
+    Status.deleteMany({}, (err, count) => {
 
-            Status.disconnect();
+      Status.disconnect();
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.test('it returns a new instance when create succeeds', (done) => {
+  lab.test('it returns a new instance when create succeeds', (done) => {
 
-        Status.create('Order', 'Complete', (err, result) => {
+    Status.create('Order', 'Complete', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.be.an.instanceOf(Status);
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(Status);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when create fails', (done) => {
+  lab.test('it returns an error when create fails', (done) => {
 
-        const realInsertOne = Status.insertOne;
-        Status.insertOne = function () {
+    const realInsertOne = Status.insertOne;
+    Status.insertOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('insert failed'));
-        };
+      callback(Error('insert failed'));
+    };
 
-        Status.create('Order', 'Fulfilled', (err, result) => {
+    Status.create('Order', 'Fulfilled', (err, result) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-            Status.insertOne = realInsertOne;
+      Status.insertOne = realInsertOne;
 
-            done();
-        });
+      done();
     });
+  });
 });
