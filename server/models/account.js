@@ -1,7 +1,6 @@
 'use strict';
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const NoteEntry = require('./note-entry');
 const StatusEntry = require('./status-entry');
 
 
@@ -56,7 +55,6 @@ Account.schema = Joi.object().keys({
     current: StatusEntry.schema,
     log: Joi.array().items(StatusEntry.schema)
   }),
-  notes: Joi.array().items(NoteEntry.schema),
   verification: Joi.object().keys({
     complete: Joi.boolean(),
     token: Joi.string()
