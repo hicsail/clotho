@@ -1,7 +1,6 @@
 'use strict';
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const StatusEntry = require('./status-entry');
 
 
 class Account extends MongoModels {
@@ -50,10 +49,6 @@ Account.schema = Joi.object().keys({
     first: Joi.string().required(),
     middle: Joi.string().allow(''),
     last: Joi.string().required()
-  }),
-  status: Joi.object().keys({
-    current: StatusEntry.schema,
-    log: Joi.array().items(StatusEntry.schema)
   }),
   verification: Joi.object().keys({
     complete: Joi.boolean(),
