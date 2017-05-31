@@ -3,10 +3,10 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
-const Person = require('./person');
+const User = require('./user');
 
 class Sequence extends MongoModels {
-    
+
     static create(name, sequence, author, callback) {
         Sequence.create(name, null, sequence, author, callback);
     }
@@ -31,7 +31,7 @@ class Sequence extends MongoModels {
     createAnnotation(name, start, end, isForwardStrand, author) {
         createAnnotation(name, null, start, end, isForwardStrand, author);
     }
-    
+
     createAnnotation(name, description, start, end, isForwardStrand, author) {
 
     }
@@ -55,7 +55,7 @@ class Sequence extends MongoModels {
         addAnnotation(annotation);
         return annotation;
     }
-    
+
     public void addAnnotation(Annotation annotation) {
         if (annotations == null) {
             annotations = new HashSet<Annotation>();
@@ -64,7 +64,7 @@ class Sequence extends MongoModels {
     }
 
     */
-    
+
 
 }
 
@@ -75,9 +75,10 @@ Sequence.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().optional(),
   sequence: Joi.string().required().regex("[ATUCGRYKMSWBDHVN]*", "nucleotide sequence"), // Case-insensitive.
-  author: Person.schema,
+  author: User.schema,
   annotations: Joi.array().items(Annotation.schema),
-  parentSequence: Sequence.schema
+  parentSequence: Sequence.schema, // Reference methods?
+  icon: Joi.string() // In SharableObjBase.
 });
 
 
