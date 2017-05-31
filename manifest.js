@@ -55,7 +55,12 @@ const manifest = {
             Account: './server/models/account',
             AdminGroup: './server/models/admin-group',
             Admin: './server/models/admin',
+            Annotation: './server/models/annotation',
+            Assembly: './server/models/assembly',
             AuthAttempt: './server/models/auth-attempt',
+            BioDesign: './server/models/bio-design',
+            Feature: './server/models/feature',
+            Part: './server/models/part',
             Session: './server/models/session',
             User: './server/models/user'
           },
