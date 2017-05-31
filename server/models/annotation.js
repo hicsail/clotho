@@ -121,14 +121,15 @@ Annotation.collection = 'annotations';
 Annotation.schema = Joi.object().keys({
   _id: Joi.object(),
   symbol: Joi.string(),
-  isForwardStrand: Joi.boolean(),
+  isForwardStrand: Joi.boolean().required(),
   feature: Feature.schema,
-  start: Joi.number.integer(),
-  end: Joi.number.integer(),
+  start: Joi.number.integer().required(),
+  end: Joi.number.integer().required(),
   forwardColor: Color.schema,
   reverseColor: Color.schema,
-  name: Joi.string(),
-  author: User.schema
+  name: Joi.string().required(),
+  author: User.schema,
+  description: Joi.string()
 });
 
 Annotation.indexes = [];
