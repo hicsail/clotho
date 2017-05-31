@@ -8,7 +8,7 @@ const User = require('user');
 
 class Annotation extends MongoModels {
   static create(name, start, end, isForwardStrand, author, callback) {
-    create(name, null, start, end, isForwardStrand, author, callback);
+    return create(name, null, start, end, isForwardStrand, author, callback);
   }
 
   static create(name, description, start, end, isForwardStrand, author, callback) {
@@ -117,6 +117,7 @@ class Annotation extends MongoModels {
 
 Annotation.collection = 'annotations';
 
+// Does not include shareableobjbase properties.
 Annotation.schema = Joi.object().keys({
   _id: Joi.object(),
   symbol: Joi.string(),

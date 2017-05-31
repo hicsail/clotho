@@ -8,7 +8,7 @@ const User = require('./user');
 class Sequence extends MongoModels {
 
     static create(name, sequence, author, callback) {
-        Sequence.create(name, null, sequence, author, callback);
+        return create(name, null, sequence, author, callback);
     }
 
     static create(name, description, sequence, author, callback) {
@@ -83,7 +83,7 @@ Sequence.schema = Joi.object().keys({
 
 
 // Needs to be changed.
-Sequence.indexes = = [
+Sequence.indexes = [
   {key: {'name': 1}}
 ];
 
