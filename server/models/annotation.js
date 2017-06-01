@@ -3,7 +3,6 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Feature = require('./feature');
-const Color = require('./color');
 const User = require('./user');
 
 class Annotation extends MongoModels {
@@ -125,8 +124,8 @@ Annotation.schema = Joi.object().keys({
   feature: Feature.schema,
   start: Joi.number().integer().required(),
   end: Joi.number().integer().required(),
-  forwardColor: Color.schema,
-  reverseColor: Color.schema,
+  forwardColor: Joi.array().length(3).items(Joi.number().integer()), // Represent Color Object in Java
+  reverseColor: Joi.array().length(3).items(Joi.number().integer()),
   name: Joi.string().required(),
   author_id: Joi.string().required(),
   description: Joi.string()

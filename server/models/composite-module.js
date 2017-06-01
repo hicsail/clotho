@@ -3,7 +3,6 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Module = require('./module');
-const ModuleRole = require('./module-role');
 
 class CompositeModule extends MongoModels {
 
@@ -38,7 +37,7 @@ CompositeModule.schema = Joi.object().keys({
   name: Joi.string().required(),
   author_id: Joi.string().required(),
   description: Joi.string(),
-  role: ModuleRole.schema
+  role: Joi.string().regex(/^TRANSCRIPTION|TRANSLATION|EXPRESSION|COMPARTMENTALIZATION|LOCALIZATION|SENSOR|REPORTER|ACTIVATION|REPRESSION$/).required()
 });
 
 CompositeModule.indexes = [];

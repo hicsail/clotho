@@ -2,7 +2,6 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const ModuleRole = require('./module-role');
 const Feature = require('./feature');
 const User = require('./user');
 
@@ -53,7 +52,7 @@ BasicModule.schema = Joi.object().keys({
   features: Joi.array().items(Feature.schema).required(),
   name: Joi.string().required(),
   description: Joi.string(),
-  role: ModuleRole.schema,
+  role: Joi.string().regex(/^TRANSCRIPTION|TRANSLATION|EXPRESSION|COMPARTMENTALIZATION|LOCALIZATION|SENSOR|REPORTER|ACTIVATION|REPRESSION$/).required(),
   author_id: Joi.string().required()
 });
 

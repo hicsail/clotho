@@ -3,7 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
-class Color extends MongoModels {
+class Influence extends MongoModels {
   static create(callback) {
     const document = {
     };
@@ -18,12 +18,12 @@ class Color extends MongoModels {
 }
 
 
-Color.collection = 'colors';
+Influence.collection = 'influences';
 
-Color.schema = Joi.object().keys({
+Influence.schema = Joi.object().keys({
   _id: Joi.object()
 });
 
-Color.indexes = [];
+Influence.indexes = [];
 
-module.exports = Color;
+module.exports = Influence;
