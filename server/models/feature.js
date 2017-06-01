@@ -6,16 +6,16 @@ const Sequence = require('./sequence');
 
 class Feature extends MongoModels {
 
-  static create(name, role, author_id, callback) {
-    return create(name, null, role, author_id, callback);
+  static create(name, role, userId, callback) {
+    return create(name, null, role, userId, callback);
   }
 
-  static create(name, description, role, author_id, callback) {
+  static create(name, description, role, userId, callback) {
     const document = {
       name: name,
       description: description,
       role: role,
-      author_id: author_id
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -55,7 +55,7 @@ Feature.schema = Joi.object().keys({
   parentFeature: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
-  author_id: Joi.string().required()
+  userId: Joi.string().required()
 });
 
 Feature.indexes = [];

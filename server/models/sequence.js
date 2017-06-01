@@ -7,16 +7,16 @@ const User = require('./user');
 
 class Sequence extends MongoModels {
 
-    static create(name, sequence, author_id, callback) {
-        return create(name, null, sequence, author_id, callback);
+    static create(name, sequence, userId, callback) {
+        return create(name, null, sequence, userId, callback);
     }
 
-    static create(name, description, sequence, author_id, callback) {
+    static create(name, description, sequence, userId, callback) {
         const document = {
             name: name,
             description: description,
             sequence: sequence,
-            author_id: author_id
+            userId: userId
         };
 
     this.insertOne(document, (err, docs) => {
@@ -28,11 +28,11 @@ class Sequence extends MongoModels {
     }
 
     // Should these be moved to Annotation file?
-    createAnnotation(name, start, end, isForwardStrand, author) {
-        createAnnotation(name, null, start, end, isForwardStrand, author);
+    createAnnotation(name, start, end, isForwardStrand, userId) {
+        createAnnotation(name, null, start, end, isForwardStrand, userId);
     }
 
-    createAnnotation(name, description, start, end, isForwardStrand, author) {
+    createAnnotation(name, description, start, end, isForwardStrand, userId) {
 
     }
 
@@ -75,7 +75,7 @@ Sequence.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().optional(),
   sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
-  author_id: Joi.string().required(),
+  userId: Joi.string().required(),
   annotations: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
   parentSequence: Joi.string(),
   //parentSequence: Sequence.schema, // self-referencing

@@ -6,17 +6,17 @@ const Module = require('./module');
 
 class CompositeModule extends MongoModels {
 
-  static create(name, role, submodules, author, callback) {
-    return create(name, null, role, submodules, author, callback);
+  static create(name, role, submodules, userId, callback) {
+    return create(name, null, role, submodules, userId, callback);
   }
 
-  static create(name, description, role, submodules, author_id, callback) {
+  static create(name, description, role, submodules, userId, callback) {
     const document = {
       name: name,
       description: description,
       role: role,
       submodules: submodules,
-      author_id: author_id
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -35,7 +35,7 @@ CompositeModule.schema = Joi.object().keys({
   _id: Joi.object(),
   submodules: Joi.array().items(Module.schema),
   name: Joi.string().required(),
-  author_id: Joi.string().required(),
+  userId: Joi.string().required(),
   description: Joi.string(),
   role: Joi.string().regex(/^TRANSCRIPTION|TRANSLATION|EXPRESSION|COMPARTMENTALIZATION|LOCALIZATION|SENSOR|REPORTER|ACTIVATION|REPRESSION$/).required()
 });
