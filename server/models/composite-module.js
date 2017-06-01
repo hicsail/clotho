@@ -35,7 +35,7 @@ CompositeModule.schema = Joi.object().keys({
   name: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string(),
-  role: Joi.string().regex(/^TRANSCRIPTION|TRANSLATION|EXPRESSION|COMPARTMENTALIZATION|LOCALIZATION|SENSOR|REPORTER|ACTIVATION|REPRESSION$/).required()
+  role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required()
 });
 
 CompositeModule.indexes = [];

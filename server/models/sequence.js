@@ -68,7 +68,7 @@ Sequence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string().optional(),
-  sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
+  sequence: Joi.string().valid('A', 'T', 'U', 'C', 'G', 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N').insensitive(), // Case-insensitive.
   userId: Joi.string().required(),
   annotations: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
   parentSequence: Joi.string(),

@@ -51,7 +51,7 @@ BasicModule.schema = Joi.object().keys({
   features: Joi.array().items(Feature.schema).required(),
   name: Joi.string().required(),
   description: Joi.string(),
-  role: Joi.string().regex(/^TRANSCRIPTION|TRANSLATION|EXPRESSION|COMPARTMENTALIZATION|LOCALIZATION|SENSOR|REPORTER|ACTIVATION|REPRESSION$/).required(),
+  role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
   userId: Joi.string().required()
 });
 

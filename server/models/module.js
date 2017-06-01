@@ -39,7 +39,7 @@ Module.collection = 'modules';
 
 Module.schema = Joi.object().keys({
   _id: Joi.object(),
-  role: Joi.string().regex(/^TRANSCRIPTION|TRANSLATION|EXPRESSION|COMPARTMENTALIZATION|LOCALIZATION|SENSOR|REPORTER|ACTIVATION|REPRESSION$/).required(),
+  role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),

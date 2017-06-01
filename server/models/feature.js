@@ -49,7 +49,7 @@ Feature.schema = Joi.object().keys({
   genbankId: Joi.string(),
   swissProtId: Joi.string(),
   riskGroup: Joi.number(), // Is short according to clotho3.
-  role: Joi.string().regex(/^(BARCODE)|(CDS)|(DEGRADATION\_TAG)|(GENE)|(LOCALIZATION\_TAG)|(OPERATOR)|(PROMOTER)|(SCAR)|(SPACER)|(RBS)|(RIBOZYME)|(TERMINATOR)$/).required(),
+  role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
   parentFeature: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
