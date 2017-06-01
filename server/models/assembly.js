@@ -58,6 +58,8 @@ Assembly.schema = Joi.object().keys({
 // @Getter
 // protected List<Assembly> subAssemblies;
 
-Assembly.indexes = [];
+Assembly.indexes = [
+  {key: {_id: 1}}
+];
 
 module.exports = Assembly;

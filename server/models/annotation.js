@@ -129,7 +129,9 @@ Annotation.schema = Joi.object().keys({
   description: Joi.string()
 });
 
-Annotation.indexes = [];
+Annotation.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = Annotation;
 

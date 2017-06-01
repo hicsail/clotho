@@ -56,6 +56,8 @@ Feature.schema = Joi.object().keys({
   userId: Joi.string().required()
 });
 
-Feature.indexes = [];
+Feature.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = Feature;

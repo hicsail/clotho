@@ -27,6 +27,8 @@ Influence.schema = Joi.object().keys({
   _id: Joi.object()
 });
 
-Influence.indexes = [];
+Influence.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = Influence;

@@ -99,6 +99,8 @@ BioDesign.schema = Joi.object().keys({
   userId: Joi.string().required()
 });
 
-BioDesign.indexes = [];
+BioDesign.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = BioDesign;

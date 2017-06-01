@@ -55,6 +55,8 @@ BasicModule.schema = Joi.object().keys({
   userId: Joi.string().required()
 });
 
-BasicModule.indexes = [];
+BasicModule.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = BasicModule;

@@ -47,6 +47,8 @@ Module.schema = Joi.object().keys({
   parentModule: Joi.string()
 });
 
-Module.indexes = [];
+Module.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = Module;

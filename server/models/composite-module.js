@@ -38,6 +38,8 @@ CompositeModule.schema = Joi.object().keys({
   role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required()
 });
 
-CompositeModule.indexes = [];
+CompositeModule.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = CompositeModule;

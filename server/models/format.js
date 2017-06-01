@@ -27,7 +27,9 @@ Format.schema = Joi.object().keys({
   _id: Joi.object()
 });
 
-Format.indexes = [];
+Format.indexes = [
+  {key: {_id: 1}}
+];
 
 module.exports = Format;
 

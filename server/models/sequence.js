@@ -79,7 +79,7 @@ Sequence.schema = Joi.object().keys({
 
 // Needs to be changed.
 Sequence.indexes = [
-  {key: {'name': 1}}
+  {key: {userId: 1}}
 ];
 
 module.exports = Sequence;
