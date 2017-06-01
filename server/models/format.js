@@ -4,11 +4,14 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class Format extends MongoModels {
+
   static create(callback) {
+
     const document = {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

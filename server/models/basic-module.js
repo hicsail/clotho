@@ -3,14 +3,12 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Feature = require('./feature');
-const User = require('./user');
 
 class BasicModule extends MongoModels {
-  static create(name, modulerole, features, userId, callback) {
-    return create(name, null, modulerole, features, userId, callback);
-  }
+
 
   static create(name, description, modulerole, features, userId, callback) {
+
     const document = {
       name: name,
       description: description,
@@ -20,6 +18,7 @@ class BasicModule extends MongoModels {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

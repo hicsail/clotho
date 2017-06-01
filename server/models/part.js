@@ -3,17 +3,13 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Format = require('./format');
-const Assembly = require('./assembly');
+// const Assembly = require('./assembly');
 const Sequence = require('./sequence');
-const User = require('./user');
 
 class Part extends MongoModels {
 
-  static create(name, sequence, userId, callback) {
-    return create(name, null, sequence, userId, callback);
-  }
-
   static create(name, description, sequence, userId, callback) {
+
     const document = {
       name: name,
       description: description,
@@ -22,6 +18,7 @@ class Part extends MongoModels {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

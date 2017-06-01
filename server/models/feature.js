@@ -6,11 +6,8 @@ const Sequence = require('./sequence');
 
 class Feature extends MongoModels {
 
-  static create(name, role, userId, callback) {
-    return create(name, null, role, userId, callback);
-  }
-
   static create(name, description, role, userId, callback) {
+
     const document = {
       name: name,
       description: description,
@@ -19,6 +16,7 @@ class Feature extends MongoModels {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

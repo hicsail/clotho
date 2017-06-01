@@ -5,11 +5,9 @@ const MongoModels = require('mongo-models');
 const Influence = require('./influence');
 
 class Module extends MongoModels {
-  static create(name, role, userId, callback) {
-    return create(name, null, role, userId, callback);
-  }
 
   static create(name, description, role, userId, callback) {
+
     const document = {
       name: name,
       description: description,
@@ -18,6 +16,7 @@ class Module extends MongoModels {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

@@ -5,11 +5,14 @@ const MongoModels = require('mongo-models');
 const Part = require('./part');
 
 class Assembly extends MongoModels {
+
   static create(callback) {
+
     const document = {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

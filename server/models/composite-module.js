@@ -6,11 +6,8 @@ const Module = require('./module');
 
 class CompositeModule extends MongoModels {
 
-  static create(name, role, submodules, userId, callback) {
-    return create(name, null, role, submodules, userId, callback);
-  }
-
   static create(name, description, role, submodules, userId, callback) {
+
     const document = {
       name: name,
       description: description,
@@ -20,6 +17,7 @@ class CompositeModule extends MongoModels {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }

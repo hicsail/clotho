@@ -3,14 +3,11 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Feature = require('./feature');
-const User = require('./user');
 
 class Annotation extends MongoModels {
-  static create(name, start, end, isForwardStrand, userId, callback) {
-    return create(name, null, start, end, isForwardStrand, userId, callback);
-  }
 
   static create(name, description, start, end, isForwardStrand, userId, callback) {
+
     const document = {
       name: name,
       description: description,
@@ -21,6 +18,7 @@ class Annotation extends MongoModels {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }
