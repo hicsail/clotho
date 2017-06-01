@@ -7,18 +7,18 @@ const Color = require('color');
 const User = require('user');
 
 class Annotation extends MongoModels {
-  static create(name, start, end, isForwardStrand, author, callback) {
-    return create(name, null, start, end, isForwardStrand, author, callback);
+  static create(name, start, end, isForwardStrand, author_id, callback) {
+    return create(name, null, start, end, isForwardStrand, author_id, callback);
   }
 
-  static create(name, description, start, end, isForwardStrand, author, callback) {
+  static create(name, description, start, end, isForwardStrand, author_id, callback) {
     const document = {
       name: name,
       description: description,
       start: start,
       end: end,
       isForwardStrand: isForwardStrand,
-      author: author
+      author_id: author_id
     };
 
     this.insertOne(document, (err, docs) => {
@@ -128,7 +128,7 @@ Annotation.schema = Joi.object().keys({
   forwardColor: Color.schema,
   reverseColor: Color.schema,
   name: Joi.string().required(),
-  author: User.schema,
+  author_id: Joi.string().required(),
   description: Joi.string()
 });
 

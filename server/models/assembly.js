@@ -7,10 +7,6 @@ const Part = require('part');
 class Assembly extends MongoModels {
   static create(callback) {
     const document = {
-      userId: userId,
-      contactId: contactId,
-      direction: direction,
-      timestamp: timestamp
     };
 
     this.insertOne(document, (err, docs) => {

@@ -9,16 +9,16 @@ const User = require('user');
 
 class Part extends MongoModels {
 
-  static create(name, sequence, author, callback) {
-    return create(name, null, sequence, author, callback);
+  static create(name, sequence, author_id, callback) {
+    return create(name, null, sequence, author_id, callback);
   }
 
-  static create(name, description, sequence, author, callback) {
+  static create(name, description, sequence, author_id, callback) {
     const document = {
       name: name,
       description: description,
       sequence: sequence,
-      author: author
+      author_id: author_id
     };
 
     this.insertOne(document, (err, docs) => {
@@ -82,7 +82,7 @@ Part.schema = Joi.object().keys({
   parentPart: Part.schema,
   name: Joi.string().required(),
   description: Joi.string(),
-  author: User.schema
+  author_id: Joi.string().required()
 });
 
 Part.indexes = [];
