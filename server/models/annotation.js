@@ -2,9 +2,9 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Feature = require('feature');
-const Color = require('color');
-const User = require('user');
+const Feature = require('./feature');
+const Color = require('./color');
+const User = require('./user');
 
 class Annotation extends MongoModels {
   static create(name, start, end, isForwardStrand, author_id, callback) {
@@ -123,8 +123,8 @@ Annotation.schema = Joi.object().keys({
   symbol: Joi.string(),
   isForwardStrand: Joi.boolean().required(),
   feature: Feature.schema,
-  start: Joi.number.integer().required(),
-  end: Joi.number.integer().required(),
+  start: Joi.number().integer().required(),
+  end: Joi.number().integer().required(),
   forwardColor: Color.schema,
   reverseColor: Color.schema,
   name: Joi.string().required(),

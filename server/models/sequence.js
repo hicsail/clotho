@@ -74,10 +74,11 @@ Sequence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string().optional(),
-  sequence: Joi.string().required().regex("[ATUCGRYKMSWBDHVN]*", "nucleotide sequence"), // Case-insensitive.
+  sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
   author_id: Joi.string().required(),
-  annotations: Joi.array().items(Annotation.schema),
-  parentSequence: Sequence.schema, // Reference methods?
+  annotations: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
+  parentSequence: Joi.string(),
+  //parentSequence: Sequence.schema, // self-referencing
   icon: Joi.string() // In SharableObjBase.
 });
 

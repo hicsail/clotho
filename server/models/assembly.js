@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Part = require('part');
+const Part = require('./part');
 
 class Assembly extends MongoModels {
   static create(callback) {
@@ -44,7 +44,7 @@ Assembly.collection = 'assemblies';
 Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   parts: Joi.array().items(Part.schema),
-  subAssemblies: Joi.array().items(Assembly.schema)
+  subAssemblies: Joi.array().items(Joi.string())
 });
 
 // @Getter

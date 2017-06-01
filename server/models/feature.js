@@ -2,8 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Sequence = require('feature');
-const User = require('user');
+const Sequence = require('./sequence');
 
 class Feature extends MongoModels {
 
@@ -29,13 +28,6 @@ class Feature extends MongoModels {
 
 }
 
-// Needs to be fixed.
-function setRiskGroup(newrg) {
-  (if (newrg > riskGroup && newrg <= 5) {
-    riskGroup = newrg;
-  }
-}
-
 // /**
 //  * Change the risk group of the Feature. You can only raise the risk group.
 //  *
@@ -59,8 +51,8 @@ Feature.schema = Joi.object().keys({
   genbankId: Joi.string(),
   swissProtId: Joi.string(),
   riskGroup: Joi.number(), // Is short according to clotho3.
-  role: Joi.string.regex("(BARCODE)|(CDS)|(DEGRADATION\_TAG)|(GENE)|(LOCALIZATION\_TAG)|(OPERATOR)|(PROMOTER)|(SCAR)|(SPACER)|(RBS)|(RIBOZYME)|(TERMINATOR)").required(),
-  parentFeature: Feature.schema,
+  role: Joi.string().regex(/^(BARCODE)|(CDS)|(DEGRADATION\_TAG)|(GENE)|(LOCALIZATION\_TAG)|(OPERATOR)|(PROMOTER)|(SCAR)|(SPACER)|(RBS)|(RIBOZYME)|(TERMINATOR)$/).required(),
+  parentFeature: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
   author_id: Joi.string().required()

@@ -2,8 +2,8 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Module = require('module');
-const ModuleRole = require('module-role');
+const Module = require('./module');
+const ModuleRole = require('./module-role');
 
 class CompositeModule extends MongoModels {
 

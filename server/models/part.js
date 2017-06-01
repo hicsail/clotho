@@ -2,10 +2,10 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Format = require('format');
-const Assembly = require('assembly');
-const Sequence = require('sequence');
-const User = require('user');
+const Format = require('./format');
+const Assembly = require('./assembly');
+const Sequence = require('./sequence');
+const User = require('./user');
 
 class Part extends MongoModels {
 
@@ -76,10 +76,10 @@ Part.collection = 'parts';
 Part.schema = Joi.object().keys({
   _id: Joi.object(),
   format: Format.schema,
-  assemblies: Joi.array().items(Assembly.schema),
+  assemblies: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
   sequence: Sequence.schema,
   isForwardOrientation: Joi.boolean(),
-  parentPart: Part.schema,
+  parentPart: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
   author_id: Joi.string().required()

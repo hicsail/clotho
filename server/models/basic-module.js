@@ -2,9 +2,9 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Feature = require('feature');
-const ModuleRole = require('module-role');
-const User = require('user');
+const ModuleRole = require('./module-role');
+const Feature = require('./feature');
+const User = require('./user');
 
 class BasicModule extends MongoModels {
   static create(name, modulerole, features, author_id, callback) {
