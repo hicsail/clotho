@@ -1,0 +1,23 @@
+[
+  {
+    "name":"annotation1",
+    "description": "example annotation",
+    "start": 0,
+    "end": 20,
+    "isForwardStrand": true
+  },
+  {
+    "name":"annotation2",
+    "description": "annotation with incorrect start",
+    "start": -1,
+    "end": 20,
+    "isForwardStrand": true
+  },
+  {
+    "name":"annotation3",
+    "description": "annotation with incorrect end",
+    "start": -1,
+    "end": 20,
+    "isForwardStrand": true
+  }
+]

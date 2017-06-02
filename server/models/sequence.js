@@ -3,89 +3,121 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
-const User = require('./user');
 
 class Sequence extends MongoModels {
 
-    static create(name, sequence, author_id, callback) {
-        return create(name, null, sequence, author_id, callback);
-    }
+  static create(name, description, sequence, isLinear, isSingleStranded, userId, callback) {
 
-    static create(name, description, sequence, author_id, callback) {
-        const document = {
-            name: name,
-            description: description,
-            sequence: sequence,
-            author_id: author_id
-        };
+    const document = {
+      name: name,
+      description: description,
+      sequence: sequence,
+      isLinear: isLinear,
+      isSingleStranded: isSingleStranded,
+      userId: userId
+    };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }
       callback(null, docs[0]);
     });
+  }
+
+  static findByUserId(userId, callback) {
+
+    const query = {'userId': userId};
+    this.find(query, (err, sequences) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      this.getAnnotations(0,sequences,callback);
+    });
+  }
+
+  static getAnnotations(index,sequences,callback) {
+
+    if(index == sequences.length){
+      return callback(null, sequences);
     }
 
-    // Should these be moved to Annotation file?
-    createAnnotation(name, start, end, isForwardStrand, author) {
-        createAnnotation(name, null, start, end, isForwardStrand, author);
-    }
+    Annotation.findBySequenceId(sequences[index]['_id'], (err,annotations) =>{
 
-    createAnnotation(name, description, start, end, isForwardStrand, author) {
+      if(err) {
+        callback(err,null);
+      }
 
-    }
+      if(annotations.length != 0) {
+        sequences[index].annotations = annotations;
+      }
 
-    addAnnotation(annotation) {
+      return this.getAnnotations(index + 1, sequences,callback);
+    });
+  }
 
-    }
+  // Should these be moved to Annotation file?
 
-    // Original Java.
-    /*
-      public Annotation createAnnotation(String name, int start, int end, boolean isForwardStrand,
-            Person author) {
-        Annotation annotation = new Annotation(name, start, end, isForwardStrand, author);
-        addAnnotation(annotation);
-        return annotation;
-    }
+  createAnnotation(name, description, start, end, isForwardStrand, userId) {
 
-    public Annotation createAnnotation(String name, String description, int start, int end,
-            boolean isForwardStrand, Person author) {
-        Annotation annotation = new Annotation(name, description, start, end, isForwardStrand, author);
-        addAnnotation(annotation);
-        return annotation;
-    }
+  }
 
-    public void addAnnotation(Annotation annotation) {
-        if (annotations == null) {
-            annotations = new HashSet<Annotation>();
-        }
-        annotations.add(annotation);
-    }
+  addAnnotation(annotation) {
 
-    */
+  }
+
+  // Original Java.
+  /*
+   public Annotation createAnnotation(String name, int start, int end, boolean isForwardStrand,
+   Person author) {
+   Annotation annotation = new Annotation(name, start, end, isForwardStrand, author);
+   addAnnotation(annotation);
+   return annotation;
+   }
+
+   public Annotation createAnnotation(String name, String description, int start, int end,
+   boolean isForwardStrand, Person author) {
+   Annotation annotation = new Annotation(name, description, start, end, isForwardStrand, author);
+   addAnnotation(annotation);
+   return annotation;
+   }
+
+   public void addAnnotation(Annotation annotation) {
+   if (annotations == null) {
+   annotations = new HashSet<Annotation>();
+   }
+   annotations.add(annotation);
+   }
+
+   */
 
 
 }
 
 Sequence.collection = 'sequences';
 
+// Sequence and Polynucleotide as 1 object
 Sequence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string().optional(),
-  sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
-  author_id: Joi.string().required(),
-  annotations: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-  parentSequence: Joi.string(),
-  //parentSequence: Sequence.schema, // self-referencing
-  icon: Joi.string() // In SharableObjBase.
+  sequence: Joi.string().valid('A', 'T', 'U', 'C', 'G', 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N').insensitive(), // Case-insensitive.
+  userId: Joi.string().required(),
+  annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
+  parentSequenceId: Joi.string(),
+  accession: Joi.string(), // Polynucleotide-specific attributes start here.
+  isLinear: Joi.boolean(),
+  isSingleStranded: Joi.boolean(),
+  submissionDate: Joi.date() // also ignores parentPolynucleotideId
 });
 
 
 // Needs to be changed.
 Sequence.indexes = [
-  {key: {'name': 1}}
+  {key: {userId: 1}}
 ];
 
 module.exports = Sequence;

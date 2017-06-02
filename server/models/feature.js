@@ -2,23 +2,21 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Sequence = require('./sequence');
 
 class Feature extends MongoModels {
 
-  static create(name, role, author_id, callback) {
-    return create(name, null, role, author_id, callback);
-  }
+  static create(annotationId, name, description, role, userId, callback) {
 
-  static create(name, description, role, author_id, callback) {
     const document = {
       name: name,
+      annotationId: annotationId,
       description: description,
       role: role,
-      author_id: author_id
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }
@@ -47,17 +45,18 @@ Feature.collection = 'features';
 
 Feature.schema = Joi.object().keys({
   _id: Joi.object(),
-  sequence: Sequence.schema,
+  annotationId: Joi.string().required(),
   genbankId: Joi.string(),
   swissProtId: Joi.string(),
   riskGroup: Joi.number(), // Is short according to clotho3.
-  role: Joi.string().regex(/^(BARCODE)|(CDS)|(DEGRADATION\_TAG)|(GENE)|(LOCALIZATION\_TAG)|(OPERATOR)|(PROMOTER)|(SCAR)|(SPACER)|(RBS)|(RIBOZYME)|(TERMINATOR)$/).required(),
-  parentFeature: Joi.string(),
+  role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
   name: Joi.string().required(),
   description: Joi.string(),
-  author_id: Joi.string().required()
+  userId: Joi.string().required()
 });
 
-Feature.indexes = [];
+Feature.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = Feature;

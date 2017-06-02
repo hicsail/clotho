@@ -3,25 +3,22 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Format = require('./format');
-const Assembly = require('./assembly');
+// const Assembly = require('./assembly');
 const Sequence = require('./sequence');
-const User = require('./user');
 
 class Part extends MongoModels {
 
-  static create(name, sequence, author_id, callback) {
-    return create(name, null, sequence, author_id, callback);
-  }
+  static create(name, description, sequence, userId, callback) {
 
-  static create(name, description, sequence, author_id, callback) {
     const document = {
       name: name,
       description: description,
       sequence: sequence,
-      author_id: author_id
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }
@@ -76,15 +73,17 @@ Part.collection = 'parts';
 Part.schema = Joi.object().keys({
   _id: Joi.object(),
   format: Format.schema,
-  assemblies: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
+  assemblyIds: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
   sequence: Sequence.schema,
   isForwardOrientation: Joi.boolean(),
-  parentPart: Joi.string(),
+  parentPartId: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
-  author_id: Joi.string().required()
+  userId: Joi.string().required()
 });
 
-Part.indexes = [];
+Part.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = Part;

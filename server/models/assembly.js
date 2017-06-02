@@ -5,11 +5,14 @@ const MongoModels = require('mongo-models');
 const Part = require('./part');
 
 class Assembly extends MongoModels {
+
   static create(callback) {
+
     const document = {
     };
 
     this.insertOne(document, (err, docs) => {
+
       if (err) {
         return callback(err);
       }
@@ -44,7 +47,7 @@ Assembly.collection = 'assemblies';
 Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   parts: Joi.array().items(Part.schema),
-  subAssemblies: Joi.array().items(Joi.string())
+  subAssemblyIds: Joi.array().items(Joi.string())
 });
 
 // @Getter
@@ -55,6 +58,8 @@ Assembly.schema = Joi.object().keys({
 // @Getter
 // protected List<Assembly> subAssemblies;
 
-Assembly.indexes = [];
+Assembly.indexes = [
+  {key: {_id: 1}}
+];
 
 module.exports = Assembly;
