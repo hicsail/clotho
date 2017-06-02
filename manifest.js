@@ -58,11 +58,10 @@ const manifest = {
             Annotation: './server/models/annotation',
             Assembly: './server/models/assembly',
             AuthAttempt: './server/models/auth-attempt',
-            BasicModules: './server/models/basic-module',
             BioDesign: './server/models/bio-design',
-            CompositeModule: './server/models/composite-module',
             Feature: './server/models/feature',
             Part: './server/models/part',
+            Module: './server/models/module',
             Sequence: './server/models/sequence',
             Session: './server/models/session',
             User: './server/models/user'

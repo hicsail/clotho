@@ -49,7 +49,7 @@ Module.schema = Joi.object().keys({
   influences: Influence.schema,
   parentModuleId: Joi.string(),
   submoduleIds: Joi.array().items(Joi.string()),
-  features: Joi.array().items(Feature.schema).required()
+  features: Joi.array().items(Feature.schema)
 });
 
 Module.indexes = [
