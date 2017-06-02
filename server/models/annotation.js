@@ -9,7 +9,7 @@ class Annotation extends MongoModels {
   static create(sequenceId, name, description, start, end, isForwardStrand, userId, callback) {
 
     const document = {
-      sequenceId: sequenceId
+      sequenceId: sequenceId,
       name: name,
       description: description,
       start: start,
