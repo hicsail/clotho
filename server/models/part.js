@@ -73,10 +73,10 @@ Part.collection = 'parts';
 Part.schema = Joi.object().keys({
   _id: Joi.object(),
   format: Format.schema,
-  assemblies: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
+  assemblyIds: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
   sequence: Sequence.schema,
   isForwardOrientation: Joi.boolean(),
-  parentPart: Joi.string(),
+  parentPartId: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required()

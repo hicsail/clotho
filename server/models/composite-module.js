@@ -2,17 +2,16 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Module = require('./module');
 
 class CompositeModule extends MongoModels {
 
-  static create(name, description, role, submodules, userId, callback) {
+  static create(name, description, role, submoduleIds, userId, callback) {
 
     const document = {
       name: name,
       description: description,
       role: role,
-      submodules: submodules,
+      submoduleIds: submoduleIds,
       userId: userId
     };
 
@@ -31,7 +30,7 @@ CompositeModule.collection = 'compositemodules';
 
 CompositeModule.schema = Joi.object().keys({
   _id: Joi.object(),
-  submodules: Joi.array().items(Module.schema),
+  submoduleIds: Joi.array().items(Joi.string()),
   name: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string(),

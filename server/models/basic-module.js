@@ -7,12 +7,12 @@ const Feature = require('./feature');
 class BasicModule extends MongoModels {
 
 
-  static create(name, description, modulerole, features, userId, callback) {
+  static create(name, description, role, features, userId, callback) {
 
     const document = {
       name: name,
       description: description,
-      modulerole: modulerole,
+      role: role,
       features: features,
       userId: userId
     };

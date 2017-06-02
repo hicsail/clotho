@@ -3,15 +3,18 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Influence = require('./influence');
+const Feature = require('./feature');
 
 class Module extends MongoModels {
 
-  static create(name, description, role, userId, callback) {
+  static create(name, description, role, features, submoduleIds, userId, callback) {
 
     const document = {
       name: name,
       description: description,
       role: role,
+      features: features,
+      submoduleIds: submoduleIds,
       userId: userId
     };
 
@@ -44,7 +47,9 @@ Module.schema = Joi.object().keys({
   description: Joi.string(),
   userId: Joi.string().required(),
   influences: Influence.schema,
-  parentModule: Joi.string()
+  parentModuleId: Joi.string(),
+  submoduleIds: Joi.array().items(Joi.string()),
+  features: Joi.array().items(Feature.schema).required()
 });
 
 Module.indexes = [

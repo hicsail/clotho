@@ -50,7 +50,7 @@ Feature.schema = Joi.object().keys({
   swissProtId: Joi.string(),
   riskGroup: Joi.number(), // Is short according to clotho3.
   role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
-  parentFeature: Joi.string(),
+  parentFeatureId: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required()

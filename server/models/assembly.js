@@ -47,7 +47,7 @@ Assembly.collection = 'assemblies';
 Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   parts: Joi.array().items(Part.schema),
-  subAssemblies: Joi.array().items(Joi.string())
+  subAssemblyIds: Joi.array().items(Joi.string())
 });
 
 // @Getter
