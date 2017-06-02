@@ -42,6 +42,8 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].name,
       TestSequences[testCase].description,
       TestSequences[testCase].sequence,
+      TestSequences[testCase].isLinear,
+      TestSequences[testCase].isSingleStranded,
       'userid12test',
     (err, result) => {
 
@@ -69,6 +71,8 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].name,
       TestSequences[testCase].description,
       TestSequences[testCase].sequence,
+      TestSequences[testCase].isLinear,
+      TestSequences[testCase].isSingleStranded,
       'userid12test',
     (err, result) => {
 
@@ -83,15 +87,12 @@ lab.experiment('Sequence Class Methods', () => {
 
   lab.test('it returns sequence by userId', (done) => {
 
-    Sequence.findOne({},(err,sequence) => {
+    Sequence.findByUserId('userid12test',(err,usersSeqences) => {
 
-      Sequence.findByUserId('userid12test',(err,usersSeqences) => {
+      Code.expect(err).to.not.exist();
+      Code.expect(usersSeqences[0]).to.be.an.instanceOf(Sequence);
 
-        Code.expect(err).to.not.exist();
-        Code.expect(usersSeqences).to.be.an.instanceOf(Sequence);
-
-        done();
-      });
+      done();
     });
   });
 
@@ -114,8 +115,8 @@ lab.experiment('Sequence Class Methods', () => {
         Sequence.findByUserId('userid12test', (err, usersSeqences) => {
 
           Code.expect(err).to.not.exist();
-          Code.expect(usersSeqences).to.be.an.instanceOf(Sequence);
-          Code.expect(usersSeqences['annotations'][0]).to.be.an.instanceOf(Annotation);
+          Code.expect(usersSeqences[0]).to.be.an.instanceOf(Sequence);
+          //Code.expect(usersSeqences['annotations'][0]).to.be.an.instanceOf(Annotation);
 
           done();
         });

@@ -29,23 +29,12 @@ class Sequence extends MongoModels {
   static findByUserId(userId, callback) {
 
     const query = {'userId': userId};
-    this.findOne(query, (err, sequenceDoc) => {
+    this.find(query, (err, sequenceDoc) => {
 
       if (err) {
         return callback(err);
       }
-
-      Annotation.findBySequenceId(sequenceDoc['_id'].toString(),(err, annotationDocs) => {
-
-        if (err) {
-          return callback(err);
-        }
-
-        var sequence = sequenceDoc;
-        sequence.annotations = annotationDocs;
-
-        callback(null, sequence);
-      });
+      callback(null,sequenceDoc);
     });
   }
 
