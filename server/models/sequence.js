@@ -6,12 +6,14 @@ const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 
-  static create(name, description, sequence, userId, callback) {
+  static create(name, description, sequence, isLinear, isSingleStranded, userId, callback) {
 
     const document = {
       name: name,
       description: description,
       sequence: sequence,
+      isLinear: isLinear,
+      isSingleStranded: isSingleStranded,
       userId: userId
     };
 
@@ -87,6 +89,7 @@ class Sequence extends MongoModels {
 
 Sequence.collection = 'sequences';
 
+// Sequence and Polynucleotide as 1 object
 Sequence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
@@ -94,7 +97,11 @@ Sequence.schema = Joi.object().keys({
   sequence: Joi.string().valid('A', 'T', 'U', 'C', 'G', 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N').insensitive(), // Case-insensitive.
   userId: Joi.string().required(),
   annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-  parentSequenceId: Joi.string()
+  parentSequenceId: Joi.string(),
+  accession: Joi.string(), // Polynucleotide-specific attributes start here.
+  isLinear: Joi.boolean(),
+  isSingleStranded: Joi.boolean(),
+  submissionDate: Joi.date() // also ignores parentPolynucleotideId
 });
 
 
