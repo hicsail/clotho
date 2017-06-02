@@ -6,7 +6,7 @@ const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 
-  static create(name, description, sequence, isLinear, isSingleStranded, userId, callback) {
+  static create(name, description, sequence, isLinear, isSingleStranded, featureId, userId, callback) {
 
     const document = {
       name: name,
@@ -14,7 +14,8 @@ class Sequence extends MongoModels {
       sequence: sequence,
       isLinear: isLinear,
       isSingleStranded: isSingleStranded,
-      userId: userId
+      userId: userId,
+      featureId: featureId
     };
 
     this.insertOne(document, (err, docs) => {
