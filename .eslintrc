@@ -17,7 +17,6 @@
       "quotes": ["error","single"],
       "semi": 2,
       "strict": 0,
-      "no-console": ["error", { allow: ["warn", "error"] }],
-
+      "no-console": ["error", { allow: ["warn", "error"] }]
     }
 }
