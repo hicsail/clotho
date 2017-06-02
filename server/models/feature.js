@@ -2,14 +2,14 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Sequence = require('./sequence');
 
 class Feature extends MongoModels {
 
-  static create(name, description, role, userId, callback) {
+  static create(annotationId, name, description, role, userId, callback) {
 
     const document = {
       name: name,
+      annotationId: annotationId,
       description: description,
       role: role,
       userId: userId
@@ -45,12 +45,11 @@ Feature.collection = 'features';
 
 Feature.schema = Joi.object().keys({
   _id: Joi.object(),
-  sequence: Sequence.schema,
+  annotationId: Joi.string().required(),
   genbankId: Joi.string(),
   swissProtId: Joi.string(),
   riskGroup: Joi.number(), // Is short according to clotho3.
   role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
-  parentFeatureId: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required()

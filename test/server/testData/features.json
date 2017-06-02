@@ -1,0 +1,23 @@
+[
+  {
+    "name":"feature1",
+    "description": "example annotation",
+    "start": 0,
+    "end": 20,
+    "isForwardStrand": true
+  },
+  {
+    "name":"feature2",
+    "description": "annotation with incorrect start",
+    "start": -1,
+    "end": 20,
+    "isForwardStrand": true
+  },
+  {
+    "name":"feature3",
+    "description": "annotation with incorrect end",
+    "start": -1,
+    "end": 20,
+    "isForwardStrand": true
+  }
+]

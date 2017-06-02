@@ -2,7 +2,6 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-//const Feature = require('./feature');
 
 class Annotation extends MongoModels {
 
@@ -64,7 +63,6 @@ Annotation.schema = Joi.object().keys({
   sequenceId: Joi.string().required(),
   symbol: Joi.string(),
   isForwardStrand: Joi.boolean().required(),
-  //feature: Feature.schema,
   start: Joi.number().integer().positive().required(),
   end: Joi.number().integer().positive().required(),
   name: Joi.string().required(),

@@ -1,4 +1,3 @@
-
 'use strict';
 const Annotation = require('../../../server/models/annotation');
 const Code = require('code');
