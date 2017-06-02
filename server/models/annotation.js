@@ -2,6 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Feature = require('./feature');
 
 class Annotation extends MongoModels {
 
@@ -29,12 +30,33 @@ class Annotation extends MongoModels {
   static findBySequenceId(sequenceId, callback) {
 
     const query = {'sequenceId': sequenceId};
-    this.find(query, (err, docs) => {
+    this.find(query, (err, annotations) => {
 
       if (err) {
         return callback(err);
       }
-      callback(null, docs);
+
+      this.getFeatures(0,annotations,callback);
+    });
+  }
+
+  static getFeatures(index,annotations,callback) {
+
+    if(index == annotations.length){
+      return callback(null, annotations);
+    }
+
+    Feature.findByAnnotationId(annotations[index]['_id'], (err,features) => {
+
+      if(err) {
+        callback(err,null);
+      }
+
+      if(features.length != 0) {
+        annotations[index].features = features;
+      }
+
+      return this.getFeatures(index+1, annotations,callback);
     });
   }
 

@@ -44,6 +44,7 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].sequence,
       TestSequences[testCase].isLinear,
       TestSequences[testCase].isSingleStranded,
+      null,
       'userid12test',
     (err, result) => {
 
@@ -73,6 +74,7 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].sequence,
       TestSequences[testCase].isLinear,
       TestSequences[testCase].isSingleStranded,
+      null,
       'userid12test',
     (err, result) => {
 
