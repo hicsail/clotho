@@ -1,10 +1,12 @@
 'use strict';
 const Sequence = require('../../../server/models/sequence');
+const Annotation = require('../../../server/models/annotation');
 const Code = require('code');
 const Config = require('../../../config');
 const Lab = require('lab');
 
 const TestSequences = require('../testData/sequences');
+const TestAnnotations = require('../testData/annotations');
 
 const lab = exports.lab = Lab.script();
 const mongoUri = Config.get('/hapiMongoModels/mongodb/uri');
@@ -40,7 +42,7 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].name,
       TestSequences[testCase].description,
       TestSequences[testCase].sequence,
-      TestSequences[testCase].userId,
+      'userid12test',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -50,7 +52,100 @@ lab.experiment('Sequence Class Methods', () => {
     });
   });
 
+  lab.test('it returns an error when create fails', (done) => {
 
+    const realInsertOne = Sequence.insertOne;
+    Sequence.insertOne = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('insert failed'));
+    };
+
+    let testCase = 0;
+
+    Sequence.create(
+      TestSequences[testCase].name,
+      TestSequences[testCase].description,
+      TestSequences[testCase].sequence,
+      'userid12test',
+    (err, result) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
+
+      Sequence.insertOne = realInsertOne;
+
+      done();
+    });
+  });
+
+  lab.test('it returns sequence by userId', (done) => {
+
+    Sequence.findOne({},(err,sequence) => {
+
+      Sequence.findByUserId('userid12test',(err,usersSeqences) => {
+
+        Code.expect(err).to.not.exist();
+        Code.expect(usersSeqences).to.be.an.instanceOf(Sequence);
+
+        done();
+      });
+    });
+  });
+
+  lab.test('it return sequence with annotations by userId', (done) => {
+
+    Sequence.findOne({},(err,sequence) => {
+
+      var testCase = 0;
+
+      Annotation.create(
+        sequence._id,
+        TestAnnotations[testCase].name,
+        TestAnnotations[testCase].description,
+        TestAnnotations[testCase].start,
+        TestAnnotations[testCase].end,
+        TestAnnotations[testCase].isForwardStrand,
+        'userid12test',
+      (err, result) => {
+
+        Sequence.findByUserId('userid12test', (err, usersSeqences) => {
+
+          Code.expect(err).to.not.exist();
+          Code.expect(usersSeqences).to.be.an.instanceOf(Sequence);
+          Code.expect(usersSeqences['annotations'][0]).to.be.an.instanceOf(Annotation);
+
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test('it returns an error when finding sequence by userId', (done) => {
+
+    const realFindById = Sequence.findByUserId;
+    Sequence.findByUserId = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('find by userid failed'));
+    };
+
+    Sequence.findByUserId('userid12test', (err, result) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
+
+      Sequence.findByUserId = realFindById;
+
+      done();
+    });
+  });
+
+/* test should be converted to api tests
   lab.test('it returns an error when create fails', (done) => {
 
     const realInsertOne = Sequence.insertOne;
@@ -259,5 +354,5 @@ lab.experiment('Sequence Class Methods', () => {
       done();
     });
   });
-
+*/
 });

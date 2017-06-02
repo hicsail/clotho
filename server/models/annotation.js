@@ -2,7 +2,8 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Feature = require('./feature');
+const ObjectID = require('mongodb').ObjectID;
+//const Feature = require('./feature');
 
 class Annotation extends MongoModels {
 
@@ -24,6 +25,18 @@ class Annotation extends MongoModels {
         return callback(err);
       }
       callback(null, docs[0]);
+    });
+  }
+
+  static findBySequenceId(sequenceId, callback) {
+
+    const query = {'sequenceId': new ObjectID(sequenceId.toString())};
+    this.find(query, (err, docs) => {
+
+      if (err) {
+        return callback(err);
+      }
+      callback(null, docs);
     });
   }
 
@@ -52,7 +65,7 @@ Annotation.schema = Joi.object().keys({
   sequenceId: Joi.string().required(),
   symbol: Joi.string(),
   isForwardStrand: Joi.boolean().required(),
-  feature: Feature.schema,
+  //feature: Feature.schema,
   start: Joi.number().integer().positive().required(),
   end: Joi.number().integer().positive().required(),
   name: Joi.string().required(),

@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-// const Annotation = require('./annotation');
+const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 
@@ -21,6 +21,29 @@ class Sequence extends MongoModels {
         return callback(err);
       }
       callback(null, docs[0]);
+    });
+  }
+
+  static findByUserId(userId, callback) {
+
+    const query = {'userId': userId};
+    this.findOne(query, (err, sequenceDoc) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      Annotation.findBySequenceId(sequenceDoc['_id'].toString(),(err, annotationDocs) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        var sequence = sequenceDoc;
+        sequence.annotations = annotationDocs;
+
+        callback(null, sequence);
+      });
     });
   }
 
