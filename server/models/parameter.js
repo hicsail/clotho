@@ -29,8 +29,8 @@ Parameter.schema = Joi.object().keys({
   _id: Joi.object(),
   value: Joi.number(),
   variable: Joi.object(), // This was originally a Variable object/a ShareableObjBase.
-  unit: Joi.string().allow(['m', 'cm', 'inches', 'in', 'feet', 'ft']), // These should be updated.
-  derivation: Joi.object() // Not using file.
+  unit: Joi.string().allow(['m', 'cm', 'inches', 'in', 'nm']), // These should be updated.
+  derivation: Joi.object() // Not using Derivation model.
 });
 
 Parameter.indexes = [
