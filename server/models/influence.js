@@ -2,12 +2,19 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Feature = require('./feature');
 
 class Influence extends MongoModels {
 
-  static create(callback) {
+  static create(name, description, influencingFeature, influencedFeature, type, userId, callback) {
 
     const document = {
+      name: name,
+      description: description,
+      influencingFeature: influencingFeature,
+      influencedFeature: influencedFeature,
+      type: type,
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -24,7 +31,14 @@ class Influence extends MongoModels {
 Influence.collection = 'influences';
 
 Influence.schema = Joi.object().keys({
-  _id: Joi.object()
+  _id: Joi.object(),
+  name: Joi.string().required(),
+  description: Joi.string(),
+  influencingFeature: Feature.schema.required(),
+  influencedFeature: Feature.schema.required(),
+  influenceType: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
+  parentInfluenceId: Joi.string(),
+  userId: Joi.string().required()
 });
 
 Influence.indexes = [

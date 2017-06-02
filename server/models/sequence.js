@@ -94,8 +94,7 @@ Sequence.schema = Joi.object().keys({
   sequence: Joi.string().valid('A', 'T', 'U', 'C', 'G', 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N').insensitive(), // Case-insensitive.
   userId: Joi.string().required(),
   annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-  parentSequenceId: Joi.string(),
-  icon: Joi.string() // In SharableObjBase.
+  parentSequenceId: Joi.string()
 });
 
 
