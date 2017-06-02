@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Sequence = server.plugins['hapi-mongo-models'].Sequence;
+  const Module = server.plugins['hapi-mongo-models'].Module;
 
   server.route({
     method: 'GET',
-    path: '/sequence',
+    path: '/module',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Sequence.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Module.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/sequence/{id}',
+    path: '/module/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,24 +53,24 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Sequence.findById(request.params.id, (err, sequence) => {
+      Module.findById(request.params.id, (err, module) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!sequence) {
+        if (!module) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(sequence);
+        reply(module);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/sequence',
+    path: '/module',
     config: {
       auth: {
         strategy: 'simple'
@@ -79,34 +79,37 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-          parentSequenceId: Joi.string().optional(),
+          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+          influenceIds: Joi.array().items(Joi.string()),
+          parentModuleId: Joi.string(),
+          submoduleIds: Joi.array().items(Joi.string()),
+          // features: Joi.array().items(Feature.schema) // Need to implement either a separate route or just fetch Ids
         }
       }
     },
     handler: function (request, reply) {
 
-      Sequence.create(
+      Module.create(
         request.payload.name,
         request.payload.description,
-        request.payload.sequence,
+        request.payload.role,
         request.auth.credentials.user._id.toString(),
-        request.payload.annotationIds,
-        request.payload.parentSequenceId,
+        request.payload.influenceIds,
+        request.payload.parentModuleId,
+        request.payload.submoduleIds,
 
-        (err, sequence) => {
+        (err, module) => {
           if (err) {
             return reply(err);
           }
-          return reply(sequence);
+          return reply(module);
         });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/sequence/{id}',
+    path: '/module/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -114,13 +117,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Sequence.findByIdAndDelete(request.params.id, (err, sequence) => {
+      Module.findByIdAndDelete(request.params.id, (err, module) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!sequence) {
+        if (!module) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -140,5 +143,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'sequence'
+  name: 'module'
 };

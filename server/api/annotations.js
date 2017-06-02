@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Sequence = server.plugins['hapi-mongo-models'].Sequence;
+  const Annotation = server.plugins['hapi-mongo-models'].Annotation;
 
   server.route({
     method: 'GET',
-    path: '/sequence',
+    path: '/annotation',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Sequence.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Annotation.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/sequence/{id}',
+    path: '/annotation/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,24 +53,24 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Sequence.findById(request.params.id, (err, sequence) => {
+      Annotation.findById(request.params.id, (err, annotation) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!sequence) {
+        if (!annotation) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(sequence);
+        reply(annotation);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/sequence',
+    path: '/annotation',
     config: {
       auth: {
         strategy: 'simple'
@@ -79,34 +79,38 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-          parentSequenceId: Joi.string().optional(),
+          sequenceId: Joi.string().required(),
+          symbol: Joi.string(),
+          isForwardStrand: Joi.boolean().required(),
+          start: Joi.number().integer().positive().required(),
+          end: Joi.number().integer().positive().required()
         }
       }
     },
     handler: function (request, reply) {
 
-      Sequence.create(
+      Annotation.create(
         request.payload.name,
         request.payload.description,
-        request.payload.sequence,
+        request.payload.sequenceId,
         request.auth.credentials.user._id.toString(),
-        request.payload.annotationIds,
-        request.payload.parentSequenceId,
+        request.payload.symbol,
+        request.payload.isForwardStrand,
+        request.payload.start,
+        request.payload.end,
 
-        (err, sequence) => {
+        (err, annotation) => {
           if (err) {
             return reply(err);
           }
-          return reply(sequence);
+          return reply(annotation);
         });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/sequence/{id}',
+    path: '/annotation/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -114,13 +118,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Sequence.findByIdAndDelete(request.params.id, (err, sequence) => {
+      Annotation.findByIdAndDelete(request.params.id, (err, annotation) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!sequence) {
+        if (!annotation) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -140,5 +144,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'sequence'
+  name: 'annotation'
 };

@@ -46,7 +46,7 @@ Module.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
-  influences: Influence.schema,
+  influenceIds: Joi.array().items(Joi.string()),
   parentModuleId: Joi.string(),
   submoduleIds: Joi.array().items(Joi.string()),
   features: Joi.array().items(Feature.schema)
