@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-//const Annotation = require('./annotation');
+const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 
@@ -29,12 +29,33 @@ class Sequence extends MongoModels {
   static findByUserId(userId, callback) {
 
     const query = {'userId': userId};
-    this.find(query, (err, sequenceDoc) => {
+    this.find(query, (err, sequences) => {
 
       if (err) {
         return callback(err);
       }
-      callback(null,sequenceDoc);
+
+      this.getAnnotations(0,sequences,callback);
+    });
+  }
+
+  static getAnnotations(index,sequences,callback) {
+
+    if(index == sequences.length){
+      return callback(null, sequences);
+    }
+
+    Annotation.findBySequenceId(sequences[index]['_id'], (err,annotations) =>{
+
+      if(err) {
+        callback(err,null);
+      }
+
+      if(annotations.length != 0) {
+        sequences[index].annotations = annotations;
+      }
+
+      return this.getAnnotations(index + 1, sequences,callback);
     });
   }
 
