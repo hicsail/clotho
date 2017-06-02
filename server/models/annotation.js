@@ -2,7 +2,6 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const ObjectID = require('mongodb').ObjectID;
 //const Feature = require('./feature');
 
 class Annotation extends MongoModels {
@@ -30,7 +29,7 @@ class Annotation extends MongoModels {
 
   static findBySequenceId(sequenceId, callback) {
 
-    const query = {'sequenceId': new ObjectID(sequenceId.toString())};
+    const query = {'sequenceId': sequenceId};
     this.find(query, (err, docs) => {
 
       if (err) {

@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Annotation = require('./annotation');
+//const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 

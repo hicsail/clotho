@@ -66,7 +66,7 @@ lab.experiment('Annotation Class Methods', () => {
     let testCase = 0;
 
     Annotation.create(
-      'annotationID',
+      'sequenceId',
       TestAnnotations[testCase].name,
       TestAnnotations[testCase].description,
       TestAnnotations[testCase].start,
@@ -79,6 +79,17 @@ lab.experiment('Annotation Class Methods', () => {
       Code.expect(result).to.not.exist();
 
       Annotation.insertOne = realInsertOne;
+
+      done();
+    });
+  });
+
+  lab.test('it returns a result when finding by sequenceId', (done) => {
+
+    Annotation.findBySequenceId('sequenceId', (err,results) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(results[0]).to.be.an.instanceOf(Annotation);
 
       done();
     });
