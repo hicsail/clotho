@@ -206,4 +206,58 @@ lab.experiment('Sequence Class Methods', () => {
     });
   });
 
+  lab.test('it returns a new instance when create succeeds with all allowed uppercase squence characters', (done) => {
+
+    let testCase = 7;
+
+    Sequence.create(
+      TestSequences[testCase].name,
+      TestSequences[testCase].description,
+      TestSequences[testCase].sequence,
+      TestSequences[testCase].userId,
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(Sequence);
+
+      done();
+    });
+  });
+
+  lab.test('it returns a new instance when create succeeds with all allowed lowercase squence characters', (done) => {
+
+    let testCase = 8;
+
+    Sequence.create(
+      TestSequences[testCase].name,
+      TestSequences[testCase].description,
+      TestSequences[testCase].sequence,
+      TestSequences[testCase].userId,
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(Sequence);
+
+      done();
+    });
+  });
+
+  lab.test('it returns a new instance when create succeeds with all allowed mixed case squence characters', (done) => {
+
+    let testCase = 9;
+
+    Sequence.create(
+      TestSequences[testCase].name,
+      TestSequences[testCase].description,
+      TestSequences[testCase].sequence,
+      TestSequences[testCase].userId,
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(Sequence);
+
+      done();
+    });
+  });
+
 });
