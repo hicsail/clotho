@@ -173,6 +173,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/assemblies',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/signup',
       options: {
         routes: {prefix: '/api'}

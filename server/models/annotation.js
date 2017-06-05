@@ -88,8 +88,8 @@ Annotation.schema = Joi.object().keys({
   start: Joi.number().integer().positive().required(),
   end: Joi.number().integer().positive().required(),
   name: Joi.string().required(),
-  userId: Joi.string().required(),
-  description: Joi.string()
+  description: Joi.string(),
+  userId: Joi.string().required()
 });
 
 Annotation.indexes = [

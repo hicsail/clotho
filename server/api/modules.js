@@ -80,6 +80,7 @@ internals.applyRoutes = function (server, next) {
           role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
           name: Joi.string().required(),
           description: Joi.string(),
+          userId: Joi.string().required(),
           influenceIds: Joi.array().items(Joi.string()), // Should this be an array of schemas instead?
           parentModuleId: Joi.string(),
           submoduleIds: Joi.array().items(Joi.string()),
@@ -91,13 +92,11 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Module.create(
-        request.payload.role,
         request.payload.name,
         request.payload.description,
-        request.payload.influenceIds,
-        request.payload.parentModuleId,
-        request.payload.submoduleIds,
+        request.payload.role,
         request.payload.features,
+        request.payload.submoduleIds,
         request.auth.credentials.user._id.toString(),
         (err, module) => {
 
