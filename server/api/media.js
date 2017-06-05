@@ -77,7 +77,6 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          parentMediumId: Joi.string(),
           name: Joi.string().required(),
           description: Joi.string().optional()
         }

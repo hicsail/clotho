@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Module = server.plugins['hapi-mongo-models'].Module;
+  const Parameter = server.plugins['hapi-mongo-models'].Parameter;
 
   server.route({
     method: 'GET',
-    path: '/module',
+    path: '/parameter',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Module.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Parameter.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/module/{id}',
+    path: '/parameter/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,61 +53,54 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Module.findById(request.params.id, (err, module) => {
+      Parameter.findById(request.params.id, (err, parameter) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!module) {
+        if (!parameter) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(module);
+        reply(parameter);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/module',
+    path: '/parameter',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
-          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
-          name: Joi.string().required(),
-          description: Joi.string(),
-          submoduleIds: Joi.array().items(Joi.string()),
-          features: Joi.array().items(Joi.object())
+          value: Joi.number(),
+          variable: Joi.object(), // This was originally a Variable object/a ShareableObjBase.
         }
       }
     },
 
     handler: function (request, reply) {
 
-      Module.create(
-        request.payload.name,
-        request.payload.description,
-        request.payload.role,
-        request.payload.features,
-        request.payload.submoduleIds,
-        request.auth.credentials.user._id.toString(),
-        (err, module) => {
+      Parameter.create(
+        request.payload.value,
+        request.payload.variable,
+        (err, parameter) => {
 
           if (err) {
             return reply(err);
           }
-          return reply(module);
+          return reply(parameter);
         });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/module/{id}',
+    path: '/parameter/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -115,13 +108,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Module.findByIdAndDelete(request.params.id, (err, module) => {
+      Parameter.findByIdAndDelete(request.params.id, (err, parameter) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!module) {
+        if (!parameter) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -143,5 +136,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'module'
+  name: 'parameter'
 };

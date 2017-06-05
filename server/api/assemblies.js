@@ -86,9 +86,6 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Assembly.create(
-        request.payload.parts,
-        request.payload.subAssemblyIds,
-        request.auth.credentials.user._id.toString(),
         (err, assembly) => {
 
           if (err) {
