@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Feature = server.plugins['hapi-mongo-models'].Feature;
+  const Assembly = server.plugins['hapi-mongo-models'].Assembly;
 
   server.route({
     method: 'GET',
-    path: '/feature',
+    path: '/assembly',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,21 +32,20 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Feature.pagedFind(query, fields, sort, limit, page, (err, results) = > {
+      Assembly.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
         }
 
         reply(results);
-    })
-      ;
+      });
     }
   });
 
   server.route({
     method: 'GET',
-    path: '/feature/{id}',
+    path: '/assembly/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -54,63 +53,55 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findById(request.params.id, (err, feature) = > {
+      Assembly.findById(request.params.id, (err, assembly) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (
-      !feature
-      )
-      {
-        return reply(Boom.notFound('Document not found.'));
-      }
+        if (!assembly) {
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply(feature);
-    })
-      ;
+        reply(assembly);
+      });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/feature',
+    path: '/assembly',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-          description: Joi.string().optional(),
-          role: Joi.string().required(),
+          parts: Joi.array().items(Joi.object()), // original set of Parts
+          subAssemblyIds: Joi.array().items(Joi.string())
         }
       }
     },
+
     handler: function (request, reply) {
 
-      Feature.create(
-        request.payload.annotationIds,
-        request.payload.name,
-        request.payload.description,
-        request.payload.role,
+      Assembly.create(
+        request.payload.parts,
+        request.payload.subAssemblyIds,
         request.auth.credentials.user._id.toString(),
+        (err, assembly) => {
 
-        (err, feature) = > {
           if (err) {
             return reply(err);
           }
-          return reply(feature);
-        }
-      );
+          return reply(assembly);
+        });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/feature/{id}',
+    path: '/assembly/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -118,18 +109,21 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findByIdAndDelete(request.params.id, (err, feature) => {
+      Assembly.findByIdAndDelete(request.params.id, (err, assembly) => {
+
         if (err) {
           return reply(err);
         }
 
-        if (!feature) {
+        if (!assembly) {
           return reply(Boom.notFound('Document not found.'));
         }
+
         reply({message: 'Success.'});
       });
     }
   });
+
   next();
 };
 
@@ -143,5 +137,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'feature'
+  name: 'assembly'
 };

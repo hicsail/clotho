@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Feature = server.plugins['hapi-mongo-models'].Feature;
+  const Medium = server.plugins['hapi-mongo-models'].Medium;
 
   server.route({
     method: 'GET',
-    path: '/feature',
+    path: '/medium',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Feature.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Medium.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/feature/{id}',
+    path: '/medium/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,24 +53,24 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findById(request.params.id, (err, feature) => {
+      Medium.findById(request.params.id, (err, medium) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!feature) {
+        if (!medium) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(feature);
+        reply(medium);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/feature',
+    path: '/medium',
     config: {
       auth: {
         strategy: 'simple'
@@ -78,35 +78,30 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-          description: Joi.string().optional(),
-          role: Joi.string().required(),
+          description: Joi.string().optional()
         }
       }
     },
+
     handler: function (request, reply) {
 
-      Feature.create(
-        request.payload.annotationIds,
+      Medium.create(
         request.payload.name,
         request.payload.description,
-        request.payload.role,
         request.auth.credentials.user._id.toString(),
-
-        (err, feature) => {
+        (err, medium) => {
 
           if (err) {
             return reply(err);
           }
-          return reply(feature);
-        }
-      );
+          return reply(medium);
+        });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/feature/{id}',
+    path: '/medium/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -114,19 +109,21 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findByIdAndDelete(request.params.id, (err, feature) => {
+      Medium.findByIdAndDelete(request.params.id, (err, medium) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!feature) {
+        if (!medium) {
           return reply(Boom.notFound('Document not found.'));
         }
+
         reply({message: 'Success.'});
       });
     }
   });
+
   next();
 };
 
@@ -140,5 +137,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'feature'
+  name: 'medium'
 };

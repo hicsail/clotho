@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Feature = server.plugins['hapi-mongo-models'].Feature;
+  const Part = server.plugins['hapi-mongo-models'].Part;
 
   server.route({
     method: 'GET',
-    path: '/feature',
+    path: '/part',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Feature.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Part.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/feature/{id}',
+    path: '/part/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,60 +53,68 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findById(request.params.id, (err, feature) => {
+      Part.findById(request.params.id, (err, part) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!feature) {
+        if (!part) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(feature);
+        reply(part);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/feature',
+    path: '/part',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
+          _id: Joi.object(),
+          format: Format.schema,
+          assemblyIds: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
+          sequence: Sequence.schema,
+          isForwardOrientation: Joi.boolean(),
+          parentPartId: Joi.string(),
           name: Joi.string().required(),
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-          description: Joi.string().optional(),
-          role: Joi.string().required(),
+          description: Joi.string(),
+          userId: Joi.string().required()
         }
       }
     },
+
     handler: function (request, reply) {
 
-      Feature.create(
-        request.payload.annotationIds,
+      Part.create(
+        request.payload.format,
+        request.payload.assemblyIds,
+        request.payload.sequence,
+        request.payload.isForwardOrientation,
+        request.payload.parentPartId,
         request.payload.name,
         request.payload.description,
-        request.payload.role,
+        request.payload.userId,
         request.auth.credentials.user._id.toString(),
-
-        (err, feature) => {
+        (err, part) => {
 
           if (err) {
             return reply(err);
           }
-          return reply(feature);
-        }
-      );
+          return reply(part);
+        });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/feature/{id}',
+    path: '/part/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -114,19 +122,21 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findByIdAndDelete(request.params.id, (err, feature) => {
+      Part.findByIdAndDelete(request.params.id, (err, part) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!feature) {
+        if (!part) {
           return reply(Boom.notFound('Document not found.'));
         }
+
         reply({message: 'Success.'});
       });
     }
   });
+
   next();
 };
 
@@ -140,5 +150,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'feature'
+  name: 'part'
 };

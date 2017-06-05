@@ -136,9 +136,38 @@ const manifest = {
         routes: {prefix: '/api'}
       }
     },
-
     {
       plugin: './server/api/annotations',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/modules',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/features',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    // {
+    //   plugin: './server/api/influences',
+    //   options: {
+    //     routes: {prefix: '/api'}
+    //   }
+    // },
+    // {
+    //   plugin: './server/api/bio-designs',
+    //   options: {
+    //     routes: {prefix: '/api'}
+    //   }
+    // },
+    {
+      plugin: './server/api/media',
       options: {
         routes: {prefix: '/api'}
       }

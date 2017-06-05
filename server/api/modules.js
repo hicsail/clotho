@@ -77,27 +77,28 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          description: Joi.string().optional(),
           role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
-          influenceIds: Joi.array().items(Joi.string()),
+          name: Joi.string().required(),
+          description: Joi.string(),
+          influenceIds: Joi.array().items(Joi.string()), // Should this be an array of schemas instead?
           parentModuleId: Joi.string(),
           submoduleIds: Joi.array().items(Joi.string()),
-          // features: Joi.array().items(Feature.schema) // Need to implement either a separate route or just fetch Ids
+          features: Joi.array().items(Joi.object())
         }
       }
     },
+
     handler: function (request, reply) {
 
       Module.create(
+        request.payload.role,
         request.payload.name,
         request.payload.description,
-        request.payload.role,
-        request.auth.credentials.user._id.toString(),
         request.payload.influenceIds,
         request.payload.parentModuleId,
         request.payload.submoduleIds,
-
+        request.payload.features,
+        request.auth.credentials.user._id.toString(),
         (err, module) => {
 
           if (err) {
@@ -132,6 +133,8 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+  next();
 };
 
 
