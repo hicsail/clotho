@@ -247,3 +247,62 @@ lab.experiment('Sequence Plugin Delete', () => {
     });
   });
 });
+
+lab.experiment('Sequence Plugin Create', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/sequence',
+      payload: {
+        name: 'sequence1',
+        sequence: 'ATUCGRYKMSWBDHVNatucgrykmswbdhvn',
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when create fails', (done) => {
+
+    stub.Sequence.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    stub.Sequence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+
+      callback(Error('create failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('it creates a document successfully', (done) => {
+
+    stub.Sequence.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    stub.Sequence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+
+      callback(null, {});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
