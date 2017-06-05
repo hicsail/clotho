@@ -60,8 +60,9 @@ const manifest = {
             AuthAttempt: './server/models/auth-attempt',
             BioDesign: './server/models/bio-design',
             Feature: './server/models/feature',
-            Part: './server/models/part',
             Module: './server/models/module',
+            Medium: './server/models/medium',
+            Part: './server/models/part',
             Sequence: './server/models/sequence',
             Session: './server/models/session',
             User: './server/models/user'
@@ -168,6 +169,12 @@ const manifest = {
     // },
     {
       plugin: './server/api/media',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/assemblies',
       options: {
         routes: {prefix: '/api'}
       }
