@@ -125,12 +125,6 @@ const manifest = {
       }
     },
     {
-      plugin: './server/api/sequences',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
       plugin: './server/api/sessions',
       options: {
         routes: {prefix: '/api'}
