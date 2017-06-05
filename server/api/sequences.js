@@ -83,7 +83,6 @@ internals.applyRoutes = function (server, next) {
           accession: Joi.string().optional(),
           isLinear: Joi.boolean().optional(),
           isSingleStranded: Joi.boolean().optional()
-          annotations: Joi.
         }
       }
     },
