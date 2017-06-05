@@ -105,13 +105,11 @@ Sequence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string().optional(),
-  sequence: Joi.string().valid('A', 'T', 'U', 'C', 'G', 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N').insensitive(), // Case-insensitive.
+  sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
   userId: Joi.string().required(),
-  annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-  parentSequenceId: Joi.string(),
-  accession: Joi.string(), // Polynucleotide-specific attributes start here.
-  isLinear: Joi.boolean(),
-  isSingleStranded: Joi.boolean(),
+  accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
+  isLinear: Joi.boolean().optional(),
+  isSingleStranded: Joi.boolean().optional(),
   submissionDate: Joi.date() // also ignores parentPolynucleotideId
 });
 
