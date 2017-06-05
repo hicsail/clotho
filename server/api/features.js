@@ -78,7 +78,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
+          annotationId: Joi.string().required(),
           description: Joi.string().optional(),
           role: Joi.string().required(),
         }
@@ -87,7 +87,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Feature.create(
-        request.payload.annotationIds,
+        request.payload.annotationId,
         request.payload.name,
         request.payload.description,
         request.payload.role,
