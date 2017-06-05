@@ -93,13 +93,9 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Part.create(
-        request.payload.format,
-        request.payload.assemblyIds,
-        request.payload.sequence,
-        request.payload.isForwardOrientation,
-        request.payload.parentPartId,
         request.payload.name,
         request.payload.description,
+        request.payload.sequence,
         request.payload.userId,
         request.auth.credentials.user._id.toString(),
         (err, part) => {
