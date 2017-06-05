@@ -247,3 +247,65 @@ lab.experiment('Annotation Plugin Delete', () => {
     });
   });
 });
+
+lab.experiment('Annotation Plugin Create', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/annotation',
+      payload: {
+        sequenceId: 'seq1',
+        name: 'sequence1',
+        start: 1,
+        end: 2,
+        isForwardStrand: true
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when create fails', (done) => {
+
+    stub.Annotation.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    stub.Annotation.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+
+      callback(Error('create failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('it creates a document successfully', (done) => {
+
+    stub.Annotation.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    stub.Annotation.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+
+      callback(null, {});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
