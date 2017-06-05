@@ -79,22 +79,25 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          sequence: Joi.string().required().regex(/^((A|T|U|C|G|R|Y|K|M|S|W|B|D|H|V|N)+)$/), // Case-insensitive.
-          annotationIds: Joi.array().items(Joi.string()), /*Joi.array().items(Annotation.schema),*/
-          parentSequenceId: Joi.string().optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
+          accession: Joi.string().optional(),
+          isLinear: Joi.boolean().optional(),
+          isSingleStranded: Joi.boolean().optional()
+          annotations: Joi.
         }
       }
     },
+
     handler: function (request, reply) {
 
       Sequence.create(
         request.payload.name,
         request.payload.description,
         request.payload.sequence,
+        request.payload.isLinear,
+        request.payload.isSingleStranded,
+        null, //feature id, should be parent if creating new one
         request.auth.credentials.user._id.toString(),
-        request.payload.annotationIds,
-        request.payload.parentSequenceId,
-
         (err, sequence) => {
 
           if (err) {
