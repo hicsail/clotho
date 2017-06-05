@@ -131,6 +131,19 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/sequences',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+
+    {
+      plugin: './server/api/annotations',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/signup',
       options: {
         routes: {prefix: '/api'}

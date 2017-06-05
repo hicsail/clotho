@@ -96,6 +96,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.parentSequenceId,
 
         (err, sequence) => {
+
           if (err) {
             return reply(err);
           }
@@ -128,6 +129,8 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+  next();
 };
 
 

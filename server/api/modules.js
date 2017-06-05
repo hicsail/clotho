@@ -99,6 +99,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.submoduleIds,
 
         (err, module) => {
+
           if (err) {
             return reply(err);
           }

@@ -77,29 +77,28 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
+          sequenceId: Joi.string().required(),
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          sequenceId: Joi.string().required(),
-          symbol: Joi.string(),
-          isForwardStrand: Joi.boolean().required(),
           start: Joi.number().integer().positive().required(),
-          end: Joi.number().integer().positive().required()
+          end: Joi.number().integer().positive().required(),
+          isForwardStrand: Joi.boolean().required()
         }
       }
     },
     handler: function (request, reply) {
 
       Annotation.create(
+        request.payload.sequenceId,
         request.payload.name,
         request.payload.description,
-        request.payload.sequenceId,
-        request.auth.credentials.user._id.toString(),
-        request.payload.symbol,
-        request.payload.isForwardStrand,
         request.payload.start,
         request.payload.end,
+        request.payload.isForwardStrand,
+        request.auth.credentials.user._id.toString(),
 
         (err, annotation) => {
+
           if (err) {
             return reply(err);
           }
@@ -132,6 +131,7 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+  next();
 };
 
 
