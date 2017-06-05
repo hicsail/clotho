@@ -32,14 +32,15 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Feature.pagedFind(query, fields, sort, limit, page, function (err, results) {
+      Feature.pagedFind(query, fields, sort, limit, page, (err, results) = > {
 
         if (err) {
           return reply(err);
         }
 
         reply(results);
-      });
+    })
+      ;
     }
   });
 
@@ -97,13 +98,13 @@ internals.applyRoutes = function (server, next) {
         request.payload.role,
         request.auth.credentials.user._id.toString(),
 
-        function (err, feature) {
-
+        (err, feature) = > {
           if (err) {
             return reply(err);
           }
           return reply(feature);
-        });
+        }
+      );
     }
   });
 
@@ -117,7 +118,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feature.findByIdAndDelete(request.params.id, function (err, feature) {
+      Feature.findByIdAndDelete(request.params.id, (err, feature) => {
         if (err) {
           return reply(err);
         }
