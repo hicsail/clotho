@@ -247,7 +247,6 @@ lab.experiment('Medium Plugin Delete', () => {
     });
   });
 });
-/*
 lab.experiment('Medium Plugin Create', () => {
 
   lab.beforeEach((done) => {
@@ -256,11 +255,7 @@ lab.experiment('Medium Plugin Create', () => {
       method: 'POST',
       url: '/medium',
       payload: {
-        sequenceId: 'seq1',
-        name: 'sequence1',
-        start: 1,
-        end: 2,
-        isForwardStrand: true
+        name: 'medium1',
       },
       credentials: AuthenticatedUser
     };
@@ -275,7 +270,7 @@ lab.experiment('Medium Plugin Create', () => {
       callback();
     };
 
-    stub.Medium.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+    stub.Medium.create = function (name,description,userId,callback) {
 
       callback(Error('create failed'));
     };
@@ -295,7 +290,7 @@ lab.experiment('Medium Plugin Create', () => {
       callback();
     };
 
-    stub.Medium.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Medium.create = function (name,description,userId,callback) {
 
       callback(null, {});
     };
@@ -309,4 +304,3 @@ lab.experiment('Medium Plugin Create', () => {
     });
   });
 });
-*/
