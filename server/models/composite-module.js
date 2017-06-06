@@ -10,7 +10,7 @@ class BasicModule extends MongoModels {
     const document = {
       name: name,
       description: description,
-      feature: feature,
+      start: feature,
       userId: userId,
     };
 
