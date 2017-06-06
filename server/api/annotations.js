@@ -48,7 +48,7 @@ internals.applyRoutes = function (server, next) {
     path: '/annotation/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategy: 'simple'
       }
     },
     handler: function (request, reply) {
@@ -77,11 +77,12 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequenceId: Joi.string().required(),
           name: Joi.string().required(),
           description: Joi.string().optional(),
           start: Joi.number().integer().positive().required(),
           end: Joi.number().integer().positive().required(),
+          sequenceId: Joi.string().required(),
+          userId: Joi.string().required(),
           isForwardStrand: Joi.boolean().required()
         }
       }
@@ -89,13 +90,13 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Annotation.create(
-        request.payload.sequenceId,
         request.payload.name,
         request.payload.description,
         request.payload.start,
         request.payload.end,
-        request.payload.isForwardStrand,
+        request.payload.sequenceId,
         request.auth.credentials.user._id.toString(),
+        request.payload.isForwardStrand,
 
         (err, annotation) => {
 
