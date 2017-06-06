@@ -21,6 +21,13 @@ exports.register = function (server, options, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/register',
+    handler: function (request, reply) {
+      return reply.view('register');
+    }
+  });
 
   next();
 };

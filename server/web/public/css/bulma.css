@@ -7125,4 +7125,26 @@ label.panel-block:hover {
   background-color: whitesmoke;
   padding: 3rem 1.5rem 6rem;
 }
+
+.form {
+  width: 300px;
+  margin:0 auto;
+  padding-top: 200px;
+}
+
+#un, #pwd {
+  font-size: 20px;
+}
+
+#unField, #pwdField{
+  font-size: 15px;
+  border-radius: 50px;
+}
+
+#un, #pwd, #unField, #pwdField {
+  width: 200px;
+  height: 30px;
+}
+
+
 /*# sourceMappingURL=bulma.css.map */
