@@ -42,7 +42,11 @@ const manifest = {
         register: 'visionary',
         options: {
           engines: {handlebars: 'handlebars'},
-          path: './server/web'
+          path: './server/web/templates',
+          layout: 'layout',
+          layoutPath: './server/web/layouts',
+          partialsPath: './server/web/partials',
+          //helpersPath: './server/web/helpers',
         }
       }
     },
