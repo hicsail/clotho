@@ -3,15 +3,16 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
-class BasicModule extends MongoModels {
+class CompositeModule extends MongoModels {
 
-  static create(name, description, feature, userId, callback) {
+  static create(name, description, role, subModules, userId, callback) {
 
     const document = {
       name: name,
       description: description,
-      start: feature,
-      userId: userId,
+      role: role,
+      subModule: subModule,
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -23,9 +24,9 @@ class BasicModule extends MongoModels {
     });
   }
 
-// TODO: addFeature function
-// Not called upon at all though
 
+// TODO: addSubModule function
+// Called upon once
 
 // Original Java
 //   @NotNull
@@ -33,32 +34,32 @@ class BasicModule extends MongoModels {
 //   @Getter
 //   @Setter
 //   @ReferenceCollection
-//   protected Set<Feature> features;
+//   protected Set<Module> subModules;
 //
-//   public BasicModule(String name, ModuleRole role, Set<Feature> features, Person author) {
+//   public CompositeModule(String name, ModuleRole role, Set<Module> subModules, Person author) {
 //   super(name, role, author);
-//   this.features = features;
+//   this.subModules = subModules;
 // }
 //
-// public BasicModule(String name, String description, ModuleRole role, Set<Feature> features, Person author) {
+// public CompositeModule(String name, String description, ModuleRole role, Set<Module> subModules,
+//   Person author) {
 //   super(name, description, role, author);
-//   this.features = features;
+//   this.subModules = subModules;
 // }
 //
-// public void addFeature(Feature feature) {
-//   if (features == null) {
-//     features = new HashSet<Feature>();
+// public void addSubModule(Module subModule) {
+//   if (subModules == null) {
+//     subModules = new HashSet<Module>();
 //   }
-//   features.add(feature);
+//   subModules.add(subModule);
 // }
-//
 }
 
 
-BasicModule.collection = 'basicModule';
+CompositeModule.collection = 'compositeModule';
 
 // Does not include shareableobjbase properties.
-BasicModule.schema = Joi.object().keys({
+CompositeModule.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
@@ -66,8 +67,8 @@ BasicModule.schema = Joi.object().keys({
   userId: Joi.string().required(),
 });
 
-BasicModule.indexes = [
+CompositeModule.indexes = [
   {key: {userId: 1}}
 ];
 
-module.exports = BasicModule;
+module.exports = CompositeModule;
