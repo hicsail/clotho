@@ -79,7 +79,8 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          feature: Joi.object(),
+          role: Joi.object(),
+          subModules: Joi.object(),
           userId: Joi.string().required(),
         }
       }
@@ -89,7 +90,8 @@ internals.applyRoutes = function (server, next) {
       Annotation.create(
         request.payload.name,
         request.payload.description,
-        request.payload.feature,
+        request.payload.role,
+        request.payload.subModules,
         request.auth.credentials.user._id.toString(),
 
         (err, composite-module) => {
