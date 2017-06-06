@@ -247,7 +247,6 @@ lab.experiment('Module Plugin Delete', () => {
     });
   });
 });
-/*
 lab.experiment('Module Plugin Create', () => {
 
   lab.beforeEach((done) => {
@@ -256,11 +255,8 @@ lab.experiment('Module Plugin Create', () => {
       method: 'POST',
       url: '/module',
       payload: {
-        sequenceId: 'seq1',
-        name: 'sequence1',
-        start: 1,
-        end: 2,
-        isForwardStrand: true
+        name: 'module1',
+        role: 'SENSOR'
       },
       credentials: AuthenticatedUser
     };
@@ -275,7 +271,7 @@ lab.experiment('Module Plugin Create', () => {
       callback();
     };
 
-    stub.Module.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+    stub.Module.create = function (name,description,role,features,submoduleIds,userId,callback) {
 
       callback(Error('create failed'));
     };
@@ -295,7 +291,7 @@ lab.experiment('Module Plugin Create', () => {
       callback();
     };
 
-    stub.Module.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Module.create = function (name,description,role,features,submoduleIds,userId,callback) {
 
       callback(null, {});
     };
@@ -309,4 +305,3 @@ lab.experiment('Module Plugin Create', () => {
     });
   });
 });
-*/
