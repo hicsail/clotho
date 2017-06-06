@@ -34,7 +34,7 @@ SampleData.schema = Joi.object().keys({
   description: Joi.string(),
   sampleId: Joi.string().required(),
   instrument: Joi.object(),
-  responseVariableIds: Joi.array().items(Joi.string()),
+  responseVariables: Joi.array().items(Joi.object()),
   userId: Joi.string().required(),
   parameterIds: Joi.array().items(Joi.string())
 });
