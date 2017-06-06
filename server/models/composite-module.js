@@ -11,7 +11,7 @@ class CompositeModule extends MongoModels {
       name: name,
       description: description,
       role: role,
-      subModule: subModule,
+      subModule: subModules,
       userId: userId
     };
 
@@ -63,8 +63,9 @@ CompositeModule.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  feature: Joi.object(),
-  userId: Joi.string().required(),
+  role: Joi.object(),
+  subModules: Joi.object(),
+  userId: Joi.string().required()
 });
 
 CompositeModule.indexes = [
