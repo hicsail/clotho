@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Format = require('./format');
+// const Format = require('./format');
 // const Assembly = require('./assembly');
 const Sequence = require('./sequence');
 
@@ -35,28 +35,28 @@ class Part extends MongoModels {
         return callback(err);
       }
 
-      this.getSequence(0,sequences,callback);
+      this.getSequence(0, sequences, callback);
     });
   }
 
   //most likely one sequence only, may have to review this function
-  static getSequence(index,part,callback) {
+  static getSequence(index, part, callback) {
 
-    if(index == part.length){
+    if (index == part.length) {
       return callback(null, sequences);
     }
 
-    Sequence.findByPartId(sequences[index]['_id'], (err,sequences) =>{
+    Sequence.findByPartId(sequences[index]['_id'], (err, sequences) => {
 
-      if(err) {
-        callback(err,null);
+      if (err) {
+        callback(err, null);
       }
 
-      if(sequences.length != 0) {
+      if (sequences.length != 0) {
         part[index].sequences = sequences;
       }
 
-      return this.getSequence(index + 1, part,callback);
+      return this.getSequence(index + 1, part, callback);
     });
   }
 
