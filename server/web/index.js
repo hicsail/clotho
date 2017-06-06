@@ -1,5 +1,5 @@
 'use strict';
-const path = require('path');
+const Path = require('path');
 
 exports.register = function (server, options, next) {
 
@@ -17,7 +17,7 @@ exports.register = function (server, options, next) {
     path: '/public/{file*2}',
     handler: function (request, reply) {
 
-      return reply.file(path.join(__dirname, './public/' + request.params.file));
+      return reply.file(Path.join(__dirname, './public/' + request.params.file));
     }
   });
 
@@ -25,6 +25,7 @@ exports.register = function (server, options, next) {
     method: 'GET',
     path: '/register',
     handler: function (request, reply) {
+
       return reply.view('register');
     }
   });
