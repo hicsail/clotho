@@ -42,3 +42,26 @@ Sample.indexes = [
 ];
 
 module.exports = Sample;
+
+
+/*
+ public Parameter createParameter(double value, Variable variable) {
+ Parameter parameter = new Parameter(value, variable);
+ addParameter(parameter);
+ return parameter;
+ }
+
+ public void addParameter(Parameter parameter) {
+ if (parameters == null) {
+ parameters = new HashSet<Parameter>();
+ }
+ parameters.add(parameter);
+ }
+
+ public void addParentSample(Sample parentSample) {
+ if (parentSamples == null) {
+ parentSamples = new HashSet<Sample>();
+ }
+ parentSamples.add(parentSample);
+ }
+ */
