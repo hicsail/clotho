@@ -6,16 +6,16 @@ const Feature = require('./feature');
 
 class Annotation extends MongoModels {
 
-  static create(sequenceId, name, description, start, end, isForwardStrand, userId, callback) {
+  static create(name, description, start, end, sequenceId, userId, isForwardStrand, callback) {
 
     const document = {
-      sequenceId: sequenceId,
       name: name,
       description: description,
       start: start,
       end: end,
-      isForwardStrand: isForwardStrand,
-      userId: userId
+      sequenceId: sequenceId,
+      userId: userId,
+      isForwardStrand: isForwardStrand
     };
 
     this.insertOne(document, (err, docs) => {
@@ -82,14 +82,13 @@ Annotation.collection = 'annotations';
 // Does not include shareableobjbase properties.
 Annotation.schema = Joi.object().keys({
   _id: Joi.object(),
-  sequenceId: Joi.string().required(),
-  symbol: Joi.string(),
-  isForwardStrand: Joi.boolean().required(),
+  name: Joi.string().required(),
+  description: Joi.string(),
   start: Joi.number().integer().positive().required(),
   end: Joi.number().integer().positive().required(),
-  name: Joi.string().required(),
+  sequenceId: Joi.string().required(),
   userId: Joi.string().required(),
-  description: Joi.string()
+  isForwardStrand: Joi.boolean().required()
 });
 
 Annotation.indexes = [
