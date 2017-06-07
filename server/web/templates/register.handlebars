@@ -1,33 +1,78 @@
 {{>nav}}
-<section class="main">
-    <div class="main-body">
+<section class="hero">
+    <div class="hero-body">
         <div class="container">
             <h1 class="title">Register</h1>
         </div>
-        <div class="field" >
+        <div class="field">
             <form id="register">
-                <label class="label"><b>Full Name</b></label>
-                <input class="input" type="text" placeholder="First Last" name="name" required>
-                <label class="label"><b>Username</b></label>
-                <input class="input" type="text" placeholder="Username" name="username" required>
-                <label class="label"><b>Password</b></label>
-                <input class="input" type="text" placeholder="Password" name="password" required>
-                <label class="label"><b>Email</b></label>
-                <input class="input" type="text" placeholder="Email" name="email" required>
+                <label class="label" id="nameLabel"><b>Full Name</b></label>
+                <input class="input" id="name" type="text" placeholder="First Last" name="name">
+                <label class="label" id="emailLabel"><b>Email</b></label>
+                <input class="input" id="email" type="text" placeholder="Email" name="email">
+                <label class="label" id="usernameLabel"><b>Username</b></label>
+                <input class="input" id="username" type="text" placeholder="Username" name="username">
+                <label class="label" id="passwordLabel"><b>Password</b></label>
+                <input class="input" id="password" type="text" placeholder="Password" name="password">
+                <label class="label" id="retypePwLabel"><b>Retype Password</b></label>
+                <input class="input" id="retypePw" type="text" placeholder="Password" name="retypePw">
                 <input class="button is-primary" id="submit" type="submit" value="Submit">
             </form>
             <script>
                 $('#register').on('submit', function (e) {
-                    e.preventDefault();
+                  e.preventDefault();
+
+                  var name = $('#name');
+                  var username = $('#username');
+                  var password = $('#password');
+                  var email = $('#email');
+                  var retypePw = $('#retypePw');
+
+                  var fields = [name, username, password, email, retypePw];
+                  for(var i = 0; i < fields.length; i++) {
+                    fields[i].removeClass('is-danger');
+                  }
+
+                  if(name[0].value === ''){
+                    name.addClass('is-danger');
+                    alert('Please fill out the name');
+                  }
+                  else if(email[0].value === '') {
+                    email.addClass('is-danger');
+                    alert('Please fill out the email');
+                  }
+                  else if(username[0].value === '') {
+                    username.addClass('is-danger');
+                    alert('Please fill out the username');
+                  }
+                  else if(password[0].value === '') {
+                    password.addClass('is-danger');
+                    alert('Please fill out the password');
+                  }
+                  else if(retypePw[0].value == '') {
+                    retypePw.addClass('is-danger');
+                    alert('Please retype your password');
+                  }
+                  else if(password[0].value != retypePw[0].value){
+                    password.addClass('is-danger');
+                    retypePw.addClass('is-danger');
+                    alert('Your passwords do not match');
+                  }
+
+                  else {
                     var values = {};
                     $.each($('#register').serializeArray(), function (i, field) {
-                        values[field.name] = field.value;
+                      values[field.name] = field.value;
                     });
                     $.post('../../api/signup', values, function () {
-                        console.log('success');
-                        window.location.replace('/')
+                      console.log('success');
+                      window.location.replace('/');
+                    }).fail(function (data) {
+                      console.log(data);
                     });
+                  }
                 });
+
             </script>
         </div>
     </div>
