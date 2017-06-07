@@ -8,12 +8,13 @@ $().ready(function ($) {
     navButton.toggleClass('is-active');
     navMenu.toggleClass('is-active');
   });
-});
 
-$('.nav-item').each((index, ele) => {
+  $('.nav-item').each((index, ele) => {
 
-  var element = ele;
-  if(window.location.pathname == $(element).attr('href')){
-    $(element).addClass('is-active');
-  }
+    var element = ele;
+
+    if(window.location.pathname == $(element).attr('href')){
+      $(element).addClass('is-active');
+    }
+  });
 });
