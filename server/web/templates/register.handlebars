@@ -5,12 +5,23 @@
             <h1 class="title">Register</h1>
         </div>
         <div class="form">
-            <label id="un"><b>Username</b></label><br>
-            <input id="unField" type="text" placeholder="Username:" name="username" required>
-            <br>
-            <label id="pwd"><b>Password</b></label><br>
-            <input id="pwdField" type="text" placeholder="Password:" name="password" required>
-
+            <form id="register">
+                <label><b>Full Name</b></label><br>
+                <input type="text" placeholder="First Last" name="fullname" required><br>
+                <label><b>Username</b></label><br>
+                <input type="text" placeholder="Username" name="username" required><br>
+                <label><b>Password</b></label><br>
+                <input type="text" placeholder="Password" name="password" required><br>
+                <label><b>Email</b></label><br>
+                <input type="text" placeholder="Email" name="email" required><br>
+                <input id="submit" type="submit" value="Submit">
+            </form>
+            <script>
+                $('#register').on('submit', function (e) {
+                  console.log(e);
+                  e.preventDefault();
+                });
+            </script>
         </div>
     </div>
 </section>

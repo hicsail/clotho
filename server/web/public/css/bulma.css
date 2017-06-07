@@ -7132,18 +7132,27 @@ label.panel-block:hover {
   padding-top: 200px;
 }
 
-#un, #pwd {
+#register > label {
   font-size: 20px;
 }
 
-#unField, #pwdField{
+#register > input[type="text"]{
   font-size: 15px;
   border-radius: 50px;
+  height:30px;
+  margin-bottom: 15px;
 }
 
-#un, #pwd, #unField, #pwdField {
+#register {
   width: 200px;
   height: 30px;
+}
+#submit {
+  height: 15px;
+  width: 100px;
+  font-size: 20px;
+  margin-left: 16%;
+  margin-top: 10px;
 }
 
 

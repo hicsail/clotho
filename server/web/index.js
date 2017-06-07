@@ -1,5 +1,6 @@
 'use strict';
 const path = require('path');
+const User = require('../models/user');
 
 exports.register = function (server, options, next) {
 
@@ -28,6 +29,8 @@ exports.register = function (server, options, next) {
       return reply.view('register');
     }
   });
+
+
 
   next();
 };
