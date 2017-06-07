@@ -292,7 +292,8 @@ lab.experiment('Users Plugin Create', () => {
       payload: {
         username: 'muddy',
         password: 'dirtandwater',
-        email: 'mrmud@mudmail.mud'
+        email: 'mrmud@mudmail.mud',
+        name: 'mr muddy'
       },
       credentials: AuthenticatedUser
     };
@@ -392,7 +393,7 @@ lab.experiment('Users Plugin Create', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(Error('create failed'));
     };
@@ -413,7 +414,7 @@ lab.experiment('Users Plugin Create', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {});
     };
@@ -439,7 +440,8 @@ lab.experiment('Users Plugin Update', () => {
       payload: {
         isActive: true,
         username: 'muddy',
-        email: 'mrmud@mudmail.mud'
+        email: 'mrmud@mudmail.mud',
+        name: 'mr muddy'
       },
       credentials: AuthenticatedUser
     };

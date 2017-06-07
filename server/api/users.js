@@ -136,7 +136,8 @@ internals.applyRoutes = function (server, next) {
         payload: {
           username: Joi.string().token().lowercase().required(),
           password: Joi.string().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -191,8 +192,9 @@ internals.applyRoutes = function (server, next) {
       const username = request.payload.username;
       const password = request.payload.password;
       const email = request.payload.email;
+      const name = request.payload.name;
 
-      User.create(username, password, email, (err, user) => {
+      User.create(username, password, email, name, (err, user) => {
 
         if (err) {
           return reply(err);
@@ -219,7 +221,8 @@ internals.applyRoutes = function (server, next) {
         payload: {
           isActive: Joi.boolean().required(),
           username: Joi.string().token().lowercase().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -278,7 +281,8 @@ internals.applyRoutes = function (server, next) {
         $set: {
           isActive: request.payload.isActive,
           username: request.payload.username,
-          email: request.payload.email
+          email: request.payload.email,
+          name: request.payload.name
         }
       };
 
