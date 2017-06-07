@@ -82,7 +82,6 @@ internals.applyRoutes = function (server, next) {
           start: Joi.number().integer().positive().required(),
           end: Joi.number().integer().positive().required(),
           sequenceId: Joi.string().required(),
-          userId: Joi.string().required(),
           isForwardStrand: Joi.boolean().required()
         }
       }
