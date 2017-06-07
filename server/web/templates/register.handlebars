@@ -56,8 +56,8 @@
                     $.each($('#register').serializeArray(), function (i, field) {
                       values[field.name] = field.value;
                     });
+                    delete values.retypePw;
                     $.post('../../api/signup', values, function () {
-                      console.log('success');
                       window.location.replace('/');
                     }).fail(function (data) {
                       var message = data.responseJSON.message;
