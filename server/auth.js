@@ -1,6 +1,7 @@
 'use strict';
 const Async = require('async');
 const Boom = require('boom');
+const Config = require('../config');
 
 
 const internals = {};
@@ -18,6 +19,61 @@ internals.applyStrategy = function (server, next) {
         session: function (done) {
 
           Session.findByCredentials(username, password, done);
+        },
+        user: ['session', function (results, done) {
+
+          if (!results.session) {
+            return done();
+          }
+
+          User.findById(results.session.userId, done);
+        }],
+        roles: ['user', function (results, done) {
+
+          if (!results.user) {
+            return done();
+          }
+
+          results.user.hydrateRoles(done);
+        }],
+        scope: ['user', function (results, done) {
+
+          if (!results.user || !results.user.roles) {
+            return done();
+          }
+
+          done(null, Object.keys(results.user.roles));
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        if (!results.session) {
+          return callback(null, false);
+        }
+
+        callback(null, Boolean(results.user), results);
+      });
+    }
+  });
+
+  server.auth.strategy('session', 'cookie', {
+    password: Config.get('/cookieSecret'),
+    cookie: 'sid-clotho',
+    isSecure: false,
+    redirectTo: '/login',
+    appendNext: 'returnUrl',
+    validateFunc: function (request, data, callback) {
+
+      Async.auto({
+        session: function (done) {
+
+          const id = data.session._id;
+          const key = data.session.key;
+
+          Session.findByCredentials(id, key, done);
         },
         user: ['session', function (results, done) {
 

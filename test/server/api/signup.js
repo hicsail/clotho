@@ -178,7 +178,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(Error('create failed'));
     };
@@ -199,7 +199,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {_id: 'BL4M0'});
     };
@@ -263,7 +263,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {_id: 'BL4M0'});
     };
