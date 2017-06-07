@@ -39,7 +39,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(results);
-    });
+      });
     }
   });
 
@@ -60,11 +60,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!influence) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply(influence);
-    });
+        reply(influence);
+      });
     }
   });
 
@@ -99,11 +99,11 @@ internals.applyRoutes = function (server, next) {
         request.auth.credentials.user._id.toString(),
         (err, influence) => {
 
-        if (err) {
-          return reply(err);
-        }
-        return reply(influence);
-    });
+          if (err) {
+            return reply(err);
+          }
+          return reply(influence);
+        });
     }
   });
 
@@ -124,11 +124,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!influence) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply({message: 'Success.'});
-    });
+        reply({message: 'Success.'});
+      });
     }
   });
 

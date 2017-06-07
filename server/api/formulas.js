@@ -39,7 +39,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(results);
-    });
+      });
     }
   });
 
@@ -60,11 +60,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!formula) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply(formula);
-    });
+        reply(formula);
+      });
     }
   });
 
@@ -107,11 +107,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!formula) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply({message: 'Success.'});
-    });
+        reply({message: 'Success.'});
+      });
     }
   });
 

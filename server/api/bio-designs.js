@@ -39,7 +39,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(results);
-    });
+      });
     }
   });
 
@@ -53,18 +53,18 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findById(request.params.id, (err, bio-design) => {
+      BioDesign.findById(request.params.id, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bio-design) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+        if (!bioDesign) {
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply(bio-design);
-    });
+        reply(bioDesign);
+      });
     }
   });
 
@@ -84,19 +84,19 @@ internals.applyRoutes = function (server, next) {
       }
     },
 
-    handler: function(request, reply) {
+    handler: function (request, reply) {
 
       BioDesign.create(
         request.payload.name,
         request.payload.description,
         request.payload.userId,
-        (err, bio-design) => {
+        (err, bioDesign) => {
 
-        if (err) {
-          return reply(err);
-        }
-        return reply(bio-design);
-    });
+          if (err) {
+            return reply(err);
+          }
+          return reply(bioDesign);
+        });
     }
   });
 
@@ -110,18 +110,18 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findByIdAndDelete(request.params.id, (err, bio-design) => {
+      BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bio-design) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+        if (!bioDesign) {
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply({message: 'Success.'});
-    });
+        reply({message: 'Success.'});
+      });
     }
   });
 

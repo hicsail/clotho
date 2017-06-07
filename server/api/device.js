@@ -39,7 +39,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(results);
-    });
+      });
     }
   });
 
@@ -60,11 +60,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!device) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply(device);
-    });
+        reply(device);
+      });
     }
   });
 
@@ -84,7 +84,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
 
-    handler: function(request, reply) {
+    handler: function (request, reply) {
 
       Device.create(
         request.payload.name,
@@ -92,11 +92,11 @@ internals.applyRoutes = function (server, next) {
         request.payload.userId,
         (err, device) => {
 
-        if (err) {
-          return reply(err);
-        }
-        return reply(device);
-    });
+          if (err) {
+            return reply(err);
+          }
+          return reply(device);
+        });
     }
   });
 
@@ -117,11 +117,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!device) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply({message: 'Success.'});
-    });
+        reply({message: 'Success.'});
+      });
     }
   });
 

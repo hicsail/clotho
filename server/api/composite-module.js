@@ -7,7 +7,8 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const CompositeModule = server.plugins['hapi-mongo-models'].CompositeModule;
+  const Module = server.plugins['hapi-mongo-models'].Module;
+  const Annotation = server.plugins['hapi-mongo-models'].Annotation;
 
   server.route({
     method: 'GET',
@@ -32,7 +33,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      CompositeModule.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Module.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -53,17 +54,17 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      CompositeModule.findById(request.params.id, (err, composite-module) => {
+      Module.findById(request.params.id, (err, module) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!composite-module) {
+        if (!module) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(composite-module);
+        reply(module);
       });
     }
   });
@@ -94,12 +95,12 @@ internals.applyRoutes = function (server, next) {
         request.payload.subModules,
         request.auth.credentials.user._id.toString(),
 
-        (err, composite-module) => {
+        (err, module) => {
 
           if (err) {
             return reply(err);
           }
-          return reply(composite-module);
+          return reply(module);
         });
     }
   });
@@ -114,13 +115,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      CompositeModule.findByIdAndDelete(request.params.id, (err, composite-module) => {
+      Module.findByIdAndDelete(request.params.id, (err, module) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!composite-module) {
+        if (!module) {
           return reply(Boom.notFound('Document not found.'));
         }
 

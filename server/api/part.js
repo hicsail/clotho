@@ -8,6 +8,8 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
   const Part = server.plugins['hapi-mongo-models'].Part;
+  const Format = server.plugins['hapi-mongo-models'].Format;
+  const Sequence = server.plugins['hapi-mongo-models'].Sequence;
 
   server.route({
     method: 'GET',
