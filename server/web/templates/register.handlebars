@@ -27,39 +27,31 @@
                   var password = $('#password');
                   var email = $('#email');
                   var retypePw = $('#retypePw');
+                  var valid = false;
 
-                  var fields = [name, username, password, email, retypePw];
+                  var fields = [name, email, username, password, retypePw];
                   for(var i = 0; i < fields.length; i++) {
                     fields[i].removeClass('is-danger');
                   }
 
-                  if(name[0].value === ''){
-                    name.addClass('is-danger');
-                    alert('Please fill out the name');
-                  }
-                  else if(email[0].value === '') {
-                    email.addClass('is-danger');
-                    alert('Please fill out the email');
-                  }
-                  else if(username[0].value === '') {
-                    username.addClass('is-danger');
-                    alert('Please fill out the username');
-                  }
-                  else if(password[0].value === '') {
-                    password.addClass('is-danger');
-                    alert('Please fill out the password');
-                  }
-                  else if(retypePw[0].value == '') {
-                    retypePw.addClass('is-danger');
-                    alert('Please retype your password');
-                  }
-                  else if(password[0].value != retypePw[0].value){
-                    password.addClass('is-danger');
-                    retypePw.addClass('is-danger');
-                    alert('Your passwords do not match');
+                  for(var i = 0; i < fields.length; i++){
+                    if(fields[i][0].value === '') {
+                      alert('Please fill out the ' + fields[i][0].id);
+                      fields[i].addClass('is-danger');
+                      break;
+                    }
+                    if(i === 4) {
+                      if(fields[3][0].value != fields[4][0].value) {
+                        alert('Your passwords do not match');
+                        fields[3].addClass('is-danger');
+                        fields[4].addClass('is-danger');
+                        break;
+                      }
+                      valid = true;
+                    }
                   }
 
-                  else {
+                  if(valid == true) {
                     var values = {};
                     $.each($('#register').serializeArray(), function (i, field) {
                       values[field.name] = field.value;
