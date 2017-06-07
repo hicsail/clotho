@@ -7126,34 +7126,23 @@ label.panel-block:hover {
   padding: 3rem 1.5rem 6rem;
 }
 
-.form {
-  width: 300px;
-  margin:0 auto;
-  padding-top: 200px;
-}
-
-#register > label {
-  font-size: 20px;
-}
-
-#register > input[type="text"]{
-  font-size: 15px;
-  border-radius: 50px;
-  height:30px;
-  margin-bottom: 15px;
-}
-
-#register {
-  width: 200px;
-  height: 30px;
-}
 #submit {
-  height: 15px;
-  width: 100px;
-  font-size: 20px;
-  margin-left: 16%;
-  margin-top: 10px;
+  margin-top: 5%;
+  position: relative;
+  margin-right: 45%;
+  margin-left: 45%;
+  padding-right: auto;
+}
+.field {
+  margin-left: 30%;
+  margin-right: 30%;
 }
 
+.label {
+  margin-bottom:0;
+}
+.input {
+  margin-bottom: 10px;
+}
 
 /*# sourceMappingURL=bulma.css.map */

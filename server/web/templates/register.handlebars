@@ -4,22 +4,29 @@
         <div class="container">
             <h1 class="title">Register</h1>
         </div>
-        <div class="form">
+        <div class="field" >
             <form id="register">
-                <label><b>Full Name</b></label><br>
-                <input type="text" placeholder="First Last" name="fullname" required><br>
-                <label><b>Username</b></label><br>
-                <input type="text" placeholder="Username" name="username" required><br>
-                <label><b>Password</b></label><br>
-                <input type="text" placeholder="Password" name="password" required><br>
-                <label><b>Email</b></label><br>
-                <input type="text" placeholder="Email" name="email" required><br>
-                <input id="submit" type="submit" value="Submit">
+                <label class="label"><b>Full Name</b></label>
+                <input class="input" type="text" placeholder="First Last" name="name" required>
+                <label class="label"><b>Username</b></label>
+                <input class="input" type="text" placeholder="Username" name="username" required>
+                <label class="label"><b>Password</b></label>
+                <input class="input" type="text" placeholder="Password" name="password" required>
+                <label class="label"><b>Email</b></label>
+                <input class="input" type="text" placeholder="Email" name="email" required>
+                <input class="button is-primary" id="submit" type="submit" value="Submit">
             </form>
             <script>
                 $('#register').on('submit', function (e) {
-                  console.log(e);
-                  e.preventDefault();
+                    e.preventDefault();
+                    var values = {};
+                    $.each($('#register').serializeArray(), function (i, field) {
+                        values[field.name] = field.value;
+                    });
+                    $.post('../../api/signup', values, function () {
+                        console.log('success');
+                        window.location.replace('/')
+                    });
                 });
             </script>
         </div>
