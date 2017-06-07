@@ -59,7 +59,7 @@ internals.applyStrategy = function (server, next) {
     }
   });
 
-  server.auth.strategy('session', 'cookie', {
+  server.auth.strategy('session', 'basic', {
     password: Config.get('/cookieSecret'),
     cookie: 'sid-clotho',
     isSecure: false,
