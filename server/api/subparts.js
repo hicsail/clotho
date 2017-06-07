@@ -148,5 +148,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'part'
+  name: 'subpart'
 };

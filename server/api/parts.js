@@ -230,5 +230,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'bioDesign'
+  name: 'part'
 };
