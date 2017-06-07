@@ -81,8 +81,9 @@ internals.applyRoutes = function (server, next) {
           const username = request.payload.username;
           const password = request.payload.password;
           const email = request.payload.email;
+          const name = request.payload.name;
 
-          User.create(username, password, email, done);
+          User.create(username, password, email, name, done);
         },
         account: ['user', function (results, done) {
 
