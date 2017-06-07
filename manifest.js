@@ -29,6 +29,9 @@ const manifest = {
       plugin: 'hapi-auth-basic'
     },
     {
+      plugin: 'hapi-auth-cookie'
+    },
+    {
       plugin: 'lout'
     },
     {
@@ -141,6 +144,15 @@ const manifest = {
     },
     {
       plugin: './server/web/index'
+    },
+    {
+      plugin: './server/web/public'
+    },
+    {
+      plugin: './server/web/login/index'
+    },
+    {
+      plugin: './server/web/signup/index'
     }
   ]
 };

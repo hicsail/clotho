@@ -5,7 +5,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/',
+    path: '/login',
     config: {
       auth: {
         mode: 'try',
@@ -19,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('index');
+      return reply.view('login');
     }
   });
 
@@ -35,6 +35,6 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'staticPages',
+  name: 'login/index',
   dependencies: 'visionary'
 };
