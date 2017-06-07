@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const BigPart = server.plugins['hapi-mongo-models'].BigPart;
+  const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
 
   server.route({
     method: 'GET',
-    path: '/bigpart',
+    path: '/part',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      BigPart.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      BioDesign.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/bigpart/{id}',
+    path: '/part/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,24 +53,24 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BigPart.findById(request.params.id, (err, bigpart) => {
+      BioDesign.findById(request.params.id, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bigpart) {
+        if (!bioDesign) {
         return reply(Boom.notFound('Document not found.'));
       }
 
-      reply(bigpart);
+      reply(bioDesign);
     });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/bigpart',
+    path: '/part',
     config: {
       auth: {
         strategy: 'simple'
@@ -86,23 +86,23 @@ internals.applyRoutes = function (server, next) {
 
     handler: function(request, reply) {
 
-      BigPart.create(
+      BioDesign.create(
         request.payload.name,
         request.payload.description,
         request.payload.userId,
-        (err, bigpart) => {
+        (err, bioDesign) => {
 
         if (err) {
           return reply(err);
         }
-        return reply(bigpart);
+        return reply(bioDesign);
     });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/bigpart/{id}',
+    path: '/part/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -110,13 +110,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BigPart.findByIdAndDelete(request.params.id, (err, bigpart) => {
+      BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bigpart) {
+        if (!bioDesign) {
         return reply(Boom.notFound('Document not found.'));
       }
 
@@ -138,5 +138,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'bigpart'
+  name: 'bioDesign'
 };

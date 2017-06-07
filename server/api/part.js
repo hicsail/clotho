@@ -11,7 +11,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/part',
+    path: '/subpart',
     config: {
       auth: {
         strategy: 'simple'
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/part/{id}',
+    path: '/subpart/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -70,7 +70,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'POST',
-    path: '/part',
+    path: '/subpart',
     config: {
       auth: {
         strategy: 'simple'
@@ -110,7 +110,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'DELETE',
-    path: '/part/{id}',
+    path: '/subpart/{id}',
     config: {
       auth: {
         strategy: 'simple',
