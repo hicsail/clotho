@@ -60,7 +60,10 @@
                       console.log('success');
                       window.location.replace('/');
                     }).fail(function (data) {
-                      console.log(data);
+                      var message = data.responseJSON.message;
+                      message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
+                      message = message.replace(/\"/g , "");
+                      alert(message)
                     });
                   }
                 });
