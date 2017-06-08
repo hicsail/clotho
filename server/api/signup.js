@@ -169,7 +169,117 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/available',
+    config: {
+      validate: {
+        payload: {
+          email: Joi.string().email().lowercase().optional(),
+          username: Joi.string().token().lowercase().optional(),
+        }
+      },
+      pre: [{
+        assign: 'vaildInput',
+        method: function (request, reply) {
 
+          const username = request.payload.username;
+          const email = request.payload.email;
+
+          if(!username && !email) {
+            return reply(Boom.badRequest('invaild submission, submit username and/or email'));
+          }
+          reply(true);
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      const username = request.payload.username;
+      const email = request.payload.email;
+
+/*
+      Async.auto({
+        username: function (done) {
+
+          if(username) {
+            User.findOne({ username: username }, done);
+          } else {
+            done(null,{username:'available'});
+          }
+        }
+      },{
+        email: function (results, done) {
+
+          if(email) {
+            User.findOne({ email: email }, done);
+          } else {
+            done(null,{email:'available'});
+          }
+        }
+      }, (err, results) => {
+        console.log(err, results);
+        if (err) {
+          return reply(err);
+        }
+
+        console.log(results);
+
+      });
+      */
+      Async.auto({
+        username: function (done) {
+
+          const username = request.payload.username;
+
+
+          User.findOne({username: username}, done);
+        },
+        email: function (done) {
+
+          const email = request.payload.email;
+
+          User.findOne({email: email}, done);
+        }
+      }, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        var available = {};
+
+        if(username) {
+          if(results.username) {
+            available.username = {
+              status: 'taken',
+              message: 'This username is not available'
+            };
+          } else {
+            available.username = {
+              status: 'available',
+              message: 'This username is available'
+            };
+          }
+        }
+        if(email) {
+          if(results.email) {
+            available.email = {
+              status: 'taken',
+              message: 'This email is already registered'
+            };
+          } else {
+            available.email = {
+              status: 'available',
+              message: 'This email is available'
+            };
+          }
+        }
+
+        reply(available);
+      });
+    }
+  });
   next();
 };
 
