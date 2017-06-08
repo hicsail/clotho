@@ -79,4 +79,42 @@ lab.experiment('Feature Class Methods', () => {
       done();
     });
   });
+
+  lab.test('it returns an instance when finding by annotation succeeds', (done) => {
+
+    Feature.findByAnnotationId(
+      'annotationId',
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result[0]).to.be.an.instanceOf(Feature);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when finding by annotation fails', (done) => {
+
+    const realInsertOne = Feature.find;
+    Feature.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('find failed'));
+    };
+
+    Feature.findByAnnotationId(
+      'annotationId',
+    (err, result) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
+
+      Feature.find = realInsertOne;
+
+      done();
+    });
+  });
+
 });
