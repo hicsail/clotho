@@ -6,7 +6,7 @@ const Feature = require('./feature');
 
 class Module extends MongoModels {
 
-  static create(name, description, role, features, submoduleIds, userId, displayId, callback) {
+  static create(name, description, role, features, submoduleIds, userId, displayId, bioDesignId, callback) {
 
     const document = {
       name: name,
@@ -15,7 +15,8 @@ class Module extends MongoModels {
       features: features,
       submoduleIds: submoduleIds,
       userId: userId,
-      displayId: displayId
+      displayId: displayId,
+      bioDesignId: bioDesignId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -50,7 +51,8 @@ Module.schema = Joi.object().keys({
   parentModuleId: Joi.string(),
   submoduleIds: Joi.array().items(Joi.string()),
   features: Joi.array().items(Feature.schema),
-  displayId: Joi.string().optional()
+  displayId: Joi.string().optional(),
+  bioDesignId: Joi.string()
 });
 
 Module.indexes = [

@@ -82,7 +82,8 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string(),
           submoduleIds: Joi.array().items(Joi.string()),
           features: Joi.array().items(Joi.object()),
-          displayId: Joi.string().optional()
+          displayId: Joi.string().optional(),
+          bioDesignId: Joi.string()
         }
       }
     },
@@ -97,6 +98,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.submoduleIds,
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
+        request.payload.bioDesignId,
         (err, module) => {
 
           if (err) {

@@ -63,6 +63,7 @@ const manifest = {
             Module: './server/models/module',
             Medium: './server/models/medium',
             Part: './server/models/part',
+            Parameter: './server/models/parameter',
             Sequence: './server/models/sequence',
             Session: './server/models/session',
             User: './server/models/user'

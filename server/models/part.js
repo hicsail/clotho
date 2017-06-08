@@ -8,14 +8,15 @@ const Sequence = require('./sequence');
 
 class Part extends MongoModels {
 
-  static create(name, description, sequence, userId, displayId, callback) {
+  static create(name, description, sequence, userId, displayId, bioDesignId, callback) {
 
     const document = {
       name: name,
       description: description,
       sequence: sequence,
       userId: userId,
-      displayId: displayId
+      displayId: displayId,
+      bioDesignId: bioDesignId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -112,7 +113,8 @@ Part.schema = Joi.object().keys({
   description: Joi.string(),
   sequence: Sequence.schema,
   userId: Joi.string().required(),
-  displayId: Joi.string().optional()
+  displayId: Joi.string().optional(),
+  bioDesignId: Joi.string()
 });
 
 Part.indexes = [

@@ -77,8 +77,9 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          value: Joi.number(),
-          variable: Joi.object(), // This was originally a Variable object/a ShareableObjBase.
+          value: Joi.number().required(),
+          variable: Joi.object().required(), // This was originally a Variable object/a ShareableObjBase.
+          bioDesignId: Joi.string().optional()
         }
       }
     },
@@ -88,6 +89,7 @@ internals.applyRoutes = function (server, next) {
       Parameter.create(
         request.payload.value,
         request.payload.variable,
+        request.payload.bioDesignId,
         (err, parameter) => {
 
           if (err) {

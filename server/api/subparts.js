@@ -79,16 +79,15 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          _id: Joi.object(),
           name: Joi.string().required(),
           description: Joi.string(),
-          userId: Joi.string().required(),
           format: Format.schema,
           assemblyIds: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
           sequence: Sequence.schema,
           isForwardOrientation: Joi.boolean(),
           parentPartId: Joi.string(),
-          displayId: Joi.string().optional()
+          displayId: Joi.string().optional(),
+          bioDesignId: Joi.string().optional()
         }
       }
     },
@@ -99,9 +98,9 @@ internals.applyRoutes = function (server, next) {
         request.payload.name,
         request.payload.description,
         request.payload.sequence,
-        request.payload.userId,
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
+        request.payload.bioDesignId,
         (err, part) => {
 
           if (err) {

@@ -14,7 +14,7 @@ internals.applyRoutes = function (server, next) {
   const Annotation = server.plugins['hapi-mongo-models'].Annotation;
   const Module = server.plugins['hapi-mongo-models'].Module;
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
-  // const Parameter = server.plugins['hapi-mongo-models'].Parameter;
+  const Parameter = server.plugins['hapi-mongo-models'].Parameter;
 
   server.route({
     method: 'GET',
@@ -86,7 +86,7 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           userId: Joi.string().required(), // in the convenience methods is the author's name
-          parameters: Joi.array().items(Joi.string()).optional(),
+          parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
           sequence: Joi.string().optional(),
           role: Joi.string().optional(),
           displayId: Joi.string().optional()
@@ -97,7 +97,15 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
+        createBioDesign: function (done) {
 
+          BioDesign.create(
+            request.payload.name,
+            null, // description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            done);
+        },
         createSequence: function (done) {
 
           Sequence.create(
@@ -111,17 +119,6 @@ internals.applyRoutes = function (server, next) {
             request.payload.displayId,
             done);
         },
-        createSubpart: ['createSequence', function (results, done) {
-
-          var seq = results.createSequence._id.toString();
-          Part.create(
-            request.payload.name,
-            null, // no description
-            seq,
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            done);
-        }],
         createAnnotation: ['createSequence', function (results, done) {
 
           var seq = results.createSequence._id.toString();
@@ -137,37 +134,57 @@ internals.applyRoutes = function (server, next) {
         }],
         createFeature: ['createSequence', 'createAnnotation', function (results, done) {
 
-          var annot = results.createAnnotation._id.toString();
+          var annotationId = results.createAnnotation._id.toString();
           Feature.create(
-            annot,
+            annotationId,
             request.payload.name,
             null, // description
             request.payload.role,
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
+            done);
+        }],
+        createSubpart: ['createSequence', 'createBioDesign', function (results, done) {
+
+          var sequenceId = results.createSequence._id.toString();
+          var bioDesignId = results.createBioDesign._id.toString();
+          Part.create(
+            request.payload.name,
+            null, // no description
+            sequenceId,
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            bioDesignId,
             done);
         }],
         createModule: ['createFeature', function (results, done) {
 
-          var feat = [results.createFeature._id.toString()]; // not sure how to get feature schema?
+          var featureId = [results.createFeature._id.toString()]; // not sure how to get feature schema?
+          var bioDesignId = results.createBioDesign._id.toString();
+
           Module.create(
             request.payload.name,
             null, // description
             request.payload.role,
-            feat,
+            featureId,
             null, // no submoduleIds
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
+            bioDesignId,
             done);
         }],
-        createBioDesign: ['createModule', function (results, done) {
+        createParameters: ['createBioDesign', function (results, done) {
 
-          BioDesign.create(
-            request.payload.name,
-            null,
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            done);
+          var bioDesignId = results.createBioDesign._id.toString();
+          var param = request.payload.parameters;
+
+          for (var i = 0; i < param.length; ++i) {
+
+            Parameter.create(param[i]['value'], param[i]['variable'], bioDesignId, done);
+
+          }
+
+          done();
         }]
       }, (err, results) => {
 
@@ -180,13 +197,9 @@ internals.applyRoutes = function (server, next) {
 
       // function calls to implement
 
-      // setSequence for feature
-
-      // setFeature for Annotation
-
       // addPart for BioDesign
       // setModule for BioDesign
-      // addParamaters for BioDesign
+      // addParameters for BioDesign
 
     }
   })
