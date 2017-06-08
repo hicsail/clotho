@@ -70,7 +70,7 @@ internals.applyStrategy = function (server, next) {
       Async.auto({
         session: function (done) {
 
-          var data = new Buffer(request.headers.cookie, 'base64').toString('ascii').split(':');
+          var data = new Buffer(request.headers.cookie.split('auth=')[1], 'base64').toString('ascii').split(':');
           const id = data[0];
           const key = data[1];
 
