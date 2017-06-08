@@ -313,3 +313,204 @@ lab.experiment('Signup Plugin', () => {
     });
   });
 });
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+        username: 'muddy',
+        email: 'mrmud@mudmail.mud'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when find one fails for username check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.username) {
+        callback(Error('find one failed'));
+      }
+      else {
+        callback();
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns a not available when find one hits for username check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.username) {
+        callback(null, {});
+      }
+      else {
+        callback(null, {});
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.username.status).to.equal('taken');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns an error when find one fails for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.email) {
+        callback(Error('find one failed'));
+      }
+      else {
+        callback();
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns not available when find one hits for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.email) {
+        callback(null, {});
+      }
+      else {
+        callback(null, {});
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.email.status).to.equal('taken');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error with invaild input', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+        email: 'myemail@email.com'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns not available when find one hits for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.email) {
+        callback(null, null);
+      }
+      else {
+        callback(null, null);
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.email.status).to.equal('available');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+        username: 'myusername'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns available when find one hits for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.username) {
+        callback(null, null);
+      }
+      else {
+        callback(null, null);
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.username.status).to.equal('available');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});

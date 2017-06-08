@@ -198,35 +198,6 @@ internals.applyRoutes = function (server, next) {
       const username = request.payload.username;
       const email = request.payload.email;
 
-/*
-      Async.auto({
-        username: function (done) {
-
-          if(username) {
-            User.findOne({ username: username }, done);
-          } else {
-            done(null,{username:'available'});
-          }
-        }
-      },{
-        email: function (results, done) {
-
-          if(email) {
-            User.findOne({ email: email }, done);
-          } else {
-            done(null,{email:'available'});
-          }
-        }
-      }, (err, results) => {
-        console.log(err, results);
-        if (err) {
-          return reply(err);
-        }
-
-        console.log(results);
-
-      });
-      */
       Async.auto({
         username: function (done) {
 
