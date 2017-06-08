@@ -4,7 +4,6 @@ const Boom = require('boom');
 const Joi = require('joi');
 
 
-
 const internals = {};
 
 
@@ -145,7 +144,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      AdminGroup.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, adminGroup) => {
+      AdminGroup.findByIdAndUpdate(id, update, (err, adminGroup) => {
 
         if (err) {
           return reply(err);
@@ -190,7 +189,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      AdminGroup.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, adminGroup) => {
+      AdminGroup.findByIdAndUpdate(id, update, (err, adminGroup) => {
 
         if (err) {
           return reply(err);

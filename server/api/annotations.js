@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -140,7 +139,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Annotation.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, annotation) => {
+      Annotation.findByIdAndUpdate(id, update, (err, annotation) => {
 
         if (err) {
           return reply(err);

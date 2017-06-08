@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -136,7 +135,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Influence.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, influence) => {
+      Influence.findByIdAndUpdate(id, update, (err, influence) => {
 
         if (err) {
           return reply(err);

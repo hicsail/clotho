@@ -4,8 +4,6 @@ const Boom = require('boom');
 const Joi = require('joi');
 const Async = require('async');
 
-const utilities = require('./utilities');
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -19,7 +17,6 @@ internals.applyRoutes = function (server, next) {
   const Module = server.plugins['hapi-mongo-models'].Module;
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
   const Annotation = server.plugins['hapi-mongo-models'].Annotation;
-  const Role = server.plugins['hapi-mongo-models'].Role;
 
   server.route({
     method: 'PUT',
@@ -28,26 +25,6 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      pre: [{
-        assign: 'checkrole',
-        method: function (request, reply) {
-
-          var role = request.payload.role;
-          if (role !== undefined && role !== null) {
-
-            Role.checkValidRole(role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                reply(true);
-              }
-            });
-          } else {
-            reply(true);
-          }
-        }
-      }],
       validate: {
         payload: {
           sort: Joi.string().default('_id'),
@@ -55,7 +32,7 @@ internals.applyRoutes = function (server, next) {
           page: Joi.number().default(1),
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().uppercase().optional(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').optional(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parts: Joi.array().items(Joi.object().keys({
             name: Joi.string(),
@@ -80,7 +57,6 @@ internals.applyRoutes = function (server, next) {
       const sort = request.query.sort;
       const limit = request.query.limit;
       const page = request.query.page;
-
 
       Async.auto({
         findSequences: function (done) {
@@ -183,50 +159,49 @@ internals.applyRoutes = function (server, next) {
         }],
         findParts: ['findModules', function (results, done) {
 
-          var resultsArray = results.findModules;
-          var bioDesignIds = [];
+        var resultsArray = results.findModules;
+        var bioDesignIds = [];
 
 
-          if (resultsArray !== null) {
-            for (var i = 0; i < resultsArray.length; ++i) {
-              if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
-                bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
-              } else if (typeof resultsArray[i] == 'string') {
-                // Prior steps found multiple bd ids, but sequence/part was undefined.
-                bioDesignIds.push(resultsArray[i]);
-              }
+        if (resultsArray !== null) {
+          for (var i = 0; i < resultsArray.length; ++i) {
+            if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
+              bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
+            } else if (typeof resultsArray[i] == 'string') {
+              // Prior steps found multiple bd ids, but sequence/part was undefined.
+              bioDesignIds.push(resultsArray[i]);
             }
           }
+        }
 
-          // Equivalent of finding subdesigns
-          // Match by subdesigns id, name, displayId, etc.
-          // Return list of parent biodesigns.
-          // To do - add parts !== undefined to other sections of async call.
-          if (request.payload.parts !== undefined && request.payload.parts !== null) {
-            BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
-          } else {
-            done(null, bioDesignIds);
-          }
+        // Equivalent of finding subdesigns
+        // Match by subdesigns id, name, displayId, etc.
+        // Return list of parent biodesigns.
+        // To do - add parts !== undefined to other sections of async call.
+        if (request.payload.parts !== undefined && request.payload.parts !== null) {
+          //BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
+          done(null, bioDesignIds);
+        } else {
+          done(null, bioDesignIds);
+        }
 
-        }],
+      }],
         findBioDesigns: ['findParts', function (results, done) {
 
-
           // collect biodesign Ids
-          var resultsArray = results.findParts;
+          var resultsArray = results.findModules;
           var bioDesignIds = [];
           if (resultsArray != null && resultsArray.length > 0) {
-            for (let result of resultsArray) {
-              if (result['bioDesignId'] !== undefined && result['bioDesignId'] !== null) {
-                bioDesignIds.push(result['bioDesignId'].toString());
-              } else if (result['superBioDesignId'] !== undefined && result['superBioDesignId'] !== null) {
-                bioDesignIds.push(result['superBioDesignId']);
-              } else if (typeof result == 'string') {
+            for (let module of resultsArray) {
+              if (module['bioDesignId'] !== undefined && module['bioDesignId'] !== null) {
+                bioDesignIds.push(module['bioDesignId'].toString());
+              } else if (typeof module == 'string') {
                 // Prior steps found multiple bd ids, but parameter was undefined.
-                bioDesignIds.push(result);
+                bioDesignIds.push(module);
               }
             }
           }
+
 
           // No result, no need to search further
           if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
@@ -244,6 +219,7 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.displayId !== undefined) {
             query['displayId'] = request.payload.displayId;
           }
+
 
           // Should not return anything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
@@ -267,7 +243,7 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        return reply(results);
+        return reply(results.findBioDesigns);
       });
     }
   });
@@ -310,33 +286,13 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      pre: [{
-        assign: 'checkrole',
-        method: function (request, reply) {
-
-          var role = request.payload.role;
-          if (role !== undefined && role !== null) {
-
-            Role.checkValidRole(role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                reply(true);
-              }
-            });
-          } else {
-            reply(true);
-          }
-        }
-      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           userId: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().uppercase().optional(),
-          partIds: Joi.array().items(Joi.string().required()).required(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').optional(),
+          partIds: Joi.array().items(Joi.string().required()),
           createSeqFromParts: Joi.boolean().required(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parameters: Joi.array().items(
@@ -352,7 +308,6 @@ internals.applyRoutes = function (server, next) {
     },
 
     handler: function (request, reply) {
-
       //Used to create a Device consisting of a BioDesign, Part, and Assembly.
       // Optionally, may also create a Sequence, Feature, BasicModule, Parameters, and Annotations.
       //async.auto task `createAssembly` has a non-existent dependency `createSubAssemblyIds`
@@ -360,6 +315,7 @@ internals.applyRoutes = function (server, next) {
       //noinspection JSDuplicatedDeclaration
       Async.auto({
         createBioDesign: function (done) {
+
           var subBioDesignIds = request.payload.partIds;
 
           BioDesign.create(
@@ -370,7 +326,6 @@ internals.applyRoutes = function (server, next) {
             null, //imageUrl
             subBioDesignIds,
             null, //superBioDesignIds
-            'DEVICE',
             done);
         },
         updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {
@@ -385,10 +340,7 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
-                BioDesign.findOneAndUpdate({
-                  _id: ObjectID(subBioDesignIds[i]),
-                  $isolated: 1
-                }, {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
+                BioDesign.findByIdAndUpdate(subBioDesignIds[i], {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
                   if (err) {
                     reject(err);
                   } else {
@@ -516,10 +468,7 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
-                Part.updateMany({
-                  bioDesignId: subBioDesignIds[i],
-                  $isolated: 1
-                }, {$set: {assemblyId: assemblyId}}, (err, results) => {
+                Part.updateMany({bioDesignId: subBioDesignIds[i]}, {$set: {assemblyId: assemblyId}}, (err, results) => {
                   if (err) {
                     reject(err);
                   } else {
@@ -542,197 +491,49 @@ internals.applyRoutes = function (server, next) {
           }
 
         }],
-        getSubSubPartIds: ['createSubpart', function (results, done) {
+        createSequence: ['createSubpart', function (results, done) {
 
-          var subBioDesignIds = request.payload.partIds;
-          var allPromises = [];
-          var subSubPartIds = {};
+          if (request.payload.sequence !== undefined) {
 
-          for (var i = 0; i < subBioDesignIds.length; ++i) {
-            var promise = new Promise((resolve, reject) => {
+            var partId = results.createSubpart._id.toString();
 
-              //sends value i to function so that order is kept track of
-              Part.findByBioDesignIdOnly(i, subBioDesignIds[i], (err, results) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  var key = results[0];  //i is returned here, partId is saved under i
-                  var resPart = results[1];
-                  var subSubPartId = resPart[0]["_id"];
-                  subSubPartIds[key] = subSubPartId;
-                  resolve(results);
-                }
-              });
-            });
-            allPromises.push(promise);
+            Sequence.create(
+              request.payload.name,
+              null, // no description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              null, // featureId null
+              partId,
+              request.payload.sequence,
+              null,
+              null,
+              done);
           }
-          Promise.all(allPromises).then((resolve, reject) => {
-            if (reject) {
-              reply(reject);
-            }
-            done(null, subSubPartIds);
-          });
-
-
-        }],
-        createSequence: ['createSubpart', 'getSubSubPartIds', function (results, done) {
-
-          //get all subSequences and concatenates them to create the superSequence!
-          var partId = results.createSubpart._id.toString();
-          var subSubPartIds = results.getSubSubPartIds;
-          var subBioDesignIds = request.payload.partIds;
-          var allPromises = [];
-
-          //array for exact length created to
-          var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
-          var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
-
-          for (var i = 0; i < subBioDesignIds.length; ++i) {
-            var promise = new Promise((resolve, reject) => {
-
-              //sends value i to function so that order is kept track of
-              Sequence.findByPartIdOnly(i, subSubPartIds[i], (err, results) => {
-                if (err) {
-                  return reject(err);
-                } else {
-                  var key = results[0];
-                  superSequenceArr[key] = results[1][0]["sequence"];;
-                  subSequenceIds[key] = results[1][0]["_id"];
-
-                  resolve(results);
-                }
-              });
-            });
-            allPromises.push(promise);
+          else {
+            done(null, []);
           }
-          Promise.all(allPromises).then((resolve, reject) => {
-            if (reject) {
-              reply(reject);
-            }
-            else {
-              var superSequence = superSequenceArr.join("");
-
-              Sequence.create(
-                request.payload.name,
-                null, // no description
-                request.auth.credentials.user._id.toString(),
-                request.payload.displayId,
-                null, // featureId null
-                partId,
-                superSequence, //create null sequence and update later
-                null,//isLinear
-                null,//isSingleStranded
-                (err, results) => {
-                  if (err) {
-                    return reject(err);
-                  } else {
-                    return results;
-                  }
-                });
-            }
-            done(null, [subSequenceIds, superSequenceArr, superSequence, resolve]);
-          });
-
-        }],
-        createSubAnnotations: ['createSequence', 'getSubSubPartIds', function (results, done) {
-          console.log("creating subAnnotation")
-
-          // Create subAnnotations for all subBioDesigns connected to subFeatures
-
-
-          //What do we need?
-          // sequenceIds --> to get featureIds later
-          // array of sequences --> to get start/end integers
-
-          //either get sequenceIds again here --> we'll need it again later for featureIds
-          //Or get an array of it above, and return it
-
-          var superSequenceResults = results.createSequence;
-          // console.log("here?");
-          //
-          // var superSequenceId = results.createSequence._id.toString();//FIX THIS AND ADD superSequenceId to annotation
-          // console.log("here?");
-          //
-          //
-          // var subSequenceIds = superSequenceResults[0];
-          // var superSequenceArr = superSequenceResults[1];
-          // var superSequence = superSequenceResults[2];
-          // var superSequenceId = superSequenceResults[3]._id.toString();
-          // console.log(superSequenceId);
-
-          var allPromises = [];
-
-          var position = 1; //sequences start at 1
-
-          for (var i = 0; i < superSequenceArr.size; ++i) {
-            console.log("in for loop");       //CHECK FOR LOOP --> not working yet
-            var promise = new Promise((resolve, reject) => {
-
-              var subSequence =  superSequenceArr[i];
-              var subSequenceLength = subSequence.length;
-              var start = position;
-              var end = position + subSequenceLength;
-              position = end + 1; //setup for next annotation
-
-              Annotation.create(
-                request.payload.name,
-                null, // description,
-                request.auth.credentials.user._id.toString(),
-                subSequenceIds[i], // sequenceId
-                start, // start
-                end, // end
-                true, // isForwardString
-                done);
-            });
-            allPromises.push(promise);
-          }
-
-          Promise.all(allPromises).then((resolve, reject) => {
-            if (reject) {
-              reply(reject);
-            }
-            console.log("HERE");
-            done(null, resolve);
-          });
-
-        }],
-        updateSubFeaturesAnnotationId: ['createSequence', function (results, done) {
-          console.log("updateSubFeaturesAnnotationId");
-
-          // Create subAnnotations for all subBioDesigns connected to subFeatures
-          var superSequenceResults = results.createSequence;
-          var sequenceId = results.createSequence._id.toString();
-          var subSubPartIds = results.getSubSubPartIds;
-
-          var subSequenceIds = superSequenceResults[0];
-          var superSequenceArr = superSequenceResults[1];
-          var superSequence = superSequenceResults[2];
-
-          var allPromises = [];
-
-          var sequenceId = results.createSequence._id.toString();
-            var partIds = request.payload.partIds;
-
-            var test = utilities.annotateMe(server, partIds);
-            console.log(test);
-
         }],
         createAnnotation: ['createSequence', function (results, done) {
-          console.log("creating annotation")
-          var seq = results.createSequence._id.toString();
-          Annotation.create(
-            request.payload.name,
-            null, // description,
-            request.auth.credentials.user._id.toString(),
-            seq, // sequenceId
-            1, // start
-            null, // add this later
-            true, // isForwardString
-            done);
 
+          if (request.payload.sequence !== undefined) {
+
+            var seq = results.createSequence._id.toString();
+            Annotation.create(
+              request.payload.name,
+              null, // description,
+              request.auth.credentials.user._id.toString(),
+              seq, // sequenceId
+              1, // start
+              request.payload.sequence.length, // end
+              true, // isForwardString
+              done);
+          }
+          else {
+            done(null, []);
+          }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
-          console.log("createFeature");
+
           var annotationId = null, moduleId = null;
           if (results.createAnnotation._id !== undefined) {
             annotationId = results.createAnnotation._id.toString();

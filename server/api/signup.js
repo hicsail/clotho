@@ -172,7 +172,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Account.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
+          Account.findByIdAndUpdate(id, update, done);
         }],
         linkAccount: ['account', function (results, done) {
 
@@ -188,7 +188,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }],
         welcome: ['linkUser', 'linkAccount', function (results, done) {
 

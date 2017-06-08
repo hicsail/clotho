@@ -3,13 +3,11 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
   const Feature = server.plugins['hapi-mongo-models'].Feature;
-  const Role = server.plugins['hapi-mongo-models'].Role;
 
   server.route({
     method: 'GET',
@@ -77,32 +75,12 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      pre: [{
-        assign: 'checkrole',
-        method: function (request, reply) {
-
-          var role = request.payload.role;
-          if (role !== undefined && role !== null) {
-
-            Role.checkValidRole(role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                reply(true);
-              }
-            });
-          } else {
-            reply(true);
-          }
-        }
-      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
           description: Joi.string().optional(),
-          role: Joi.string().uppercase().required(),
+          role: Joi.string().required(),
           annotationId: Joi.string().required(),
           moduleId: Joi.string()
         }
@@ -136,32 +114,12 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      pre: [{
-        assign: 'checkrole',
-        method: function (request, reply) {
-
-          var role = request.payload.role;
-          if (role !== undefined && role !== null) {
-
-            Role.checkValidRole(role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                reply(true);
-              }
-            });
-          } else {
-            reply(true);
-          }
-        }
-      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
           description: Joi.string().optional(),
-          role: Joi.string().uppercase().required(),
+          role: Joi.string().required(),
           annotationId: Joi.string().required(),
           moduleId: Joi.string()
         }
@@ -170,7 +128,6 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const id = request.params.id;
-
       const update = {
         $set: {
           name: request.payload.name,
@@ -182,7 +139,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Feature.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, feature) => {
+      Feature.findByIdAndUpdate(id, update, (err, feature) => {
 
         if (err) {
           return reply(err);
@@ -195,7 +152,6 @@ internals.applyRoutes = function (server, next) {
         reply(feature);
       });
     }
-
   });
 
   server.route({

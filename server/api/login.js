@@ -6,7 +6,6 @@ const Config = require('../../config');
 const Joi = require('joi');
 
 
-
 const internals = {};
 
 
@@ -269,7 +268,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }],
         email: ['user', function (results, done) {
 
@@ -391,7 +390,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }]
       }, (err, results) => {
 

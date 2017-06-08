@@ -992,7 +992,7 @@ internals.applyRoutes = function (server, next) {
             var update = {$set: {bioDesignId: null}};
 
             // Remove reference of bioDesign on old parameters.
-            Parameter.updateMany({bioDesignId: request.params.id, $isolated: 1}, update, (err, parameter) => {
+            Parameter.updateMany({bioDesignId: request.params.id}, update, (err, parameter) => {
 
               if (err) {
                 return reply(err);

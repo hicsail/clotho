@@ -272,7 +272,7 @@ lab.experiment('BioDesign Plugin Create', () => {
       callback();
     };
 
-    stub.BioDesign.create = function (name, description, userId, displayId, imageURL, callback) {
+    stub.BioDesign.create = function (name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
 
       callback(Error('create failed'));
     };
@@ -292,7 +292,7 @@ lab.experiment('BioDesign Plugin Create', () => {
       callback();
     };
 
-    stub.BioDesign.create = function (name, description, userId, displayId, imageURL, callback) {
+    stub.BioDesign.create = function (name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
 
       callback(null, {});
     };

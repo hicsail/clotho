@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -132,7 +131,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Parameter.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, parameter) => {
+      Parameter.findByIdAndUpdate(id, update, (err, parameter) => {
 
         if (err) {
           return reply(err);

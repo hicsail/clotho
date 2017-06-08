@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -153,7 +152,7 @@ internals.applyRoutes = function (server, next) {
       };
 
       // TODO: add findByIdAndUpdate() method in the sequence.js object file. Add here after.
-      Sequence.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, sequence) => {
+      Sequence.findByIdAndUpdate(id, update, (err, sequence) => {
 
         if (err) {
           return reply(err);

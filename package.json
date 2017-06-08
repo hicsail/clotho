@@ -46,7 +46,7 @@
     "joi": "10.x.x",
     "jsdoc": "^3.4.3",
     "lout": "10.x.x",
-    "mongo-models": "1.x.x",
+    "mongo-models": "file:mongo-models-1.3.1.tgz",
     "mongodb": "2.x.x",
     "node-aho-corasick": "0.0.2",
     "nodemailer": "3.x.x",

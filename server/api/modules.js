@@ -3,13 +3,11 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
   const Module = server.plugins['hapi-mongo-models'].Module;
-  const Role = server.plugins['hapi-mongo-models'].Role;
 
   server.route({
     method: 'GET',
@@ -77,33 +75,13 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      pre: [{
-        assign: 'checkrole',
-        method: function (request, reply) {
-
-          var role = request.payload.role;
-          if (role !== undefined && role !== null) {
-
-            Role.checkValidRole(role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                reply(true);
-              }
-            });
-          } else {
-            reply(true);
-          }
-        }
-      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           description: Joi.string(),
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
-          role: Joi.string().uppercase().required(),
+          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -136,33 +114,13 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      pre: [{
-        assign: 'checkrole',
-        method: function (request, reply) {
-
-          var role = request.payload.role;
-          if (role !== undefined && role !== null) {
-
-            Role.checkValidRole(role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                reply(true);
-              }
-            });
-          } else {
-            reply(true);
-          }
-        }
-      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           description: Joi.string(),
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
-          role: Joi.string().uppercase().required(),
+          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -170,7 +128,6 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const id = request.params.id;
-
       const update = {
         $set: {
           name: request.payload.name,
@@ -182,8 +139,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-
-      Module.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, module) => {
+      Module.findByIdAndUpdate(id, update, (err, module) => {
 
         if (err) {
           return reply(err);
@@ -196,8 +152,6 @@ internals.applyRoutes = function (server, next) {
         reply(module);
       });
     }
-
-
   });
 
   server.route({

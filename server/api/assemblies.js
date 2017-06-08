@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -124,7 +123,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Assembly.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, assembly) => {
+      Assembly.findByIdAndUpdate(id, update, (err, assembly) => {
 
         if (err) {
           return reply(err);

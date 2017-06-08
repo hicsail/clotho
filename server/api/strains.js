@@ -4,7 +4,6 @@ const Boom = require('boom');
 const Joi = require('joi');
 
 
-
 const internals = {};
 
 
@@ -144,7 +143,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Strain.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, strains) => {
+      Strain.findByIdAndUpdate(id, update, (err, strains) => {
 
         if (err) {
           return reply(err);

@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
 
-
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -83,8 +82,7 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
           subBioDesignIds: Joi.array().items(Joi.string()).optional(),
-          superBioDesignId: Joi.string().optional(),
-          type: Joi.string().uppercase().optional()
+          superBioDesignId: Joi.string().optional()
         }
       }
     },
@@ -99,7 +97,6 @@ internals.applyRoutes = function (server, next) {
         request.payload.imageURL,
         request.payload.subBioDesignIds,
         request.payload.superBioDesignId,
-        null,
         (err, bioDesign) => {
 
           if (err) {
@@ -109,7 +106,6 @@ internals.applyRoutes = function (server, next) {
         });
     }
   });
-
 
   server.route({
     method: 'PUT',
@@ -125,26 +121,25 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
           subBioDesignIds: Joi.array().items(Joi.string()).optional(),
-          superBioDesignId: Joi.string().optional(),
-          type: Joi.string().uppercase().optional()
+          superBioDesignId: Joi.string().optional()
         }
       }
     },
     handler: function (request, reply) {
 
       const id = request.params.id;
-      var update = { $set: {}};
-
-      // Check for null values.
-      for (let key of Object.keys(request.payload)) {
-        if (request.payload[key] !== undefined && request.payload[key] !== null) {
-          update['$set'][key] =  request.payload[key];
-        } else if (key === 'name') {
-          update['$set']['name'] = request.payload['name'];
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          displayId: request.payload.displayId,
+          imageURL: request.payload.imageURL,
+          subBioDesignIds: request.payload.subBioDesignIds,
+          superBioDesignId: request.payload.superBioDesignId
         }
-      }
+      };
 
-      BioDesign.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, bio_design) => {
+      BioDesign.findByIdAndUpdate(id, update, (err, bio_design) => {
 
         if (err) {
           return reply(err);
