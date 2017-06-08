@@ -9,7 +9,19 @@
                 <label class="label" id="nameLabel"><b>Full Name</b></label>
                 <input class="input" id="name" type="text" placeholder="First Last" name="name">
                 <label class="label" id="emailLabel"><b>Email</b></label>
-                <input class="input" id="email" type="text" placeholder="Email" name="email">
+
+                <p class="control has-icons-left has-icons-right">
+                    <input class="input" id="email" type="text" placeholder="Email" name="email">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <span class="icon is-small is-right" id="emailCheck" style="display: none">
+                        <i class="fa fa-check" id="emailRightIcon"></i>
+                    </span>
+                </p>
+                <p class="help" id="emailStatus"></p>
+
+
                 <label class="label" id="usernameLabel"><b>Username</b></label>
                 <input class="input" id="username" type="text" placeholder="Username" name="username">
                 <label class="label" id="passwordLabel"><b>Password</b></label>
@@ -64,14 +76,57 @@
                     $.post('../../api/signup', values, function () {
                       window.location.replace('/');
                     }).fail(function (data) {
-                      var message = data.responseJSON.message;
-                      message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
-                      message = message.replace(/\"/g , "");
+                      var message = formatResponseMessage(data.responseJSON.message);
                       alert(message)
                     });
                   }
                 });
 
+
+
+
+
+                var emailFocus = false;
+                var usernameFocus = false;
+                $('#email').focus(function (e) {
+                    e.preventDefault();
+                    emailFocus = true;
+                });
+                $('#username').focus(function (e) {
+                    e.preventDefault();
+                    usernameFocus = true;
+                });
+
+                $('#email').blur(function (e) {
+                  if (emailFocus === true) {
+                      e.preventDefault();
+                      emailFocus = false;
+                      $.post('/api/available', {email: $('#email')[0].value}, function (data) {
+                        var message = data.email.message;
+                        var success = 'This email is available';
+
+                        if (message === success) {
+                          $('#email').addClass('is-success');
+                          $('#emailCheck').css('display', '');
+                          $('#emailStatus').text(success);
+                        }
+                        else {
+                          $('#email').addClass('is-danger');
+                          $('#emailRightIcon').removeClass('fa-check').addClass('fa-warning');
+                          $('#emailCheck').css('display', '');
+                          $('#emailStatus').text(message);
+                        }
+                      }).fail(function (data) { // It will fail if the input is not in email form
+                        var message = formatResponseMessage(data.responseJSON.message);
+                        alert(message);
+                      });
+                  }
+                });
+
+                function formatResponseMessage(message) {
+                    message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
+                    return message.replace(/\"/g , "");
+                }
             </script>
         </div>
     </div>
