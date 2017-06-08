@@ -35,9 +35,29 @@
 
 
                 <label class="label" id="passwordLabel"><b>Password</b></label>
-                <input class="input" id="password" type="text" placeholder="Password" name="password">
+                <p class="control has-icons-right has-icons-left">
+                    <input class="input" id="password" type="text" placeholder="Password" name="password">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <span class="icon is-small is-right" id="passwordCheck" style="display: none">
+                        <i class="fa fa-check" id="passwordRightIcon"></i>
+                    </span>
+                </p>
+
+
                 <label class="label" id="retypePwLabel"><b>Retype Password</b></label>
-                <input class="input" id="retypePw" type="text" placeholder="Password" name="retypePw">
+                <p class="control has-icons-right has-icons-left">
+                    <input class="input" id="retypePw" type="text" placeholder="Retype Password" name="retypePw">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <span class="icon is-small is-right" id="retypePwCheck" style="display: none">
+                        <i class="fa fa-check" id="retypePwRightIcon"></i>
+                    </span>
+                </p>
+                <p class="help" id="retypePwStatus"></p>
+
                 <input class="button is-primary" id="submit" type="submit" value="Submit">
             </form>
             <script>
@@ -137,7 +157,7 @@
                   }
                 });
 
-                $('#username').blur(function (e) {
+                $('#username').blur(function () {
                     if (usernameFocus === true) {
                         //e.preventDefault();
                         usernameFocus = false;
@@ -151,8 +171,7 @@
                                 $('#usernameRightIcon').removeClass('fa-warning').addClass('fa-check');
                                 $('#usernameCheck').css('display', '');
                                 $('#usernameStatus').text(success);
-                            }
-                            else {
+                            } else {
                                 $('#username').removeClass('is-success').addClass('is-danger');
                                 $('#usernameRightIcon').removeClass('fa-check').addClass('fa-warning');
                                 $('#usernameCheck').css('display', '');
@@ -167,6 +186,35 @@
                         });
                     }
                 });
+
+
+                $('#retypePw').keyup(function (e) {
+                  e.preventDefault();
+                  var pw = $('#password')[0].value;
+                  var pw2 = $('#retypePw')[0].value;
+                  if (pw === '') {
+                    $('#password').removeClass('is-success').addClass('is-danger');
+                    $('#retypePwStatus').text('Please type in a password');
+                  } else if (pw === pw2) {
+                    $('#password').removeClass('is-danger').addClass('is-success');
+                    $('#retypePw').removeClass('is-danger').addClass('is-success');
+                    $('#passwordRightIcon').removeClass('fa-warning').addClass('fa-check');
+                    $('#retypePwRightIcon').removeClass('fa-warning').addClass('fa-check');
+                    $('#passwordCheck').css('display', '');
+                    $('#retypePwCheck').css('display', '');
+                    $('#retypePwStatus').text('Passwords match!');
+                  } else {
+                    $('#password').removeClass('is-success').addClass('is-danger');
+                    $('#retypePw').removeClass('is-success').addClass('is-danger');
+                    $('#passwordRightIcon').removeClass('fa-check').addClass('fa-warning');
+                    $('#retypePwRightIcon').removeClass('fa-check').addClass('fa-warning');
+                    $('#passwordCheck').css('display', '');
+                    $('#retypePwCheck').css('display', '');
+                    $('#retypePwStatus').text('Passwords do not match');
+                  }
+                });
+
+
 
                 function formatResponseMessage(message) {
                     message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
