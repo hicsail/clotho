@@ -27,7 +27,7 @@
                       var expires = new Date();
                       expires.setFullYear(9999);
                       //create new cookie
-                      document.cookie = 'auth=' + data.authHeader.split('Basic ')[1] + ';expires=' + expires + ';path= /';
+                      document.cookie = 'auth=' + data.authHeader.split('Basic ')[1] + '; expires=' + expires + '; path=/;';
                       window.location.replace('/');
                     }).fail(function (data) {
                         var message = data.responseJSON.message;
