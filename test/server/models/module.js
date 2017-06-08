@@ -40,13 +40,14 @@ lab.experiment('Module Class Methods', () => {
       'submodule',
       'userid12test',
       'displayId',
-    (err, result) => {
+      'bioDesignId',
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Module);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Module);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -68,14 +69,15 @@ lab.experiment('Module Class Methods', () => {
       'submodule',
       'userid12test',
       'displayId',
-    (err, result) => {
+      'bioDesignId',
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Module.insertOne = realInsertOne;
+        Module.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });
