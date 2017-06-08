@@ -6,13 +6,13 @@ const Feature = require('./feature');
 
 class Module extends MongoModels {
 
-  static create(name, description, role, features, submoduleIds, userId, displayId, bioDesignId, callback) {
+  static create(name, description, role, featureIds, submoduleIds, userId, displayId, bioDesignId, callback) {
 
     const document = {
       name: name,
       description: description,
       role: role,
-      features: features,
+      featureIds: featureIds,
       submoduleIds: submoduleIds,
       userId: userId,
       displayId: displayId,
@@ -50,7 +50,7 @@ Module.schema = Joi.object().keys({
   influenceIds: Joi.array().items(Joi.string()), // Should this be an array of schemas instead?
   parentModuleId: Joi.string(),
   submoduleIds: Joi.array().items(Joi.string()),
-  features: Joi.array().items(Feature.schema),
+  featureIds: Joi.array().items(Joi.string()),
   displayId: Joi.string().optional(),
   bioDesignId: Joi.string()
 });

@@ -159,14 +159,14 @@ internals.applyRoutes = function (server, next) {
         }],
         createModule: ['createFeature', function (results, done) {
 
-          var featureId = [results.createFeature._id.toString()]; // not sure how to get feature schema?
+          var featureIds = [results.createFeature._id.toString()]; // not sure how to get feature schema?
           var bioDesignId = results.createBioDesign._id.toString();
 
           Module.create(
             request.payload.name,
             null, // description
             request.payload.role,
-            featureId,
+            featureIds,
             null, // no submoduleIds
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
