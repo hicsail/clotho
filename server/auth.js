@@ -65,13 +65,14 @@ internals.applyStrategy = function (server, next) {
     isSecure: false,
     redirectTo: '/login',
     appendNext: 'returnUrl',
-    validateFunc: function (request, data, callback) {
+    validateFunc: function (request, username, password, callback) {
 
       Async.auto({
         session: function (done) {
 
-          const id = data.session._id;
-          const key = data.session.key;
+          var data = new Buffer(request.headers.cookie, 'base64').toString('ascii').split(':');
+          const id = data[0];
+          const key = data[1];
 
           Session.findByCredentials(id, key, done);
         },
@@ -96,7 +97,6 @@ internals.applyStrategy = function (server, next) {
           if (!results.user || !results.user.roles) {
             return done();
           }
-
           done(null, Object.keys(results.user.roles));
         }]
       }, (err, results) => {

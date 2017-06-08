@@ -152,6 +152,9 @@ const manifest = {
       plugin: './server/web/login/index'
     },
     {
+      plugin: './server/web/login/logout'
+    },
+    {
       plugin: './server/web/signup/index'
     }
   ]

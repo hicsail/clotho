@@ -23,7 +23,11 @@
                     });
 
                     // If the user exists, redirect to home page, if not show an alert
-                    $.post('../../api/login', values, function (){
+                    $.post('/api/login', values, function (data) {
+                      console.log(data.authHeader.split('Basic ')[1]);
+                      var expires = new Date();
+                      expires.setFullYear(9999);
+                      document.cookie = data.authHeader.split('Basic ')[1] + ';expires=' + expires;
                       window.location.replace('/');
                     }).fail(function (data) {
                         var message = data.responseJSON.message;

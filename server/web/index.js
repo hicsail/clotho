@@ -18,8 +18,11 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
-
-      return reply.view('index');
+      var user = null;
+      if(request.auth.isAuthenticated) {
+        user = request.auth.credentials.user;
+      }
+      return reply.view('index',{ user:user });
     }
   });
 

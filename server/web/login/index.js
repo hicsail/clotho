@@ -19,7 +19,11 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('login');
+      if(request.auth.isAuthenticated) {
+        return reply.redirect('/');
+      } else {
+        return reply.view('login');
+      }
     }
   });
 

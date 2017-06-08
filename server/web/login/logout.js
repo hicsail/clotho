@@ -5,25 +5,10 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/register',
-    config: {
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
-      }
-    },
+    path: '/logout',
     handler: function (request, reply) {
 
-      if(request.auth.isAuthenticated) {
-        return reply.redirect('/');
-      } else {
-        return reply.view('register');
-      }
+      reply.view('logout');
     }
   });
 
@@ -39,6 +24,6 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'signup/index',
+  name: 'login/logout',
   dependencies: 'visionary'
 };
