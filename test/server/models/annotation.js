@@ -35,13 +35,13 @@ lab.experiment('Annotation Class Methods', () => {
     let testCase = 0;
 
     Annotation.create(
-      'sequenceId',
       TestAnnotations[testCase].name,
       TestAnnotations[testCase].description,
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
-      TestAnnotations[testCase].isForwardStrand,
+      'sequenceId',
       'userid12test',
+      TestAnnotations[testCase].isForwardStrand,
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -65,13 +65,13 @@ lab.experiment('Annotation Class Methods', () => {
     let testCase = 0;
 
     Annotation.create(
-      'sequenceId',
       TestAnnotations[testCase].name,
       TestAnnotations[testCase].description,
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
-      TestAnnotations[testCase].isForwardStrand,
+      'sequenceId',
       'userid12test',
+      TestAnnotations[testCase].isForwardStrand,
     (err, result) => {
 
       Code.expect(err).to.be.an.object();
