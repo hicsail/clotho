@@ -36,7 +36,7 @@ ExperimentDesign.schema = Joi.object().keys({
   controlledVariables: Joi.array().items(Joi.string()).required(),
   userId: Joi.string().required(),
   experimentalConditionIds: Joi.array().items(Joi.string()),
-  bioDesign: BioDesign.schema,
+  bioDesignId: Joi.string(),
   subDesignIds: Joi.array().items(Joi.string()),
   parentDesignId: Joi.string()
 });

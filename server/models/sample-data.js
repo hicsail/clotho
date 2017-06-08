@@ -4,14 +4,14 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class SampleData extends MongoModels {
-  static create(name, description, sampleId, instrument, responseVariableIds, userId, callback) {
+  static create(name, description, sampleId, instrument, responseVariables, userId, callback) {
 
     const document = {
       name: name,
       description: description,
       sampleId: sampleId,
       instrument: instrument,
-      responseVariableIds: responseVariableIds,
+      responseVariables: responseVariables,
       userId: userId
     };
 

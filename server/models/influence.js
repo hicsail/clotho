@@ -36,7 +36,7 @@ Influence.schema = Joi.object().keys({
   description: Joi.string(),
   influencingFeature: Feature.schema.required(),
   influencedFeature: Feature.schema.required(),
-  influenceType: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
+  type: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
   parentInfluenceId: Joi.string(),
   userId: Joi.string().required()
 });

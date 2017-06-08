@@ -180,6 +180,18 @@ const manifest = {
         routes: {prefix: '/api'}
       }
     },
+    // {
+    //   plugin: './server/api/subparts',
+    //   options: {
+    //     routes: {prefix: '/api'}
+    //   }
+    // },
+    {
+      plugin: './server/api/parts',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
     {
       plugin: './server/api/signup',
       options: {
