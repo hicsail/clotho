@@ -30,10 +30,10 @@ Container.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
-  container: Joi.object(), // ?
-  coordinates: Joi.array().items(Joi.number().integer()),
+  type: Joi.string().valid('BEAKER', 'BOX', 'FLASK', 'FRIDGE', 'INCUBATOR', 'PLATE', 'RACK', 'TUBE', 'WELL'),
   parameterIds: Joi.array().items(Joi.string()),
-  type: Joi.string().valid('BEAKER', 'BOX', 'FLASK', 'FRIDGE', 'INCUBATOR', 'PLATE', 'RACK', 'TUBE', 'WELL')
+  container: Joi.object(), // ?
+  coordinates: Joi.array().items(Joi.number().integer())
 });
 
 Container.indexes = [

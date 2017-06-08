@@ -105,13 +105,13 @@ BioDesign.schema = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
+  displayId: Joi.string().optional(),
+  moduleId: Joi.string(),
   parentDesignId: Joi.string(),
-  module: Module.schema,
+  media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
   strains: Joi.array().items(Strain.schema),
-  media: Joi.array().items(Medium.schema),
-  subDesignIds: Joi.array().items(Joi.string()),
-  displayId: Joi.string().optional()
+  subDesignIds: Joi.array().items(Joi.string())
 });
 
 BioDesign.indexes = [

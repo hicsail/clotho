@@ -4,13 +4,13 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class Experiment extends MongoModels {
-  static create(name, description, experimentalDesignId, userId, callback) {
+  static create(name, description, userId, experimentalDesignId, callback) {
 
     const document = {
       name: name,
       description: description,
-      experimentalDesignId: experimentalDesignId,
-      userId: userId
+      userId: userId,
+      experimentalDesignId: experimentalDesignId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -30,11 +30,11 @@ Experiment.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  experimentalDesignId: Joi.string().required(),
   userId: Joi.string().required(),
-  subExperimentIds: Joi.array().items(Joi.string()),
+  experimentalDesignId: Joi.string().required(),
+  experimentalGroupIds: Joi.array().items(Joi.string()),
   parentExperimentId: Joi.string(),
-  experimentalGroupIds: Joi.array().items(Joi.string())
+  subExperimentIds: Joi.array().items(Joi.string())
 });
 
 Experiment.indexes = [
