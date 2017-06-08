@@ -5,15 +5,15 @@ const MongoModels = require('mongo-models');
 
 class Feature extends MongoModels {
 
-  static create(annotationId, name, description, role, userId, displayId, callback) {
+  static create(name, description, userId, displayId, role, annotationId, callback) {
 
     const document = {
       name: name,
-      annotationId: annotationId,
       description: description,
-      role: role,
       userId: userId,
-      displayId: displayId
+      displayId: displayId,
+      role: role,
+      annotationId: annotationId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -57,15 +57,15 @@ Feature.collection = 'features';
 
 Feature.schema = Joi.object().keys({
   _id: Joi.object(),
-  annotationId: Joi.string().required(),
-  genBankId: Joi.string(),
-  swissProtId: Joi.string(),
-  riskGroup: Joi.number(), // Is short according to clotho3.
-  role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
-  displayId: Joi.string().optional()
+  displayId: Joi.string().optional(),
+  role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
+  annotationId: Joi.string().required(),
+  genBankId: Joi.string(),
+  swissProtId: Joi.string(),
+  riskGroup: Joi.number() // Is short according to clotho3.
 });
 
 Feature.indexes = [

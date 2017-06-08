@@ -2,17 +2,16 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const BioDesign = require('./bio-design');
 
 class ExperimentDesign extends MongoModels {
-  static create(name, description, responseVariables, controlledVariables, userId, callback) {
+  static create(name, description, userId, controlledVariables, responseVariables, callback) {
 
     const document = {
       name: name,
       description: description,
-      responseVariables: responseVariables,
+      userId: userId,
       controlledVariables: controlledVariables,
-      userId: userId
+      responseVariables: responseVariables
     };
 
     this.insertOne(document, (err, docs) => {
@@ -32,13 +31,13 @@ ExperimentDesign.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  responseVariables: Joi.array().items(Joi.string()).required(),
-  controlledVariables: Joi.array().items(Joi.string()).required(),
   userId: Joi.string().required(),
-  experimentalConditionIds: Joi.array().items(Joi.string()),
   bioDesignId: Joi.string(),
-  subDesignIds: Joi.array().items(Joi.string()),
-  parentDesignId: Joi.string()
+  controlledVariables: Joi.array().items(Joi.string()).required(),
+  experimentalConditionIds: Joi.array().items(Joi.string()),
+  parentDesignId: Joi.string(),
+  responseVariables: Joi.array().items(Joi.string()).required(),
+  subDesignIds: Joi.array().items(Joi.string())
 });
 
 ExperimentDesign.indexes = [];

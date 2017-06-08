@@ -2,7 +2,6 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Module = require('./module');
 const Sequence = require('./sequence');
 const Strain = require('./strain');
 const Medium = require('./medium');
@@ -108,10 +107,10 @@ BioDesign.schema = Joi.object().keys({
   displayId: Joi.string().optional(),
   moduleId: Joi.string(),
   parentDesignId: Joi.string(),
+  subDesignIds: Joi.array().items(Joi.string()),
   media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
-  strains: Joi.array().items(Strain.schema),
-  subDesignIds: Joi.array().items(Joi.string())
+  strains: Joi.array().items(Strain.schema)
 });
 
 BioDesign.indexes = [

@@ -35,19 +35,19 @@ lab.experiment('Feature Class Methods', () => {
     let testCase = 0;
 
     Feature.create(
-      'annotationId',
       TestFeatures[testCase].name,
       TestFeatures[testCase].description,
-      TestFeatures[testCase].role,
       'userid12test',
       'displayId',
-    (err, result) => {
+      TestFeatures[testCase].role,
+      'annotationId',
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Feature);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Feature);
 
-      done();
-    });
+        done();
+      });
   });
 
 
@@ -65,34 +65,34 @@ lab.experiment('Feature Class Methods', () => {
     let testCase = 0;
 
     Feature.create(
-      'annotationId',
       TestFeatures[testCase].name,
       TestFeatures[testCase].description,
-      TestFeatures[testCase].role,
       'userid12test',
       'displayId',
-    (err, result) => {
+      TestFeatures[testCase].role,
+      'annotationId',
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Feature.insertOne = realInsertOne;
+        Feature.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an instance when finding by annotation succeeds', (done) => {
 
     Feature.findByAnnotationId(
       'annotationId',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result[0]).to.be.an.instanceOf(Feature);
+        Code.expect(err).to.not.exist();
+        Code.expect(result[0]).to.be.an.instanceOf(Feature);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when finding by annotation fails', (done) => {
@@ -108,15 +108,15 @@ lab.experiment('Feature Class Methods', () => {
 
     Feature.findByAnnotationId(
       'annotationId',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Feature.find = realInsertOne;
+        Feature.find = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
 });

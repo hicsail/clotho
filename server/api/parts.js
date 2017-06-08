@@ -140,12 +140,12 @@ internals.applyRoutes = function (server, next) {
 
           var annotationId = results.createAnnotation._id.toString();
           Feature.create(
-            annotationId,
             request.payload.name,
             null, // description
-            request.payload.role,
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
+            request.payload.role,
+            annotationId,
             done);
         }],
         createSubpart: ['createSequence', 'createBioDesign', function (results, done) {

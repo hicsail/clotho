@@ -88,12 +88,12 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Feature.create(
-        request.payload.annotationId,
         request.payload.name,
         request.payload.description,
-        request.payload.role,
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
+        request.payload.role,
+        request.payload.annotationId,
         (err, feature) => {
 
           if (err) {
