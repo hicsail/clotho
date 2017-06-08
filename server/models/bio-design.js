@@ -11,12 +11,13 @@ const Medium = require('./medium');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, callback) {
+  static create(name, description, userId, displayId, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId
+      displayId: displayId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -110,7 +111,8 @@ BioDesign.schema = Joi.object().keys({
   polynucleotides: Joi.array().items(Sequence.schema),
   strains: Joi.array().items(Strain.schema),
   media: Joi.array().items(Medium.schema),
-  subDesignIds: Joi.array().items(Joi.string())
+  subDesignIds: Joi.array().items(Joi.string()),
+  displayId: Joi.string().optional()
 });
 
 BioDesign.indexes = [

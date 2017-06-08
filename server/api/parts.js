@@ -106,8 +106,9 @@ internals.applyRoutes = function (server, next) {
             request.payload.sequence,
             null,
             null,
-            request.auth.credentials.user._id.toString(),
             null, // featureId null
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
             done);
         },
         createSubpart: ['createSequence', function (results, done) {
@@ -118,6 +119,7 @@ internals.applyRoutes = function (server, next) {
             null, // no description
             seq,
             request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
             done);
         }],
         createAnnotation: ['createSequence', function (results, done) {
@@ -142,6 +144,7 @@ internals.applyRoutes = function (server, next) {
             null, // description
             request.payload.role,
             request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
             done);
         }],
         createModule: ['createFeature', function (results, done) {
@@ -154,6 +157,7 @@ internals.applyRoutes = function (server, next) {
             feat,
             null, // no submoduleIds
             request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
             done);
         }],
         createBioDesign: ['createModule', function (results, done) {
@@ -162,6 +166,7 @@ internals.applyRoutes = function (server, next) {
             request.payload.name,
             null,
             request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
             done);
         }]
       }, (err, results) => {
@@ -174,17 +179,13 @@ internals.applyRoutes = function (server, next) {
 
 
       // function calls to implement
-      // setDisplayID for sequence
-      // setDisplayID for Part
 
       // setSequence for feature
-      // setDisplayID for feature
 
       // setFeature for Annotation
-      // setDisplayID for Module
+
       // addPart for BioDesign
       // setModule for BioDesign
-      // setDisplayID for BioDesign
       // addParamaters for BioDesign
 
     }

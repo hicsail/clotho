@@ -79,7 +79,8 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().required(),
-          userId: Joi.string().required()
+          userId: Joi.string().required(),
+          displayId: Joi.string().optional()
         }
       }
     },
@@ -90,6 +91,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.name,
         request.payload.description,
         request.payload.userId,
+        request.payload.displayId,
         (err, bioDesign) => {
 
           if (err) {

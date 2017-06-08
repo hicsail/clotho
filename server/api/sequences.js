@@ -82,7 +82,8 @@ internals.applyRoutes = function (server, next) {
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
           accession: Joi.string().optional(),
           isLinear: Joi.boolean().optional(),
-          isSingleStranded: Joi.boolean().optional()
+          isSingleStranded: Joi.boolean().optional(),
+          displayId: Joi.string().optional()
         }
       }
     },
@@ -97,6 +98,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.isSingleStranded,
         null, //feature id, should be parent if creating new one
         request.auth.credentials.user._id.toString(),
+        request.payload.displayId,
         (err, sequence) => {
 
           if (err) {

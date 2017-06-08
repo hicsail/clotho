@@ -81,7 +81,8 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           description: Joi.string(),
           submoduleIds: Joi.array().items(Joi.string()),
-          features: Joi.array().items(Joi.object())
+          features: Joi.array().items(Joi.object()),
+          displayId: Joi.string().optional()
         }
       }
     },
@@ -95,6 +96,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.features,
         request.payload.submoduleIds,
         request.auth.credentials.user._id.toString(),
+        request.payload.displayId,
         (err, module) => {
 
           if (err) {

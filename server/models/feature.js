@@ -5,14 +5,15 @@ const MongoModels = require('mongo-models');
 
 class Feature extends MongoModels {
 
-  static create(annotationId, name, description, role, userId, callback) {
+  static create(annotationId, name, description, role, userId, displayId, callback) {
 
     const document = {
       name: name,
       annotationId: annotationId,
       description: description,
       role: role,
-      userId: userId
+      userId: userId,
+      displayId: displayId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -63,7 +64,8 @@ Feature.schema = Joi.object().keys({
   role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
   name: Joi.string().required(),
   description: Joi.string(),
-  userId: Joi.string().required()
+  userId: Joi.string().required(),
+  displayId: Joi.string().optional()
 });
 
 Feature.indexes = [

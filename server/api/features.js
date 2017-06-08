@@ -81,6 +81,7 @@ internals.applyRoutes = function (server, next) {
           annotationId: Joi.string().required(),
           description: Joi.string().optional(),
           role: Joi.string().required(),
+          displayId: Joi.string().optional()
         }
       }
     },
@@ -92,7 +93,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.description,
         request.payload.role,
         request.auth.credentials.user._id.toString(),
-
+        request.payload.displayId,
         (err, feature) => {
 
           if (err) {
