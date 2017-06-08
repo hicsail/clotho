@@ -40,6 +40,7 @@ lab.experiment('Feature Class Methods', () => {
       TestFeatures[testCase].description,
       TestFeatures[testCase].role,
       'userid12test',
+      'displayId',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -69,6 +70,7 @@ lab.experiment('Feature Class Methods', () => {
       TestFeatures[testCase].description,
       TestFeatures[testCase].role,
       'userid12test',
+      'displayId',
     (err, result) => {
 
       Code.expect(err).to.be.an.object();

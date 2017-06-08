@@ -108,7 +108,7 @@ Sequence.schema = Joi.object().keys({
   description: Joi.string().optional(),
   sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
   userId: Joi.string().required(),
-  displayId: Joistring().optional(),
+  displayId: Joi.string().optional(),
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),
   isSingleStranded: Joi.boolean().optional(),

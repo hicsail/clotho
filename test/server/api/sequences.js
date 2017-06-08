@@ -272,7 +272,7 @@ lab.experiment('Sequence Plugin Create', () => {
       callback();
     };
 
-    stub.Sequence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Sequence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,displayId,callback) {
 
       callback(Error('create failed'));
     };
@@ -292,7 +292,7 @@ lab.experiment('Sequence Plugin Create', () => {
       callback();
     };
 
-    stub.Sequence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Sequence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,displayId,callback) {
 
       callback(null, {});
     };

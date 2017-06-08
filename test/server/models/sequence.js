@@ -46,6 +46,7 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].isSingleStranded,
       null,
       'userid12test',
+      'displayId',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -76,6 +77,7 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].isSingleStranded,
       null,
       'userid12test',
+      'displayId',
     (err, result) => {
 
       Code.expect(err).to.be.an.object();

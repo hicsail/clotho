@@ -16,7 +16,7 @@ class BioDesign extends MongoModels {
     const document = {
       name: name,
       description: description,
-      userId: userId
+      userId: userId,
       displayId: displayId
     };
 
