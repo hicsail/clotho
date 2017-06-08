@@ -58,6 +58,9 @@
                       values[field.name] = field.value;
                     });
                     delete values.retypePw; //delete the confirmed password
+
+                    // If user does not already exist, send to home page
+                    // If any error, show it in an alert
                     $.post('../../api/signup', values, function () {
                       window.location.replace('/');
                     }).fail(function (data) {

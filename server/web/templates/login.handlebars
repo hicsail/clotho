@@ -16,11 +16,13 @@
                 $('#login').on('submit', function (e) {
                     e.preventDefault();
 
+                    // Store the input values in an object variable
                     var values = {};
                     $.each($('#login').serializeArray(), function (i, field) {
                         values[field.name] = field.value;
                     });
 
+                    // If the user exists, redirect to home page, if not show an alert
                     $.post('../../api/login', values, function (){
                       window.location.replace('/');
                     }).fail(function (data) {
