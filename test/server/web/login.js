@@ -5,7 +5,7 @@ const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
-const HomePlugin = require('../../../server/web/index');
+const LoginPlugin = require('../../../server/web/login/index');
 const Lab = require('lab');
 const MakeMockModel = require('../fixtures/make-mock-model');
 const Manifest = require('../../../manifest');
@@ -62,7 +62,7 @@ let server;
 
 lab.beforeEach((done) => {
 
-  const plugins = [Vision, VisionaryPlugin, ModelsPlugin, HomePlugin, AuthPlugin, HapiAuthCookie, HapiAuthBasic];
+  const plugins = [Vision, VisionaryPlugin, ModelsPlugin, LoginPlugin, AuthPlugin, HapiAuthCookie, HapiAuthBasic];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {
@@ -76,13 +76,13 @@ lab.beforeEach((done) => {
 });
 
 
-lab.experiment('Home Page View', () => {
+lab.experiment('Login Page View', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/'
+      url: '/login'
     };
 
     done();
@@ -90,7 +90,7 @@ lab.experiment('Home Page View', () => {
 
 
 
-  lab.test('home page renders properly', (done) => {
+  lab.test('login page renders properly', (done) => {
 
     server.inject(request, (response) => {
 

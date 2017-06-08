@@ -35,6 +35,6 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'staticPages',
+  name: 'home',
   dependencies: 'visionary'
 };
