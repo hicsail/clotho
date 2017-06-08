@@ -37,18 +37,18 @@ lab.experiment('Annotation Class Methods', () => {
     Annotation.create(
       TestAnnotations[testCase].name,
       TestAnnotations[testCase].description,
+      'userid12test',
+      'sequenceId',
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
-      'sequenceId',
-      'userid12test',
       TestAnnotations[testCase].isForwardStrand,
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Annotation);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Annotation);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -67,25 +67,25 @@ lab.experiment('Annotation Class Methods', () => {
     Annotation.create(
       TestAnnotations[testCase].name,
       TestAnnotations[testCase].description,
+      'userid12test',
+      'sequenceId',
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
-      'sequenceId',
-      'userid12test',
       TestAnnotations[testCase].isForwardStrand,
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Annotation.insertOne = realInsertOne;
+        Annotation.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns a result when finding by sequenceId', (done) => {
 
-    Annotation.findBySequenceId('sequenceId', (err,results) => {
+    Annotation.findBySequenceId('sequenceId', (err, results) => {
 
       Code.expect(err).to.not.exist();
       Code.expect(results[0]).to.be.an.instanceOf(Annotation);

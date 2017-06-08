@@ -6,15 +6,15 @@ const Feature = require('./feature');
 
 class Annotation extends MongoModels {
 
-  static create(name, description, start, end, sequenceId, userId, isForwardStrand, callback) {
+  static create(name, description, userId, sequenceId, start, end, isForwardStrand, callback) {
 
     const document = {
       name: name,
       description: description,
+      userId: userId,
+      sequenceId: sequenceId,
       start: start,
       end: end,
-      sequenceId: sequenceId,
-      userId: userId,
       isForwardStrand: isForwardStrand
     };
 
@@ -84,10 +84,10 @@ Annotation.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
+  userId: Joi.string().required(),
+  sequenceId: Joi.string().required(),
   start: Joi.number().integer().positive().required(),
   end: Joi.number().integer().positive().required(),
-  sequenceId: Joi.string().required(),
-  userId: Joi.string().required(),
   isForwardStrand: Joi.boolean().required()
 });
 

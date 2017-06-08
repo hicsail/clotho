@@ -79,9 +79,9 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
+          sequenceId: Joi.string().required(),
           start: Joi.number().integer().positive().required(),
           end: Joi.number().integer().positive().required(),
-          sequenceId: Joi.string().required(),
           isForwardStrand: Joi.boolean().required()
         }
       }
@@ -91,10 +91,10 @@ internals.applyRoutes = function (server, next) {
       Annotation.create(
         request.payload.name,
         request.payload.description,
+        request.auth.credentials.user._id.toString(),
+        request.payload.sequenceId,
         request.payload.start,
         request.payload.end,
-        request.payload.sequenceId,
-        request.auth.credentials.user._id.toString(),
         request.payload.isForwardStrand,
 
         (err, annotation) => {

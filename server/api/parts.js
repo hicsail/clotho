@@ -27,7 +27,12 @@ internals.applyRoutes = function (server, next) {
         query: {
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
-          page: Joi.number().default(1)
+          page: Joi.number().default(1),
+          name: Joi.string(),
+          displayId: Joi.string(),
+          role: Joi.string(),
+          sequence: Joi.string(),
+          parameters: Joi.array().items(Joi.object())
         }
       }
     },
@@ -85,7 +90,6 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          userId: Joi.string().required(), // in the convenience methods is the author's name
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
           sequence: Joi.string().optional(),
           role: Joi.string().optional(),
@@ -125,10 +129,10 @@ internals.applyRoutes = function (server, next) {
           Annotation.create(
             request.payload.name,
             null, // description,
+            request.auth.credentials.user._id.toString(),
+            seq, // sequenceId
             1, // start
             request.payload.sequence.length, // end
-            seq, // sequenceId
-            request.auth.credentials.user._id.toString(),
             true, // isForwardString
             done);
         }],
@@ -194,12 +198,6 @@ internals.applyRoutes = function (server, next) {
         return reply(results);
       });
 
-
-      // function calls to implement
-
-      // addPart for BioDesign
-      // setModule for BioDesign
-      // addParameters for BioDesign
 
     }
   })

@@ -256,8 +256,8 @@ lab.experiment('Annotation Plugin Create', () => {
       method: 'POST',
       url: '/annotation',
       payload: {
-        sequenceId: 'seq1',
         name: 'sequence1',
+        sequenceId: 'seq1',
         start: 1,
         end: 2,
         isForwardStrand: true
@@ -275,7 +275,7 @@ lab.experiment('Annotation Plugin Create', () => {
       callback();
     };
 
-    stub.Annotation.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+    stub.Annotation.create = function (name, description, userId, sequenceId, start, end, isForwardStrand, callback) {
 
       callback(Error('create failed'));
     };
@@ -295,7 +295,7 @@ lab.experiment('Annotation Plugin Create', () => {
       callback();
     };
 
-    stub.Annotation.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Annotation.create = function (name, description, sequence, isLinear, isSingleStranded, featureId, userId, callback) {
 
       callback(null, {});
     };

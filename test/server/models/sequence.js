@@ -107,13 +107,13 @@ lab.experiment('Sequence Class Methods', () => {
       var testCase = 0;
 
       Annotation.create(
-        sequence._id,
         TestAnnotations[testCase].name,
         TestAnnotations[testCase].description,
+        'userid12test',
+        sequence._id,
         TestAnnotations[testCase].start,
         TestAnnotations[testCase].end,
         TestAnnotations[testCase].isForwardStrand,
-        'userid12test',
       (err, result) => {
 
         Sequence.findByUserId('userid12test', (err, usersSeqences) => {
