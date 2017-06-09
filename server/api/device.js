@@ -68,6 +68,11 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  //Original Java
+  //public static ObjectId createDevice(Persistor persistor, String name,
+  // List<String> partIDs, String author, boolean createSeqFromParts) {
+
+
   server.route({
     method: 'POST',
     path: '/device',
@@ -78,18 +83,42 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          description: Joi.string().required(),
-          userId: Joi.string().required()
+          partIDs: Joi.array().items(Joi.string().required()),
+          userId: Joi.string().required(),
+          createSeqFromParts: Joi.boolean().required(),
+          displayID: Joi.string().optional(),
+          sequence: Joi.string().optional(),
+          role: Joi.string().optional(),
+          parameters: Joi.array().optional() //List<Parameters> parameters, insert parameter schema here
         }
       }
     },
 
     handler: function(request, reply) {
 
+      if (sequence==null) {
+
+      }
+
+      // Person auth = new Person(author);
+      // userId =
+      // Part devPart = new Part(name, auth);
+      // devPart.createAssembly();
+      // devPart.setDisplayID(displayID);
+      //
+      // BioDesign device = new BioDesign(name, auth);
+      // device.addPart(devPart);
+      // device.setDisplayID(displayID);
+
       Device.create(
         request.payload.name,
-        request.payload.description,
+        request.payload.partIDs,
         request.payload.userId,
+        request.payload.createSeqFromParts,
+        null,
+        null,
+        null,
+        null,
         (err, device) => {
 
         if (err) {
@@ -97,6 +126,8 @@ internals.applyRoutes = function (server, next) {
         }
         return reply(device);
     });
+
+
     }
   });
 
