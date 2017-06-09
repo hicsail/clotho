@@ -42,7 +42,6 @@ Async.auto({
     const Admin = require('./server/models/admin');
     const AuthAttempt = require('./server/models/auth-attempt');
     const Session = require('./server/models/session');
-    const Status = require('./server/models/status');
     const User = require('./server/models/user');
 
     Async.auto({
@@ -58,7 +57,6 @@ Async.auto({
           Admin.deleteMany.bind(Admin, {}),
           AuthAttempt.deleteMany.bind(AuthAttempt, {}),
           Session.deleteMany.bind(Session, {}),
-          Status.deleteMany.bind(Status, {}),
           User.deleteMany.bind(User, {})
         ], done);
       }],

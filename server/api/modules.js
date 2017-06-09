@@ -77,11 +77,13 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
           name: Joi.string().required(),
           description: Joi.string(),
-          submoduleIds: Joi.array().items(Joi.string()),
-          features: Joi.array().items(Joi.object())
+          displayId: Joi.string().optional(),
+          bioDesignId: Joi.string(),
+          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+          featureIds: Joi.array().items(Joi.object()),
+          submoduleIds: Joi.array().items(Joi.string())
         }
       }
     },
@@ -91,10 +93,12 @@ internals.applyRoutes = function (server, next) {
       Module.create(
         request.payload.name,
         request.payload.description,
-        request.payload.role,
-        request.payload.features,
-        request.payload.submoduleIds,
         request.auth.credentials.user._id.toString(),
+        request.payload.displayId,
+        request.payload.bioDesignId,
+        request.payload.role,
+        request.payload.featureIds,
+        request.payload.submoduleIds,
         (err, module) => {
 
           if (err) {

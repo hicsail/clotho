@@ -2,19 +2,19 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Format = require('./format');
-// const Assembly = require('./assembly');
 const Sequence = require('./sequence');
 
 class Part extends MongoModels {
 
-  static create(name, description, sequence, userId, callback) {
+  static create(name, description, userId, displayId, bioDesignId, sequenceId, callback) {
 
     const document = {
       name: name,
       description: description,
-      sequence: sequence,
-      userId: userId
+      userId: userId,
+      displayId: displayId,
+      bioDesignId: bioDesignId,
+      sequenceId: sequenceId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -25,6 +25,41 @@ class Part extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
+  static findByBioDesignId(BioDesignId, callback) {
+
+    const query = {'BioDesignId': BioDesignId};
+    this.find(query, (err, part) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      this.getSequence(0, sequences, callback);
+    });
+  }
+
+  //most likely one sequence only, may have to review this function
+  static getSequence(index, part, callback) {
+
+    if (index == part.length) {
+      return callback(null, sequences);
+    }
+
+    Sequence.findByPartId(sequences[index]['_id'], (err, sequences) => {
+
+      if (err) {
+        callback(err, null);
+      }
+
+      if (sequences.length != 0) {
+        part[index].sequences = sequences;
+      }
+
+      return this.getSequence(index + 1, part, callback);
+    });
+  }
+
 
 }
 
@@ -72,14 +107,12 @@ Part.collection = 'parts';
 
 Part.schema = Joi.object().keys({
   _id: Joi.object(),
-  format: Format.schema,
-  assemblyIds: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
-  sequence: Sequence.schema,
-  isForwardOrientation: Joi.boolean(),
-  parentPartId: Joi.string(),
   name: Joi.string().required(),
   description: Joi.string(),
-  userId: Joi.string().required()
+  userId: Joi.string().required(),
+  displayId: Joi.string().optional(),
+  bioDesignId: Joi.string(),
+  sequenceId: Joi.string()
 });
 
 Part.indexes = [

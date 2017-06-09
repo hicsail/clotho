@@ -6,15 +6,15 @@ const Feature = require('./feature');
 
 class Influence extends MongoModels {
 
-  static create(name, description, influencingFeature, influencedFeature, type, userId, callback) {
+  static create(name, description, userId, type, influencedFeature, influencingFeature, callback) {
 
     const document = {
       name: name,
       description: description,
-      influencingFeature: influencingFeature,
-      influencedFeature: influencedFeature,
+      userId: userId,
       type: type,
-      userId: userId
+      influencedFeature: influencedFeature,
+      influencingFeature: influencingFeature
     };
 
     this.insertOne(document, (err, docs) => {
@@ -34,11 +34,11 @@ Influence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  influencingFeature: Feature.schema.required(),
-  influencedFeature: Feature.schema.required(),
-  influenceType: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
+  userId: Joi.string().required(),
+  type: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
   parentInfluenceId: Joi.string(),
-  userId: Joi.string().required()
+  influencingFeature: Feature.schema.required(),
+  influencedFeature: Feature.schema.required()
 });
 
 Influence.indexes = [

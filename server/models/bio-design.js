@@ -2,21 +2,19 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Module = require('./module');
-const Parameter = require('./parameter');
-const Part = require('./part');
 const Sequence = require('./sequence');
 const Strain = require('./strain');
 const Medium = require('./medium');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, callback) {
+  static create(name, description, userId, displayId, callback) {
 
     const document = {
       name: name,
       description: description,
-      userId: userId
+      userId: userId,
+      displayId: displayId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -27,6 +25,8 @@ class BioDesign extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
+
 }
 
 
@@ -100,17 +100,17 @@ class BioDesign extends MongoModels {
 BioDesign.collection = 'biodesigns';
 
 BioDesign.schema = Joi.object().keys({
+  _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
+  displayId: Joi.string().optional(),
+  moduleId: Joi.string(),
   parentDesignId: Joi.string(),
-  module: Module.schema,
-  parameters: Joi.array().items(Parameter.schema),
-  parts: Joi.array().items(Part.schema),
-  polynucleotides: Joi.array().items(Sequence.schema),
-  strains: Joi.array().items(Strain.schema),
+  subDesignIds: Joi.array().items(Joi.string()),
   media: Joi.array().items(Medium.schema),
-  subDesignIds: Joi.array().items(Joi.string())
+  polynucleotides: Joi.array().items(Sequence.schema),
+  strains: Joi.array().items(Strain.schema)
 });
 
 BioDesign.indexes = [

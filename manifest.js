@@ -63,6 +63,7 @@ const manifest = {
             Module: './server/models/module',
             Medium: './server/models/medium',
             Part: './server/models/part',
+            Parameter: './server/models/parameter',
             Sequence: './server/models/sequence',
             Session: './server/models/session',
             User: './server/models/user'
@@ -175,6 +176,18 @@ const manifest = {
     },
     {
       plugin: './server/api/assemblies',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    // {
+    //   plugin: './server/api/subparts',
+    //   options: {
+    //     routes: {prefix: '/api'}
+    //   }
+    // },
+    {
+      plugin: './server/api/parts',
       options: {
         routes: {prefix: '/api'}
       }

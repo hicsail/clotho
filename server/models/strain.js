@@ -4,12 +4,12 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class Strain extends MongoModels {
-  static create(name, userId, description, callback) {
+  static create(name, description, userId, callback) {
 
     const document = {
       name: name,
-      userId: userId,
-      description: description
+      description: description,
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -27,11 +27,11 @@ Strain.collection = 'strains';
 
 Strain.schema = Joi.object().keys({
   _id: Joi.object(),
-  polynucleotides: Joi.array().items(Joi.string()), // Set of sequences.
-  parentStrainId: Joi.string(),
   name: Joi.string().required(),
+  description: Joi.string(),
   userId: Joi.string().required(),
-  description: Joi.string()
+  parentStrainId: Joi.string(),
+  polynucleotides: Joi.array().items(Joi.string()) // Set of sequences.
 });
 
 Strain.indexes = [

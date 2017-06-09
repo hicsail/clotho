@@ -39,7 +39,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(results);
-    });
+      });
     }
   });
 
@@ -60,11 +60,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!influence) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply(influence);
-    });
+        reply(influence);
+      });
     }
   });
 
@@ -79,11 +79,9 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          influencingFeature: Joi.string().required(),
+          type: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
           influencedFeature: Joi.string().required(),
-          type: Joi.string().required(), // maybe use Joi.object.type()?
-
-
+          influencingFeature: Joi.string().required()
         }
       }
     },
@@ -93,17 +91,17 @@ internals.applyRoutes = function (server, next) {
       Influence.create(
         request.payload.name,
         request.payload.description,
-        request.payload.influencingFeature,
-        request.payload.influencedFeature,
-        request.payload.type,
         request.auth.credentials.user._id.toString(),
+        request.payload.type,
+        request.payload.influencedFeature,
+        request.payload.influencingFeature,
         (err, influence) => {
 
-        if (err) {
-          return reply(err);
-        }
-        return reply(influence);
-    });
+          if (err) {
+            return reply(err);
+          }
+          return reply(influence);
+        });
     }
   });
 
@@ -124,11 +122,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!influence) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+          return reply(Boom.notFound('Document not found.'));
+        }
 
-      reply({message: 'Success.'});
-    });
+        reply({message: 'Success.'});
+      });
     }
   });
 

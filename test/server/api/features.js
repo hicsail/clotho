@@ -273,7 +273,7 @@ lab.experiment('Feature Plugin Create', () => {
       callback();
     };
 
-    stub.Feature.create = function (annotationId,name,description,role,userId,callback) {
+    stub.Feature.create = function (annotationId,name,description,role,userId,displayId,callback) {
 
       callback(Error('create failed'));
     };
@@ -293,7 +293,7 @@ lab.experiment('Feature Plugin Create', () => {
       callback();
     };
 
-    stub.Feature.create = function (annotationId,name,description,role,userId,callback) {
+    stub.Feature.create = function (annotationId,name,description,role,userId,displayId,callback) {
 
       callback(null, {});
     };
