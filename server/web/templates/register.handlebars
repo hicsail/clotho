@@ -7,7 +7,15 @@
         <div class="field">
             <form id="register">
                 <label class="label" id="nameLabel"><b>Full Name</b></label>
-                <input class="input" id="name" type="text" placeholder="First Last" name="name">
+                <p class="control has-icons-left has-icons-right">
+                    <input class="input" id="name" type="text" placeholder="First Last" name="name">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-user-circle"></i>
+                    </span>
+                    <span class="icon is-small is-right" id="nameCheck" style="display: none">
+                        <i class="fa fa-check" id="nameRightIcon"></i>
+                    </span>
+                </p>
 
                 <label class="label" id="emailLabel"><b>Email</b></label>
                 <p class="control has-icons-left has-icons-right">
@@ -112,10 +120,6 @@
                   }
                 });
 
-
-
-
-
                 var emailFocus = false;
                 var usernameFocus = false;
                 $('#email').focus(function (e) {
@@ -127,6 +131,7 @@
                     usernameFocus = true;
                 });
 
+                // Email verification
                 $('#email').blur(function (e) {
                   if (emailFocus === true) {
                       //e.preventDefault();
@@ -157,6 +162,7 @@
                   }
                 });
 
+                // Username verifiation
                 $('#username').blur(function () {
                     if (usernameFocus === true) {
                         //e.preventDefault();
@@ -177,7 +183,7 @@
                                 $('#usernameCheck').css('display', '');
                                 $('#usernameStatus').text(message);
                             }
-                        }).fail(function (data) { // It will fail if the input is not in email form
+                        }).fail(function (data) {   // It will fail if the input is not in email form
                             var message = formatResponseMessage(data.responseJSON.message);
                             $('#username').removeClass('is-success').addClass('is-danger');
                             $('#usernameRightIcon').removeClass('fa-check').addClass('fa-warning');
@@ -187,7 +193,7 @@
                     }
                 });
 
-
+                // Password verification
                 $('#retypePw').keyup(function (e) {
                   e.preventDefault();
                   var pw = $('#password')[0].value;
