@@ -71,7 +71,7 @@ internals.applyRoutes = function (server, next) {
   //Original Java
   //public static ObjectId createDevice(Persistor persistor, String name,
   // List<String> partIDs, String author, boolean createSeqFromParts) {
-
+// name, displayId, role, partIds, createSeqFromParts, sequence, parameters
 
   server.route({
     method: 'POST',
@@ -83,52 +83,130 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          partIDs: Joi.array().items(Joi.string().required()),
-          userId: Joi.string().required(),
-          createSeqFromParts: Joi.boolean().required(),
-          displayID: Joi.string().optional(),
-          sequence: Joi.string().optional(),
+          userId: Joi.string().optional(),
+          displayId: Joi.string().optional(),
           role: Joi.string().optional(),
+          partIds: Joi.array().items(Joi.string().required()),
+          createSeqFromParts: Joi.boolean().required(),
+          sequence: Joi.string().optional(),
           parameters: Joi.array().optional() //List<Parameters> parameters, insert parameter schema here
         }
       }
     },
 
     handler: function (request, reply) {
+    //Used to create a Device consisting of a BioDesign, Part, and Assembly.
+      // Optionally, may also create a Sequence, Feature, BasicModule, Parameters, and Annotations.
+      Async.auto({
+        createBioDesign: function (done) {
 
-      if (sequence==null) {
+          BioDesign.create(
+            request.payload.name,
+            null, // description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            done);
+        },
+        createSubpart: ['createSequence', 'createBioDesign', function (results, done) {
 
-      }
+          var sequenceId = results.createSequence._id.toString();
+          var bioDesignId = results.createBioDesign._id.toString();
+          Part.create(
+            request.payload.name,
+            null, // no description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            bioDesignId,
+            sequenceId,
+            done);
+        }],
+        createAssembly: function (results, done) {
 
-      // Person auth = new Person(author);
-      // userId =
-      // Part devPart = new Part(name, auth);
-      // devPart.createAssembly();
-      // devPart.setDisplayID(displayID);
-      //
-      // BioDesign device = new BioDesign(name, auth);
-      // device.addPart(devPart);
-      // device.setDisplayID(displayID);
+          var part = results.createPart._id.toString();
+          var subAssemblyIds = results.createSubAssembly._id.toString();
+          Assembly.create(
+            part,
+            subAssemblyIds,
+            done);
+        },
+        createSequence: function (done) {
 
-      Device.create(
-        request.payload.name,
-        request.payload.partIDs,
-        request.payload.userId,
-        request.payload.createSeqFromParts,
-        null,
-        null,
-        null,
-        null,
-        (err, device) => {
+          Sequence.create(
+            request.payload.name,
+            null, // no description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            null, // featureId null
+            request.payload.sequence,
+            null,
+            null,
+            done);
+        },
+        createAnnotation: ['createSequence', function (results, done) {
+
+          var seq = results.createSequence._id.toString();
+          Annotation.create(
+            request.payload.name,
+            null, // description,
+            request.auth.credentials.user._id.toString(),
+            seq, // sequenceId
+            1, // start
+            request.payload.sequence.length, // end
+            true, // isForwardString
+            done);
+        }],
+        createFeature: ['createSequence', 'createAnnotation', function (results, done) {
+
+          var annotationId = results.createAnnotation._id.toString();
+          Feature.create(
+            request.payload.name,
+            null, // description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            request.payload.role,
+            annotationId,
+            done);
+        }],
+        createModule: ['createFeature', function (results, done) {
+
+          var featureIds = [results.createFeature._id.toString()]; // not sure how to get feature schema?
+          var bioDesignId = results.createBioDesign._id.toString();
+
+          Module.create(
+            request.payload.name,
+            null, // description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            bioDesignId,
+            request.payload.role,
+            featureIds,
+            null, // no submoduleIds
+            done);
+        }],
+        createParameters: ['createBioDesign', function (results, done) {
+
+          var bioDesignId = results.createBioDesign._id.toString();
+          var param = request.payload.parameters;
+
+          for (var i = 0; i < param.length; ++i) {
+
+            Parameter.create(bioDesignId, param[i]['value'], param[i]['variable'], done);
+
+          }
+
+        }]
+      }, (err, results) => {
 
         if (err) {
           return reply(err);
         }
-        return reply(device);
+        return reply(results);
       });
-      
+
     }
   });
+
+
 
   server.route({
     method: 'DELETE',
