@@ -59,20 +59,22 @@ internals.applyStrategy = function (server, next) {
     }
   });
 
-  server.auth.strategy('session', 'basic', {
+
+
+  server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
-    cookie: 'sid-clotho',
+    cookie: 'Clotho',
     isSecure: false,
+    clearInvalid: true,
     redirectTo: '/login',
     appendNext: 'returnUrl',
-    validateFunc: function (request, username, password, callback) {
+    validateFunc: function (request, data, callback) {
 
       Async.auto({
         session: function (done) {
 
-          var data = new Buffer(request.headers.cookie.split('auth=')[1], 'base64').toString('ascii').split(':');
-          const id = data[0];
-          const key = data[1];
+          const id = data._id;
+          const key = data.key;
 
           Session.findByCredentials(id, key, done);
         },
@@ -97,6 +99,7 @@ internals.applyStrategy = function (server, next) {
           if (!results.user || !results.user.roles) {
             return done();
           }
+
           done(null, Object.keys(results.user.roles));
         }]
       }, (err, results) => {

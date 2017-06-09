@@ -3,6 +3,8 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
+  const Session = server.plugins['hapi-mongo-models'].Session;
+
   server.route({
     method: 'GET',
     path: '/login',
@@ -24,6 +26,38 @@ internals.applyRoutes = function (server, next) {
       } else {
         return reply.view('login');
       }
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/logout',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const credentials = request.auth.credentials || { session: {} };
+      const session = credentials.session || {};
+
+      Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        request.cookieAuth.clear();
+
+        return reply.redirect('/');
+      });
     }
   });
 

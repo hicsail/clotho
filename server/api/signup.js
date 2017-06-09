@@ -155,7 +155,7 @@ internals.applyRoutes = function (server, next) {
         const credentials = results.session._id + ':' + results.session.key;
         const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
 
-        reply({
+        const result = {
           user: {
             _id: user._id,
             username: user.username,
@@ -164,7 +164,9 @@ internals.applyRoutes = function (server, next) {
           },
           session: results.session,
           authHeader
-        });
+        };
+        request.cookieAuth.set(result);
+        reply(result);
       });
     }
   });

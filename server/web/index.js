@@ -18,6 +18,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       var user = null;
       if(request.auth.isAuthenticated) {
         user = request.auth.credentials.user;

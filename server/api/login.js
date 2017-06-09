@@ -91,7 +91,7 @@ internals.applyRoutes = function (server, next) {
             if (err) {
               return reply(err);
             }
-
+            request.cookieAuth.set(session);
             return reply(session);
           });
         }
