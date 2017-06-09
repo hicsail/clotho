@@ -91,6 +91,42 @@ lab.experiment('Part Class Methods', () => {
     });
   });
 
+  lab.test('it returns an instance when findByBioDesign succeeds', (done) => {
+
+    Part.create(
+      'name',
+      'description',
+      'userId',
+      'displayId',
+      'bioDesignId',
+      'sequenceId',
+    (err, part) => {
+
+      Sequence.create(
+        'name',
+        'description',
+        'userId',
+        'displayId',
+        'featureId',
+        part._id.toString(),
+        'sequenceAsInATGAGATA',
+        true,
+        false,
+      (err, sequence) => {
+
+        Part.findByBioDesignId(
+          'bioDesignId',
+        (err, result) => {
+
+          Code.expect(err).to.not.exist();
+          Code.expect(result[0]).to.be.an.instanceOf(Part);
+
+          done();
+        });
+      });
+    });
+  });
+
   lab.test('it returns an error when findByBioDesign fails', (done) => {
 
     const realfindByBioDesignId = Part.findByBioDesignId;

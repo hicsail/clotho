@@ -44,7 +44,7 @@ class Sequence extends MongoModels {
 
   static findByPartId(partId, callback) {
 
-    const query = {'partId': partId};
+    const query = {partId: partId};
     this.find(query, (err, sequences) => {
 
       if (err) {
