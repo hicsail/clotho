@@ -5,12 +5,13 @@ const MongoModels = require('mongo-models');
 
 class Parameter extends MongoModels {
 
-  static create(bioDesignId, value, variable, callback) {
+  static create(userId, bioDesignId, value, variable, callback) {
 
     const document = {
+      userId: userId,
       bioDesignId: bioDesignId,
       value: value,
-      variable: variable
+      variable: variable,
     };
 
     this.insertOne(document, (err, docs) => {
@@ -32,7 +33,8 @@ Parameter.schema = Joi.object().keys({
   derivation: Joi.object(), // Not using Derivation model.
   unit: Joi.string().allow(['m', 'cm', 'inches', 'in', 'nm']), // These should be updated.
   value: Joi.number().required(),
-  variable: Joi.object().required() // This was originally a Variable object/a ShareableObjBase.
+  variable: Joi.object().required(), // This was originally a Variable object/a ShareableObjBase.
+  userId: Joi.string().required()
 });
 
 Parameter.indexes = [
