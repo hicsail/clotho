@@ -153,6 +153,9 @@ const manifest = {
     },
     {
       plugin: './server/web/signup/index'
+    },
+    {
+      plugin: './server/web/account/index'
     }
   ]
 };

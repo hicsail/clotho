@@ -165,7 +165,9 @@ internals.applyRoutes = function (server, next) {
           session: results.session,
           authHeader
         };
-        request.cookieAuth.set(result);
+        if(request.cookieAuth) {
+          request.cookieAuth.set(result);
+        }
         reply(result);
       });
     }
