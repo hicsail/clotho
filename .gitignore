@@ -4,3 +4,4 @@ test/artifacts/*
 .idea
 /nbproject/private/
 nbproject
+**/npm-debug.log
