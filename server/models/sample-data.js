@@ -4,15 +4,15 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class SampleData extends MongoModels {
-  static create(name, description, sampleId, instrument, responseVariables, userId, callback) {
+  static create(name, description, userId, sampleId, responseVariables, instrument, callback) {
 
     const document = {
       name: name,
       description: description,
+      userId: userId,
       sampleId: sampleId,
-      instrument: instrument,
       responseVariables: responseVariables,
-      userId: userId
+      instrument: instrument
     };
 
     this.insertOne(document, (err, docs) => {
@@ -32,11 +32,11 @@ SampleData.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  sampleId: Joi.string().required(),
-  instrument: Joi.object(),
-  responseVariables: Joi.array().items(Joi.object()),
   userId: Joi.string().required(),
-  parameterIds: Joi.array().items(Joi.string())
+  parameterIds: Joi.array().items(Joi.string()),
+  sampleId: Joi.string().required(),
+  responseVariables: Joi.array().items(Joi.object()),
+  instrument: Joi.object()
 });
 
 SampleData.indexes = [

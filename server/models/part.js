@@ -2,21 +2,19 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-// const Format = require('./format');
-// const Assembly = require('./assembly');
 const Sequence = require('./sequence');
 
 class Part extends MongoModels {
 
-  static create(name, description, sequence, userId, displayId, bioDesignId, callback) {
+  static create(name, description, userId, displayId, bioDesignId, sequenceId, callback) {
 
     const document = {
       name: name,
       description: description,
-      sequence: sequence,
       userId: userId,
       displayId: displayId,
-      bioDesignId: bioDesignId
+      bioDesignId: bioDesignId,
+      sequenceId: sequenceId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -28,7 +26,7 @@ class Part extends MongoModels {
     });
   }
 
-  static findByBioDesignId(userId, callback) {
+  static findByBioDesignId(BioDesignId, callback) {
 
     const query = {'BioDesignId': BioDesignId};
     this.find(query, (err, part) => {
@@ -111,10 +109,10 @@ Part.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  sequence: Sequence.schema,
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
-  bioDesignId: Joi.string()
+  bioDesignId: Joi.string(),
+  sequenceId: Joi.string()
 });
 
 Part.indexes = [

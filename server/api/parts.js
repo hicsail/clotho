@@ -115,12 +115,12 @@ internals.applyRoutes = function (server, next) {
           Sequence.create(
             request.payload.name,
             null, // no description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            null, // featureId null
             request.payload.sequence,
             null,
             null,
-            null, // featureId null
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
             done);
         },
         createAnnotation: ['createSequence', function (results, done) {
@@ -155,10 +155,10 @@ internals.applyRoutes = function (server, next) {
           Part.create(
             request.payload.name,
             null, // no description
-            sequenceId,
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
             bioDesignId,
+            sequenceId,
             done);
         }],
         createModule: ['createFeature', function (results, done) {

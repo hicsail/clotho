@@ -4,13 +4,13 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class Sample extends MongoModels {
-  static create(name, description, containerId, userId, callback) {
+  static create(name, description, userId, containerId, callback) {
 
     const document = {
       name: name,
       description: description,
-      containerId: containerId,
-      userId: userId
+      userId: userId,
+      containerId: containerId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -30,10 +30,10 @@ Sample.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
-  containerId: Joi.string().required(),
   userId: Joi.string().required(),
   bioDesignId: Joi.string(),
   parameterIds: Joi.array().items(Joi.string()),
+  containerId: Joi.string().required(),
   parentSampleIds: Joi.array().items(Joi.string())
 });
 

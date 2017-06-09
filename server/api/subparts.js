@@ -8,8 +8,6 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
   const Part = server.plugins['hapi-mongo-models'].Part;
-  const Format = server.plugins['hapi-mongo-models'].Format;
-  const Sequence = server.plugins['hapi-mongo-models'].Sequence;
 
   server.route({
     method: 'GET',
@@ -81,13 +79,10 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string(),
-          format: Format.schema,
-          assemblyIds: Joi.array().items(Joi.string()), /*Joi.array().items(Assembly.schema),*/
-          sequence: Sequence.schema,
-          isForwardOrientation: Joi.boolean(),
-          parentPartId: Joi.string(),
+          userId: Joi.string().required(),
           displayId: Joi.string().optional(),
-          bioDesignId: Joi.string().optional()
+          bioDesignId: Joi.string(),
+          sequenceId: Joi.string()
         }
       }
     },
@@ -97,10 +92,10 @@ internals.applyRoutes = function (server, next) {
       Part.create(
         request.payload.name,
         request.payload.description,
-        request.payload.sequence,
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
         request.payload.bioDesignId,
+        request.payload.sequenceId,
         (err, part) => {
 
           if (err) {

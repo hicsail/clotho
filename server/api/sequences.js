@@ -93,12 +93,12 @@ internals.applyRoutes = function (server, next) {
       Sequence.create(
         request.payload.name,
         request.payload.description,
+        request.auth.credentials.user._id.toString(),
+        request.payload.displayId,
+        null, //feature id, should be parent if creating new one
         request.payload.sequence,
         request.payload.isLinear,
         request.payload.isSingleStranded,
-        null, //feature id, should be parent if creating new one
-        request.auth.credentials.user._id.toString(),
-        request.payload.displayId,
         (err, sequence) => {
 
           if (err) {

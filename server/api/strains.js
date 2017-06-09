@@ -87,8 +87,8 @@ internals.applyRoutes = function (server, next) {
 
       Strain.create(
         request.payload.name,
-        request.auth.credentials.user._id.toString(),
         request.payload.description,
+        request.auth.credentials.user._id.toString(),
         (err, strain) => {
 
           if (err) {

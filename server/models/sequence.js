@@ -6,17 +6,17 @@ const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 
-  static create(name, description, sequence, isLinear, isSingleStranded, featureId, userId, displayId, callback) {
+  static create(name, description, userId, displayId, featureId, sequence, isLinear, isSingleStranded, callback) {
 
     const document = {
       name: name,
       description: description,
+      userId: userId,
+      displayId: displayId,
+      featureId: featureId,
       sequence: sequence,
       isLinear: isLinear,
-      isSingleStranded: isSingleStranded,
-      featureId: featureId,
-      userId: userId,
-      displayId: displayId
+      isSingleStranded: isSingleStranded
     };
 
     this.insertOne(document, (err, docs) => {
@@ -106,12 +106,12 @@ Sequence.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string().optional(),
-  sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),
   isSingleStranded: Joi.boolean().optional(),
+  sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
   submissionDate: Joi.date() // also ignores parentPolynucleotideId
 });
 
