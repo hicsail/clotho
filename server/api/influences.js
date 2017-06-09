@@ -79,11 +79,9 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          influencingFeature: Joi.string().required(),
+          type: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
           influencedFeature: Joi.string().required(),
-          type: Joi.string().required(), // maybe use Joi.object.type()?
-
-
+          influencingFeature: Joi.string().required()
         }
       }
     },
@@ -93,10 +91,10 @@ internals.applyRoutes = function (server, next) {
       Influence.create(
         request.payload.name,
         request.payload.description,
-        request.payload.influencingFeature,
-        request.payload.influencedFeature,
-        request.payload.type,
         request.auth.credentials.user._id.toString(),
+        request.payload.type,
+        request.payload.influencedFeature,
+        request.payload.influencingFeature,
         (err, influence) => {
 
           if (err) {

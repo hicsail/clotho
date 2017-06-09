@@ -5,17 +5,17 @@ const MongoModels = require('mongo-models');
 
 class Module extends MongoModels {
 
-  static create(name, description, role, featureIds, submoduleIds, userId, displayId, bioDesignId, callback) {
+  static create(name, description, userId, displayId, bioDesignId, role, featureIds, submoduleIds, callback) {
 
     const document = {
       name: name,
       description: description,
-      role: role,
-      featureIds: featureIds,
-      submoduleIds: submoduleIds,
       userId: userId,
       displayId: displayId,
-      bioDesignId: bioDesignId
+      bioDesignId: bioDesignId,
+      role: role,
+      featureIds: featureIds,
+      submoduleIds: submoduleIds
     };
 
     this.insertOne(document, (err, docs) => {
@@ -37,21 +37,20 @@ class Module extends MongoModels {
 // }
 
 
-
 Module.collection = 'modules';
 
 Module.schema = Joi.object().keys({
   _id: Joi.object(),
-  role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
+  displayId: Joi.string().optional(),
+  bioDesignId: Joi.string(),
+  role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+  featureIds: Joi.array().items(Joi.string()),
   influenceIds: Joi.array().items(Joi.string()), // Should this be an array of schemas instead?
   parentModuleId: Joi.string(),
-  submoduleIds: Joi.array().items(Joi.string()),
-  featureIds: Joi.array().items(Joi.string()),
-  displayId: Joi.string().optional(),
-  bioDesignId: Joi.string()
+  submoduleIds: Joi.array().items(Joi.string())
 });
 
 Module.indexes = [

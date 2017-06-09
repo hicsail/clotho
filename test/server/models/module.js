@@ -35,12 +35,12 @@ lab.experiment('Module Class Methods', () => {
     Module.create(
       'module',
       'module description',
-      'TRANSCRIPTION',
-      'features',
-      'submodule',
       'userid12test',
       'displayId',
       'bioDesignId',
+      'TRANSCRIPTION',
+      'features',
+      'submodule',
       (err, result) => {
 
         Code.expect(err).to.not.exist();
@@ -64,12 +64,12 @@ lab.experiment('Module Class Methods', () => {
     Module.create(
       'module',
       'module description',
-      'TRANSCRIPTION',
-      'features',
-      'submodule',
       'userid12test',
       'displayId',
       'bioDesignId',
+      'TRANSCRIPTION',
+      'features',
+      'submodule',
       (err, result) => {
 
         Code.expect(err).to.be.an.object();

@@ -90,10 +90,10 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
-          sequence: Joi.string().optional(),
+          displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          displayId: Joi.string().optional()
+          parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
+          sequence: Joi.string().optional()
         }
       }
     },
@@ -169,12 +169,12 @@ internals.applyRoutes = function (server, next) {
           Module.create(
             request.payload.name,
             null, // description
-            request.payload.role,
-            featureIds,
-            null, // no submoduleIds
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
             bioDesignId,
+            request.payload.role,
+            featureIds,
+            null, // no submoduleIds
             done);
         }],
         createParameters: ['createBioDesign', function (results, done) {
@@ -184,11 +184,10 @@ internals.applyRoutes = function (server, next) {
 
           for (var i = 0; i < param.length; ++i) {
 
-            Parameter.create(param[i]['value'], param[i]['variable'], bioDesignId, done);
+            Parameter.create(bioDesignId, param[i]['value'], param[i]['variable'], done);
 
           }
 
-          done();
         }]
       }, (err, results) => {
 

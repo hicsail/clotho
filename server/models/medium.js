@@ -27,10 +27,10 @@ Medium.collection = 'media';
 
 Medium.schema = Joi.object().keys({
   _id: Joi.object(),
-  parentMediumId: Joi.string(),
   name: Joi.string().required(),
   userId: Joi.string().required(),
-  description: Joi.string()
+  description: Joi.string(),
+  parentMediumId: Joi.string()
 });
 
 Medium.indexes = [
