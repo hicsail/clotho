@@ -40,7 +40,9 @@ ExperimentDesign.schema = Joi.object().keys({
   subDesignIds: Joi.array().items(Joi.string())
 });
 
-ExperimentDesign.indexes = [];
+ExperimentDesign.indexes = [
+  {key: {userId: 1}}
+];
 
 module.exports = ExperimentDesign;
 
