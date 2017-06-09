@@ -110,7 +110,7 @@ lab.experiment('Sequence Class Methods', () => {
         TestAnnotations[testCase].name,
         TestAnnotations[testCase].description,
         'userid12test',
-        sequence._id,
+        sequence._id.toString(),
         TestAnnotations[testCase].start,
         TestAnnotations[testCase].end,
         TestAnnotations[testCase].isForwardStrand,
@@ -150,214 +150,47 @@ lab.experiment('Sequence Class Methods', () => {
     });
   });
 
-  /* test should be converted to api tests
-   lab.test('it returns an error when create fails', (done) => {
+  lab.test('it returns an error when finding sequence by userId fails', (done) => {
 
-   const realInsertOne = Sequence.insertOne;
-   Sequence.insertOne = function () {
+    const realFind = Sequence.find;
+    Sequence.find = function () {
 
-   const args = Array.prototype.slice.call(arguments);
-   const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-   callback(Error('insert failed'));
-   };
+      callback(Error('find by userid failed'));
+    };
 
-   let testCase = 0;
+    Sequence.findByUserId('userid12test', (err, result) => {
 
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   null,
-   (err, result) => {
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-   Code.expect(err).to.be.an.object();
-   Code.expect(result).to.not.exist();
+      Sequence.find = realFind;
 
-   Sequence.insertOne = realInsertOne;
+      done();
+    });
+  });
 
-   done();
-   });
-   });
+  lab.test('it returns an error when finding sequence by userId fails', (done) => {
 
-   lab.test('it returns a new instance when create succeeds with a sequence of uppercase letters', (done) => {
+    const findBySequenceId = Annotation.findBySequenceId;
+    Annotation.findBySequenceId = function () {
 
-   let testCase = 0;
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
+      callback(Error('find by userid failed'));
+    };
 
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
+    Sequence.findByUserId('userid12test', (err, result) => {
 
-   done();
-   });
-   });
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-   lab.test('it returns a new instance when create succeeds with a sequence of lowercase letters', (done) => {
+      Annotation.findBySequenceId = findBySequenceId;
 
-   let testCase = 1;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns a new instance when create succeeds with a sequence of mixed case letters', (done) => {
-
-   let testCase = 2;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns an error when create fails with a sequence of incorrect lowercase case letters', (done) => {
-
-   let testCase = 3;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns an error when create fails with a sequence of incorrect uppercase case letters', (done) => {
-
-   let testCase = 4;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns an error when create fails with a sequence of incorrect mixed case letters', (done) => {
-
-   let testCase = 5;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns a new instance when create succeeds with a large sequence', (done) => {
-
-   let testCase = 6;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns a new instance when create succeeds with all allowed uppercase squence characters', (done) => {
-
-   let testCase = 7;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns a new instance when create succeeds with all allowed lowercase squence characters', (done) => {
-
-   let testCase = 8;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-
-   lab.test('it returns a new instance when create succeeds with all allowed mixed case squence characters', (done) => {
-
-   let testCase = 9;
-
-   Sequence.create(
-   TestSequences[testCase].name,
-   TestSequences[testCase].description,
-   TestSequences[testCase].sequence,
-   TestSequences[testCase].userId,
-   (err, result) => {
-
-   Code.expect(err).to.not.exist();
-   Code.expect(result).to.be.an.instanceOf(Sequence);
-
-   done();
-   });
-   });
-   */
+      done();
+    });
+  });
 });

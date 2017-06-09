@@ -47,10 +47,10 @@ class Sequence extends MongoModels {
       return callback(null, sequences);
     }
 
-    Annotation.findBySequenceId(sequences[index]['_id'], (err,annotations) =>{
+    Annotation.findBySequenceId(sequences[index]['_id'].toString(), (err,annotations) =>{
 
       if(err) {
-        callback(err,null);
+        return callback(err,null);
       }
 
       if(annotations.length != 0) {
