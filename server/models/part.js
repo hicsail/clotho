@@ -26,37 +26,37 @@ class Part extends MongoModels {
     });
   }
 
-  static findByBioDesignId(BioDesignId, callback) {
+  static findByBioDesignId(bioDesignId, callback) {
 
-    const query = {'BioDesignId': BioDesignId};
-    this.find(query, (err, part) => {
+    const query = { bioDesignId: bioDesignId};
+    this.find(query, (err, parts) => {
 
       if (err) {
         return callback(err);
       }
 
-      this.getSequence(0, sequences, callback);
+      this.getSequence(0, parts, callback);
     });
   }
 
   //most likely one sequence only, may have to review this function
-  static getSequence(index, part, callback) {
+  static getSequence(index, parts, callback) {
 
-    if (index == part.length) {
-      return callback(null, sequences);
+    if (index == parts.length) {
+      return callback(null, parts);
     }
 
-    Sequence.findByPartId(sequences[index]['_id'], (err, sequences) => {
+    Sequence.findByPartId(parts[index]['_id'].toString(), (err, sequences) => {
 
       if (err) {
-        callback(err, null);
+        return callback(err, null);
       }
 
       if (sequences.length != 0) {
-        part[index].sequences = sequences;
+        parts[index].sequences = sequences;
       }
 
-      return this.getSequence(index + 1, part, callback);
+      return this.getSequence(index + 1, parts, callback);
     });
   }
 
