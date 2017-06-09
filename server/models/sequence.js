@@ -6,7 +6,7 @@ const Annotation = require('./annotation');
 
 class Sequence extends MongoModels {
 
-  static create(name, description, userId, displayId, featureId, sequence, isLinear, isSingleStranded, callback) {
+  static create(name, description, userId, displayId, featureId, partId, sequence, isLinear, isSingleStranded, callback) {
 
     const document = {
       name: name,
@@ -14,6 +14,7 @@ class Sequence extends MongoModels {
       userId: userId,
       displayId: displayId,
       featureId: featureId,
+      partId: partId,
       sequence: sequence,
       isLinear: isLinear,
       isSingleStranded: isSingleStranded
@@ -31,6 +32,19 @@ class Sequence extends MongoModels {
   static findByUserId(userId, callback) {
 
     const query = {'userId': userId};
+    this.find(query, (err, sequences) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      this.getAnnotations(0,sequences,callback);
+    });
+  }
+
+  static findByPartId(partId, callback) {
+
+    const query = {partId: partId};
     this.find(query, (err, sequences) => {
 
       if (err) {
@@ -108,6 +122,7 @@ Sequence.schema = Joi.object().keys({
   description: Joi.string().optional(),
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
+  partId: Joi.string().optional(),
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),
   isSingleStranded: Joi.boolean().optional(),

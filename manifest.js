@@ -59,11 +59,18 @@ const manifest = {
             Assembly: './server/models/assembly',
             AuthAttempt: './server/models/auth-attempt',
             BioDesign: './server/models/bio-design',
+            Container: './server/models/container',
+            ExperimentDesign: './server/models/experiment-design',
+            Experiment: './server/models/experiment',
             Feature: './server/models/feature',
-            Module: './server/models/module',
+            Format: './server/models/format',
+            Influence: './server/models/influence',
             Medium: './server/models/medium',
-            Part: './server/models/part',
+            Module: './server/models/module',
             Parameter: './server/models/parameter',
+            Part: './server/models/part',
+            SampleData: './server/models/sample-data',
+            Sample: './server/models/sample',
             Sequence: './server/models/sequence',
             Session: './server/models/session',
             User: './server/models/user'
@@ -97,10 +104,28 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/annotations',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/assemblies',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/auth-attempts',
       options: {
         routes: {prefix: '/api'}
       }
+    },
+    {
+      plugin: './server/api/bio-designs',
+        options: {
+          routes: {prefix: '/api'}
+        }
     },
     {
       plugin: './server/api/contact',
@@ -109,7 +134,31 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/device',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/features',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/formulas',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/index',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/influences',
       options: {
         routes: {prefix: '/api'}
       }
@@ -127,19 +176,7 @@ const manifest = {
       }
     },
     {
-      plugin: './server/api/sessions',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
-      plugin: './server/api/sequences',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
-      plugin: './server/api/annotations',
+      plugin: './server/api/media',
       options: {
         routes: {prefix: '/api'}
       }
@@ -151,41 +188,11 @@ const manifest = {
       }
     },
     {
-      plugin: './server/api/features',
+      plugin: './server/api/parameters',
       options: {
         routes: {prefix: '/api'}
       }
     },
-    // {
-    //   plugin: './server/api/influences',
-    //   options: {
-    //     routes: {prefix: '/api'}
-    //   }
-    // },
-    // {
-    //   plugin: './server/api/bio-designs',
-    //   options: {
-    //     routes: {prefix: '/api'}
-    //   }
-    // },
-    {
-      plugin: './server/api/media',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
-      plugin: './server/api/assemblies',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    // {
-    //   plugin: './server/api/subparts',
-    //   options: {
-    //     routes: {prefix: '/api'}
-    //   }
-    // },
     {
       plugin: './server/api/parts',
       options: {
@@ -193,7 +200,31 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/sequences',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/sessions',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/signup',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/strains',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/subparts',
       options: {
         routes: {prefix: '/api'}
       }
