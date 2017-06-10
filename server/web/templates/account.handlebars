@@ -8,14 +8,14 @@
             <aside class="menu">
                 <p class="menu-label">Change Account Settings</p>
                 <ul class="menu-list">
-                    <li><a>Change Name</a></li>
-                    <li><a>Change Username</a></li>
-                    <li><a>Change Email</a></li>
-                    <li><a>Change Password</a></li>
+                    <li id="changeName"><a>Change Name</a></li>
+                    <li id="changeUsername"><a>Change Username</a></li>
+                    <li id="changeEmail"><a>Change Email</a></li>
+                    <li id="changePassword"><a>Change Password</a></li>
                 </ul>
             </aside>
         </div>
-        <div class="field" id="Name" style="overflow: hidden; display: ">
+        <div class="field" id="Name" style="overflow: hidden; display: none">
             <form id="changeName">
 
                 <label class="label" id="oldNameLabel"><b>Old Name</b></label>
@@ -45,7 +45,7 @@
                 <input class="button is-primary" id="submit" type="submit" value="Submit">
             </form>
         </div>
-        <div class="field" id="Username" style="overflow: hidden; display: ">
+        <div class="field" id="Username" style="overflow: hidden; display: none">
             <form id="changeUsername">
                 <label class="label" id="oldUsernameLabel"><b>Old Username</b></label>
                 <p class="control has-icons-right has-icons-left">
@@ -74,7 +74,7 @@
                 <input class="button is-primary" id="submit", type="submit" value="Submit">
             </form>
         </div>
-        <div class="field" id="Email" style="overflow:hidden; display: ">
+        <div class="field" id="Email" style="overflow:hidden; display: none">
             <form id="changeEmail">
                 <label class="label" id="oldEmailLabel"><b>Old Email</b></label>
                 <p class="control has-icons-right has-icons-left">
@@ -103,7 +103,7 @@
                 <input class="button is-primary" id="submit", type="submit" value="Submit">
             </form>
         </div>
-        <div class="field" id="Password" style="overflow: hidden; display: ">
+        <div class="field" id="Password" style="overflow: hidden; display: none">
             <form id="changePassword">
                 <label class="label" id="oldPasswordLabel"><b>Old Password</b></label>
                 <p class="control has-icons-right has-icons-left">
@@ -144,5 +144,48 @@
                 <input class="button is-primary" id="submit", type="submit" value="Submit">
             </form>
         </div>
+        <div id="title" style="overflow: hidden; display: ; margin-left: 25%; margin-top: -30px">
+            <h1 class="title">Settings</h1>
+        </div>
+        <script>
+            var nameDoc = document.getElementById('Name');
+            var usernameDoc = document.getElementById('Username');
+            var emailDoc = document.getElementById('Email');
+            var passwordDoc = document.getElementById('Password');
+            var title = document.getElementById('title');
+            var docs = [nameDoc, usernameDoc, emailDoc, passwordDoc, title];
+
+            $('#changeName').click(function (e) {
+                e.preventDefault();
+                hideAllDivs();
+                nameDoc.style.display = '';
+
+            });
+
+            $('#changeUsername').click(function (e) {
+                e.preventDefault();
+                hideAllDivs();
+                usernameDoc.style.display = '';
+            });
+
+            $('#changeEmail').click(function (e) {
+                e.preventDefault()
+                hideAllDivs();
+                emailDoc.style.display = '';
+            });
+
+            $('#changePassword').click(function (e) {
+                e.preventDefault();
+                hideAllDivs();
+                passwordDoc.style.display = '';
+            });
+
+            function hideAllDivs() {
+                for (var i = 0; i < docs.length; i++) {
+                    docs[i].style.display = 'none';
+                }
+            }
+
+        </script>
     </div>
 </section>
