@@ -24,7 +24,7 @@
 
                     // If the user exists, redirect to home page, if not show an alert
                     $.post('/api/login', values, function (data) {
-                      window.location.replace('/');
+                      location.reload();
                     }).fail(function (data) {
                         var message = data.responseJSON.message;
                         alert(message);

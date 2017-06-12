@@ -21,8 +21,12 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      if(request.auth.isAuthenticated) {
-        return reply.redirect('/');
+      if (request.auth.isAuthenticated) {
+        if(request.query.returnUrl) {
+          return reply.redirect(request.query.returnUrl);
+        } else {
+          return reply.redirect('/');
+        }
       } else {
         return reply.view('login');
       }
