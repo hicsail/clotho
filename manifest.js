@@ -63,7 +63,6 @@ const manifest = {
             ExperimentDesign: './server/models/experiment-design',
             Experiment: './server/models/experiment',
             Feature: './server/models/feature',
-            Format: './server/models/format',
             Influence: './server/models/influence',
             Medium: './server/models/medium',
             Module: './server/models/module',
