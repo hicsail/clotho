@@ -122,9 +122,9 @@ const manifest = {
     },
     {
       plugin: './server/api/bio-designs',
-        options: {
-          routes: {prefix: '/api'}
-        }
+      options: {
+        routes: {prefix: '/api'}
+      }
     },
     {
       plugin: './server/api/contact',
@@ -140,12 +140,6 @@ const manifest = {
     },
     {
       plugin: './server/api/features',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
-      plugin: './server/api/formulas',
       options: {
         routes: {prefix: '/api'}
       }
