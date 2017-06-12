@@ -4,188 +4,92 @@
         <div class="container">
             <h1 class="title">Account</h1>
         </div>
-        <div class="container" id="menu" style="width: 165px; float: left; overflow: hidden; margin-left: 10%">
+        <div class="container" id="menu" style="width: auto; float: left; overflow: hidden; margin-left: 10%">
             <aside class="menu">
                 <p class="menu-label">Change Account Settings</p>
                 <ul class="menu-list">
-                    <li id="changeName"><a>Change Name</a></li>
-                    <li id="changeUsername"><a>Change Username</a></li>
-                    <li id="changeEmail"><a>Change Email</a></li>
+                    <li id="changeUserAccountInfo"><a>Change Account Information</a></li>
                     <li id="changePassword"><a>Change Password</a></li>
                 </ul>
             </aside>
         </div>
-        <div class="field" id="Name" style="overflow: hidden; display: none">
-            <form id="changeName">
+        <div class="field" id="userAccountInfo" style="overflow: hidden; display: ">
+            <form id="changeAccountInfoForm">
+                <h1 class="title">Change User Account Information</h1>
 
-                <label class="label" id="oldNameLabel"><b>Old Name</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="oldName" type="text" placeholder="Old Name" name="oldName">
+                <label class="label" id="nameLabel"><b>Name</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="name" type="text" name="name" value="{{user.name}}">
                     <span class="icon is-small is-left">
                         <i class="fa fa-user-circle"></i>
                     </span>
-                    <span class="icon is-small is-right" id="oldNameCheck" style="display: none">
-                        <i class="fa fa-check" id="oldNameRightIcon"></i>
-                    </span>
                 </p>
-                <p class="help" id="oldNameStatus"></p>
 
-                <label class="label" id="newNameLabel"><b>New Name</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="newName" type="text" placeholder="New Name" name="newName">
+                <label class="label" id="usernameLabel"><b>Username</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="username" type="text" name="username" value="{{user.username}}">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-user-circle"></i>
-                    </span>
-                    <span class="icon is-small is-right" id="newNameCheck" style="display: none">
-                        <i class="fa fa-check" id="newNameRightIcon"></i>
+                        <i class="fa fa-user"></i>
                     </span>
                 </p>
-                <p class="help" id="newNameStatus"></p>
+
+                <label class="label" id="emailLabel"><b>Email</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="email" type="text" name="email" value="{{user.email}}">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                </p>
 
                 <input class="button is-primary" id="submit" type="submit" value="Submit">
             </form>
         </div>
-        <div class="field" id="Username" style="overflow: hidden; display: none">
-            <form id="changeUsername">
-                <label class="label" id="oldUsernameLabel"><b>Old Username</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="oldUsername" type="text" placeholder="Old Username" name="oldUsername">
-                    <span class="icon is-small is-left">
-                            <i class="fa fa-user"></i>
-                        </span>
-                    <span class="icon is-small is-right" id="oldUsernameCheck" style="display: none">
-                            <i class="fa fa-check" id="oldUsernameRightIcon"></i>
-                        </span>
-                </p>
-                <p class="help" id="oldUsernameStatus"></p>
 
-                <label class="label" id="newUsernameLabel"><b>New Username</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="newUsername" type="text" placeholder="New Username" name="newUsername">
-                    <span class="icon is-small is-left">
-                            <i class="fa fa-user"></i>
-                        </span>
-                    <span class="icon is-small is-right" id="newUsernameCheck" style="display: none">
-                            <i class="fa fa-check" id="newUsernameRightIcon"></i>
-                        </span>
-                </p>
-                <p class="help" id="newUsernameStatus"></p>
+        <div class="field" id="password" style="overflow: hidden; display: ">
+            <form id="changePasswordForm">
+                <h1 class="title">Change Password</h1>
 
-                <input class="button is-primary" id="submit", type="submit" value="Submit">
+                <label class="label" id="passwordLabel"><b>New Password</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="password" type="password" name="password">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                </p>
+
+                <label class="label" id="retypePasswordLabel"><b>Retype New Password</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="retypePassword" type="password" name="retypePassword">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                </p>
+
+                <input class="button is-primary" id="submit" type="submit" value="Submit">
             </form>
-        </div>
-        <div class="field" id="Email" style="overflow:hidden; display: none">
-            <form id="changeEmail">
-                <label class="label" id="oldEmailLabel"><b>Old Email</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="oldEmail" type="text" placeholder="Old Email" name="oldEmail">
-                    <span class="icon is-small is-left">
-                                <i class="fa fa-envelope"></i>
-                            </span>
-                    <span class="icon is-small is-right" id="oldEmailCheck" style="display: none">
-                                <i class="fa fa-check" id="oldEmailIcon"></i>
-                            </span>
-                </p>
-                <p class="help" id="oldEmailStatus"></p>
-
-                <label class="label" id="newoldEmailLabel"><b>New Email</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="newEmail" type="text" placeholder="new Email" name="newEmail">
-                    <span class="icon is-small is-left">
-                                <i class="fa fa-envelope"></i>
-                            </span>
-                    <span class="icon is-small is-right" id="newEmailCheck" style="display: none">
-                                <i class="fa fa-check" id="newEmailIcon"></i>
-                            </span>
-                </p>
-                <p class="help" id="newEmailStatus"></p>
-
-                <input class="button is-primary" id="submit", type="submit" value="Submit">
-            </form>
-        </div>
-        <div class="field" id="Password" style="overflow: hidden; display: none">
-            <form id="changePassword">
-                <label class="label" id="oldPasswordLabel"><b>Old Password</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="oldPassword" type="text" placeholder="Old Password" name="oldPassword">
-                    <span class="icon is-small is-left">
-                            <i class="fa fa-lock"></i>
-                        </span>
-                    <span class="icon is-small is-right" id="oldPasswordCheck" style="display: none">
-                            <i class="fa fa-check" id="oldPasswordRightIcon"></i>
-                        </span>
-                </p>
-                <p class="help" id="oldPasswordStatus"></p>
-
-                <label class="label" id="newPasswordLabel"><b>New Password</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="newPassword" type="text" placeholder="New Password" name="newPassword">
-                    <span class="icon is-small is-left">
-                            <i class="fa fa-lock"></i>
-                        </span>
-                    <span class="icon is-small is-right" id="newPasswordCheck" style="display: none">
-                            <i class="fa fa-check" id="newPasswordIcon"></i>
-                        </span>
-                </p>
-                <p class="help" id="newPasswordStatus"></p>
-
-                <label class="label" id="retypePasswordLabel"><b>Retype Password</b></label>
-                <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="retypePassword" type="text" placeholder="Retype Password" name="retypePassword">
-                    <span class="icon is-small is-left">
-                            <i class="fa fa-lock"></i>
-                        </span>
-                    <span class="icon is-small is-right" id="retypePasswordCheck" style="display: none">
-                            <i class="fa fa-check" id="retypePasswordIcon"></i>
-                        </span>
-                </p>
-                <p class="help" id="retypePasswordStatus"></p>
-
-                <input class="button is-primary" id="submit", type="submit" value="Submit">
-            </form>
-        </div>
-        <div id="title" style="overflow: hidden; display: ; margin-left: 25%; margin-top: -30px">
-            <h1 class="title">Settings</h1>
         </div>
         <script>
-            var nameDoc = document.getElementById('Name');
-            var usernameDoc = document.getElementById('Username');
-            var emailDoc = document.getElementById('Email');
-            var passwordDoc = document.getElementById('Password');
-            var title = document.getElementById('title');
-            var docs = [nameDoc, usernameDoc, emailDoc, passwordDoc, title];
+            var accountInfoForm = document.getElementById('changeAccountInfoForm');
+            var passwordForm = document.getElementById('changePasswordForm');
+            var forms = [accountInfoForm, passwordForm];
+            hideForms();
 
-            $('#changeName').click(function (e) {
+            $('#changeUserAccountInfo').click(function (e) {
                 e.preventDefault();
-                hideAllDivs();
-                nameDoc.style.display = '';
-
+                hideForms();
+                accountInfoForm.style.display = '';
             });
-
-            $('#changeUsername').click(function (e) {
-                e.preventDefault();
-                hideAllDivs();
-                usernameDoc.style.display = '';
-            });
-
-            $('#changeEmail').click(function (e) {
-                e.preventDefault()
-                hideAllDivs();
-                emailDoc.style.display = '';
-            });
-
             $('#changePassword').click(function (e) {
                 e.preventDefault();
-                hideAllDivs();
-                passwordDoc.style.display = '';
+                hideForms();
+                passwordForm.style.display = '';
             });
 
-            function hideAllDivs() {
-                for (var i = 0; i < docs.length; i++) {
-                    docs[i].style.display = 'none';
+            function hideForms() {
+                for (var i = 0; i < forms.length; i++) {
+                  forms[i].style.display = 'none'
                 }
             }
-
         </script>
     </div>
 </section>
