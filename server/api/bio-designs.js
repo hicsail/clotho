@@ -78,8 +78,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          description: Joi.string().required(),
-          userId: Joi.string().required(),
+          description: Joi.string().optional(),
           displayId: Joi.string().optional()
         }
       }
@@ -90,7 +89,7 @@ internals.applyRoutes = function (server, next) {
       BioDesign.create(
         request.payload.name,
         request.payload.description,
-        request.payload.userId,
+        request.auth.credentials.user._id.toString(),
         request.payload.displayId,
         (err, bioDesign) => {
 

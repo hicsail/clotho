@@ -247,7 +247,7 @@ lab.experiment('BioDesign Plugin Delete', () => {
     });
   });
 });
-/*
+
 lab.experiment('BioDesign Plugin Create', () => {
 
   lab.beforeEach((done) => {
@@ -256,11 +256,7 @@ lab.experiment('BioDesign Plugin Create', () => {
       method: 'POST',
       url: '/bio-design',
       payload: {
-        sequenceId: 'seq1',
-        name: 'sequence1',
-        start: 1,
-        end: 2,
-        isForwardStrand: true
+        name: 'bio-design1',
       },
       credentials: AuthenticatedUser
     };
@@ -275,7 +271,7 @@ lab.experiment('BioDesign Plugin Create', () => {
       callback();
     };
 
-    stub.BioDesign.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+    stub.BioDesign.create = function (name, description, userId, displayId, callback) {
 
       callback(Error('create failed'));
     };
@@ -295,7 +291,7 @@ lab.experiment('BioDesign Plugin Create', () => {
       callback();
     };
 
-    stub.BioDesign.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.BioDesign.create = function (name, description, userId, displayId, callback) {
 
       callback(null, {});
     };
@@ -309,4 +305,3 @@ lab.experiment('BioDesign Plugin Create', () => {
     });
   });
 });
-*/
