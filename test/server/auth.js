@@ -239,7 +239,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategy: 'simple',
+          strategies: ['simple','session'],
           scope: 'admin'
         }
       },
@@ -305,7 +305,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategy: 'simple',
+          strategies: ['simple','session'],
           scope: ['account', 'admin']
         }
       },
@@ -371,7 +371,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategy: 'simple',
+          strategies: ['simple','session'],
           scope: 'admin'
         },
         pre: [
@@ -443,7 +443,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategy: 'simple',
+          strategies: ['simple','session'],
           scope: 'admin'
         },
         pre: [
@@ -512,7 +512,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategy: 'simple',
+          strategies: ['simple','session'],
           scope: 'admin'
         },
         pre: [
@@ -581,7 +581,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategy: 'simple',
+          strategies: ['simple','session'],
           scope: 'admin'
         },
         pre: [
