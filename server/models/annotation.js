@@ -46,10 +46,10 @@ class Annotation extends MongoModels {
       return callback(null, annotations);
     }
 
-    Feature.findByAnnotationId(annotations[index]['_id'], (err,features) => {
+    Feature.findByAnnotationId(annotations[index]['_id'].toString(), (err,features) => {
 
       if(err) {
-        callback(err,null);
+        return callback(err,null);
       }
 
       if(features.length != 0) {

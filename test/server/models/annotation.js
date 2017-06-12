@@ -1,5 +1,6 @@
 'use strict';
 const Annotation = require('../../../server/models/annotation');
+const Feature = require('../../../server/models/feature');
 const Code = require('code');
 const Config = require('../../../config');
 const Lab = require('lab');
@@ -42,13 +43,23 @@ lab.experiment('Annotation Class Methods', () => {
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
       TestAnnotations[testCase].isForwardStrand,
-      (err, result) => {
+    (err, result) => {
+
+      Feature.create(
+        TestAnnotations[testCase].name,
+        TestAnnotations[testCase].description,
+        'userid12test',
+        'displayId',
+        'BARCODE',
+        result._id.toString(),
+      (err, feature) => {
 
         Code.expect(err).to.not.exist();
         Code.expect(result).to.be.an.instanceOf(Annotation);
 
         done();
       });
+    });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -72,23 +83,91 @@ lab.experiment('Annotation Class Methods', () => {
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
       TestAnnotations[testCase].isForwardStrand,
-      (err, result) => {
+    (err, result) => {
 
-        Code.expect(err).to.be.an.object();
-        Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-        Annotation.insertOne = realInsertOne;
+      Annotation.insertOne = realInsertOne;
 
-        done();
-      });
+      done();
+    });
   });
 
-  lab.test('it returns a result when finding by sequenceId', (done) => {
+  lab.test('it returns a result when finding by sequenceId succeeds', (done) => {
 
     Annotation.findBySequenceId('sequenceId', (err, results) => {
 
       Code.expect(err).to.not.exist();
       Code.expect(results[0]).to.be.an.instanceOf(Annotation);
+
+      done();
+    });
+  });
+
+  lab.test('it returns a result when finding by sequenceId succeeds', (done) => {
+
+    let testCase = 0;
+
+    Annotation.create(
+      TestAnnotations[testCase].name,
+      TestAnnotations[testCase].description,
+      'userid12test',
+      'sequenceId2',
+      TestAnnotations[testCase].start,
+      TestAnnotations[testCase].end,
+      TestAnnotations[testCase].isForwardStrand,
+    (err, result) => {
+
+      Annotation.findBySequenceId('sequenceId2', (err, results) => {
+
+        Code.expect(err).to.not.exist();
+        Code.expect(results[0]).to.be.an.instanceOf(Annotation);
+
+        done();
+      });
+    });
+  });
+
+  lab.test('it returns an error when finding by sequenceId fails', (done) => {
+
+    const realFind = Annotation.find;
+    Annotation.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    Annotation.findBySequenceId('sequenceId', (err, results) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(results).to.not.exist();
+
+      Annotation.find = realFind;
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when finding by getFeatures fails', (done) => {
+
+    const realFind = Feature.findByAnnotationId;
+    Feature.findByAnnotationId = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    Annotation.findBySequenceId('sequenceId', (err, results) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(results).to.not.exist();
+
+      Feature.findByAnnotationId = realFind;
 
       done();
     });
