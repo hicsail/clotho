@@ -106,7 +106,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const id = request.auth.credentials.user._id.toString();
-      const fields = User.fieldsAdapter('username email roles');
+      const fields = User.fieldsAdapter('username name email roles');
 
       User.findById(id, fields, (err, user) => {
 
@@ -313,7 +313,8 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           username: Joi.string().token().lowercase().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -371,11 +372,12 @@ internals.applyRoutes = function (server, next) {
       const update = {
         $set: {
           username: request.payload.username,
-          email: request.payload.email
+          email: request.payload.email,
+          name: request.payload.name,
         }
       };
       const findOptions = {
-        fields: User.fieldsAdapter('username email roles')
+        fields: User.fieldsAdapter('username email name roles')
       };
 
       User.findByIdAndUpdate(id, update, findOptions, (err, user) => {
