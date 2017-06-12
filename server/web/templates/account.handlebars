@@ -8,12 +8,12 @@
             <aside class="menu">
                 <p class="menu-label">Change Account Settings</p>
                 <ul class="menu-list">
-                    <li id="changeUserAccountInfo"><a>Change Account Information</a></li>
-                    <li id="changePassword"><a>Change Password</a></li>
+                    <li id="changeUserAccountInfo"><a id="actInfo" class="is-active">Change Account Information</a></li>
+                    <li id="changePassword"><a id="pwd">Change Password</a></li>
                 </ul>
             </aside>
         </div>
-        <div class="field" id="userAccountInfo" style="overflow: hidden; display: ">
+        <div class="field" id="userAccountInfo" style="overflow: hidden">
             <form id="changeAccountInfoForm">
                 <h1 class="title">Change User Account Information</h1>
 
@@ -45,7 +45,7 @@
             </form>
         </div>
 
-        <div class="field" id="password" style="overflow: hidden; display: ">
+        <div class="field" id="userPassword" style="overflow: hidden">
             <form id="changePasswordForm">
                 <h1 class="title">Change Password</h1>
 
@@ -69,26 +69,124 @@
             </form>
         </div>
         <script>
+            var nameField = $('#name');
+            var username = $('#username');
+            var email = $('#email');
+            var accountInfoFields = [nameField, username, email];
+            var passwordField = $('#password');
+            var retypePasswordField = $('#retypePassword');
+            var passwordFields = [passwordField, retypePasswordField];
             var accountInfoForm = document.getElementById('changeAccountInfoForm');
             var passwordForm = document.getElementById('changePasswordForm');
             var forms = [accountInfoForm, passwordForm];
-            hideForms();
+            hideForms([forms[1]]);
+
+            $('#changeAccountInfoForm').on('submit', function (e) {
+                e.prevenDefault();
+                checkData(accountInfoFields);
+            });
+            $('#changePasswordForm').on('submit', function (e) {
+                e.preventDefault();
+                checkPassword(passwordFields);
+            });
+
+
+            function checkData(fields) {
+                // Remove red outline of boxes
+                removeDanger(fields);
+                // Loop through fields to see if they are filled.
+                var valid = allFieldsFilled(fields);
+                if (valid) {
+                    var values = {};    // Stores the values of the input fields
+                    $.each($('#changeAccountInfoForm').serializeArray(), function (i, field) {   // Loops through the input fields
+                        values[field.name] = field.value;
+                    });
+                    // If user/email does not already exist, success, refresh page
+                    // If any error, show it in an alert
+                    $.ajax({
+                        url: '/api/users/my',
+                        method: 'PUT',
+                        data: values,
+                        success: function () {
+                          window.location.replace('/account');
+                        },
+                        error: function (data) {
+                            alert(data.responseJSON.message);
+                        }
+                    });
+                }
+            }
+
+            function checkPassword(fields) {
+                // Remove red outline of boxes
+                removeDanger(fields);
+                // Loop through fields to see if they are filled
+                var filled = allFieldsFilled(fields);
+                // Check if password and retype password field matches
+                var valid = passwordsMatch(fields);
+                if (filled && valid) {
+                    var values = {password: fields[0][0].value};
+                    // Update password
+                    $.ajax({
+                        url: '/api/users/my/password',
+                        method: 'PUT',
+                        data: values,
+                        success: function () {
+                            window.location.replace('/account');
+                        },
+                        error: function (data) {
+                            alert(data.responseJSON.message);
+                        }
+                    });
+                }
+
+            }
 
             $('#changeUserAccountInfo').click(function (e) {
                 e.preventDefault();
-                hideForms();
+                hideForms(forms);
                 accountInfoForm.style.display = '';
+                $('#pwd').removeClass('is-active');
+                $('#actInfo').addClass('is-active');
             });
             $('#changePassword').click(function (e) {
                 e.preventDefault();
-                hideForms();
+                hideForms(forms);
                 passwordForm.style.display = '';
+                $('#actInfo').removeClass('is-active');
+                $('#pwd').addClass('is-active');
             });
 
-            function hideForms() {
+
+            function hideForms(forms) {
                 for (var i = 0; i < forms.length; i++) {
                   forms[i].style.display = 'none'
                 }
+            }
+            // Remove red outline around fields
+            function removeDanger(fields) {
+                for(var i = 0; i < fields.length; i++) {  // Loop through the fields and remove the red outline if there is one
+                    fields[i].removeClass('is-danger');
+                }
+            }
+            // Check if all of the input fields have text in them
+            function allFieldsFilled(fields) {
+                for(var i = 0; i < fields.length; i++) {
+                    if (fields[i][0].value === '') {
+                        alert('Please fill out the ' + fields[i][0].id);
+                        fields[i].addClass('is-danger');
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            // Check if the password and retype password fields match
+            function passwordsMatch(fields) {
+                if (fields[0][0].value === fields[1][0].value) {
+                  return true;
+                }
+                alert('Passwords do not match!');
+                return false;
             }
         </script>
     </div>
