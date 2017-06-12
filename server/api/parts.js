@@ -150,7 +150,6 @@ internals.applyRoutes = function (server, next) {
         }],
         createSubpart: ['createSequence', 'createBioDesign', function (results, done) {
 
-          var sequenceId = results.createSequence._id.toString();
           var bioDesignId = results.createBioDesign._id.toString();
           Part.create(
             request.payload.name,
@@ -158,7 +157,6 @@ internals.applyRoutes = function (server, next) {
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
             bioDesignId,
-            sequenceId,
             done);
         }],
         createModule: ['createFeature', function (results, done) {

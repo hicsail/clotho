@@ -39,7 +39,6 @@ lab.experiment('Part Class Methods', () => {
       'userid12test',
       'displayId',
       'bioDesignId',
-      'sequenceId',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -66,7 +65,6 @@ lab.experiment('Part Class Methods', () => {
       'userid12test',
       'displayId',
       'bioDesignId',
-      'sequenceId',
     (err, result) => {
 
       Code.expect(err).to.be.an.object();
@@ -99,7 +97,6 @@ lab.experiment('Part Class Methods', () => {
       'userId',
       'displayId',
       'bioDesignId',
-      'sequenceId',
     (err, part) => {
 
       Sequence.create(

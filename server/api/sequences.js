@@ -83,7 +83,9 @@ internals.applyRoutes = function (server, next) {
           accession: Joi.string().optional(),
           isLinear: Joi.boolean().optional(),
           isSingleStranded: Joi.boolean().optional(),
-          displayId: Joi.string().optional()
+          displayId: Joi.string().optional(),
+          featureId: Joi.string().optional(),
+          partId: Joi.string().optional()
         }
       }
     },
@@ -95,7 +97,8 @@ internals.applyRoutes = function (server, next) {
         request.payload.description,
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
-        null, //feature id, should be parent if creating new one
+        request.payload.featureId, //feature id, should be parent if creating new one
+        request.payload.partId,
         request.payload.sequence,
         request.payload.isLinear,
         request.payload.isSingleStranded,

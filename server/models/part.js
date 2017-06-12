@@ -6,15 +6,14 @@ const Sequence = require('./sequence');
 
 class Part extends MongoModels {
 
-  static create(name, description, userId, displayId, bioDesignId, sequenceId, callback) {
+  static create(name, description, userId, displayId, bioDesignId, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId,
       displayId: displayId,
-      bioDesignId: bioDesignId,
-      sequenceId: sequenceId
+      bioDesignId: bioDesignId
     };
 
     this.insertOne(document, (err, docs) => {
