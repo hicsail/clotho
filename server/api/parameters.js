@@ -79,7 +79,7 @@ internals.applyRoutes = function (server, next) {
         payload: {
           bioDesignId: Joi.string().optional(),
           value: Joi.number().required(),
-          variable: Joi.object().required() // This was originally a Variable object/a ShareableObjBase.
+          variable: Joi.string().required() // This was originally a Variable object/a ShareableObjBase.
         }
       }
     },
@@ -91,13 +91,13 @@ internals.applyRoutes = function (server, next) {
         request.payload.bioDesignId,
         request.payload.value,
         request.payload.variable,
-        (err, parameter) => {
+      (err, parameter) => {
 
-          if (err) {
-            return reply(err);
-          }
-          return reply(parameter);
-        });
+        if (err) {
+          return reply(err);
+        }
+        return reply(parameter);
+      });
     }
   });
 

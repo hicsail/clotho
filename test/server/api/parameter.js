@@ -247,7 +247,7 @@ lab.experiment('Parameter Plugin Delete', () => {
     });
   });
 });
-/*
+
 lab.experiment('Parameter Plugin Create', () => {
 
   lab.beforeEach((done) => {
@@ -256,11 +256,9 @@ lab.experiment('Parameter Plugin Create', () => {
       method: 'POST',
       url: '/parameter',
       payload: {
-        sequenceId: 'seq1',
-        name: 'sequence1',
-        start: 1,
-        end: 2,
-        isForwardStrand: true
+        bioDesignId: 'bioDesignId',
+        value: 5,
+        variable: 'weight',
       },
       credentials: AuthenticatedUser
     };
@@ -275,7 +273,7 @@ lab.experiment('Parameter Plugin Create', () => {
       callback();
     };
 
-    stub.Parameter.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+    stub.Parameter.create = function (userId, bioDesignId, value, variable, callback) {
 
       callback(Error('create failed'));
     };
@@ -295,7 +293,7 @@ lab.experiment('Parameter Plugin Create', () => {
       callback();
     };
 
-    stub.Parameter.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Parameter.create = function (userId, bioDesignId, value, variable, callback) {
 
       callback(null, {});
     };
@@ -309,4 +307,3 @@ lab.experiment('Parameter Plugin Create', () => {
     });
   });
 });
-*/
