@@ -1,6 +1,7 @@
 {{>nav}}
 <section class="hero">
-    <div class="hero-body">
+    <div class="hero-body" style="padding: 0rem 0rem;">
+        <div class="notification" id="alert" style="visibility: hidden; margin-bottom: 0rem; text-align: center; font-size: 150%; padding-top: .5rem; padding-bottom: .5rem">Success!</div>
         <div class="container">
             <h1 class="title">Account</h1>
             <div class="container" id="menu" style="width: auto; float: left; overflow: hidden">
@@ -16,7 +17,6 @@
         <div class="field" id="userAccountInfo" style="overflow: hidden">
             <form id="changeAccountInfoForm">
                 <h1 class="title">Change User Account Information</h1>
-                <div class="notification is-success" id="success">Success!</div>
 
                 <label class="label" id="nameLabel"><b>Name</b></label>
                 <p class="control has-icons-left">
@@ -49,8 +49,6 @@
         <div class="field" id="userPassword" style="overflow: hidden">
             <form id="changePasswordForm">
                 <h1 class="title">Change Password</h1>
-                <div class="notification is-success" id="pwSuccess">Success!</div>
-
                 <label class="label" id="passwordLabel"><b>New Password</b></label>
                 <p class="control has-icons-left">
                     <input class="input" id="password" type="password" name="password">
@@ -72,9 +70,9 @@
         </div>
         <script>
             var nameField = $('#name');
-            var username = $('#username');
+            var usernameField = $('#username');
             var email = $('#email');
-            var accountInfoFields = [nameField, username, email];
+            var accountInfoFields = [nameField, usernameField, email];
             var passwordField = $('#password');
             var retypePasswordField = $('#retypePassword');
             var passwordFields = [passwordField, retypePasswordField];
@@ -82,7 +80,7 @@
             var passwordForm = document.getElementById('changePasswordForm');
             var forms = [accountInfoForm, passwordForm];
             hideForms([forms[1]]);
-            $('#success').hide();
+            //$('#alert').hide();
 
             $('#changeAccountInfoForm').on('submit', function (e) {
                 e.preventDefault();
@@ -105,7 +103,7 @@
                 e.preventDefault();
                 hideForms(forms);
                 passwordForm.style.display = '';
-                $('#pwSuccess').hide();
+                $('#pwNotification').hide();
                 $('#actInfo').removeClass('is-active');
                 $('#pwd').addClass('is-active');
             });
@@ -127,16 +125,9 @@
                         url: '/api/users/my',
                         method: 'PUT',
                         data: values,
-                        success: function () {
-                            //window.location.replace('/account');
-                            $('#success').fadeIn();
-                            window.setTimeout(function () {
-                                $('#success').fadeOut();
-                            }, 2000)
-
-                        },
+                        success: successAlert('Success!'),
                         error: function (data) {
-                            alert(data.responseJSON.message);
+                            failureAlert(formatResponseMessage(data.responseJSON.message));
                         }
                     });
                 }
@@ -157,15 +148,9 @@
                         url: '/api/users/my/password',
                         method: 'PUT',
                         data: values,
-                        success: function () {
-                            $('#pwSuccess').fadeIn();
-                            window.setTimeout(function () {
-                                $('#pwSuccess').fadeOut();
-                            }, 2000)
-
-                        },
+                        success: successAlert('Success!'),
                         error: function (data) {
-                            alert(data.responseJSON.message);
+                            failureAlert(data.responseJSON.message);
                         }
                     });
                 }
@@ -188,21 +173,43 @@
             function allFieldsFilled(fields) {
                 for(var i = 0; i < fields.length; i++) {
                     if (fields[i][0].value === '') {
-                        alert('Please fill out the ' + fields[i][0].id);
+                        failureAlert('Please fill out the ' + fields[i][0].id);
                         fields[i].addClass('is-danger');
                         return false;
                     }
-                    return true;
                 }
+                return true;
             }
             // Check if the password and retype password fields match
             function passwordsMatch(fields) {
                 if (fields[0][0].value === fields[1][0].value) {
                   return true;
                 }
-                alert('Passwords do not match!');
+                failureAlert('Passwords do not match!');
+                console.log('failed');
                 return false;
             }
+
+            function failureAlert(message) {
+                $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+            }
+            function successAlert(message) {
+                $('#alert').text(message).removeClass('is-danger').addClass('is-success').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+                window.setTimeout(function () {
+                    $('#alert').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 400);
+                    }, 2700);
+            }
+            function formatResponseMessage(message) {
+                message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
+                return message.replace(/\"/g , "");
+            }
+            // fade in
+            //$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 2000);
+
+            // Fade out
+            //$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 2000);
+
         </script>
     </div>
 </section>
+
