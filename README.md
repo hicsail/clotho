@@ -1,46 +1,10 @@
-# Frame
-
-A user system API starter. Bring your own front-end.
-
-[![Build Status](https://travis-ci.org/jedireza/frame.svg?branch=master)](https://travis-ci.org/jedireza/frame)
-[![Dependency Status](https://david-dm.org/jedireza/frame.svg?style=flat)](https://david-dm.org/jedireza/frame)
-[![devDependency Status](https://david-dm.org/jedireza/frame/dev-status.svg?style=flat)](https://david-dm.org/jedireza/frame#info=devDependencies)
-
-
-## Features
-
- - Login system with forgot password and reset password
- - Abusive login attempt detection
- - User roles for accounts and admins
- - Admins only notes and status history for accounts
- - Admin groups with shared permissions
- - Admin level permissions that override group permissions
-
+# Clotho
+Clotho is a framework for engineering synthetic biological systems and managing the data used to create them. You can author data schemas, run functions and algorithms, and tie Clotho into existing applications.
 
 ## Technology
 
 Frame is built with the [hapi](https://hapijs.com/) framework. We're
 using [MongoDB](http://www.mongodb.org/) as a data store.
-
-
-## Bring your own front-end
-
-Frame is only a restful JSON API. If you'd like a ready made front-end,
-checkout [Aqua](https://github.com/jedireza/aqua). Or better yet, fork
-this repo and build one on top of Frame.
-
-
-## Live demo
-
-| url                                                                        | username | password |
-|:-------------------------------------------------------------------------- |:-------- |:-------- |
-| [https://getframe.herokuapp.com/](https://getframe.herokuapp.com/)         | root     | root     |
-| [https://getframe.herokuapp.com/docs](https://getframe.herokuapp.com/docs) | ----     | ----     |
-
-[Postman](http://www.getpostman.com/) is a great tool for testing and
-developing APIs. See the wiki for details on [how to
-login](https://github.com/jedireza/frame/wiki/How-to-login).
-
 
 ## Requirements
 
@@ -56,28 +20,9 @@ page](https://github.com/jedireza/frame/wiki/bcrypt-Installation-Trouble).
 ## Installation
 
 ```bash
-$ git clone git@github.com:jedireza/frame.git
-$ cd frame
+$ git clone git@github.com:hicsail/clotho.git
+$ cd clotho
 $ npm install
-```
-### bcyrpt installation help
-
-Install node-gyp and dependencies
-```
-npm install -g node-gyp
-brew install make
-brew install gcc
-```
-use python 2.7
-get the python path with ```which python```
-set npm python config with python path
-```bash
-npm config set python [PATH]
-```
-
-install bcyrpt
-```bash
-npm i bcyrpt
 ```
 
 ## Configuration
@@ -104,40 +49,29 @@ they exist: `accounts`, `adminGroups`, `admins`, `authAttempts`, `sessions`,
 ```bash
 $ npm run first-time-setup
 
-# > frame@0.0.0 first-time-setup /home/jedireza/projects/frame
 # > node first-time-setup.js
 
-# MongoDB URL: (mongodb://localhost:27017/frame)
+# MongoDB URL: (mongodb://localhost:27017/clotho)
 # Root user email: jedireza@gmail.com
 # Root user password:
 # Setup complete.
 ```
-
-
 ## Running the app
 
 ```bash
 $ npm start
 
-# > frame@0.0.0 start /Users/jedireza/projects/frame
 # > ./node_modules/nodemon/bin/nodemon.js -e js,md server
 
 # 09 Sep 03:47:15 - [nodemon] v1.10.2
 # ...
 ```
 
-Now you should be able to point your browser to http://127.0.0.1:9000/ and
-see the welcome message.
+Now you should be able to point your browser to http://localhost:9000/ and
+see the home page.
 
 [`nodemon`](https://github.com/remy/nodemon) watches for changes in server
 code and restarts the app automatically.
-
-We also pass the `--inspect` flag to Node so you have a debugger available.
-Watch the output of `$ npm start` and look for the debugging URL and open it in
-Chrome. It looks something like this:
-
-`chrome-devtools://devtools/remote/serve_file/@62cd277117e6f8ec53e31b1be58290a6f7ab42ef/inspector.html?experiments=true&v8only=true&ws=localhost:9229/node`
-
 
 ## Running in production
 
@@ -175,7 +109,6 @@ use to write all of our tests.
 ```bash
 $ npm test
 
-# > frame@0.0.0 test /Users/jedireza/projects/frame
 # > ./node_modules/lab/bin/lab -c
 
 # ..................................................
@@ -195,8 +128,3 @@ $ npm test
 ## License
 
 MIT
-
-
-## Don't forget
-
-What you build with Frame is more important than Frame.
