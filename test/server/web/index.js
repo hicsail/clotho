@@ -1,5 +1,6 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
+const AuthenticatedUser = require('../fixtures/credentials-admin');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -82,13 +83,12 @@ lab.experiment('Home Page View', () => {
 
     request = {
       method: 'GET',
-      url: '/'
+      url: '/',
+      credentials: AuthenticatedUser
     };
 
     done();
   });
-
-
 
   lab.test('home page renders properly', (done) => {
 

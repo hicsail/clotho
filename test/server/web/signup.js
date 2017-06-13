@@ -1,5 +1,6 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
+const AuthenticatedUser = require('../fixtures/cookie-account');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -82,7 +83,8 @@ lab.experiment('Sign up Page View', () => {
 
     request = {
       method: 'GET',
-      url: '/register'
+      url: '/register',
+      credentials: AuthenticatedUser
     };
 
     done();
@@ -94,8 +96,7 @@ lab.experiment('Sign up Page View', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusMessage).to.match(/OK/i);
-      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.statusCode).to.equal(302);
 
       done();
     });
