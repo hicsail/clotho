@@ -25,7 +25,7 @@ class Sequence extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      callback(nul, docs[0]);
     });
   }
 

@@ -9,6 +9,14 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
   const Device = server.plugins['hapi-mongo-models'].Device;
+  const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
+  const Part = server.plugins['hapi-mongo-models'].Part;
+  const Assembly = server.plugins['hapi-mongo-models'].Assembly;
+  const Sequence = server.plugins['hapi-mongo-models'].Sequence;
+  const Feature = server.plugins['hapi-mongo-models'].Feature;
+  const Module = server.plugins['hapi-mongo-models'].Module;
+  const Parameters = server.plugins['hapi-mongo-models'].Parameters;
+  const Annotations = server.plugins['hapi-mongo-models'].Annotations;
 
   server.route({
     method: 'GET',
@@ -121,15 +129,15 @@ internals.applyRoutes = function (server, next) {
             sequenceId,
             done);
         }],
-        createAssembly: function (results, done) {
+        createAssembly: ['createSubpart', 'createSubAssemblyIds', function (results, done) {
 
-          var part = results.createPart._id.toString();
-          var subAssemblyIds = results.createSubAssembly._id.toString();
+          var subpart = results.createSubpart._id.toString();
+          var subAssemblyIds = results.createSubAssemblyIds._id.toString();
           Assembly.create(
-            part,
+            subpart,
             subAssemblyIds,
             done);
-        },
+        }],
         createSequence: function (done) {
 
           Sequence.create(
