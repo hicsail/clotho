@@ -20,10 +20,19 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/login',
     config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
       validate: {
         payload: {
           username: Joi.string().lowercase().required(),
           password: Joi.string().required()
+        }
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
         }
       },
       pre: [{
@@ -91,9 +100,8 @@ internals.applyRoutes = function (server, next) {
             if (err) {
               return reply(err);
             }
-            if(request.cookieAuth) {
-              request.cookieAuth.set(session);
-            }
+
+            request.cookieAuth.set(session);
             return reply(session);
           });
         }

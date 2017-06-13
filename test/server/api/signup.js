@@ -1,4 +1,5 @@
 'use strict';
+const AuthPlugin = require('../../../server/auth');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -47,7 +48,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, MailerPlugin, SignupPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
   server = new Hapi.Server();
   server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {

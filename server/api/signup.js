@@ -19,12 +19,21 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/signup',
     config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
       validate: {
         payload: {
           name: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           username: Joi.string().token().lowercase().required(),
           password: Joi.string().required()
+        }
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
         }
       },
       pre: [{
@@ -165,9 +174,8 @@ internals.applyRoutes = function (server, next) {
           session: results.session,
           authHeader
         };
-        if(request.cookieAuth) {
-          request.cookieAuth.set(results.session);
-        }
+
+        request.cookieAuth.set(results.session);
         reply(result);
       });
     }
@@ -261,7 +269,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['mailer', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth','mailer', 'hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };
