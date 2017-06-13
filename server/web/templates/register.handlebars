@@ -1,6 +1,7 @@
 {{>nav}}
 <section class="hero">
-    <div class="hero-body">
+    <div class="hero-body" style="padding: 0rem 0rem;">
+        <div class="notification" id="alert" style="visibility: hidden; margin-bottom: 0rem; text-align: center; font-size: 125%; padding-top: .5rem; padding-bottom: .5rem">Success!</div>
         <div class="container">
             <h1 class="title">Register</h1>
         </div>
@@ -87,13 +88,19 @@
                   // Loop through fields to see if they are filled.
                   for(var i = 0; i < fields.length; i++){
                     if(fields[i][0].value === '') {
-                      alert('Please fill out the ' + fields[i][0].id);
+                      var id = fields[i][0].id;
+                      if (id === 'retypePw') {
+                        failureAlert('Please retype your password.');
+                      } else {
+
+                          failureAlert('Please fill out the ' + id);
+                      }
                       fields[i].addClass('is-danger');
                       break;
                     }
                     if(i === 4) {   // If they are all filled out, check to see if passwords match
                       if(fields[3][0].value != fields[4][0].value) {
-                        alert('Your passwords do not match');
+                        failureAlert('Your passwords do not match');
                         fields[3].addClass('is-danger');
                         fields[4].addClass('is-danger');
                         break;
@@ -115,7 +122,7 @@
                       window.location.replace('/');
                     }).fail(function (data) {
                       var message = formatResponseMessage(data.responseJSON.message);
-                      alert(message)
+                      failureAlert(message)
                     });
                   }
                 });
@@ -225,6 +232,15 @@
                 function formatResponseMessage(message) {
                     message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
                     return message.replace(/\"/g , "");
+                }
+                function failureAlert(message) {
+                    $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+                }
+                function successAlert(message) {
+                    $('#alert').text(message).removeClass('is-danger').addClass('is-success').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+                    window.setTimeout(function () {
+                        $('#alert').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 400);
+                    }, 2500);
                 }
             </script>
         </div>
