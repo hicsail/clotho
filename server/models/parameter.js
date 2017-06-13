@@ -38,7 +38,7 @@ class Parameter extends MongoModels {
       query['variable'] = parameterVariables;
 
     }
-    this.find(query, null, (err, results) => {
+    this.find(query, (err, results) => {
 
       if (err) {
         return callback(err);
