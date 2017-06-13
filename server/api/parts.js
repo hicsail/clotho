@@ -230,6 +230,7 @@ internals.applyRoutes = function (server, next) {
             null, // description
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
+            null,
             done);
         },
         createSequence: function (done) {
@@ -305,7 +306,12 @@ internals.applyRoutes = function (server, next) {
 
           for (var i = 0; i < param.length; ++i) {
 
-            Parameter.create(bioDesignId, param[i]['value'], param[i]['variable'], done);
+            Parameter.create(
+              request.auth.credentials.user._id.toString(),
+              bioDesignId,
+              param[i]['value'],
+              param[i]['variable'],
+              done);
 
           }
 
