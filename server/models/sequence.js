@@ -32,13 +32,13 @@ class Sequence extends MongoModels {
   static findBySequence(seq, callback) {
 
     const query = {sequence: seq};
-    this.find(query, null, (err, results) => {
+    this.find(query, (err, sequences) => {
 
       if (err) {
         return callback(err);
       }
 
-      callback(err, results);
+      this.getAnnotations(0, sequences, callback);
     });
   }
 
