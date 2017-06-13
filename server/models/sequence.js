@@ -20,12 +20,12 @@ class Sequence extends MongoModels {
       isSingleStranded: isSingleStranded
     };
 
-    this.insertOne(document, (err, docs) => {
+    this.insertOne(document,  (err, docs) => {
 
       if (err) {
         return callback(err);
       }
-      callback(nul, docs[0]);
+      callback(null, docs[1]);
     });
   }
 

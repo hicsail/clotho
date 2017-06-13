@@ -118,6 +118,7 @@ internals.applyRoutes = function (server, next) {
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
             null, // featureId null
+            null, //partId
             request.payload.sequence,
             null,
             null,
