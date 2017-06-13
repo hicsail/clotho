@@ -1,6 +1,7 @@
 {{> nav}}
 <section class="hero">
-    <div class="hero-body">
+    <div class="hero-body" style="padding: 0rem 0rem;">
+        <div class="notification" id="alert" style="visibility: hidden; margin-bottom: 0rem; text-align: center; font-size: 125%; padding-top: .5rem; padding-bottom: .5rem">Success!</div>
         <div class="container">
             <h1 class="title">Login</h1>
         </div>
@@ -27,9 +28,13 @@
                       location.reload();
                     }).fail(function (data) {
                         var message = data.responseJSON.message;
-                        alert(message);
+                        failureAlert(message);
                     });
                 });
+
+                function failureAlert(message) {
+                    $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+                }
             </script>
         </div>
     </div>
