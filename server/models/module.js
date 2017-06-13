@@ -26,6 +26,25 @@ class Module extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
+  static findByBioDesignId(bioDesignIds, filters, callback) {
+
+    var query = {bioDesignId: {$in: bioDesignIds}};
+
+    for (var f in filters) {
+      query[f] = filters[f];
+    }
+
+    this.find(query, null, (err, results) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(err, results);
+    });
+
+  }
 }
 
 //

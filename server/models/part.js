@@ -25,9 +25,30 @@ class Part extends MongoModels {
     });
   }
 
+  // allows for input ids to be a list or just a single id
+  static findBySequenceId(seqId, callback) {
+
+    var query;
+    if (seqId.constructor === Array) {
+      query = {'sequenceId': {$in: seqId}};
+    } else {
+      query = {'sequenceId': seqId};
+    }
+
+    this.find(query, (err, parts) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      return callback(err, parts);
+
+    });
+  }
+
   static findByBioDesignId(bioDesignId, callback) {
 
-    const query = { bioDesignId: bioDesignId};
+    const query = {bioDesignId: bioDesignId};
     this.find(query, (err, parts) => {
 
       if (err) {

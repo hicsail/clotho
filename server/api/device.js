@@ -15,8 +15,8 @@ internals.applyRoutes = function (server, next) {
   const Sequence = server.plugins['hapi-mongo-models'].Sequence;
   const Feature = server.plugins['hapi-mongo-models'].Feature;
   const Module = server.plugins['hapi-mongo-models'].Module;
-  const Parameters = server.plugins['hapi-mongo-models'].Parameters;
-  const Annotations = server.plugins['hapi-mongo-models'].Annotations;
+  const Parameter = server.plugins['hapi-mongo-models'].Parameter;
+  const Annotation = server.plugins['hapi-mongo-models'].Annotation;
 
   server.route({
     method: 'GET',

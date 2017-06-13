@@ -32,28 +32,150 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string(),
           role: Joi.string(),
           sequence: Joi.string(),
-          parameters: Joi.array().items(Joi.object())
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string(),
+              unit: Joi.string().allow(['m', 'cm', 'inches', 'in', 'nm']), // These should be updated.
+              value: Joi.number().required(),
+              variable: Joi.object().required()
+            })
+          )
         }
       }
     },
     handler: function (request, reply) {
 
-      const query = {};
       const fields = request.query.fields;
       const sort = request.query.sort;
       const limit = request.query.limit;
       const page = request.query.page;
 
-      BioDesign.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Async.auto({
+        findSequences: function (done) {
+
+          if (request.payload.sequence !== null) {
+            Sequence.findBySequence(request.payload.sequence, done);
+          } else {
+            done(null, []);
+          }
+        },
+        findParts: ['findSequences', function (results, done) {
+          // get Sequence ids from array
+          var seqArr = results.findSequences;
+          var seqIds = [];
+          for (let seq of seqArr) {
+            seqIds.push(seq['_id'].toString());
+          }
+
+          // then query all sequence's part ids
+          Part.findBySequenceId(seqIds, done);
+        }],
+        findParameters: ['findParts', function (results, done) {
+          // using part documents from last step, get biodesigns
+          var partArr = results.findParts;
+          var bioDesignIds = [];
+          for (let part of partArr) {
+            bioDesignIds.push(part['bioDesignId'].toString());
+          }
+
+          // only one result, no need to search further
+          if (request.payload.sequence !== null & (bioDesignIds.length === 0 || bioDesignIds.length === 1)) {
+
+            // return BioDesign
+            BioDesign.findById(bioDesignIds[0], (err, results) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              reply(results);
+            });
+          }
+
+          // otherwise keep going with parameters search
+          if (request.payload.parameters !== null) {
+            Parameter.findByBioDesignId(bioDesignIds, request.payload.parameters, done);
+          } else {
+            done(null, []);
+          }
+
+        }],
+        findModules: ['findParameters', function (results, done) {
+          // collect biodesign Ids
+          var parameterArray = results.findParameters;
+          var bioDesignIds = [];
+          for (let parameter of parameterArray) {
+            bioDesignIds.push(parameter['bioDesignId'].toString());
+          }
+
+          // if parameters had been null, bioDesignIds would be empty
+          // if empty because parameters not null, bioDesignIds should be returned
+          if (request.payload.parameters !== null && (bioDesignIds.length === 0 || bioDesignIds.length === 1)) {
+            BioDesign.findById(bioDesignIds[0], (err, results) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              reply(results);
+            });
+          }
+
+
+          // otherwise perform module search
+          if (request.payload.role !== null) {
+            Module.findByBioDesignId(bioDesignIds, {role: request.payload.role}, done);
+          } else {
+            done(null, []);
+          }
+
+        }],
+        findBioDesigns: ['findModules', function (results, done) {
+
+          // collect biodesign Ids
+          var moduleArray = results.findModules;
+          var bioDesignIds = [];
+          for (let module of moduleArray) {
+            bioDesignIds.push(module['bioDesignId'].toString());
+          }
+
+
+
+          if (request.payload.role !== null && (bioDesignIds.length === 0 || bioDesignIds.length === 1)) {
+            BioDesign.findById(bioDesignIds[0], (err, results) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              reply(results);
+            });
+          }
+
+          var bdQuery = {
+            name: request.payload.name, displayId: request.payload.displayId, bioDesignId: {$in: bioDesignIds}
+          };
+
+          BioDesign.pagedFind(bdQuery, fields, sort, limit, page, (err, results) => {
+
+            if (err) {
+              return reply(err);
+            }
+
+            reply(results);
+          });
+        }]
+      }, (err, results) => {
 
         if (err) {
           return reply(err);
         }
-
-        reply(results);
+        return reply(results);
       });
+
     }
-  });
+  })
+  ;
 
   server.route({
     method: 'GET',
