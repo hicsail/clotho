@@ -16,6 +16,7 @@
         <div class="field" id="userAccountInfo" style="overflow: hidden">
             <form id="changeAccountInfoForm">
                 <h1 class="title">Change User Account Information</h1>
+                <div class="notification is-success" id="success">Success!</div>
 
                 <label class="label" id="nameLabel"><b>Name</b></label>
                 <p class="control has-icons-left">
@@ -48,6 +49,7 @@
         <div class="field" id="userPassword" style="overflow: hidden">
             <form id="changePasswordForm">
                 <h1 class="title">Change Password</h1>
+                <div class="notification is-success" id="pwSuccess">Success!</div>
 
                 <label class="label" id="passwordLabel"><b>New Password</b></label>
                 <p class="control has-icons-left">
@@ -80,6 +82,7 @@
             var passwordForm = document.getElementById('changePasswordForm');
             var forms = [accountInfoForm, passwordForm];
             hideForms([forms[1]]);
+            $('#success').hide();
 
             $('#changeAccountInfoForm').on('submit', function (e) {
                 e.preventDefault();
@@ -94,6 +97,7 @@
                 e.preventDefault();
                 hideForms(forms);
                 accountInfoForm.style.display = '';
+                $('#success').hide();
                 $('#pwd').removeClass('is-active');
                 $('#actInfo').addClass('is-active');
             });
@@ -101,6 +105,7 @@
                 e.preventDefault();
                 hideForms(forms);
                 passwordForm.style.display = '';
+                $('#pwSuccess').hide();
                 $('#actInfo').removeClass('is-active');
                 $('#pwd').addClass('is-active');
             });
@@ -123,7 +128,12 @@
                         method: 'PUT',
                         data: values,
                         success: function () {
-                            window.location.replace('/account');
+                            //window.location.replace('/account');
+                            $('#success').fadeIn();
+                            window.setTimeout(function () {
+                                $('#success').fadeOut();
+                            }, 2000)
+
                         },
                         error: function (data) {
                             alert(data.responseJSON.message);
@@ -148,7 +158,11 @@
                         method: 'PUT',
                         data: values,
                         success: function () {
-                            window.location.replace('/account');
+                            $('#pwSuccess').fadeIn();
+                            window.setTimeout(function () {
+                                $('#pwSuccess').fadeOut();
+                            }, 2000)
+
                         },
                         error: function (data) {
                             alert(data.responseJSON.message);
