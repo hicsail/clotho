@@ -82,7 +82,7 @@
             hideForms([forms[1]]);
 
             $('#changeAccountInfoForm').on('submit', function (e) {
-                e.prevenDefault();
+                e.preventDefault();
                 checkAccountInformation(accountInfoFields);
             });
             $('#changePasswordForm').on('submit', function (e) {
