@@ -19,12 +19,21 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/signup',
     config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
       validate: {
         payload: {
           name: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           username: Joi.string().token().lowercase().required(),
           password: Joi.string().required()
+        }
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
         }
       },
       pre: [{
@@ -81,8 +90,9 @@ internals.applyRoutes = function (server, next) {
           const username = request.payload.username;
           const password = request.payload.password;
           const email = request.payload.email;
+          const name = request.payload.name;
 
-          User.create(username, password, email, done);
+          User.create(username, password, email, name, done);
         },
         account: ['user', function (results, done) {
 
@@ -154,7 +164,7 @@ internals.applyRoutes = function (server, next) {
         const credentials = results.session._id + ':' + results.session.key;
         const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
 
-        reply({
+        const result = {
           user: {
             _id: user._id,
             username: user.username,
@@ -163,19 +173,103 @@ internals.applyRoutes = function (server, next) {
           },
           session: results.session,
           authHeader
-        });
+        };
+
+        request.cookieAuth.set(results.session);
+        reply(result);
       });
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/available',
+    config: {
+      validate: {
+        payload: {
+          email: Joi.string().email().lowercase().optional(),
+          username: Joi.string().token().lowercase().optional(),
+        }
+      },
+      pre: [{
+        assign: 'vaildInput',
+        method: function (request, reply) {
 
+          const username = request.payload.username;
+          const email = request.payload.email;
+
+          if(!username && !email) {
+            return reply(Boom.badRequest('invaild submission, submit username and/or email'));
+          }
+          reply(true);
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      const username = request.payload.username;
+      const email = request.payload.email;
+
+      Async.auto({
+        username: function (done) {
+
+          const username = request.payload.username;
+
+
+          User.findOne({username: username}, done);
+        },
+        email: function (done) {
+
+          const email = request.payload.email;
+
+          User.findOne({email: email}, done);
+        }
+      }, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        var available = {};
+
+        if(username) {
+          if(results.username) {
+            available.username = {
+              status: 'taken',
+              message: 'This username is not available'
+            };
+          } else {
+            available.username = {
+              status: 'available',
+              message: 'This username is available'
+            };
+          }
+        }
+        if(email) {
+          if(results.email) {
+            available.email = {
+              status: 'taken',
+              message: 'This email is already registered'
+            };
+          } else {
+            available.email = {
+              status: 'available',
+              message: 'This email is available'
+            };
+          }
+        }
+
+        reply(available);
+      });
+    }
+  });
   next();
 };
 
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['mailer', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth','mailer', 'hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

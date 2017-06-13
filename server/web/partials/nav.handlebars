@@ -1,0 +1,25 @@
+<nav class="nav has-shadow">
+  <div class="container">
+    <div class="nav-left">
+      <a class="nav-item" href="/">
+        <img src="/public/images/logo.png" alt="Clotho logo">
+      </a>
+      <a class="nav-item is-tab is-hidden-mobile" href="/">Home</a>
+    </div>
+    <span class="nav-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+    <div class="nav-right nav-menu">
+      <a class="nav-item is-tab is-hidden-tablet" href="/">Home</a>
+      {{#if user}}
+      <a class="nav-item is-tab" href="/account">Hello {{user.name}}</a>
+      <a class="nav-item is-tab" href="/logout">Logout</a>
+      {{else}}
+      <a class="nav-item is-tab" href="/login">Login</a>
+      <a class="nav-item is-tab" href="/register">Register</a>
+      {{/if}}
+    </div>
+  </div>
+</nav>

@@ -8,7 +8,7 @@ const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
 const MakeMockModel = require('../fixtures/make-mock-model');
 const Lab = require('lab');
-const IndexPlugin = require('../../../server/web/index');
+const LoginPlugin = require('../../../server/web/login/index');
 const Manifest = require('../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
@@ -60,7 +60,7 @@ let server;
 
 lab.before((done) => {
 
-  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, IndexPlugin];
+  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LoginPlugin];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {
@@ -74,13 +74,13 @@ lab.before((done) => {
 });
 
 
-lab.experiment('Index Page View', () => {
+lab.experiment('Login Page View', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/'
+      url: '/login'
     };
 
     done();
@@ -104,8 +104,75 @@ lab.experiment('Index Page View', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusMessage).to.match(/Ok/i);
-      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.statusCode).to.equal(302);
+      done();
+    });
+  });
+
+  lab.test('it redirects when user is authenticated as an account to url', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+    request.url = '/login?returnUrl=/account';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+      done();
+    });
+  });
+});
+
+lab.experiment('Logout Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/logout'
+    };
+
+    done();
+  });
+
+
+  lab.test('it redirect user if no user is logged in', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+
+  lab.test('it loggout out user and bring them to home page', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+
+  lab.test('it returns error when loggout out fails', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    stub.Session.findByIdAndDelete = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('paged find failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
       done();
     });
   });

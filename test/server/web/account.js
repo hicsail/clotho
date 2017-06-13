@@ -1,14 +1,14 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
-const AuthenticatedAccount = require('../fixtures/credentials-account');
+const AuthenticatedUser = require('../fixtures/cookie-account');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
-const MakeMockModel = require('../fixtures/make-mock-model');
+const AccountPlugin = require('../../../server/web/account/index');
 const Lab = require('lab');
-const IndexPlugin = require('../../../server/web/index');
+const MakeMockModel = require('../fixtures/make-mock-model');
 const Manifest = require('../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
@@ -18,13 +18,16 @@ const Visionary = require('visionary');
 let stub;
 
 stub = {
-  Session: MakeMockModel()
+  Account: MakeMockModel(),
+  Session: MakeMockModel(),
+  User: MakeMockModel()
 };
 
 const proxy = {};
+proxy[Path.join(process.cwd(), './server/models/account')] = stub.Account;
 proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
+proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
-const lab = exports.lab = Lab.script();
 const ModelsPlugin = {
   register: Proxyquire('hapi-mongo-models', proxy),
   options: Manifest.get('/registrations').filter((reg) => {
@@ -40,6 +43,7 @@ const ModelsPlugin = {
   })[0].plugin.options
 };
 
+
 const VisionaryPlugin = {
   register: Visionary,
   options: Manifest.get('/registrations').filter((reg) => {
@@ -52,15 +56,14 @@ const VisionaryPlugin = {
     return false;
   })[0].plugin.options
 };
-
-
+const lab = exports.lab = Lab.script();
 let request;
 let server;
 
 
-lab.before((done) => {
+lab.beforeEach((done) => {
 
-  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, IndexPlugin];
+  const plugins = [Vision, VisionaryPlugin, ModelsPlugin, AccountPlugin, AuthPlugin, HapiAuthCookie, HapiAuthBasic];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {
@@ -74,38 +77,28 @@ lab.before((done) => {
 });
 
 
-lab.experiment('Index Page View', () => {
+lab.experiment('Account Page View', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/'
+      url: '/account',
+      credentials: AuthenticatedUser
     };
 
     done();
   });
 
 
-  lab.test('it renders properly', (done) => {
+
+  lab.test('account page renders properly', (done) => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusMessage).to.match(/Ok/i);
+      Code.expect(response.statusMessage).to.match(/OK/i);
       Code.expect(response.statusCode).to.equal(200);
 
-      done();
-    });
-  });
-
-  lab.test('it redirects when user is authenticated as an account', (done) => {
-
-    request.credentials = AuthenticatedAccount;
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusMessage).to.match(/Ok/i);
-      Code.expect(response.statusCode).to.equal(200);
       done();
     });
   });

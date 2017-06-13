@@ -5,6 +5,7 @@ const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
+const HapiAuthCookie = require('hapi-auth-cookie');
 const Lab = require('lab');
 const MakeMockModel = require('../fixtures/make-mock-model');
 const Manifest = require('../../../manifest');
@@ -43,7 +44,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, ModelsPlugin, AuthPlugin, UserPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, UserPlugin];
   server = new Hapi.Server();
   server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {
@@ -292,7 +293,8 @@ lab.experiment('Users Plugin Create', () => {
       payload: {
         username: 'muddy',
         password: 'dirtandwater',
-        email: 'mrmud@mudmail.mud'
+        email: 'mrmud@mudmail.mud',
+        name: 'mr muddy'
       },
       credentials: AuthenticatedUser
     };
@@ -392,7 +394,7 @@ lab.experiment('Users Plugin Create', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(Error('create failed'));
     };
@@ -413,7 +415,7 @@ lab.experiment('Users Plugin Create', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {});
     };
@@ -439,7 +441,8 @@ lab.experiment('Users Plugin Update', () => {
       payload: {
         isActive: true,
         username: 'muddy',
-        email: 'mrmud@mudmail.mud'
+        email: 'mrmud@mudmail.mud',
+        name: 'mr muddy'
       },
       credentials: AuthenticatedUser
     };
@@ -606,7 +609,8 @@ lab.experiment('Users Plugin (My) Update', () => {
       url: '/users/my',
       payload: {
         username: 'muddy',
-        email: 'mrmud@mudmail.mud'
+        email: 'mrmud@mudmail.mud',
+        name: 'mr muddy'
       },
       credentials: AuthenticatedUser
     };

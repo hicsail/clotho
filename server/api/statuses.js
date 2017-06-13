@@ -17,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     path: '/statuses',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -57,7 +57,7 @@ internals.applyRoutes = function (server, next) {
     path: '/statuses/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       pre: [
@@ -87,7 +87,7 @@ internals.applyRoutes = function (server, next) {
     path: '/statuses',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -122,7 +122,7 @@ internals.applyRoutes = function (server, next) {
     path: '/statuses/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -164,7 +164,7 @@ internals.applyRoutes = function (server, next) {
     path: '/statuses/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       pre: [

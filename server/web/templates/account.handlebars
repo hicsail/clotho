@@ -1,0 +1,212 @@
+{{>nav}}
+<section class="hero">
+    <div class="hero-body" style="padding: 0rem 0rem;">
+        <div class="notification" id="alert" style="visibility: hidden; margin-bottom: 0rem; text-align: center; font-size: 125%; padding-top: .5rem; padding-bottom: .5rem">Success!</div>
+        <div class="container">
+            <h1 class="title">Account</h1>
+            <div class="container" id="menu" style="width: auto; float: left; overflow: hidden">
+                <aside class="menu">
+                    <p class="menu-label">Change Account Settings</p>
+                    <ul class="menu-list">
+                        <li id="changeUserAccountInfo"><a id="actInfo" class="is-active">Change Account Information</a></li>
+                        <li id="changePassword"><a id="pwd">Change Password</a></li>
+                    </ul>
+                </aside>
+            </div>
+        </div>
+        <div class="field" id="userAccountInfo" style="overflow: hidden">
+            <form id="changeAccountInfoForm">
+                <h1 class="title">Change User Account Information</h1>
+
+                <label class="label" id="nameLabel"><b>Name</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="name" type="text" name="name" value="{{user.name}}">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-user-circle"></i>
+                    </span>
+                </p>
+
+                <label class="label" id="usernameLabel"><b>Username</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="username" type="text" name="username" value="{{user.username}}">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+                </p>
+
+                <label class="label" id="emailLabel"><b>Email</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="email" type="text" name="email" value="{{user.email}}">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                </p>
+
+                <input class="button is-primary" id="submit" type="submit" value="Submit">
+            </form>
+        </div>
+
+        <div class="field" id="userPassword" style="overflow: hidden">
+            <form id="changePasswordForm">
+                <h1 class="title">Change Password</h1>
+                <label class="label" id="passwordLabel"><b>New Password</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="password" type="password" name="password">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                </p>
+
+                <label class="label" id="retypePasswordLabel"><b>Retype New Password</b></label>
+                <p class="control has-icons-left">
+                    <input class="input" id="retypePassword" type="password" name="retypePassword">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                </p>
+
+                <input class="button is-primary" id="submit" type="submit" value="Submit">
+            </form>
+        </div>
+        <script>
+            var nameField = $('#name');
+            var usernameField = $('#username');
+            var email = $('#email');
+            var accountInfoFields = [nameField, usernameField, email];
+            var passwordField = $('#password');
+            var retypePasswordField = $('#retypePassword');
+            var passwordFields = [passwordField, retypePasswordField];
+            var accountInfoForm = document.getElementById('changeAccountInfoForm');
+            var passwordForm = document.getElementById('changePasswordForm');
+            var forms = [accountInfoForm, passwordForm];
+            hideForms([forms[1]]);
+
+            $('#changeAccountInfoForm').on('submit', function (e) {
+                e.preventDefault();
+                checkAccountInformation(accountInfoFields);
+            });
+            $('#changePasswordForm').on('submit', function (e) {
+                e.preventDefault();
+                checkPassword(passwordFields);
+            });
+
+            $('#changeUserAccountInfo').click(function (e) {
+                e.preventDefault();
+                hideForms(forms);
+                accountInfoForm.style.display = '';
+                $('#success').hide();
+                $('#pwd').removeClass('is-active');
+                $('#actInfo').addClass('is-active');
+            });
+            $('#changePassword').click(function (e) {
+                e.preventDefault();
+                hideForms(forms);
+                passwordForm.style.display = '';
+                $('#pwNotification').hide();
+                $('#actInfo').removeClass('is-active');
+                $('#pwd').addClass('is-active');
+            });
+
+            // Make sure the fields are inputted properly for the change account information form and send a put request
+            function checkAccountInformation(fields) {
+                // Remove red outline of boxes
+                removeDanger(fields);
+                // Loop through fields to see if they are filled.
+                var valid = allFieldsFilled(fields);
+                if (valid) {
+                    var values = {};    // Stores the values of the input fields
+                    $.each($('#changeAccountInfoForm').serializeArray(), function (i, field) {   // Loops through the input fields
+                        values[field.name] = field.value;
+                    });
+                    // If user/email does not already exist, success, refresh page
+                    // If any error, show it in an alert
+                    $.ajax({
+                        url: '/api/users/my',
+                        method: 'PUT',
+                        data: values,
+                        success: function () {
+                            successAlert('Success!');
+                        },
+                        error: function (data) {
+                            failureAlert(data.responseJSON.message);
+                        }
+                    });
+                }
+            }
+
+            // Make sure the fields are inputted properly for the change password form and send a put request
+            function checkPassword(fields) {
+                // Remove red outline of boxes
+                removeDanger(fields);
+                // Loop through fields to see if they are filled
+                var filled = allFieldsFilled(fields);
+                // Check if password and retype password field matches
+                var valid = passwordsMatch(fields);
+                if (filled && valid) {
+                    var values = {password: fields[0][0].value};
+                    // Update password
+                    $.ajax({
+                        url: '/api/users/my/password',
+                        method: 'PUT',
+                        data: values,
+                        success: function () {
+                            successAlert('Success!');
+                        },
+                        error: function (data) {
+                            failureAlert(data.responseJSON.message);
+                        }
+                    });
+                }
+
+            }
+
+            // Hide the form that is not active
+            function hideForms(forms) {
+                for (var i = 0; i < forms.length; i++) {
+                  forms[i].style.display = 'none'
+                }
+            }
+            // Remove red outline around fields
+            function removeDanger(fields) {
+                for(var i = 0; i < fields.length; i++) {  // Loop through the fields and remove the red outline if there is one
+                    fields[i].removeClass('is-danger');
+                }
+            }
+            // Check if all of the input fields have text in them
+            function allFieldsFilled(fields) {
+                for(var i = 0; i < fields.length; i++) {
+                    if (fields[i][0].value === '') {
+                        failureAlert('Please fill out the ' + fields[i][0].id);
+                        return false;
+                    }
+                }
+                return true;
+            }
+            // Check if the password and retype password fields match
+            function passwordsMatch(fields) {
+                if (fields[0][0].value === fields[1][0].value) {
+                  return true;
+                }
+                failureAlert('Passwords do not match!');
+                return false;
+            }
+
+            function failureAlert(message) {
+                $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+            }
+            function successAlert(message) {
+                $('#alert').text(message).removeClass('is-danger').addClass('is-success').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
+                window.setTimeout(function () {
+                    $('#alert').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 400);
+                    }, 2500);
+            }
+            // fade in
+            //$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 2000);
+
+            // Fade out
+            //$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 2000);
+
+        </script>
+    </div>
+</section>
+
