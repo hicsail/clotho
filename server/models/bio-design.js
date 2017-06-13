@@ -8,13 +8,14 @@ const Medium = require('./medium');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, callback) {
+  static create(name, description, userId, displayId, imageURL, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId,
-      displayId: displayId
+      displayId: displayId,
+      imageURL: imageURL
     };
 
     this.insertOne(document, (err, docs) => {

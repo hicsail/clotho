@@ -37,6 +37,7 @@ lab.experiment('BioDesign Class Methods', () => {
       'BioDesign Description',
       'userid12test',
       'displayId',
+      'imageURL',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -62,6 +63,7 @@ lab.experiment('BioDesign Class Methods', () => {
       'BioDesign Description',
       'userid12test',
       'displayId',
+      'imageURL',
     (err, result) => {
 
       Code.expect(err).to.be.an.object();
