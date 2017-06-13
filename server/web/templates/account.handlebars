@@ -1,7 +1,7 @@
 {{>nav}}
 <section class="hero">
     <div class="hero-body" style="padding: 0rem 0rem;">
-        <div class="notification" id="alert" style="visibility: hidden; margin-bottom: 0rem; text-align: center; font-size: 150%; padding-top: .5rem; padding-bottom: .5rem">Success!</div>
+        <div class="notification" id="alert" style="visibility: hidden; margin-bottom: 0rem; text-align: center; font-size: 125%; padding-top: .5rem; padding-bottom: .5rem">Success!</div>
         <div class="container">
             <h1 class="title">Account</h1>
             <div class="container" id="menu" style="width: auto; float: left; overflow: hidden">
@@ -80,7 +80,6 @@
             var passwordForm = document.getElementById('changePasswordForm');
             var forms = [accountInfoForm, passwordForm];
             hideForms([forms[1]]);
-            //$('#alert').hide();
 
             $('#changeAccountInfoForm').on('submit', function (e) {
                 e.preventDefault();
@@ -125,9 +124,11 @@
                         url: '/api/users/my',
                         method: 'PUT',
                         data: values,
-                        success: successAlert('Success!'),
+                        success: function () {
+                            successAlert('Success!');
+                        },
                         error: function (data) {
-                            failureAlert(formatResponseMessage(data.responseJSON.message));
+                            failureAlert(data.responseJSON.message);
                         }
                     });
                 }
@@ -148,7 +149,9 @@
                         url: '/api/users/my/password',
                         method: 'PUT',
                         data: values,
-                        success: successAlert('Success!'),
+                        success: function () {
+                            successAlert('Success!');
+                        },
                         error: function (data) {
                             failureAlert(data.responseJSON.message);
                         }
@@ -174,7 +177,6 @@
                 for(var i = 0; i < fields.length; i++) {
                     if (fields[i][0].value === '') {
                         failureAlert('Please fill out the ' + fields[i][0].id);
-                        fields[i].addClass('is-danger');
                         return false;
                     }
                 }
@@ -186,7 +188,6 @@
                   return true;
                 }
                 failureAlert('Passwords do not match!');
-                console.log('failed');
                 return false;
             }
 
@@ -197,11 +198,7 @@
                 $('#alert').text(message).removeClass('is-danger').addClass('is-success').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
                 window.setTimeout(function () {
                     $('#alert').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 400);
-                    }, 2700);
-            }
-            function formatResponseMessage(message) {
-                message = message.substring(message.lastIndexOf('[')+1, message.lastIndexOf(']'));
-                return message.replace(/\"/g , "");
+                    }, 2500);
             }
             // fade in
             //$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 2000);
