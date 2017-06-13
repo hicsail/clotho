@@ -70,14 +70,53 @@ lab.experiment('Module Class Methods', () => {
       'TRANSCRIPTION',
       'features',
       'submodule',
-      (err, result) => {
+    (err, result) => {
 
-        Code.expect(err).to.be.an.object();
-        Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-        Module.insertOne = realInsertOne;
+      Module.insertOne = realInsertOne;
 
-        done();
-      });
+      done();
+    });
+  });
+
+  lab.test('it returns an instance when findByBioDesignId succeeds', (done) => {
+
+    Module.findByBioDesignId(
+    ['bioDesignId'],
+    null,
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result[0]).to.be.an.instanceOf(Module);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when findByBioDesignId fails', (done) => {
+
+    const realFunction = Module.find;
+    Module.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    Module.findByBioDesignId(
+    ['bioDesignId'],
+    null,
+    (err, result) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
+
+      Module.find = realFunction;
+
+      done();
+    });
   });
 });

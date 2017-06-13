@@ -35,7 +35,7 @@ class Module extends MongoModels {
       query[f] = filters[f];
     }
 
-    this.find(query, null, (err, results) => {
+    this.find(query, (err, results) => {
 
       if (err) {
         return callback(err);
