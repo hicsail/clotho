@@ -176,7 +176,6 @@
                         usernameFocus = false;
                         $.post('/api/available', {username: $('#username')[0].value}, function (data) {
                             var message = data.username.message;
-                            console.log(message);
                             var success = 'This username is available';
 
                             if (message === success) {
