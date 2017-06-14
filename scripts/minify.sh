@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-
-npm install uglify-js
-
-cd ../server/web/scripts
-
-uglifyjs account.js -c -m -o ../public/mini-js/account.min.js
-uglifyjs login.js -c -m -o ../public/mini-js/login.min.js
-uglifyjs register.js -c -m -o ../public/mini-js/register.min.js
+for file in ./server/web/scripts/*.js; do
+  s=$file
+  s=${s##*/}
+  filename=${s%.*}
+  ./node_modules/.bin/uglifyjs ./server/web/scripts/${file##*/} -c -m -o ./server/web/public/mini-js/$filename.min.js
+done
