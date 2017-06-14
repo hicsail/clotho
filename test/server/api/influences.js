@@ -247,7 +247,7 @@ lab.experiment('Influence Plugin Delete', () => {
     });
   });
 });
-/*
+
 lab.experiment('Influence Plugin Create', () => {
 
   lab.beforeEach((done) => {
@@ -256,11 +256,10 @@ lab.experiment('Influence Plugin Create', () => {
       method: 'POST',
       url: '/influence',
       payload: {
-        sequenceId: 'seq1',
-        name: 'sequence1',
-        start: 1,
-        end: 2,
-        isForwardStrand: true
+        name: 'influence name',
+        type: 'REPRESSION',
+        influencedFeature: 'influencedFeature',
+        influencingFeature: 'influencingFeature'
       },
       credentials: AuthenticatedUser
     };
@@ -275,7 +274,7 @@ lab.experiment('Influence Plugin Create', () => {
       callback();
     };
 
-    stub.Influence.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+    stub.Influence.create = function (name, description, userId, type, influencedFeature, influencingFeature, callback) {
 
       callback(Error('create failed'));
     };
@@ -295,7 +294,7 @@ lab.experiment('Influence Plugin Create', () => {
       callback();
     };
 
-    stub.Influence.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+    stub.Influence.create = function (name, description, userId, type, influencedFeature, influencingFeature, callback) {
 
       callback(null, {});
     };
@@ -309,4 +308,3 @@ lab.experiment('Influence Plugin Create', () => {
     });
   });
 });
-*/
