@@ -78,11 +78,9 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          description: Joi.string(),
-          userId: Joi.string().required(),
+          description: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          bioDesignId: Joi.string(),
-          sequenceId: Joi.string()
+          bioDesignId: Joi.string().optional()
         }
       }
     },
@@ -95,7 +93,6 @@ internals.applyRoutes = function (server, next) {
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
         request.payload.bioDesignId,
-        request.payload.sequenceId,
         (err, part) => {
 
           if (err) {
