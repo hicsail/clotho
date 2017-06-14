@@ -8,8 +8,7 @@
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
     "lint": "lab -dL",
-    "postinstall": "./scripts/generateDocs.sh",
-    "prestart":"./scripts/minify.sh"
+    "prestart":"./scripts/minify.sh && ./scripts/generateDocs.sh"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
   "repository": {
