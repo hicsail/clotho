@@ -149,6 +149,9 @@ const manifest = {
       plugin: './server/web/public'
     },
     {
+      plugin: './server/web/documentation'
+    },
+    {
       plugin: './server/web/login/index'
     },
     {

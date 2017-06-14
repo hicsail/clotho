@@ -14,7 +14,65 @@ internals.applyRoutes = function (server, next) {
   const Session = server.plugins['hapi-mongo-models'].Session;
   const User = server.plugins['hapi-mongo-models'].User;
 
-
+  /**
+   * @api {post} /api/signup Signup
+   * @apiName Signup
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} username  user's username or email address. Must be lowercase.
+   * @apiParam {String} password  user's password.
+   * @apiParam {String} email     user's email.
+   * @apiParam {String} name      user's full name.
+   * @apiParam {String} application  current application name using the api.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "username":"clotho",
+   *    "password":"clotho",
+   *    "email":"clotho@clotho.com",
+   *    "name": "Clotho User",
+   *    "application":"Clotho Web"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *  "user": {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "username": "clotho",
+   *    "email": "clotho@clotho.com",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   *  },
+   *  "session": {
+   *    "userId": "59416fb93b81ca1e4a0c2523",
+   *    "application": "Clotho Web",
+   *    "key": "3913aaca-7c04-4658-9fb3-9d56b8141868",
+   *    "time": "2017-06-14T18:21:19.067Z",
+   *    "_id": "59417e9f25f30328c959078a"
+   *  },
+   *  "authHeader": "Basic NTk0MTdlOWYyNWYzMDMyOGM5NTkwNzhhOjM5MTNhYWNhLTdjMDQtNDY1OC05ZmIzLTlkNTZiODE0MTg2OA=="
+   * }
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   *  "statusCode": 409,
+   *  "error": "Conflict",
+   *  "message": "Username already in use."
+   * }
+   *
+   * * @apiErrorExample {json} Error-Response 2:
+   * {
+   *  "statusCode": 409,
+   *  "error": "Conflict",
+   *  "message": "Email already in use."
+   * }
+   */
   server.route({
     method: 'POST',
     path: '/signup',
