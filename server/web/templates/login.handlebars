@@ -13,29 +13,7 @@
                 <input class="input" id="password" type="password" placeholder="Password" name="password">
                 <input class="button is-primary" id="login" type="submit" value="Login">
             </form>
-            <script>
-                $('#login').on('submit', function (e) {
-                    e.preventDefault();
-
-                    // Store the input values in an object variable
-                    var values = {};
-                    $.each($('#login').serializeArray(), function (i, field) {
-                        values[field.name] = field.value;
-                    });
-                    values.application = 'Clotho Web'; // add application name
-                    // If the user exists, redirect to home page, if not show an alert
-                    $.post('/api/login', values, function (data) {
-                      location.reload();
-                    }).fail(function (data) {
-                        var message = data.responseJSON.message;
-                        failureAlert(message);
-                    });
-                });
-
-                function failureAlert(message) {
-                    $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 400);
-                }
-            </script>
+            <script type="text/javascript" src="../scripts/login.min.js"></script>
         </div>
     </div>
 </section>
