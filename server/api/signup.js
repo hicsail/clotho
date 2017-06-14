@@ -28,7 +28,8 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           username: Joi.string().token().lowercase().required(),
-          password: Joi.string().required()
+          password: Joi.string().required(),
+          application: Joi.string().required()
         }
       },
       plugins: {
@@ -152,7 +153,7 @@ internals.applyRoutes = function (server, next) {
         }],
         session: ['linkUser', 'linkAccount', function (results, done) {
 
-          Session.create(results.user._id.toString(), done);
+          Session.create(results.user._id.toString(), request.payload.application, done);
         }]
       }, (err, results) => {
 
