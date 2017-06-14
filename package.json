@@ -7,7 +7,8 @@
     "start": "nodemon server.js -e handlebars,js,css",
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
-    "lint": "lab -dL"
+    "lint": "lab -dL",
+    "prestart":"./scripts/minify.sh"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
   "repository": {
