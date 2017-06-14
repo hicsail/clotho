@@ -5,7 +5,7 @@ const MongoModels = require('mongo-models');
 
 class Feature extends MongoModels {
 
-  static create(name, description, userId, displayId, role, annotationId, callback) {
+  static create(name, description, userId, displayId, role, annotationId, moduleId, callback) {
 
     const document = {
       name: name,
@@ -13,7 +13,8 @@ class Feature extends MongoModels {
       userId: userId,
       displayId: displayId,
       role: role,
-      annotationId: annotationId
+      annotationId: annotationId,
+      moduleId: moduleId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -28,14 +29,31 @@ class Feature extends MongoModels {
   static findByAnnotationId(annotationId, callback) {
 
     const query = {'annotationId': annotationId};
+
     this.find(query, (err, annotations) => {
 
       if (err) {
         return callback(err);
       }
+
       callback(null, annotations);
     });
   }
+
+  static findByModuleId(moduleId, callback) {
+
+    const query = {'moduleId': moduleId};
+
+    this.find(query, (err, modules) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, modules);
+    });
+  }
+
 }
 
 // /**
@@ -64,6 +82,7 @@ Feature.schema = Joi.object().keys({
   role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
   annotationId: Joi.string().required(),
   genBankId: Joi.string(),
+  moduleId: Joi.string(),
   swissProtId: Joi.string(),
   riskGroup: Joi.number() // Is short according to clotho3.
 });

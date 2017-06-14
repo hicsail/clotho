@@ -24,7 +24,7 @@ class Parameter extends MongoModels {
   }
 
 
-  static findByBioDesignId(bioDesignIds, parameters, callback) {
+  static getParameterByBioDesignId(bioDesignIds, parameters, callback) {
 
     var query = {bioDesignId: {$in: bioDesignIds}};
     if (parameters !== null) {
@@ -34,8 +34,8 @@ class Parameter extends MongoModels {
         parameterVariables.push(para['variable']);
       }
 
-      query['value'] = parameterValues;
-      query['variable'] = parameterVariables;
+      query['value'] = {$in: parameterValues};
+      query['variable'] = {$in: parameterVariables};
 
     }
     this.find(query, (err, results) => {

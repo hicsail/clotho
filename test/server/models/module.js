@@ -39,7 +39,6 @@ lab.experiment('Module Class Methods', () => {
       'displayId',
       'bioDesignId',
       'TRANSCRIPTION',
-      'features',
       'submodule',
       (err, result) => {
 
@@ -68,7 +67,6 @@ lab.experiment('Module Class Methods', () => {
       'displayId',
       'bioDesignId',
       'TRANSCRIPTION',
-      'features',
       'submodule',
     (err, result) => {
 

@@ -41,6 +41,7 @@ lab.experiment('Feature Class Methods', () => {
       'displayId',
       TestFeatures[testCase].role,
       'annotationId',
+      'moduleId',
       (err, result) => {
 
         Code.expect(err).to.not.exist();
@@ -71,6 +72,7 @@ lab.experiment('Feature Class Methods', () => {
       'displayId',
       TestFeatures[testCase].role,
       'annotationId',
+      'moduleId',
       (err, result) => {
 
         Code.expect(err).to.be.an.object();

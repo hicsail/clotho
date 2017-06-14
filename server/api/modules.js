@@ -82,7 +82,6 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
           role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
-          featureIds: Joi.array().items(Joi.object()),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -97,7 +96,6 @@ internals.applyRoutes = function (server, next) {
         request.payload.displayId,
         request.payload.bioDesignId,
         request.payload.role,
-        request.payload.featureIds,
         request.payload.submoduleIds,
         (err, module) => {
 

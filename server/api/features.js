@@ -78,10 +78,11 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          annotationId: Joi.string().required(),
+          displayId: Joi.string().optional(),
           description: Joi.string().optional(),
           role: Joi.string().required(),
-          displayId: Joi.string().optional()
+          annotationId: Joi.string().required(),
+          moduleId: Joi.string(),
         }
       }
     },
@@ -94,6 +95,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.displayId,
         request.payload.role,
         request.payload.annotationId,
+        request.payload.moduleId,
         (err, feature) => {
 
           if (err) {

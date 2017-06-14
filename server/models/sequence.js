@@ -29,7 +29,7 @@ class Sequence extends MongoModels {
     });
   }
 
-  static findBySequence(seq, callback) {
+  static getSequenceBySequenceString(seq, callback) {
 
     const query = {sequence: seq};
     this.find(query, (err, sequences) => {

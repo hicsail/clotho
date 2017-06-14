@@ -54,7 +54,7 @@ internals.applyRoutes = function (server, next) {
         findSequences: function (done) {
 
           if (request.payload.sequence !== null) {
-            Sequence.findBySequence(request.payload.sequence, done);
+            Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
             done(null, []);
           }
@@ -62,13 +62,13 @@ internals.applyRoutes = function (server, next) {
         findParts: ['findSequences', function (results, done) {
           // get Sequence ids from array
           var seqArr = results.findSequences;
-          var seqIds = [];
+          var partIds = [];
           for (let seq of seqArr) {
-            seqIds.push(seq['_id'].toString());
+            partIds.push(seq['partId'].toString());
           }
 
           // then query all sequence's part ids
-          Part.findBySequenceId(seqIds, done);
+          Part.find({_id: {$in: partIds}}, done);
         }],
         findParameters: ['findParts', function (results, done) {
           // using part documents from last step, get biodesigns
@@ -78,23 +78,20 @@ internals.applyRoutes = function (server, next) {
             bioDesignIds.push(part['bioDesignId'].toString());
           }
 
-          // only one result, no need to search further
-          if (request.payload.sequence !== null & (bioDesignIds.length === 0 || bioDesignIds.length === 1)) {
+          // only zero/one result, no need to search further
+          if (request.payload.sequence !== null) {
+            if (bioDesignIds.length === 0) {
+              return reply([]);
+            }
 
-            // return BioDesign
-            BioDesign.findById(bioDesignIds[0], (err, results) => {
-
-              if (err) {
-                return reply(err);
-              }
-
-              reply(results);
-            });
+            if (bioDesignIds.length === 1) {
+              // should get full BioDesign
+            }
           }
 
           // otherwise keep going with parameters search
           if (request.payload.parameters !== null) {
-            Parameter.findByBioDesignId(bioDesignIds, request.payload.parameters, done);
+            Parameter.getParameterByBioDesignId(bioDesignIds, request.payload.parameters, done);
           } else {
             done(null, []);
           }
@@ -108,23 +105,21 @@ internals.applyRoutes = function (server, next) {
             bioDesignIds.push(parameter['bioDesignId'].toString());
           }
 
-          // if parameters had been null, bioDesignIds would be empty
-          // if empty because parameters not null, bioDesignIds should be returned
-          if (request.payload.parameters !== null && (bioDesignIds.length === 0 || bioDesignIds.length === 1)) {
-            BioDesign.findById(bioDesignIds[0], (err, results) => {
+          // only zero/one result, no need to search further
+          if (request.payload.parameters !== null) {
+            if (bioDesignIds.length === 0) {
+              return reply([]);
+            }
 
-              if (err) {
-                return reply(err);
-              }
-
-              reply(results);
-            });
+            if (bioDesignIds.length === 1) {
+              // should get full BioDesign
+            }
           }
 
 
           // otherwise perform module search
           if (request.payload.role !== null) {
-            Module.findByBioDesignId(bioDesignIds, {role: request.payload.role}, done);
+            Module.getModuleByBioDesignId(bioDesignIds, {role: request.payload.role}, done);
           } else {
             done(null, []);
           }
@@ -139,23 +134,23 @@ internals.applyRoutes = function (server, next) {
             bioDesignIds.push(module['bioDesignId'].toString());
           }
 
+          // only zero/one result, no need to search further
+          if (request.payload.role !== null) {
+            if (bioDesignIds.length === 0) {
+              return reply([]);
+            }
 
+            if (bioDesignIds.length === 1) {
+              // should get full BioDesign
 
-          if (request.payload.role !== null && (bioDesignIds.length === 0 || bioDesignIds.length === 1)) {
-            BioDesign.findById(bioDesignIds[0], (err, results) => {
-
-              if (err) {
-                return reply(err);
-              }
-
-              reply(results);
-            });
+            }
           }
 
           var bdQuery = {
             name: request.payload.name, displayId: request.payload.displayId, bioDesignId: {$in: bioDesignIds}
           };
 
+          // get full biodesigns
           BioDesign.pagedFind(bdQuery, fields, sort, limit, page, (err, results) => {
 
             if (err) {
@@ -260,9 +255,11 @@ internals.applyRoutes = function (server, next) {
             true, // isForwardString
             done);
         }],
-        createFeature: ['createSequence', 'createAnnotation', function (results, done) {
+        createFeature: ['createModule', function (results, done) {
 
           var annotationId = results.createAnnotation._id.toString();
+          var moduleId = results.createModule._id.toString();
+
           Feature.create(
             request.payload.name,
             null, // description
@@ -270,11 +267,13 @@ internals.applyRoutes = function (server, next) {
             request.payload.displayId,
             request.payload.role,
             annotationId,
+            moduleId,
             done);
         }],
         createSubpart: ['createSequence', 'createBioDesign', function (results, done) {
 
           var bioDesignId = results.createBioDesign._id.toString();
+
           Part.create(
             request.payload.name,
             null, // no description
@@ -283,9 +282,8 @@ internals.applyRoutes = function (server, next) {
             bioDesignId,
             done);
         }],
-        createModule: ['createFeature', function (results, done) {
+        createModule: ['createBioDesign', function (results, done) {
 
-          var featureIds = [results.createFeature._id.toString()]; // not sure how to get feature schema?
           var bioDesignId = results.createBioDesign._id.toString();
 
           Module.create(
@@ -295,7 +293,6 @@ internals.applyRoutes = function (server, next) {
             request.payload.displayId,
             bioDesignId,
             request.payload.role,
-            featureIds,
             null, // no submoduleIds
             done);
         }],

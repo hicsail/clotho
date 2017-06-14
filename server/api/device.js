@@ -164,21 +164,8 @@ internals.applyRoutes = function (server, next) {
             true, // isForwardString
             done);
         }],
-        createFeature: ['createSequence', 'createAnnotation', function (results, done) {
+        createModule: ['createBioDesign', function (results, done) {
 
-          var annotationId = results.createAnnotation._id.toString();
-          Feature.create(
-            request.payload.name,
-            null, // description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            request.payload.role,
-            annotationId,
-            done);
-        }],
-        createModule: ['createFeature', function (results, done) {
-
-          var featureIds = [results.createFeature._id.toString()]; // not sure how to get feature schema?
           var bioDesignId = results.createBioDesign._id.toString();
 
           Module.create(
@@ -188,8 +175,22 @@ internals.applyRoutes = function (server, next) {
             request.payload.displayId,
             bioDesignId,
             request.payload.role,
-            featureIds,
             null, // no submoduleIds
+            done);
+        }],
+        createFeature: ['createSequence', 'createAnnotation', 'createModule', function (results, done) {
+
+          var annotationId = results.createAnnotation._id.toString();
+          var moduleId = results.createModule._id.toString();
+
+          Feature.create(
+            request.payload.name,
+            null, // description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            request.payload.role,
+            annotationId,
+            moduleId,
             done);
         }],
         createParameters: ['createBioDesign', function (results, done) {

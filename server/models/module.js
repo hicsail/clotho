@@ -2,10 +2,11 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Feature = require('./feature');
 
 class Module extends MongoModels {
 
-  static create(name, description, userId, displayId, bioDesignId, role, featureIds, submoduleIds, callback) {
+  static create(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
     const document = {
       name: name,
@@ -14,7 +15,6 @@ class Module extends MongoModels {
       displayId: displayId,
       bioDesignId: bioDesignId,
       role: role,
-      featureIds: featureIds,
       submoduleIds: submoduleIds
     };
 
@@ -27,7 +27,7 @@ class Module extends MongoModels {
     });
   }
 
-  static findByBioDesignId(bioDesignIds, filters, callback) {
+  static getModuleByBioDesignId(bioDesignIds, filters, callback) {
 
     var query = {bioDesignId: {$in: bioDesignIds}};
 
@@ -45,6 +45,41 @@ class Module extends MongoModels {
     });
 
   }
+
+  static findByBioDesignId(bioDesignId, callback) {
+
+    const query = {bioDesignId: bioDesignId};
+
+    this.find(query, (err, modules) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      this.getFeatures(0, modules, callback);
+    });
+  }
+
+  static getFeatures(index,modules,callback) {
+
+    if(index == modules.length){
+      return callback(null, modules);
+    }
+
+    Feature.findByModuleId(modules[index]['_id'].toString(), (err,features) => {
+
+      if(err) {
+        return callback(err,null);
+      }
+
+      if(features.length != 0) {
+        modules[index].features = features;
+      }
+
+      return this.getFeatures(index+1, modules,callback);
+    });
+  }
+
 }
 
 //
