@@ -3,3 +3,4 @@ test/artifacts/*
 .env
 .idea
 server/web/public/documentation
+server/web/public/mini-js
