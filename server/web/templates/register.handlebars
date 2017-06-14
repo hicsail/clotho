@@ -116,6 +116,7 @@
                     });
                     delete values.retypePw; //delete the confirmed password
 
+                    values.application = 'Clotho Web'; // add application name
                     // If user does not already exist, send to home page
                     // If any error, show it in an alert
                     $.post('../../api/signup', values, function () {
