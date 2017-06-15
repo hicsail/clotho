@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+mkdir -p ./server/web/public/mini-js
 for file in ./server/web/scripts/*.js; do
   s=$file
   s=${s##*/}
