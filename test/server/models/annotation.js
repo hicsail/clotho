@@ -50,6 +50,7 @@ lab.experiment('Annotation Class Methods', () => {
           TestAnnotations[testCase].description,
           'userid12test',
           'displayId',
+          'BARCODE', //role
           result._id.toString(),
           'moduleId',
           (err, feature) => {

@@ -82,8 +82,7 @@ lab.experiment('Module Class Methods', () => {
   lab.test('it returns an instance when findByBioDesignId succeeds', (done) => {
 
     Module.findByBioDesignId(
-    ['bioDesignId'],
-    null,
+    'bioDesignId',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -105,8 +104,7 @@ lab.experiment('Module Class Methods', () => {
     };
 
     Module.findByBioDesignId(
-    ['bioDesignId'],
-    null,
+    'bioDesignId',
     (err, result) => {
 
       Code.expect(err).to.be.an.object();

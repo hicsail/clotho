@@ -271,7 +271,7 @@ lab.experiment('Module Plugin Create', () => {
       callback();
     };
 
-    stub.Module.create = function (name, description, userId, displayId, bioDesignId, role, featureIds, submoduleIds, callback) {
+    stub.Module.create = function (name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
       callback(Error('create failed'));
     };
@@ -291,7 +291,7 @@ lab.experiment('Module Plugin Create', () => {
       callback();
     };
 
-    stub.Module.create = function (name, description, userId, displayId, bioDesignId, role, featureIds, submoduleIds, callback) {
+    stub.Module.create = function (name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
       callback(null, {});
     };

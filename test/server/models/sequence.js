@@ -196,44 +196,7 @@ lab.experiment('Sequence Class Methods', () => {
     });
   });
 
-  lab.test('it return sequence by findBySequence', (done) => {
-
-    var testCase = 0;
-
-    Sequence.findBySequence(TestSequences[testCase].sequence, (err, result) => {
-
-      Code.expect(err).to.not.exist();
-      Code.expect(result[0]).to.be.an.instanceOf(Sequence);
-
-      done();
-    });
-  });
-
-  lab.test('it return an error when findBySequence fails', (done) => {
-
-    var testCase = 0;
-
-    const realFind = Sequence.find;
-    Sequence.find = function () {
-
-      const args = Array.prototype.slice.call(arguments);
-      const callback = args.pop();
-
-      callback(Error('failed'));
-    };
-
-    Sequence.findBySequence(TestSequences[testCase].sequence, (err, result) => {
-
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
-
-      Sequence.find = realFind;
-
-      done();
-    });
-  });
-
-  lab.test('it return an error when findBySequence fails', (done) => {
+  lab.test('it return an error when findByPartId fails', (done) => {
 
     const realFind = Sequence.find;
     Sequence.find = function () {
