@@ -93,7 +93,35 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {get} /api/users/my Get Current User
+   * @apiName /api/users/my
+   * @apiDescription Get current user
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "username": "clotho",
+   *    "email": "clotho@clotho.com",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'GET',
     path: '/users/my',

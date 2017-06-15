@@ -9,6 +9,11 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: '/login',
+        }
       }
     },
     handler: function (request, reply) {
