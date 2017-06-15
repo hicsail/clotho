@@ -528,17 +528,17 @@ internals.applyRoutes = function (server, next) {
    *
    * @apiParamExample {json} Request-Example:
    *  {
-   *    "password":"password"
+   *    "password":"clotho"
    *  }
    *
    * @apiSuccessExample {json} Success-Response:
    * {
    *    "_id": "59416fb93b81ca1e4a0c2523",
    *    "isActive": true,
-   *    "username": "clotho2",
-   *    "password": "$2a$10$18/pmvAoMqC5nAdBdAdNGezLuFtzL6BCm.q5welHPkdvPdTDHWF4G",
-   *    "email": "clotho2@clotho.com",
-   *    "name": "Clotho2 User",
+   *    "username": "clotho",
+   *    "password": "$2a$10$T0wK82pi7gzZAqdcEbt38uEBTAB5bhu0mqPYwCAHYwBo7/C0IFjMm",
+   *    "email": "clotho@clotho.com",
+   *    "name": "Clotho User",
    *    "timeCreated": "2017-06-14T18:49:01.255Z",
    *    "roles": {
    *      "account": {
