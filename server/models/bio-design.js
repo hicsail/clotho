@@ -5,6 +5,10 @@ const MongoModels = require('mongo-models');
 const Sequence = require('./sequence');
 const Strain = require('./strain');
 const Medium = require('./medium');
+const Part = require('./part');
+const Parameter = require('./parameter');
+const Module = require('./module');
+
 
 class BioDesign extends MongoModels {
 
@@ -27,9 +31,76 @@ class BioDesign extends MongoModels {
     });
   }
 
+  // accepts array of bioDesignIds
+  static getBioDesignIds(bioDesignIds, query, callback) {
+
+    if (query == null) {
+      query = {};
+    }
+
+    query['bioDesignId'] =  {$in: bioDesignIds};
+
+    this.find(query, (err, bioDesigns) => {
+
+        // dealing with error
+        if (err) {
+          return callback(err);
+        }
+
+        // otherwise buildup biodesign objects
+
+        for (var i = 0; i < bioDesigns.length; i++) {
+          // fetch aggregate of part, module, parameter (informally, components)
+          // and combine with main biodesign object
+          this.getBioDesign(bioDesignIds[i], (errGet, components) => {
+            if (err) {
+              return callback(errGet);
+            }
+
+            bioDesigns[i]['parts'] = components['parts'];
+            bioDesigns[i]['modules'] = components['modules'];
+            bioDesigns[i]['parameters'] = components['parameters'];
+
+          });
+
+        }
+
+        return bioDesigns;
+
+      }
+    );
+  }
+
+  // based on biodesignId, fetches all children
+  static getBioDesign(bioDesignId, callback) {
+
+    Part.findByBioDesignId(bioDesignId, (err, parts) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      Module.findByBioDesignId(bioDesignId, (err, modules) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        Parameter.getParameterByBioDesignId(bioDesignId, (err, parameters) => {
+
+          if (err) {
+            return callback(err);
+          }
+
+          return callback(null, {parts: parts, modules: modules, parameters: parameters});
+        });
+
+      });
+
+    });
+
+  }
 }
-
-
 
 
 //const SharableObjBase = require('org.clothocad.core.datums.SharableObjBase');

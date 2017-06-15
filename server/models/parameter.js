@@ -30,6 +30,9 @@ class Parameter extends MongoModels {
     if (parameters !== null) {
       var parameterValues = [], parameterVariables = [];
       for (var para of parameters) {
+        if (!isNaN(para['value'])) {
+          para['value'] = +para['value']; // convert to number
+        }
         parameterValues.push(para['value']);
         parameterVariables.push(para['variable']);
       }

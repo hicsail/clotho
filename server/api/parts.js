@@ -17,14 +17,14 @@ internals.applyRoutes = function (server, next) {
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
 
   server.route({
-    method: 'GET',
+    method: 'PUT',
     path: '/part',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
-        query: {
+        payload: {
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
           page: Joi.number().default(1),
@@ -36,19 +36,19 @@ internals.applyRoutes = function (server, next) {
             Joi.object().keys({
               name: Joi.string(),
               unit: Joi.string().allow(['m', 'cm', 'inches', 'in', 'nm']), // These should be updated.
-              value: Joi.number().required(),
-              variable: Joi.object().required()
+              value: Joi.number(),
+              variable: Joi.object()
             })
-          )
+          ).optional()
         }
       }
     },
     handler: function (request, reply) {
 
-      const fields = request.query.fields;
-      const sort = request.query.sort;
-      const limit = request.query.limit;
-      const page = request.query.page;
+      const fields = request.payload.fields;
+      const sort = request.payload.sort;
+      const limit = request.payload.limit;
+      const page = request.payload.page;
 
       Async.auto({
         findSequences: function (done) {
@@ -64,28 +64,38 @@ internals.applyRoutes = function (server, next) {
           var seqArr = results.findSequences;
           var partIds = [];
           for (let seq of seqArr) {
-            partIds.push(seq['partId'].toString());
+            if (seq['partId'] !== null) {
+              partIds.push(seq['partId'].toString());
+            }
           }
 
-          // then query all sequence's part ids
-          Part.find({_id: {$in: partIds}}, done);
+          if (request.payload.sequence !== null && partIds.length > 0) {
+            // then query all sequence's part ids
+            Part.find({_id: {$in: partIds}}, done);
+          } else {
+            done(null, []);
+          }
+
         }],
         findParameters: ['findParts', function (results, done) {
           // using part documents from last step, get biodesigns
           var partArr = results.findParts;
           var bioDesignIds = [];
           for (let part of partArr) {
-            bioDesignIds.push(part['bioDesignId'].toString());
+            if (part['bioDesignId'] !== null) {
+              bioDesignIds.push(part['bioDesignId'].toString());
+            }
           }
 
           // only zero/one result, no need to search further
           if (request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
-              return reply([]);
+              return reply({debug: results});
             }
 
             if (bioDesignIds.length === 1) {
               // should get full BioDesign
+              return BioDesign.getBioDesignIds(bioDesignIds, null, done);
             }
           }
 
@@ -98,21 +108,25 @@ internals.applyRoutes = function (server, next) {
 
         }],
         findModules: ['findParameters', function (results, done) {
-          // collect biodesign Ids
+          // collect bioDesign Ids
           var parameterArray = results.findParameters;
           var bioDesignIds = [];
           for (let parameter of parameterArray) {
-            bioDesignIds.push(parameter['bioDesignId'].toString());
+            if (parameter['bioDesignId'] !== null) {
+              bioDesignIds.push(parameter['bioDesignId'].toString());
+            }
+
           }
 
           // only zero/one result, no need to search further
           if (request.payload.parameters !== null) {
             if (bioDesignIds.length === 0) {
-              return reply([]);
+              return reply({debug: results});
             }
 
             if (bioDesignIds.length === 1) {
               // should get full BioDesign
+              return BioDesign.getBioDesignIds(bioDesignIds, null, done);
             }
           }
 
@@ -131,34 +145,28 @@ internals.applyRoutes = function (server, next) {
           var moduleArray = results.findModules;
           var bioDesignIds = [];
           for (let module of moduleArray) {
-            bioDesignIds.push(module['bioDesignId'].toString());
+            if (module['bioDesignId'] !== null) {
+              bioDesignIds.push(module['bioDesignId'].toString());
+            }
           }
 
           // only zero/one result, no need to search further
           if (request.payload.role !== null) {
             if (bioDesignIds.length === 0) {
-              return reply([]);
+              return reply({debug: results});
             }
 
             if (bioDesignIds.length === 1) {
               // should get full BioDesign
-
+              return BioDesign.getBioDesignIds(bioDesignIds, null, done);
             }
           }
 
-          var bdQuery = {
-            name: request.payload.name, displayId: request.payload.displayId, bioDesignId: {$in: bioDesignIds}
-          };
+          var query = {name: request.payload.name, displayId: request.payload.displayId};
 
           // get full biodesigns
-          BioDesign.pagedFind(bdQuery, fields, sort, limit, page, (err, results) => {
+          return BioDesign.getBioDesignIds(bioDesignIds, query, done);
 
-            if (err) {
-              return reply(err);
-            }
-
-            reply(results);
-          });
         }]
       }, (err, results) => {
 
@@ -228,7 +236,9 @@ internals.applyRoutes = function (server, next) {
             null,
             done);
         },
-        createSequence: function (done) {
+        createSequence: ['createSubpart', function (results, done) {
+
+          var partId = results.createSubpart._id.toString();
 
           Sequence.create(
             request.payload.name,
@@ -236,12 +246,12 @@ internals.applyRoutes = function (server, next) {
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
             null, // featureId null
-            null, //partId
+            partId,
             request.payload.sequence,
             null,
             null,
             done);
-        },
+        }],
         createAnnotation: ['createSequence', function (results, done) {
 
           var seq = results.createSequence._id.toString();
@@ -255,7 +265,7 @@ internals.applyRoutes = function (server, next) {
             true, // isForwardString
             done);
         }],
-        createFeature: ['createModule', function (results, done) {
+        createFeature: ['createModule', 'createAnnotation', function (results, done) {
 
           var annotationId = results.createAnnotation._id.toString();
           var moduleId = results.createModule._id.toString();
@@ -270,7 +280,7 @@ internals.applyRoutes = function (server, next) {
             moduleId,
             done);
         }],
-        createSubpart: ['createSequence', 'createBioDesign', function (results, done) {
+        createSubpart: ['createBioDesign', function (results, done) {
 
           var bioDesignId = results.createBioDesign._id.toString();
 

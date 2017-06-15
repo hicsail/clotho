@@ -27,12 +27,15 @@ class Module extends MongoModels {
     });
   }
 
-  static getModuleByBioDesignId(bioDesignIds, filters, callback) {
+  static getModuleByBioDesignId(bioDesignId, query, callback) {
+    if (query == null) {
+      query = {};
+    }
 
-    var query = {bioDesignId: {$in: bioDesignIds}};
-
-    for (var f in filters) {
-      query[f] = filters[f];
+    if (typeof bioDesignId == 'string') {
+      query['bioDesignId'] = bioDesignId;
+    } else {
+      query['bioDesignId'] = {bioDesignId: {$in: bioDesignId}};
     }
 
     this.find(query, (err, results) => {
