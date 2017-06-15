@@ -18,6 +18,7 @@ internals.applyRoutes = function (server, next) {
   /**
    * @api {post} /api/login Login
    * @apiName Login
+   * @apiDescription Create a new user session
    * @apiGroup Authentication
    * @apiVersion 4.0.0
    * @apiPermission none
