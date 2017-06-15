@@ -28,7 +28,7 @@ class Parameter extends MongoModels {
 
     var query = {bioDesignId: {$in: bioDesignIds}};
     if (parameters !== null) {
-      var parameterValues, parameterVariables;
+      var parameterValues = [], parameterVariables = [];
       for (var para of parameters) {
         parameterValues.push(para['value']);
         parameterVariables.push(para['variable']);

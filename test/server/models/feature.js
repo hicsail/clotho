@@ -121,4 +121,28 @@ lab.experiment('Feature Class Methods', () => {
       });
   });
 
+  lab.test('it returns an error when findByModuleId fails', (done) => {
+
+    const realInsertOne = Feature.find;
+    Feature.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('find failed'));
+    };
+
+    Feature.findByModuleId(
+      'moduleId',
+      (err, result) => {
+
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
+
+        Feature.find = realInsertOne;
+
+        done();
+      });
+  });
+
 });

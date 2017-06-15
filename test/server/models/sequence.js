@@ -41,7 +41,7 @@ lab.experiment('Sequence Class Methods', () => {
     Sequence.create(
       TestSequences[testCase].name,
       TestSequences[testCase].description,
-      'userid12test',
+      'userId',
       'displayId',
       null,
       'partId',
@@ -73,7 +73,7 @@ lab.experiment('Sequence Class Methods', () => {
     Sequence.create(
       TestSequences[testCase].name,
       TestSequences[testCase].description,
-      'userid12test',
+      'userId',
       'displayId',
       null,
       'partId',
@@ -93,7 +93,7 @@ lab.experiment('Sequence Class Methods', () => {
 
   lab.test('it returns sequence by userId', (done) => {
 
-    Sequence.findByUserId('userid12test', (err, usersSeqences) => {
+    Sequence.findByUserId('userId', (err, usersSeqences) => {
 
       Code.expect(err).to.not.exist();
       Code.expect(usersSeqences[0]).to.be.an.instanceOf(Sequence);
@@ -111,14 +111,14 @@ lab.experiment('Sequence Class Methods', () => {
       Annotation.create(
         TestAnnotations[testCase].name,
         TestAnnotations[testCase].description,
-        'userid12test',
+        'userId',
         sequence._id.toString(),
         TestAnnotations[testCase].start,
         TestAnnotations[testCase].end,
         TestAnnotations[testCase].isForwardStrand,
         (err, result) => {
 
-          Sequence.findByUserId('userid12test', (err, usersSeqences) => {
+          Sequence.findByUserId('userId', (err, usersSeqences) => {
 
             Code.expect(err).to.not.exist();
             Code.expect(usersSeqences[0]).to.be.an.instanceOf(Sequence);
@@ -141,7 +141,7 @@ lab.experiment('Sequence Class Methods', () => {
       callback(Error('find by userid failed'));
     };
 
-    Sequence.findByUserId('userid12test', (err, result) => {
+    Sequence.findByUserId('userId', (err, result) => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(result).to.not.exist();
@@ -163,7 +163,7 @@ lab.experiment('Sequence Class Methods', () => {
       callback(Error('find by userid failed'));
     };
 
-    Sequence.findByUserId('userid12test', (err, result) => {
+    Sequence.findByUserId('userId', (err, result) => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(result).to.not.exist();
@@ -185,7 +185,7 @@ lab.experiment('Sequence Class Methods', () => {
       callback(Error('find by userid failed'));
     };
 
-    Sequence.findByUserId('userid12test', (err, result) => {
+    Sequence.findByUserId('userId', (err, result) => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(result).to.not.exist();
@@ -211,6 +211,43 @@ lab.experiment('Sequence Class Methods', () => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(result).to.not.exist();
+
+      Sequence.find = realFind;
+
+      done();
+    });
+  });
+
+  lab.test('it returns sequence by getSequenceBySequenceString when succeeds', (done) => {
+
+    var testCase = 0;
+
+    Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence, (err, usersSeqences) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(usersSeqences[0]).to.be.an.instanceOf(Sequence);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error by getSequenceBySequenceString when fails', (done) => {
+
+    var testCase = 0;
+
+    const realFind = Sequence.find;
+    Sequence.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence, (err, usersSeqences) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(usersSeqences).to.not.exist();
 
       Sequence.find = realFind;
 

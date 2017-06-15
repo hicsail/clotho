@@ -72,4 +72,60 @@ lab.experiment('Parameter Class Methods', () => {
       done();
     });
   });
+
+  lab.test('it returns a instance when getParameterByBioDesignId succeeds', (done) => {
+
+    Parameter.getParameterByBioDesignId(
+      ['bioDesignId'],
+      null,
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result[0]).to.be.an.instanceOf(Parameter);
+
+      done();
+    });
+  });
+
+  lab.test('it returns a instance when getParameterByBioDesignId succeeds', (done) => {
+
+    Parameter.getParameterByBioDesignId(
+      ['bioDesignId'],
+      [{
+        value: 'value',
+        variable: 'variable'
+      }],
+    (err, result) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(result[0]).to.be.an.instanceOf(Parameter);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when getParameterByBioDesignId fails', (done) => {
+
+    const realFind = Parameter.find;
+    Parameter.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    Parameter.getParameterByBioDesignId(
+      ['bioDesignId'],
+      null,
+    (err, result) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
+
+      Parameter.find = realFind;
+
+      done();
+    });
+  });
 });
