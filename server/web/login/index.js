@@ -65,6 +65,29 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/passwordreset',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
+    handler: function (request, reply) {
+      if(request.auth.isAuthenticated) {
+        return reply.redirect('/');
+      } else {
+        return reply.view('passwordreset');
+      }
+    }
+  });
+
   next();
 };
 
