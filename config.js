@@ -46,7 +46,7 @@ const config = {
     port: 465,
     secure: true,
     auth: {
-      user: 'jedireza@gmail.com',
+      user: 'shaikh1@bu.edu',
       pass: process.env.SMTP_PASSWORD
     }
   },
