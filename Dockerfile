@@ -22,7 +22,8 @@ RUN nodejs -v
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN node -v
 
-EXPOSE 9000
 RUN mkdir -p /data/db
+EXPOSE 9000
+ENTRYPOINT ["/usr/bin/mongod"]
 
 CMD sh docker-run.sh
