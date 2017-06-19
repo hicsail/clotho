@@ -10,6 +10,7 @@ RUN apt-get update
 RUN apt-get install -y mongodb-org
 RUN apt-get install -y nodejs
 RUN apt-get install -y npm
+RUN apt-get install -y netcat
 RUN npm cache clean -f
 RUN apt-get install -y curl                     #Needed for the 'n' package to be installed successfully.
 RUN npm install -g n
@@ -24,6 +25,6 @@ RUN node -v
 
 RUN mkdir -p /data/db
 EXPOSE 9000
-ENTRYPOINT ["/usr/bin/mongod"]
+CMD /usr/bin/mongod
 
 CMD sh docker-run.sh
