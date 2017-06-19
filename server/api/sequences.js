@@ -113,6 +113,59 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/sequence/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().required(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
+          accenssion: Joi.string().optional(),
+          isLinear: Joi.boolean().optional(),
+          isSingleStranded: Joi.boolean().optional(),
+          displayId: Joi.string().optional(),
+          featureId: Joi.string().optional(),
+          partId: Joi.string().optional()
+        }
+      }
+    },
+    handler: function (request, reply) {
+      const id = request.params.id;
+
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          sequence: request.payload.sequence,
+          accenssion: request.payload.accenssion,
+          isLinear: request.payload.isLinear,
+          isSingleStranded: request.payload.isSingleStranded,
+          displayId: request.payload.displayId,
+          featureId: request.payload.featureId,
+          partId: request.payload.partId
+        }
+      };
+
+      // TODO: add update method in the sequence.js object file. Add here after.
+      Sequence.findByIdAndUpdate(id, update, (err, sequence) => {
+        if (err) {
+          return reply(err);
+        }
+
+        if (!sequence) {
+          return reply(Boom.notFound('Sequence not found.'));
+        }
+
+        reply(sequence);
+      });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/sequence/{id}',
     config: {
