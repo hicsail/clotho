@@ -30,6 +30,5 @@ RUN node -v
 
 RUN mkdir -p /data/db
 EXPOSE 9000
-#CMD /usr/bin/mongod
 
 CMD sh ../docker-run.sh
