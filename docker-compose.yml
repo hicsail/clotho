@@ -1,14 +1,27 @@
-version: '2'
-services:
-  app:
-    build: .
-    ports:
-      - "9000:9000"
-    environment:
-      - MONGODB_URI_DEFAULT=mongodb://db:27017/clotho
-    links:
-      - db
-  db:
-    image: mongo
-    ports:
-      - "27018:27017"
+#version: '2'
+#services:
+#  app:
+#    build: .
+#    ports:
+#      - "9000:9000"
+#    environment:
+#      - MONGODB_URI_DEFAULT=mongodb://db:27017/clotho
+#    links:
+#      - db
+#  db:
+#    image: mongo
+#    ports:
+#      - "27017:27017"
+
+mongo:
+  image: mongo
+app:
+  build: .
+  links:
+    - mongo
+  volumes :
+    - ../:/usr/src/sci-fi
+  ports:
+    - "9000:9000"
+  environment:
+    - NODE_ENV='docker'

@@ -34,9 +34,9 @@ const config = {
     mongodb: {
       uri: {
         $filter: 'env',
-        production: process.env.MONGODB_URI,
-        test: 'mongodb://localhost:27017/clotho-test',
-        $default: process.env.MONGODB_URI_DEFAULT
+        production: 'mongodb://mongo:27017/clotho',
+        test: 'mongodb://mongo:27017/clotho',
+        $default: 'mongodb://mongo:27017/clotho'
       }
     },
     autoIndex: true
