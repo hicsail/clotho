@@ -1,7 +1,10 @@
 FROM ubuntu:latest
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY package.json /usr/src/app/
+
+ENV NODE_ENV 'docker'
+
+RUN mkdir -p /usr/src/clotho
+WORKDIR /usr/src/clotho/server
+COPY package.json /usr/src/clotho/
 
 RUN apt-get update
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
@@ -16,15 +19,17 @@ RUN apt-get install -y curl                     #Needed for the 'n' package to b
 RUN npm install -g n
 RUN n 6.0.0
 
+COPY . /usr/src/clotho
+
 RUN npm install
-COPY . /usr/src/app
 
 RUN nodejs -v
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN node -v
 
+
 RUN mkdir -p /data/db
 EXPOSE 9000
 CMD /usr/bin/mongod
 
-CMD sh docker-run.sh
+CMD sh ../docker-run.sh
