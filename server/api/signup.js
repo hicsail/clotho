@@ -17,6 +17,7 @@ internals.applyRoutes = function (server, next) {
   /**
    * @api {post} /api/signup Signup
    * @apiName Signup
+   * @apiDescription Create a new user account
    * @apiGroup Authentication
    * @apiVersion 4.0.0
    * @apiPermission none
@@ -240,6 +241,80 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {post} /api/available Available
+   * @apiName Available
+   * @apiDescription Check is username and email is available
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} username  user's username or email address.
+   * @apiParam {String} email     user's email.
+   *
+   * @apiParamExample {json} Request-Example 1:
+   *  {
+   *    "username":"ClothoUser",
+   *    "email":"clotho@clotho-bu.com"
+   *  }
+   *
+   * @apiParamExample {json} Request-Example 2:
+   *  {
+   *    "username":"Clotho",
+   *    "email":"clotho@clotho.com"
+   *  }
+   *
+   * @apiParamExample {json} Request-Example 2:
+   *  {
+   *    "username":"clothoUser"
+   *  }
+   *
+   * @apiParamExample {json} Request-Example 4:
+   *  {
+   *    "email":"clotho@clotho.com"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response 1:
+   * {
+   *  "username": {
+   *      "status": "available",
+   *      "message": "This username is available"
+   *   },
+   *   "email": {
+   *      "status": "available",
+   *      "message": "This email is available"
+   *    }
+   * }
+   *
+   * @apiSuccessExample {json} Success-Response 2:
+   * {
+   *  "username": {
+   *      "status": "taken",
+   *      "message": "This username is not available"
+   *   },
+   *   "email": {
+   *      "status": "taken",
+   *      "message": "This email is not available"
+   *    }
+   * }
+   *
+   * @apiSuccessExample {json} Success-Response 3:
+   * {
+   *  "username": {
+   *      "status": "available",
+   *      "message": "This username is available"
+   *   }
+   * }
+   *
+   * @apiSuccessExample {json} Success-Response 4:
+   * {
+   *   "email": {
+   *      "status": "taken",
+   *      "message": "This email is not available"
+   *    }
+   * }
+   *
+   */
   server.route({
     method: 'POST',
     path: '/available',

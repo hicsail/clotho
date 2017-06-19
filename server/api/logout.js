@@ -9,7 +9,27 @@ internals.applyRoutes = function (server, next) {
 
   const Session = server.plugins['hapi-mongo-models'].Session;
 
-
+  /**
+   * @api {delete} /api/logout Logout
+   * @apiName Logout
+   * @apiDescription Remove Users Session
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   * "message": "Success."
+   * }
+   *
+   * @apiErrorExample {json} Error-Response:
+   * {
+   *  "statusCode": 404,
+   *  "error": "Not Found",
+   *  "message": "Document not found."
+   * }
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/logout',

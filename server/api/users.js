@@ -93,7 +93,35 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {get} /api/users/my Get Current User
+   * @apiName /api/users/my
+   * @apiDescription Get current user
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "username": "clotho",
+   *    "email": "clotho@clotho.com",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'GET',
     path: '/users/my',
@@ -301,7 +329,49 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {put} /api/users/my Update Current User
+   * @apiName Update Current User
+   * @apiDescription Update current user's username, email, or name
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} username  user's new username.
+   * @apiParam {String} email     user's new email.
+   * @apiParam {String} name      user's new full name.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "username":"clotho2",
+   *    "email":"clotho2@clotho.com",
+   *    "name": "Clotho2 User",
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "isActive": true,
+   *    "username": "clotho2",
+   *    "email": "clotho2@clotho.com",
+   *    "name": "Clotho2 User",
+   *    "timeCreated": "2017-06-14T18:49:01.255Z",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'PUT',
     path: '/users/my',
@@ -446,7 +516,46 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {put} /api/users/my/password Change Password
+   * @apiName Change Password
+   * @apiDescription Change User's Password
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} password  user's new password.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "password":"clotho"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "isActive": true,
+   *    "username": "clotho",
+   *    "password": "$2a$10$T0wK82pi7gzZAqdcEbt38uEBTAB5bhu0mqPYwCAHYwBo7/C0IFjMm",
+   *    "email": "clotho@clotho.com",
+   *    "name": "Clotho User",
+   *    "timeCreated": "2017-06-14T18:49:01.255Z",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'PUT',
     path: '/users/my/password',
