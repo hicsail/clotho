@@ -236,49 +236,49 @@ internals.applyRoutes = function (server, next) {
             null,
             done);
         },
-        createSequence: ['createSubpart', function (results, done) {
+        createParameters: ['createBioDesign', function (results, done) {
 
-          var partId = results.createSubpart._id.toString();
+          if (request.payload.parameters !== undefined) {
 
-          Sequence.create(
-            request.payload.name,
-            null, // no description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            null, // featureId null
-            partId,
-            request.payload.sequence,
-            null,
-            null,
-            done);
+            var bioDesignId = results.createBioDesign._id.toString();
+            var param = request.payload.parameters;
+
+            for (var i = 0; i < param.length; ++i) {
+
+              Parameter.create(
+                request.auth.credentials.user._id.toString(),
+                bioDesignId,
+                param[i]['value'],
+                param[i]['variable'],
+                done);
+
+            }
+          }
+          else {
+            done(null, []);
+          }
+
         }],
-        createAnnotation: ['createSequence', function (results, done) {
+        createModule: ['createBioDesign', function (results, done) {
 
-          var seq = results.createSequence._id.toString();
-          Annotation.create(
-            request.payload.name,
-            null, // description,
-            request.auth.credentials.user._id.toString(),
-            seq, // sequenceId
-            1, // start
-            request.payload.sequence.length, // end
-            true, // isForwardString
-            done);
-        }],
-        createFeature: ['createModule', 'createAnnotation', function (results, done) {
+          if (request.payload.role !== undefined) {
+            var bioDesignId = results.createBioDesign._id.toString();
 
-          var annotationId = results.createAnnotation._id.toString();
-          var moduleId = results.createModule._id.toString();
+            Module.create(
+              request.payload.name,
+              null, // description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              bioDesignId,
+              request.payload.role,
+              null, // no submoduleIds
+              done);
 
-          Feature.create(
-            request.payload.name,
-            null, // description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            request.payload.role,
-            annotationId,
-            moduleId,
-            done);
+          }
+          else {
+            done(null, []);
+          }
+
         }],
         createSubpart: ['createBioDesign', function (results, done) {
 
@@ -292,37 +292,82 @@ internals.applyRoutes = function (server, next) {
             bioDesignId,
             done);
         }],
-        createModule: ['createBioDesign', function (results, done) {
+        createSequence: ['createSubpart', function (results, done) {
 
-          var bioDesignId = results.createBioDesign._id.toString();
+          if (request.payload.sequence !== undefined) {
 
-          Module.create(
+            var partId = results.createSubpart._id.toString();
+
+            Sequence.create(
+              request.payload.name,
+              null, // no description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              null, // featureId null
+              partId,
+              request.payload.sequence,
+              null,
+              null,
+              done);
+
+          }
+          else {
+            done(null, []);
+          }
+
+        }],
+        createAnnotation: ['createSequence', function (results, done) {
+
+          if (request.payload.sequence !== undefined) {
+
+            var seq = results.createSequence._id.toString();
+            Annotation.create(
+              request.payload.name,
+              null, // description,
+              request.auth.credentials.user._id.toString(),
+              seq, // sequenceId
+              1, // start
+              request.payload.sequence.length, // end
+              true, // isForwardString
+              done);
+          }
+          else {
+            done(null, []);
+          }
+        }],
+        createFeature: ['createModule', 'createAnnotation', function (results, done) {
+
+          if (results.createAnnotation._id === undefined) {
+            var annotationId = null;
+          }
+          else {
+            var annotationId = results.createAnnotation._id.toString();
+          }
+
+          if (results.createModule._id === undefined) {
+            var moduleId = null;
+          }
+          else {
+            var moduleId = results.createModule._id.toString();
+          }
+
+          if (annotationId !== null  && moduleId !== null) {
+          Feature.create(
             request.payload.name,
             null, // description
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
-            bioDesignId,
             request.payload.role,
-            null, // no submoduleIds
+            annotationId,
+            moduleId,
             done);
-        }],
-        createParameters: ['createBioDesign', function (results, done) {
-
-          var bioDesignId = results.createBioDesign._id.toString();
-          var param = request.payload.parameters;
-
-          for (var i = 0; i < param.length; ++i) {
-
-            Parameter.create(
-              request.auth.credentials.user._id.toString(),
-              bioDesignId,
-              param[i]['value'],
-              param[i]['variable'],
-              done);
-
           }
-
+          else {
+            done(null, []);
+          }
         }]
+
+
       }, (err, results) => {
 
         if (err) {
