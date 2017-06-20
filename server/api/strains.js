@@ -101,6 +101,45 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/strain/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description
+        }
+      };
+
+      Strain.findByIdAndUpdate(id, update, (err, strain) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!strain)) {
+        return reply(Boom.notFound('Strain not found.'));
+        }
+
+      reply(strain);
+      });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/strain/{id}',
     config: {

@@ -97,6 +97,45 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/assembly/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      }
+      validate: {
+        payload: {
+          parts: Joi.array().items(Joi.object()), // original set of Parts
+          subAssemblyIds: Joi.array().items(Joi.string())
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          parts: request.payload.parts,
+          subAssemblyIds: request.payload.subAssemblyIds
+        }
+      };
+
+      Assembly.findByIdAndUpdate(id, update, (err, assembly) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!assembly) {
+          return reply(Boom.notFound('Assembly not found.'));
+        }
+
+        reply(assembly);
+      });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/assembly/{id}',
     config: {

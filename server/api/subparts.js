@@ -104,6 +104,49 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/subpart/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          bioDesignId: Joi.string().optional()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          displayId: request.payload.displayId,
+          bioDesignId: request.payload.bioDesignId
+        }
+      };
+
+      Part.findByIdAndUpdate(id, update, (err, part) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!part)) {
+        return reply(Boom.notFound('Sub-part not found.'));
+      }
+
+      reply(part);
+    });
+}
+});
+
+  server.route({
     method: 'DELETE',
     path: '/subpart/{id}',
     config: {

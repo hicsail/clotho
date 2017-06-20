@@ -100,6 +100,45 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/medium/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+        }
+      };
+
+      Medium.findByIdAndUpdate(id, update, (err, medium) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!medium) {
+        return reply(Boom.notFound('Medium not found.'));
+      }
+
+      reply(medium);
+    });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/medium/{id}',
     config: {

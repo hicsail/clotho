@@ -106,6 +106,51 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/influence/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          type: Joi.string().valid('REPRESSION', 'ACTIVATION').required(),
+          influencedFeature: Joi.string().required(),
+          influencingFeature: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          type: request.payload.type,
+          influencedFeature: request.payload.influencedFeature,
+          influencingFeature: request.payload.influencingFeature
+        }
+      };
+
+      Influence.findByIdAndUpdate(id, update, (err, influence) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!influence) {
+          return reply(Boom.notFound('Influence not found.'));
+        }
+
+        reply(influence);
+      });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/influence/{id}',
     config: {
