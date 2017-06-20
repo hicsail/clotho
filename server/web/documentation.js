@@ -5,20 +5,25 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/account',
+    path: '/api/docs',
     config: {
       auth: {
+        mode: 'try',
         strategy: 'session'
       },
       plugins: {
         'hapi-auth-cookie': {
-          redirectTo: '/login',
+          redirectTo: false
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply.view('account',{user: request.auth.credentials.user});
+      var user = null;
+      if(request.auth.isAuthenticated) {
+        user = request.auth.credentials.user;
+      }
+      return reply.view('docs',{user: user});
     }
   });
 
@@ -34,6 +39,6 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'account/index',
+  name: 'documentation',
   dependencies: 'visionary'
 };

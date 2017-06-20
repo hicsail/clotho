@@ -33,7 +33,7 @@ class Session extends MongoModels {
     });
   }
 
-  static create(userId, callback) {
+  static create(userId, application, callback) {
 
     const self = this;
 
@@ -43,6 +43,7 @@ class Session extends MongoModels {
 
         const document = {
           userId,
+          application,
           key: results.keyHash.hash,
           time: new Date()
         };
@@ -53,6 +54,7 @@ class Session extends MongoModels {
 
         const query = {
           userId,
+          application,
           key: {$ne: results.keyHash.hash}
         };
 
@@ -111,12 +113,13 @@ Session.schema = Joi.object().keys({
   _id: Joi.object(),
   userId: Joi.string().required(),
   key: Joi.string().required(),
+  application: Joi.string().required(),
   time: Joi.date().required()
 });
 
 
 Session.indexes = [
-  {key: {userId: 1}}
+  {key: {userId: 1, application: 1}}
 ];
 
 

@@ -14,7 +14,66 @@ internals.applyRoutes = function (server, next) {
   const Session = server.plugins['hapi-mongo-models'].Session;
   const User = server.plugins['hapi-mongo-models'].User;
 
-
+  /**
+   * @api {post} /api/signup Signup
+   * @apiName Signup
+   * @apiDescription Create a new user account
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} username  user's username or email address. Must be lowercase.
+   * @apiParam {String} password  user's password.
+   * @apiParam {String} email     user's email.
+   * @apiParam {String} name      user's full name.
+   * @apiParam {String} application  current application name using the api.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "username":"clotho",
+   *    "password":"clotho",
+   *    "email":"clotho@clotho.com",
+   *    "name": "Clotho User",
+   *    "application":"Clotho Web"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *  "user": {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "username": "clotho",
+   *    "email": "clotho@clotho.com",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   *  },
+   *  "session": {
+   *    "userId": "59416fb93b81ca1e4a0c2523",
+   *    "application": "Clotho Web",
+   *    "key": "3913aaca-7c04-4658-9fb3-9d56b8141868",
+   *    "time": "2017-06-14T18:21:19.067Z",
+   *    "_id": "59417e9f25f30328c959078a"
+   *  },
+   *  "authHeader": "Basic NTk0MTdlOWYyNWYzMDMyOGM5NTkwNzhhOjM5MTNhYWNhLTdjMDQtNDY1OC05ZmIzLTlkNTZiODE0MTg2OA=="
+   * }
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   *  "statusCode": 409,
+   *  "error": "Conflict",
+   *  "message": "Username already in use."
+   * }
+   *
+   * * @apiErrorExample {json} Error-Response 2:
+   * {
+   *  "statusCode": 409,
+   *  "error": "Conflict",
+   *  "message": "Email already in use."
+   * }
+   */
   server.route({
     method: 'POST',
     path: '/signup',
@@ -28,7 +87,8 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           username: Joi.string().token().lowercase().required(),
-          password: Joi.string().required()
+          password: Joi.string().required(),
+          application: Joi.string().required()
         }
       },
       plugins: {
@@ -152,7 +212,7 @@ internals.applyRoutes = function (server, next) {
         }],
         session: ['linkUser', 'linkAccount', function (results, done) {
 
-          Session.create(results.user._id.toString(), done);
+          Session.create(results.user._id.toString(), request.payload.application, done);
         }]
       }, (err, results) => {
 
@@ -181,6 +241,80 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {post} /api/available Available
+   * @apiName Available
+   * @apiDescription Check is username and email is available
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} username  user's username or email address.
+   * @apiParam {String} email     user's email.
+   *
+   * @apiParamExample {json} Request-Example 1:
+   *  {
+   *    "username":"ClothoUser",
+   *    "email":"clotho@clotho-bu.com"
+   *  }
+   *
+   * @apiParamExample {json} Request-Example 2:
+   *  {
+   *    "username":"Clotho",
+   *    "email":"clotho@clotho.com"
+   *  }
+   *
+   * @apiParamExample {json} Request-Example 2:
+   *  {
+   *    "username":"clothoUser"
+   *  }
+   *
+   * @apiParamExample {json} Request-Example 4:
+   *  {
+   *    "email":"clotho@clotho.com"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response 1:
+   * {
+   *  "username": {
+   *      "status": "available",
+   *      "message": "This username is available"
+   *   },
+   *   "email": {
+   *      "status": "available",
+   *      "message": "This email is available"
+   *    }
+   * }
+   *
+   * @apiSuccessExample {json} Success-Response 2:
+   * {
+   *  "username": {
+   *      "status": "taken",
+   *      "message": "This username is not available"
+   *   },
+   *   "email": {
+   *      "status": "taken",
+   *      "message": "This email is not available"
+   *    }
+   * }
+   *
+   * @apiSuccessExample {json} Success-Response 3:
+   * {
+   *  "username": {
+   *      "status": "available",
+   *      "message": "This username is available"
+   *   }
+   * }
+   *
+   * @apiSuccessExample {json} Success-Response 4:
+   * {
+   *   "email": {
+   *      "status": "taken",
+   *      "message": "This email is not available"
+   *    }
+   * }
+   *
+   */
   server.route({
     method: 'POST',
     path: '/available',
