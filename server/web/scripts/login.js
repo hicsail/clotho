@@ -15,10 +15,3 @@ $('#login').on('submit', function (e) {
     failureAlert(message);
   });
 });
-
-function failureAlert(message) {
-  $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({
-    opacity: 0,
-    visibility: "visible"
-  }).animate({opacity: 1}, 400);
-}

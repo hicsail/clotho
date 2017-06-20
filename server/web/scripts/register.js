@@ -160,18 +160,3 @@ function formatResponseMessage(message) {
   message = message.substring(message.lastIndexOf('[') + 1, message.lastIndexOf(']'));
   return message.replace(/\"/g, "");
 }
-function failureAlert(message) {
-  $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({
-    opacity: 0,
-    visibility: "visible"
-  }).animate({opacity: 1}, 400);
-}
-function successAlert(message) {
-  $('#alert').text(message).removeClass('is-danger').addClass('is-success').css({
-    opacity: 0,
-    visibility: "visible"
-  }).animate({opacity: 1}, 400);
-  window.setTimeout(function () {
-    $('#alert').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 400);
-  }, 2500);
-}
