@@ -248,14 +248,14 @@ lab.experiment('Assembly Plugin Delete', () => {
   });
 });
 
-lab.exeriment('Assembly Update', () => {
+lab.experiment('Assembly Plugin Update', () => {
 
   lab.beforeEach((done) => {
     request = {
       method: 'PUT',
       url: '/assembly/420000000000000000000000',
       payload: {
-        parts: null, //not sure how to put an object here
+        parts: [{}], //not sure how to put an object here
         subAssemblyIds: ['firstItem', 'secondItem', 'thirdItem']
       },
       credentials: AuthenticatedUser
@@ -264,16 +264,42 @@ lab.exeriment('Assembly Update', () => {
     done();
   });
 
-  lab.test('it returns an error when the assembly is not found', (done) => {
-    stub.Assembly.findOne = function (conditions, callback) {
-      if (conditions.username) {
+  lab.test('it updates the document successfully', (done) => {
+    stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+      callback(null, {});
+    };
 
-      }
-    }
+    server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
   });
 
+  lab.test('it returns an error', (done) => {
+    stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+      callback(Error('error'));
+    };
 
-})
+    server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(500);
+      done();
+    });
+  });
+
+  lab.test('the assembly is not found', (done) => {
+    stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+    callback(null, null);
+  };
+
+    server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(404);
+      done();
+    });
+  });
+
+});
 
 /*
 lab.experiment('Assembly Plugin Create', () => {

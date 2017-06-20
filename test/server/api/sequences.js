@@ -332,4 +332,39 @@ lab.experiment('Sequences Plugin Update', () => {
     done();
   });
 
+  lab.test('it updates the document successfully', (done) => {
+    stub.Sequence.findByIdAndUpdate = function (id, update, callback) {
+      callback(null, {});
+    };
+
+    server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error', (done) => {
+    stub.Sequence.findByIdAndUpdate = function (id, update, callback) {
+      callback(Error('error'));
+    };
+
+    server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(500);
+      done();
+    });
+  });
+
+  lab.test('the sequence is not found', (done) => {
+    stub.Sequence.findByIdAndUpdate = function (id, update, callback) {
+    callback(null, null);
+  };
+
+    server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(404);
+      done();
+    });
+  });
+
 });
