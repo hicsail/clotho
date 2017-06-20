@@ -119,24 +119,3 @@ function passwordsMatch(fields) {
   failureAlert('Passwords do not match!');
   return false;
 }
-
-function failureAlert(message) {
-  $('#alert').text(message).removeClass('is-success').addClass('is-danger').css({
-    opacity: 0,
-    visibility: "visible"
-  }).animate({opacity: 1}, 400);
-}
-function successAlert(message) {
-  $('#alert').text(message).removeClass('is-danger').addClass('is-success').css({
-    opacity: 0,
-    visibility: "visible"
-  }).animate({opacity: 1}, 400);
-  window.setTimeout(function () {
-    $('#alert').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 400);
-  }, 2500);
-}
-// fade in
-//$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 0, visibility: "visible"}).animate({opacity: 1}, 2000);
-
-// Fade out
-//$('#alert').text('hi').removeClass('is-success').addClass('is-danger').css({opacity: 1.0, visibility: "visible"}).animate({opacity: 0}, 2000);
