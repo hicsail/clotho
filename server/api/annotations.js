@@ -109,7 +109,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'PUT',
-    path: 'annotation/{id}',
+    path: '/annotation/{id}',
     config: {
       auth: {
         strategy: 'simple'

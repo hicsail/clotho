@@ -104,7 +104,7 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
-    method: 'POST',
+    method: 'PUT',
     path: '/bio-design/{id}',
     config: {
       auth: {
