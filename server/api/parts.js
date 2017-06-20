@@ -227,7 +227,6 @@ internals.applyRoutes = function (server, next) {
 
       Async.auto({
         createBioDesign: function (done) {
-
           BioDesign.create(
             request.payload.name,
             null, // description
@@ -244,20 +243,17 @@ internals.applyRoutes = function (server, next) {
             var param = request.payload.parameters;
 
             for (var i = 0; i < param.length; ++i) {
-
               Parameter.create(
                 request.auth.credentials.user._id.toString(),
                 bioDesignId,
                 param[i]['value'],
                 param[i]['variable'],
                 done);
-
             }
           }
           else {
             done(null, []);
           }
-
         }],
         createModule: ['createBioDesign', function (results, done) {
 
@@ -273,12 +269,10 @@ internals.applyRoutes = function (server, next) {
               request.payload.role,
               null, // no submoduleIds
               done);
-
           }
           else {
             done(null, []);
           }
-
         }],
         createSubpart: ['createBioDesign', function (results, done) {
 
@@ -309,12 +303,10 @@ internals.applyRoutes = function (server, next) {
               null,
               null,
               done);
-
           }
           else {
             done(null, []);
           }
-
         }],
         createAnnotation: ['createSequence', function (results, done) {
 
@@ -366,8 +358,6 @@ internals.applyRoutes = function (server, next) {
             done(null, []);
           }
         }]
-
-
       }, (err, results) => {
 
         if (err) {
@@ -375,8 +365,6 @@ internals.applyRoutes = function (server, next) {
         }
         return reply(results);
       });
-
-
     }
   })
   ;
