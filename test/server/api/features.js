@@ -307,3 +307,24 @@ lab.experiment('Feature Plugin Create', () => {
     });
   });
 });
+
+lab.experiment('Features Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/feature/420000000000000000000000',
+      payload: {
+        name: 'ibs',
+        displayId: 'Test display id',
+        description: 'Test description',
+        role: 'Test role',
+        annotationId: 'Test annotation id',
+        moduleId: 'Test module id'
+      },
+      credentials: AuthenticatedUser
+    };
+    done();
+  });
+});

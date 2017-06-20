@@ -305,3 +305,27 @@ lab.experiment('Module Plugin Create', () => {
     });
   });
 });
+
+
+lab.experiment('Modules Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/module/420000000000000000000000',
+      payload: {
+        name: 'ibs',
+        description: 'Test description',
+        displayId: 'Test display id',
+        bioDesignId: 'Test bio design id',
+        role: 'TRANSCRIPTION',
+        submoduleIds: ['first item', 'second item', 'third item']
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+});

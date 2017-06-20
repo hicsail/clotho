@@ -309,3 +309,23 @@ lab.experiment('Annotation Plugin Create', () => {
     });
   });
 });
+
+lab.experiment('Annotations Update', () => {
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'PUT',
+      url: '/annotation/420000000000000000000000',
+      payload: {
+        name: 'ibs',
+        description: 'This is the description',
+        sequenceId: 'This is the sequence id',
+        start: 10,
+        end: 12,
+        isForwardStrand: true
+      },
+      credentials: AuthenticatedUser
+    };
+    done();
+  });
+});

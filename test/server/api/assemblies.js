@@ -247,6 +247,34 @@ lab.experiment('Assembly Plugin Delete', () => {
     });
   });
 });
+
+lab.exeriment('Assembly Update', () => {
+
+  lab.beforeEach((done) => {
+    request = {
+      method: 'PUT',
+      url: '/assembly/420000000000000000000000',
+      payload: {
+        parts: null, //not sure how to put an object here
+        subAssemblyIds: ['firstItem', 'secondItem', 'thirdItem']
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when the assembly is not found', (done) => {
+    stub.Assembly.findOne = function (conditions, callback) {
+      if (conditions.username) {
+
+      }
+    }
+  });
+
+
+})
+
 /*
 lab.experiment('Assembly Plugin Create', () => {
 

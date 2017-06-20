@@ -306,3 +306,30 @@ lab.experiment('Sequence Plugin Create', () => {
     });
   });
 });
+
+
+lab.experiment('Sequences Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/sequence/420000000000000000000000',
+      payload: {
+        name: 'Ibs',
+        description: 'Test description',
+        sequence: 'Test sequence', // Case-insensitive.
+        accenssion: 'Test accenssion',
+        isLinear: true,
+        isSingleStranded: true,
+        displayId: 'Test display id',
+        featureId: 'Test feature id',
+        partId: 'Test part id'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+});

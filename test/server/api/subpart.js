@@ -305,3 +305,25 @@ lab.experiment('Part Plugin Create', () => {
     });
   });
 });
+
+
+lab.experiment('Sub-Parts Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/subpart/420000000000000000000000',
+      payload: {
+        name: 'Test name',
+        description: 'Test description',
+        displayId: 'Test display id',
+        bioDesignId: 'Test bio design id'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+});

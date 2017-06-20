@@ -305,3 +305,23 @@ lab.experiment('BioDesign Plugin Create', () => {
     });
   });
 });
+
+lab.experiment('Bio Design Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'PUT',
+      url: '/bio-design/420000000000000000000000',
+      payload: {
+        name: 'ibs',
+        description: 'This is a test description',
+        displayId: 'This is a test display id',
+        imageURL: 'testImageURL.com'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+});

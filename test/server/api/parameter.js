@@ -307,3 +307,24 @@ lab.experiment('Parameter Plugin Create', () => {
     });
   });
 });
+
+
+lab.experiment('Parameters Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/parameter/420000000000000000000000',
+      payload: {
+        bioDesignId: 'Test bio design',
+        value: 10,
+        variable: 'Test variable'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+});

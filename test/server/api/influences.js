@@ -308,3 +308,25 @@ lab.experiment('Influence Plugin Create', () => {
     });
   });
 });
+
+lab.experiment('Influences Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/infleunce/420000000000000000000000',
+      payload: {
+        name: 'ibs',
+        description: 'Test description',
+        type: 'REPRESSION',
+        influencedFeature: 'test influenced feature',
+        influencingFeature: 'test influencing feature'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+});

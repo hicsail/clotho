@@ -304,3 +304,22 @@ lab.experiment('Medium Plugin Create', () => {
     });
   });
 });
+
+lab.experiment('Media Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: "PUT",
+      url: '/medium/420000000000000000000000',
+      payload: {
+        name: 'ibs',
+        description: 'Test description'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+});
