@@ -22,12 +22,20 @@ internals.applyRoutes = function (server, next) {
    * "message": "Success."
    * }
    *
-   * @apiErrorExample {json} Error-Response:
+   * @apiErrorExample {json} 401:
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication."
+   * }
+   *
+   * @apiErrorExample {json} 404:
    * {
    *  "statusCode": 404,
    *  "error": "Not Found",
    *  "message": "Document not found."
    * }
+   *
    *
    */
   server.route({
@@ -35,7 +43,6 @@ internals.applyRoutes = function (server, next) {
     path: '/logout',
     config: {
       auth: {
-        mode: 'try',
         strategy: 'simple'
       }
     },
