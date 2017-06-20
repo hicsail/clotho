@@ -66,7 +66,7 @@ internals.applyStrategy = function (server, next) {
     cookie: 'Clotho',
     isSecure: false,
     clearInvalid: true,
-    redirectTo: '/login',
+    redirectTo: false,
     appendNext: 'returnUrl',
     validateFunc: function (request, data, callback) {
 

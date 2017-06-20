@@ -143,10 +143,19 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/clotho',
+      options: {
+        routes: {prefix: '/clotho'}
+      }
+    },
+    {
       plugin: './server/web/index'
     },
     {
       plugin: './server/web/public'
+    },
+    {
+      plugin: './server/web/documentation'
     },
     {
       plugin: './server/web/login/index'
