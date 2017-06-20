@@ -43,6 +43,7 @@ internals.applyRoutes = function (server, next) {
     path: '/logout',
     config: {
       auth: {
+        mode: 'try',
         strategy: 'simple'
       }
     },
@@ -50,6 +51,10 @@ internals.applyRoutes = function (server, next) {
 
       const credentials = request.auth.credentials || {session: {}};
       const session = credentials.session || {};
+
+      if(!request.auth.isAuthenticated) {
+        return reply(Boom.unauthorized('Missing authentication'));
+      }
 
       Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
 

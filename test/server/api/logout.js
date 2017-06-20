@@ -100,7 +100,7 @@ lab.experiment('Logout Plugin (Delete Session)', () => {
   });
 
 
-  lab.test('it returns a not found when delete misses (no credentials)', (done) => {
+  lab.test('it returns a unauthorized when delete misses (no credentials)', (done) => {
 
     stub.Session.findByIdAndDelete = function () {
 
@@ -114,8 +114,8 @@ lab.experiment('Logout Plugin (Delete Session)', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(404);
-      Code.expect(response.result.message).to.match(/document not found/i);
+      Code.expect(response.statusCode).to.equal(401);
+      Code.expect(response.result.message).to.match(/Missing authentication/i);
 
       done();
     });
@@ -155,6 +155,27 @@ lab.experiment('Logout Plugin (Delete Session)', () => {
 
       callback(null, 1);
     };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.message).to.match(/success/i);
+
+      done();
+    });
+  });
+
+  lab.test('it deletes the authenticated user session successfully', (done) => {
+
+    stub.Session.findByIdAndDelete = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, 1);
+    };
+
+    request.credentials = AuthenticatedUser;
 
     server.inject(request, (response) => {
 
