@@ -80,6 +80,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       if(request.auth.isAuthenticated) {
         return reply.redirect('/');
       } else {
@@ -103,6 +104,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       if(request.auth.isAuthenticated) {
         return reply.redirect('/');
       } else {
