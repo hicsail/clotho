@@ -102,6 +102,47 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/parameter/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          bioDesignId: Joi.string().optional(),
+          value: Joi.number().required(),
+          variable: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          bioDesignId: request.payload.bioDesignId,
+          value: request.payload.value,
+          variable: request.payload.variable
+        }
+      };
+
+      Parameter.findByIdAndUpdate(id, update, (err, parameter) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!parameter) {
+        return reply(Boom.notFound('Parameter not found.'));
+      }
+
+      reply(parameter);
+    });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/parameter/{id}',
     config: {

@@ -104,6 +104,49 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'POST',
+    path: '/bio-design/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          imageURL: Joi.string().optional()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          displayId: request.payload.displayId,
+          imageURL: request.payload.imageURL
+        }
+      };
+
+      BioDesign.findByIdAndUpdate(id, update, (err, bio_design) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!bio_design) {
+          return reply(Boom.notFound('Bio Design not found.'));
+        }
+
+        return reply(bio_design);
+      });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/bio-design/{id}',
     config: {

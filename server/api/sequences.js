@@ -150,7 +150,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      // TODO: add update method in the sequence.js object file. Add here after.
+      // TODO: add findByIdAndUpdate() method in the sequence.js object file. Add here after.
       Sequence.findByIdAndUpdate(id, update, (err, sequence) => {
         if (err) {
           return reply(err);

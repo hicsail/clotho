@@ -108,6 +108,53 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/module/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string(),
+          displayId: Joi.string().optional(),
+          bioDesignId: Joi.string(),
+          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+          submoduleIds: Joi.array().items(Joi.string())
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          displayId: request.payload.displayId,
+          bioDesignId: request.payload.bioDesignId,
+          role: request.payload.role,
+          submoduleIds: request.payload.submoduleIds
+        }
+      };
+
+      Module.findByIdAndUpdate(id, update, (err, module) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!module) {
+        return reply(Boom.notFound('Module not found.'));
+      }
+
+      reply(module);
+    });
+    }
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/module/{id}',
     config: {

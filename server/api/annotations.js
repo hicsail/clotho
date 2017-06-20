@@ -108,6 +108,54 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'PUT',
+    path: 'annotation/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      }
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          sequenceId: Joi.string().required(),
+          start: Joi.number().integer().positive().required(),
+          end: Joi.number().integer().positive().required(),
+          isForwardStrand: Joi.boolean().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id= request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          sequenceId: request.payload.sequenceId,
+          start: request.payload.start,
+          end: request.payload.end,
+          isForwardStrand: request.payload.isForwardStrand
+        }
+      };
+
+      Annotation.findByIdAndUpdate(id, update, (err, annotation) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!annotation) {
+          return reply(Boom.notFound('Annotation not found.'));
+      }
+
+      reply(annotation);
+      });
+    }
+
+  });
+
+  server.route({
     method: 'DELETE',
     path: '/annotation/{id}',
     config: {

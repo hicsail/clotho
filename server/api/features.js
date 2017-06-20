@@ -82,7 +82,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string().optional(),
           role: Joi.string().required(),
           annotationId: Joi.string().required(),
-          moduleId: Joi.string(),
+          moduleId: Joi.string()
         }
       }
     },
@@ -104,6 +104,53 @@ internals.applyRoutes = function (server, next) {
           return reply(feature);
         }
       );
+    }
+  });
+
+  server.route({
+    method: 'PUT',
+    path: '/feature/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          displayId: Joi.string().optional(),
+          description: Joi.string().optional(),
+          role: Joi.string().required(),
+          annotationId: Joi.string().required(),
+          moduleId: Joi.string()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          name: request.payload.name,
+          displayId: request.payload.displayId,
+          description: request.payload.description,
+          role: request.payload.role,
+          annotationId: request.payload.annotationId,
+          moduleId: request.payload.moduleId
+        }
+      };
+
+      Feature.findByIdAndUpdate(id, update, (err, feature) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!feature) {
+          return reply(Boom.notFound('Feature not found.'));
+        }
+
+        reply(feature);
+      });
     }
   });
 
