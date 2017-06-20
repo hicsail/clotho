@@ -67,7 +67,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/passwordreset',
+    path: '/forgot',
     config: {
       auth: {
         mode: 'try',
@@ -83,7 +83,30 @@ internals.applyRoutes = function (server, next) {
       if(request.auth.isAuthenticated) {
         return reply.redirect('/');
       } else {
-        return reply.view('passwordreset');
+        return reply.view('forgotPassword');
+      }
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/reset',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
+    handler: function (request, reply) {
+      if(request.auth.isAuthenticated) {
+        return reply.redirect('/');
+      } else {
+        return reply.view('resetPassword');
       }
     }
   });
