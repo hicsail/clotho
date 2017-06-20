@@ -37,14 +37,24 @@ class BioDesign extends MongoModels {
     if (query == null) {
       query = {};
     }
+    var query2 = {};
 
-    for (var i = 0; i < bioDesignIds.length; i++)  {
-      bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i]);
+    if (typeof bioDesignIds !== 'string') {
+      for (var i = 0; i < bioDesignIds.length; i++) {
+        bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i].toString());
+      }
+
+      query2 = {_id: {$in: bioDesignIds}};
+    } else {
+      query2 = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
-    query['_id'] =  {$in: bioDesignIds};
+    for (var attrname in query) {
+      query2[attrname] = query[attrname];
+    }
+    console.log(query2);
 
-    this.find(query, (err, bioDesigns) => {
+    this.find(query2, (err, bioDesigns) => {
 
 
         // dealing with error
@@ -62,11 +72,16 @@ class BioDesign extends MongoModels {
               return callback(errGet);
             }
 
+            console.log(bioDesigns[i]);
+
             console.log(components);
 
-            bioDesigns[i]['parts'] = components['parts'];
-            bioDesigns[i]['modules'] = components['modules'];
-            bioDesigns[i]['parameters'] = components['parameters'];
+            if (bioDesigns[i] !== undefined) {
+              bioDesigns[i]['parts'] = components['parts'];
+              bioDesigns[i]['modules'] = components['modules'];
+              bioDesigns[i]['parameters'] = components['parameters'];
+            }
+
 
           });
 
@@ -88,7 +103,6 @@ class BioDesign extends MongoModels {
       }
 
 
-
       Module.findByBioDesignId(bioDesignId, (err, modules) => {
 
         if (err) {
@@ -101,11 +115,6 @@ class BioDesign extends MongoModels {
             return callback(err);
           }
 
-          console.log("returning");
-          console.log(bioDesignId);
-          console.log(parts);
-          console.log(parameters);
-          console.log(modules);
 
           return callback(null, {parts: parts, modules: modules, parameters: parameters});
         });
