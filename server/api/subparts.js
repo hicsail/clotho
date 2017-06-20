@@ -137,7 +137,7 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
 
-        if (!part)) {
+        if (!part) {
         return reply(Boom.notFound('Sub-part not found.'));
       }
 

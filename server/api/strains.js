@@ -130,7 +130,7 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
 
-        if (!strain)) {
+        if (!strain) {
         return reply(Boom.notFound('Strain not found.'));
         }
 
