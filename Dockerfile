@@ -22,11 +22,7 @@ RUN n 6.0.0
 COPY . /usr/src/clotho
 
 RUN npm install
-
-RUN nodejs -v
 RUN ln -s /usr/bin/nodejs /usr/bin/node
-RUN node -v
-
 
 RUN mkdir -p /data/db
 EXPOSE 9000
