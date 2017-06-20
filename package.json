@@ -8,7 +8,7 @@
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
     "lint": "lab -dL",
-    "prestart":"./scripts/minify.sh && ./scripts/generateDocs.sh"
+    "prestart": "./scripts/minify.sh && ./scripts/generateDocs.sh"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
   "repository": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "apidoc": "^0.17.6",
     "async": "2.x.x",
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "1.x.x",
     "boom": "4.x.x",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",

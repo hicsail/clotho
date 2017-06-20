@@ -1,6 +1,6 @@
 'use strict';
 const Async = require('async');
-const Bcrypt = require('bcryptjs');
+const Bcrypt = require('bcrypt');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');

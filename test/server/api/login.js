@@ -1,7 +1,7 @@
 'use strict';
 const AuthAttempt = require('../../../server/models/auth-attempt');
 const AuthPlugin = require('../../../server/auth');
-const Bcrypt = require('bcryptjs');
+const Bcrypt = require('bcrypt');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
