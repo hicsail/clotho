@@ -245,7 +245,8 @@ internals.applyRoutes = function (server, next) {
           };
           const template = 'forgot-password';
           const context = {
-            key: results.keyHash.key
+            key: results.keyHash.key,
+            url: request.headers.origin + '/reset#' + results.keyHash.key
           };
 
           mailer.sendEmail(emailOptions, template, context, done);
