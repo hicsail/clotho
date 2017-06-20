@@ -35,14 +35,16 @@ class Module extends MongoModels {
     if (typeof bioDesignId == 'string') {
       query['bioDesignId'] = bioDesignId;
     } else {
-      query['bioDesignId'] = {bioDesignId: {$in: bioDesignId}};
+      query['bioDesignId'] = {$in: bioDesignId};
     }
+
 
     this.find(query, (err, results) => {
 
       if (err) {
         return callback(err);
       }
+
 
       callback(err, results);
     });

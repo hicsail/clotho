@@ -25,12 +25,16 @@ class Parameter extends MongoModels {
 
 
   static getParameterByBioDesignId(bioDesignIds, parameters, callback) {
+    var query = {};
+    if (typeof bioDesignIds == 'string') {
+      query = {bioDesignId: bioDesignIds};
+    } else {
+      query = {bioDesignId: {$in: bioDesignIds}};
+    }
 
-    var query = {bioDesignId: {$in: bioDesignIds}};
 
     if (parameters !== null) {
       var parameterValues = [], parameterVariables = [];
-      console.log(parameters);
       for (let para of parameters) {
         if (!isNaN(para['value'])) {
           para['value'] = +para['value']; // convert to number

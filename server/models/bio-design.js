@@ -37,84 +37,91 @@ class BioDesign extends MongoModels {
     if (query == null) {
       query = {};
     }
+    var query2 = {};
 
-    for (var i = 0; i < bioDesignIds.length; i++)  {
-      bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i]);
+    if (typeof bioDesignIds !== 'string') {
+      for (var i = 0; i < bioDesignIds.length; i++) {
+        bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i].toString());
+      }
+
+      query2 = {_id: {$in: bioDesignIds}};
+    } else {
+      query2 = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
-    query['_id'] =  {$in: bioDesignIds};
+    for (var attrname in query) {
+      query2[attrname] = query[attrname];
+    }
+    console.log(query2);
 
-    this.find(query, (err, bioDesigns) => {
+    this.find(query2, (err, bioDesigns) => {
 
 
-        // dealing with error
-        if (err) {
-          return callback(err);
-        }
-
-        // otherwise buildup biodesign objects
-
-        for (var i = 0; i < bioDesigns.length; i++) {
-          // fetch aggregate of part, module, parameter (informally, components)
-          // and combine with main biodesign object
-          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
-            if (err) {
-              return callback(errGet);
-            }
-
-            console.log(components);
-
-            bioDesigns[i]['parts'] = components['parts'];
-            bioDesigns[i]['modules'] = components['modules'];
-            bioDesigns[i]['parameters'] = components['parameters'];
-
-          });
-
-        }
-
-        return callback(null, bioDesigns);
-
+      // dealing with error
+      if (err) {
+        return callback(err);
       }
-    );
-  }
 
-  // based on biodesignId, fetches all children
-  static getBioDesign(bioDesignId, callback) {
+      // otherwise buildup biodesign objects
+      var allPromises = [];
+      for (var i = 0; i < bioDesigns.length; i++) {
+        // fetch aggregate of part, module, parameter (informally, components)
+        // and combine with main biodesign object
+        var promise = new Promise((resolve, reject) => {
+          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
 
-    Part.findByBioDesignId(bioDesignId, (err, parts) => {
+            if (errGet) {
+              reject(errGet);
+            }
+            resolve(components);
+          });
+        });
+        allPromises.push(promise);
+      }
+
+      Promise.all(allPromises).then((resolve,reject)=>{
+        for(var i = 0; i < bioDesigns.length; i++){
+          bioDesigns[i]['parts'] = resolve[i]['parts'];
+          bioDesigns[i]['modules'] = resolve[i]['modules'];
+          bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+        }
+        return callback(null, bioDesigns);
+      });
+    }
+  );
+}
+
+// based on biodesignId, fetches all children
+static getBioDesign(bioDesignId, callback) {
+
+  Part.findByBioDesignId(bioDesignId, (err, parts) => {
+
+    if (err) {
+      return callback(err);
+    }
+
+
+    Module.findByBioDesignId(bioDesignId, (err, modules) => {
 
       if (err) {
         return callback(err);
       }
 
-
-
-      Module.findByBioDesignId(bioDesignId, (err, modules) => {
+      Parameter.getParameterByBioDesignId(bioDesignId, null, (err, parameters) => {
 
         if (err) {
           return callback(err);
         }
 
-        Parameter.getParameterByBioDesignId(bioDesignId, null, (err, parameters) => {
 
-          if (err) {
-            return callback(err);
-          }
-
-          console.log("returning");
-          console.log(bioDesignId);
-          console.log(parts);
-          console.log(parameters);
-          console.log(modules);
-
-          return callback(null, {parts: parts, modules: modules, parameters: parameters});
-        });
-
+        return callback(null, {parts: parts, modules: modules, parameters: parameters});
       });
 
     });
 
-  }
+  });
+
+}
 }
 
 
