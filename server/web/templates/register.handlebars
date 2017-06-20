@@ -1,12 +1,16 @@
 {{> nav}}
-{{> alert}}
-<section class="hero">
-    <div class="hero-body" style="padding: 0rem 0rem;">
-        <div class="container">
-            <h1 class="title">Register</h1>
-        </div>
-        <div class="field">
-            <form id="register">
+<section class="hero is-light is-fullheight is-bold">
+    <div class="hero-heading">
+      {{> alert}}
+      <div class="has-text-centered">
+        <h1 class="title">Register an Account</h1>
+      </div>
+    </div>
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-8 is-offset-2">
+            <form id="register" class="box">
                 <label class="label" id="nameLabel"><b>Full Name</b></label>
                 <p class="control has-icons-left has-icons-right">
                     <input class="input" id="name" type="text" placeholder="First Last" name="name">
@@ -55,9 +59,9 @@
                 </p>
 
 
-                <label class="label" id="retypePwLabel"><b>Retype Password</b></label>
+                <label class="label" id="retypePwLabel"><b>Confirm Password</b></label>
                 <p class="control has-icons-right has-icons-left">
-                    <input class="input" id="retypePw" type="password" placeholder="Retype Password" name="retypePw">
+                    <input class="input" id="retypePw" type="password" placeholder="Confirm Password" name="retypePw">
                     <span class="icon is-small is-left">
                         <i class="fa fa-lock"></i>
                     </span>
@@ -66,10 +70,15 @@
                     </span>
                 </p>
                 <p class="help" id="retypePwStatus"></p>
-
-                <input class="button is-primary" id="submit" type="submit" value="Submit">
+                <button class="button is-primary" id="submit">Register</button>
             </form>
+            <hr>
+            <div class="has-text-centered">
+              Have an account? <strong><a href="/login">Login Here</a></stong>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 </section>
 <script type="text/javascript" src="../public/mini-js/register.min.js"></script>

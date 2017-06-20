@@ -18,10 +18,10 @@ $('#register').on('submit', function (e) {
     if (fields[i][0].value === '') {
       var id = fields[i][0].id;
       if (id === 'retypePw') {
-        failureAlert('Please retype your password.');
+        failureAlert('Please confirm your password.');
       } else {
 
-        failureAlert('Please fill out the ' + id);
+        failureAlert('Please fill out your ' + id);
       }
       fields[i].addClass('is-danger');
       break;

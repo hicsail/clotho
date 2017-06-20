@@ -1,12 +1,16 @@
 {{> nav}}
-{{> alert}}
-<section class="hero">
-    <div class="hero-body" style="padding: 0rem 0rem;">
-        <div class="container">
-            <h1 class="title">Login</h1>
-        </div>
-        <div class="field">
-            <form id="login">
+<section class="hero is-light is-fullheight is-bold">
+    <div class="hero-heading">
+      {{> alert}}
+      <div class="has-text-centered">
+        <h1 class="title">Login</h1>
+      </div>
+    </div>
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-8 is-offset-2">
+            <form id="login" class="box">
                 <label class="label" id="usernameLabel"><b>Username</b></label>
                 <input class="input" id="username" type="text" placeholder="Username" name="username">
                 <label class="label" id="passwordLabel"><b>Password</b></label>
@@ -14,7 +18,13 @@
                 <input class="button is-primary" id="login" type="submit" value="Login">
                 <a class="button is-primary is-outlined" type="button" href="/forgot">Forgot Password</a>
             </form>
+            <hr>
+            <div class="has-text-centered">
+              Need an account? <strong><a href="/register">Register Here</a></stong>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 </section>
 <script type="text/javascript" src="../public/mini-js/login.min.js"></script>
