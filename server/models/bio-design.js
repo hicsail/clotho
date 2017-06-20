@@ -38,9 +38,14 @@ class BioDesign extends MongoModels {
       query = {};
     }
 
-    query['bioDesignId'] =  {$in: bioDesignIds};
+    for (var i = 0; i < bioDesignIds.length; i++)  {
+      bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i]);
+    }
+
+    query['_id'] =  {$in: bioDesignIds};
 
     this.find(query, (err, bioDesigns) => {
+
 
         // dealing with error
         if (err) {
@@ -52,10 +57,12 @@ class BioDesign extends MongoModels {
         for (var i = 0; i < bioDesigns.length; i++) {
           // fetch aggregate of part, module, parameter (informally, components)
           // and combine with main biodesign object
-          this.getBioDesign(bioDesignIds[i], (errGet, components) => {
+          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
             if (err) {
               return callback(errGet);
             }
+
+            console.log(components);
 
             bioDesigns[i]['parts'] = components['parts'];
             bioDesigns[i]['modules'] = components['modules'];
@@ -65,7 +72,7 @@ class BioDesign extends MongoModels {
 
         }
 
-        return bioDesigns;
+        return callback(null, bioDesigns);
 
       }
     );
@@ -80,17 +87,25 @@ class BioDesign extends MongoModels {
         return callback(err);
       }
 
+
+
       Module.findByBioDesignId(bioDesignId, (err, modules) => {
 
         if (err) {
           return callback(err);
         }
 
-        Parameter.getParameterByBioDesignId(bioDesignId, (err, parameters) => {
+        Parameter.getParameterByBioDesignId(bioDesignId, null, (err, parameters) => {
 
           if (err) {
             return callback(err);
           }
+
+          console.log("returning");
+          console.log(bioDesignId);
+          console.log(parts);
+          console.log(parameters);
+          console.log(modules);
 
           return callback(null, {parts: parts, modules: modules, parameters: parameters});
         });

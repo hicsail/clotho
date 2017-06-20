@@ -106,6 +106,8 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
     //Used to create a Device consisting of a BioDesign, Part, and Assembly.
       // Optionally, may also create a Sequence, Feature, BasicModule, Parameters, and Annotations.
+      //async.auto task `createAssembly` has a non-existent dependency `createSubAssemblyIds`
+      // in createSubpart, createSubAssemblyIds
       Async.auto({
         createBioDesign: function (done) {
 
@@ -114,19 +116,59 @@ internals.applyRoutes = function (server, next) {
             null, // description
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
+            null,
             done);
         },
-        createSubpart: ['createSequence', 'createBioDesign', function (results, done) {
+        createParameters: ['createBioDesign', function (results, done) {
 
-          var sequenceId = results.createSequence._id.toString();
+          if (request.payload.parameters !== undefined) {
+
+            var bioDesignId = results.createBioDesign._id.toString();
+            var param = request.payload.parameters;
+
+            for (var i = 0; i < param.length; ++i) {
+
+              Parameter.create(
+                request.auth.credentials.user._id.toString(),
+                bioDesignId,
+                param[i]['value'],
+                param[i]['variable'],
+                done);
+            }
+          }
+          else {
+            done(null, []);
+          }
+        }],
+        createModule: ['createBioDesign', function (results, done) {
+
+          if (request.payload.role !== undefined) {
+            var bioDesignId = results.createBioDesign._id.toString();
+
+            Module.create(
+              request.payload.name,
+              null, // description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              bioDesignId,
+              request.payload.role,
+              null, // no submoduleIds
+              done);
+          }
+          else {
+            done(null, []);
+          }
+        }],
+        createSubpart: ['createBioDesign', function (results, done) {
+
           var bioDesignId = results.createBioDesign._id.toString();
+
           Part.create(
             request.payload.name,
             null, // no description
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
             bioDesignId,
-            sequenceId,
             done);
         }],
         createAssembly: ['createSubpart', 'createSubAssemblyIds', function (results, done) {
@@ -138,72 +180,77 @@ internals.applyRoutes = function (server, next) {
             subAssemblyIds,
             done);
         }],
-        createSequence: function (done) {
+        createSequence: ['createSubpart', function (results, done) {
 
-          Sequence.create(
-            request.payload.name,
-            null, // no description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            null, // featureId null
-            request.payload.sequence,
-            null,
-            null,
-            done);
-        },
+          if (request.payload.sequence !== undefined) {
+
+            var partId = results.createSubpart._id.toString();
+
+            Sequence.create(
+              request.payload.name,
+              null, // no description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              null, // featureId null
+              partId,
+              request.payload.sequence,
+              null,
+              null,
+              done);
+          }
+          else {
+            done(null, []);
+          }
+        }],
         createAnnotation: ['createSequence', function (results, done) {
 
-          var seq = results.createSequence._id.toString();
-          Annotation.create(
-            request.payload.name,
-            null, // description,
-            request.auth.credentials.user._id.toString(),
-            seq, // sequenceId
-            1, // start
-            request.payload.sequence.length, // end
-            true, // isForwardString
-            done);
+          if (request.payload.sequence !== undefined) {
+
+            var seq = results.createSequence._id.toString();
+            Annotation.create(
+              request.payload.name,
+              null, // description,
+              request.auth.credentials.user._id.toString(),
+              seq, // sequenceId
+              1, // start
+              request.payload.sequence.length, // end
+              true, // isForwardString
+              done);
+          }
+          else {
+            done(null, []);
+          }
         }],
-        createModule: ['createBioDesign', function (results, done) {
+        createFeature: ['createModule', 'createAnnotation', function (results, done) {
 
-          var bioDesignId = results.createBioDesign._id.toString();
-
-          Module.create(
-            request.payload.name,
-            null, // description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            bioDesignId,
-            request.payload.role,
-            null, // no submoduleIds
-            done);
-        }],
-        createFeature: ['createSequence', 'createAnnotation', 'createModule', function (results, done) {
-
-          var annotationId = results.createAnnotation._id.toString();
-          var moduleId = results.createModule._id.toString();
-
-          Feature.create(
-            request.payload.name,
-            null, // description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            request.payload.role,
-            annotationId,
-            moduleId,
-            done);
-        }],
-        createParameters: ['createBioDesign', function (results, done) {
-
-          var bioDesignId = results.createBioDesign._id.toString();
-          var param = request.payload.parameters;
-
-          for (var i = 0; i < param.length; ++i) {
-
-            Parameter.create(bioDesignId, param[i]['value'], param[i]['variable'], done);
-
+          if (results.createAnnotation._id === undefined) {
+            var annotationId = null;
+          }
+          else {
+            var annotationId = results.createAnnotation._id.toString();
           }
 
+          if (results.createModule._id === undefined) {
+            var moduleId = null;
+          }
+          else {
+            var moduleId = results.createModule._id.toString();
+          }
+
+          if (annotationId !== null  && moduleId !== null) {
+            Feature.create(
+              request.payload.name,
+              null, // description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              request.payload.role,
+              annotationId,
+              moduleId,
+              done);
+          }
+          else {
+            done(null, []);
+          }
         }]
       }, (err, results) => {
 
@@ -212,7 +259,6 @@ internals.applyRoutes = function (server, next) {
         }
         return reply(results);
       });
-
     }
   });
 
