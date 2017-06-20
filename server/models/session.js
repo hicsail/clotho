@@ -1,6 +1,6 @@
 'use strict';
 const Async = require('async');
-const Bcrypt = require('bcrypt');
+const Bcrypt = require('bcryptjs');
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Uuid = require('uuid');

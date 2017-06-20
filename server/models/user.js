@@ -2,7 +2,7 @@
 const Account = require('./account');
 const Admin = require('./admin');
 const Async = require('async');
-const Bcrypt = require('bcrypt');
+const Bcrypt = require('bcryptjs');
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
