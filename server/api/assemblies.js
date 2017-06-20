@@ -102,7 +102,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'simple'
-      }
+      },
       validate: {
         payload: {
           parts: Joi.array().items(Joi.object()), // original set of Parts

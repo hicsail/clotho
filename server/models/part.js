@@ -25,6 +25,26 @@ class Part extends MongoModels {
     });
   }
 
+  // helper method for strings query
+  static getParts(partIds, callback) {
+    for (var i = 0; i < partIds.length; i++)  {
+      partIds[i] = new MongoModels.ObjectID(partIds[i]);
+    }
+
+
+    const query = {_id: {$in: partIds}};
+
+    this.find(query, (err, parts) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+
+      callback(null, parts);
+    });
+  }
+
   static findByBioDesignId(bioDesignId, callback) {
 
     const query = {bioDesignId: bioDesignId};

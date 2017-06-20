@@ -63,15 +63,16 @@ internals.applyRoutes = function (server, next) {
           // get Sequence ids from array
           var seqArr = results.findSequences;
           var partIds = [];
-          for (let seq of seqArr) {
-            if (seq['partId'] !== null) {
-              partIds.push(seq['partId'].toString());
+          for (var i = 0; i < seqArr.length; ++i) {
+            if (seqArr[i]['partId'] !== null) {
+              partIds.push((seqArr[i]['partId']).toString());
             }
           }
 
           if (request.payload.sequence !== null && partIds.length > 0) {
-            // then query all sequence's part ids
-            Part.find({_id: {$in: partIds}}, done);
+            // then query all sequences' part ids
+            Part.getParts(partIds, done);
+
           } else {
             done(null, []);
           }
@@ -81,16 +82,22 @@ internals.applyRoutes = function (server, next) {
           // using part documents from last step, get biodesigns
           var partArr = results.findParts;
           var bioDesignIds = [];
-          for (let part of partArr) {
-            if (part['bioDesignId'] !== null) {
-              bioDesignIds.push(part['bioDesignId'].toString());
+
+
+          if (partArr !== null) {
+            for (var i = 0; i < partArr.length; i++) {
+              if (partArr[i]['bioDesignId'] !== null) {
+                bioDesignIds.push(partArr[i]['bioDesignId'].toString());
+              }
             }
           }
+
+
 
           // only zero/one result, no need to search further
           if (request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
-              return reply({debug: results});
+              return reply({"debug": results});
             }
 
             if (bioDesignIds.length === 1) {
@@ -103,25 +110,29 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.parameters !== null) {
             Parameter.getParameterByBioDesignId(bioDesignIds, request.payload.parameters, done);
           } else {
-            done(null, []);
+            done(null, bioDesignIds);
           }
 
         }],
         findModules: ['findParameters', function (results, done) {
           // collect bioDesign Ids
           var parameterArray = results.findParameters;
-          var bioDesignIds = [];
-          for (let parameter of parameterArray) {
-            if (parameter['bioDesignId'] !== null) {
-              bioDesignIds.push(parameter['bioDesignId'].toString());
-            }
 
+          console.log(typeof parameterArray[0]);
+          var bioDesignIds = [];
+          if (parameterArray != null) {
+            for (var i = 0; i < parameterArray.length; i++) {
+              if (parameterArray[i]['bioDesignId'] !== null && parameterArray[i]['bioDesignId'] !== undefined) {
+                bioDesignIds.push(parameterArray[i]['bioDesignId'].toString());
+              }
+            }
           }
 
+
           // only zero/one result, no need to search further
-          if (request.payload.parameters !== null) {
+          if (request.payload.parameters !== null && request.payload.parameters != undefined) {
             if (bioDesignIds.length === 0) {
-              return reply({debug: results});
+              return reply({"debug": results});
             }
 
             if (bioDesignIds.length === 1) {
@@ -135,7 +146,7 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.role !== null) {
             Module.getModuleByBioDesignId(bioDesignIds, {role: request.payload.role}, done);
           } else {
-            done(null, []);
+            done(null, bioDesignIds);
           }
 
         }],
@@ -144,16 +155,18 @@ internals.applyRoutes = function (server, next) {
           // collect biodesign Ids
           var moduleArray = results.findModules;
           var bioDesignIds = [];
-          for (let module of moduleArray) {
-            if (module['bioDesignId'] !== null) {
-              bioDesignIds.push(module['bioDesignId'].toString());
+          if (moduleArray != null) {
+            for (let module of moduleArray) {
+              if (module['bioDesignId'] !== null) {
+                bioDesignIds.push(module['bioDesignId'].toString());
+              }
             }
           }
 
           // only zero/one result, no need to search further
           if (request.payload.role !== null) {
             if (bioDesignIds.length === 0) {
-              return reply({debug: results});
+              return reply({"debug": results});
             }
 
             if (bioDesignIds.length === 1) {

@@ -113,7 +113,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'simple'
-      }
+      },
       validate: {
         payload: {
           name: Joi.string().required(),
