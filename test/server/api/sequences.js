@@ -316,15 +316,14 @@ lab.experiment('Sequences Plugin Update', () => {
       method: "PUT",
       url: '/sequence/420000000000000000000000',
       payload: {
-        name: 'Ibs',
-        description: 'Test description',
-        sequence: 'Test sequence', // Case-insensitive.
-        accenssion: 'Test accenssion',
-        isLinear: true,
-        isSingleStranded: true,
-        displayId: 'Test display id',
-        featureId: 'Test feature id',
-        partId: 'Test part id'
+        'name': 'ibs',
+        'description': 'test desc',
+        'sequence': 'ACTG',
+        'isLinear': true,
+        'isSingleStranded': true,
+        'displayId': 'Test display id',
+        'featureId': 'test feat id',
+        'partId': 'test part id'
       },
       credentials: AuthenticatedUser
     };

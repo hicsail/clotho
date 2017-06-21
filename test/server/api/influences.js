@@ -315,7 +315,7 @@ lab.experiment('Influences Plugin Update', () => {
 
     request = {
       method: "PUT",
-      url: '/infleunce/420000000000000000000000',
+      url: '/influence/420000000000000000000000',
       payload: {
         name: 'ibs',
         description: 'Test description',
@@ -337,6 +337,7 @@ lab.experiment('Influences Plugin Update', () => {
     server.inject(request, (response) => {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
+
       done();
     });
   });
@@ -353,7 +354,7 @@ lab.experiment('Influences Plugin Update', () => {
   });
 
   lab.test('the influence is not found', (done) => {
-    stub.Infleunce.findByIdAndUpdate = function (id, update, callback) {
+    stub.Influence.findByIdAndUpdate = function (id, update, callback) {
     callback(null, null);
   };
 
