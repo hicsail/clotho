@@ -20,4 +20,4 @@ deployment:
     branch: deployment
     commands:
       - rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/clotho/
-      - ssh circleci@$SERVER_IP 'cd /home/circleci/clotho && docker-compose build && docker-compose up -d'
+      - ssh -o StrictHostKeyChecking=no circleci@$SERVER_IP 'cd /home/circleci/clotho && docker-compose build && docker-compose up -d'
