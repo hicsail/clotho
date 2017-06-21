@@ -19,9 +19,9 @@ jobs:
       - run:
           name: test
           command: npm test
-      - add_ssh_keys:
-          fingerprints:
-            - "$SSH_KEY_FINGERPRINT"
+      - run:
+          name: Add ssh key to know_hosts
+          command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
       - deploy:
           name: Deploy
           command: |
