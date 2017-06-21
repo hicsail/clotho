@@ -10,12 +10,60 @@ const MakeMockModel = require('../fixtures/make-mock-model');
 const Manifest = require('../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
-const StrainsPlugin = require('../../../server/api/strains');
+const StrainPlugin = require('../../../server/api/strains');
 
 const lab = exports.lab = Lab.script();
 let request;
 let server;
 let stub;
+
+
+lab.before((done) => {
+
+  stub = {
+    Strain: MakeMockModel()
+  };
+
+  const proxy = {};
+  proxy[Path.join(process.cwd(), './server/models/strain')] = stub.Strain;
+
+  const ModelsPlugin = {
+    register: Proxyquire('hapi-mongo-models', proxy),
+    options: Manifest.get('/registrations').filter((reg) => {
+
+      if (reg.plugin &&
+        reg.plugin.register &&
+        reg.plugin.register === 'hapi-mongo-models') {
+
+        return true;
+      }
+
+      return false;
+    })[0].plugin.options
+  };
+
+  const plugins = [HapiAuthBasic, ModelsPlugin, AuthPlugin, StrainPlugin];
+  server = new Hapi.Server();
+  server.connection({port: Config.get('/port/web')});
+  server.register(plugins, (err) => {
+
+    if (err) {
+      return done(err);
+    }
+
+    server.initialize(done);
+  });
+});
+
+
+lab.after((done) => {
+
+  server.plugins['hapi-mongo-models'].MongoModels.disconnect();
+
+  done();
+});
+
+
 
 lab.experiment('Strain Plugin Update', () => {
 

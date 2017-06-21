@@ -8,6 +8,7 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
   const Strain = server.plugins['hapi-mongo-models'].Strain;
+  console.log(Strain);
 
   server.route({
     method: 'GET',
@@ -82,7 +83,6 @@ internals.applyRoutes = function (server, next) {
         }
       }
     },
-
     handler: function (request, reply) {
 
       Strain.create(
