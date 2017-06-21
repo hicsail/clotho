@@ -25,5 +25,5 @@ jobs:
       - deploy:
           name: Deploy
           command: |
-                rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/CIRCLE_PROJECT_REPONAME/CIRCLE_BRANCH/
-                ssh circleci@$SERVER_IP 'cd /home/circleci/CIRCLE_PROJECT_REPONAME/CIRCLE_BRANCH && docker-compose build && docker-compose up -d'
+                rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/clotho/
+                ssh circleci@$SERVER_IP 'cd /home/circleci/clotho && docker-compose build && docker-compose up -d'
