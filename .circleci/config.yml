@@ -21,7 +21,7 @@ jobs:
           command: npm test
       - run:
           name: install rsync
-          command: apt install rsync
+          command: apt-get -y install rsync
       - deploy:
           name: Deploy
           command: |
