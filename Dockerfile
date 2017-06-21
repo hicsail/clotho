@@ -17,7 +17,7 @@ RUN apt-get install -y netcat
 RUN npm cache clean -f
 RUN apt-get install -y curl                     #Needed for the 'n' package to be installed successfully.
 RUN npm install -g n
-RUN n 6.0.0
+RUN n 6.11.0
 
 COPY . /usr/src/clotho
 
