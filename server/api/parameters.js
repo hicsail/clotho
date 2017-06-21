@@ -77,9 +77,11 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
+          name: Joi.string().required(),
           bioDesignId: Joi.string().optional(),
           value: Joi.number().required(),
-          variable: Joi.string().required() // This was originally a Variable object/a ShareableObjBase.
+          variable: Joi.string().required(), // This was originally a Variable object/a ShareableObjBase.
+          units: Joi.string().required()
         }
       }
     },
@@ -87,17 +89,19 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Parameter.create(
+        request.payload.name,
         request.auth.credentials.user._id.toString(),
         request.payload.bioDesignId,
         request.payload.value,
         request.payload.variable,
-      (err, parameter) => {
+        request.payload.units,
+        (err, parameter) => {
 
-        if (err) {
-          return reply(err);
-        }
-        return reply(parameter);
-      });
+          if (err) {
+            return reply(err);
+          }
+          return reply(parameter);
+        });
     }
   });
 
@@ -134,11 +138,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!parameter) {
-        return reply(Boom.notFound('Parameter not found.'));
-      }
+          return reply(Boom.notFound('Parameter not found.'));
+        }
 
-      reply(parameter);
-    });
+        reply(parameter);
+      });
     }
   });
 

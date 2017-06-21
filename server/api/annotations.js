@@ -127,7 +127,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const id= request.params.id;
+      const id = request.params.id;
       const update = {
         $set: {
           name: request.payload.name,
@@ -147,9 +147,9 @@ internals.applyRoutes = function (server, next) {
 
         if (!annotation) {
           return reply(Boom.notFound('Annotation not found.'));
-      }
+        }
 
-      reply(annotation);
+        reply(annotation);
       });
     }
 

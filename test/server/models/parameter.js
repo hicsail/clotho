@@ -33,17 +33,19 @@ lab.experiment('Parameter Class Methods', () => {
   lab.test('it returns a new instance when create succeeds', (done) => {
 
     Parameter.create(
+      'name',
       'userid12test',
       'bioDesignId',
       'value',
       'variable',
-    (err, result) => {
+      'units',
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Parameter);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Parameter);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -58,19 +60,21 @@ lab.experiment('Parameter Class Methods', () => {
     };
 
     Parameter.create(
+      'name',
       'userid12test',
       'bioDesignId',
       'value',
       'variable',
-    (err, result) => {
+      'units',
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Parameter.insertOne = realInsertOne;
+        Parameter.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns a instance when getParameterByBioDesignId succeeds', (done) => {
@@ -78,13 +82,13 @@ lab.experiment('Parameter Class Methods', () => {
     Parameter.getParameterByBioDesignId(
       ['bioDesignId'],
       null,
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result[0]).to.be.an.instanceOf(Parameter);
+        Code.expect(err).to.not.exist();
+        Code.expect(result[0]).to.be.an.instanceOf(Parameter);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns a instance when getParameterByBioDesignId succeeds', (done) => {
@@ -95,13 +99,13 @@ lab.experiment('Parameter Class Methods', () => {
         value: 'value',
         variable: 'variable'
       }],
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result[0]).to.be.an.instanceOf(Parameter);
+        Code.expect(err).to.not.exist();
+        Code.expect(result[0]).to.be.an.instanceOf(Parameter);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when getParameterByBioDesignId fails', (done) => {
@@ -118,14 +122,14 @@ lab.experiment('Parameter Class Methods', () => {
     Parameter.getParameterByBioDesignId(
       ['bioDesignId'],
       null,
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Parameter.find = realFind;
+        Parameter.find = realFind;
 
-      done();
-    });
+        done();
+      });
   });
 });

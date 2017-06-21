@@ -256,9 +256,11 @@ lab.experiment('Parameter Plugin Create', () => {
       method: 'POST',
       url: '/parameter',
       payload: {
+        name: 'name',
         bioDesignId: 'bioDesignId',
         value: 5,
         variable: 'weight',
+        units: 'g'
       },
       credentials: AuthenticatedUser
     };
@@ -273,7 +275,7 @@ lab.experiment('Parameter Plugin Create', () => {
       callback();
     };
 
-    stub.Parameter.create = function (userId, bioDesignId, value, variable, callback) {
+    stub.Parameter.create = function (name, userId, bioDesignId, value, variable, units, callback) {
 
       callback(Error('create failed'));
     };
@@ -293,7 +295,7 @@ lab.experiment('Parameter Plugin Create', () => {
       callback();
     };
 
-    stub.Parameter.create = function (userId, bioDesignId, value, variable, callback) {
+    stub.Parameter.create = function (name, userId, bioDesignId, value, variable, units, callback) {
 
       callback(null, {});
     };
@@ -314,7 +316,7 @@ lab.experiment('Parameters Plugin Update', () => {
   lab.beforeEach((done) => {
 
     request = {
-      method: "PUT",
+      method: 'PUT',
       url: '/parameter/420000000000000000000000',
       payload: {
         bioDesignId: 'Test bio design',
@@ -328,11 +330,14 @@ lab.experiment('Parameters Plugin Update', () => {
   });
 
   lab.test('it updates the document successfully', (done) => {
+
     stub.Parameter.findByIdAndUpdate = function (id, update, callback) {
+
       callback(null, {});
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
 
@@ -341,22 +346,28 @@ lab.experiment('Parameters Plugin Update', () => {
   });
 
   lab.test('it returns an error', (done) => {
+
     stub.Parameter.findByIdAndUpdate = function (id, update, callback) {
+
       callback(Error('error'));
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(500);
       done();
     });
   });
 
   lab.test('the parameter is not found', (done) => {
+
     stub.Parameter.findByIdAndUpdate = function (id, update, callback) {
-    callback(null, null);
-  };
+
+      callback(null, null);
+    };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(404);
       done();
     });

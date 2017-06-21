@@ -28,6 +28,7 @@ class Module extends MongoModels {
   }
 
   static getModuleByBioDesignId(bioDesignId, query, callback) {
+
     if (query == null) {
       query = {};
     }

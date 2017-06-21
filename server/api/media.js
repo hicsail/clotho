@@ -130,11 +130,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!medium) {
-        return reply(Boom.notFound('Medium not found.'));
-      }
+          return reply(Boom.notFound('Medium not found.'));
+        }
 
-      reply(medium);
-    });
+        reply(medium);
+      });
     }
   });
 

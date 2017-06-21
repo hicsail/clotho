@@ -45,10 +45,11 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const fields = request.payload.fields;
-      const sort = request.payload.sort;
-      const limit = request.payload.limit;
-      const page = request.payload.page;
+      /* const fields = request.payload.fields;
+       const sort = request.payload.sort;
+       const limit = request.payload.limit;
+       const page = request.payload.page;
+       */
 
       Async.auto({
         findSequences: function (done) {
@@ -85,10 +86,10 @@ internals.applyRoutes = function (server, next) {
 
 
           if (partArray !== null) {
-            for (var i = 0; i < partArray.length; i++) {
+            for (var i = 0; i < partArray.length; ++i) {
               if (partArray[i]['bioDesignId'] !== null) {
                 bioDesignIds.push(partArray[i]['bioDesignId'].toString());
-              }  else if (typeof partArray[i] == 'string') {
+              } else if (typeof partArray[i] == 'string') {
                 // Prior steps found multiple bd ids, but sequence/part was undefined.
                 bioDesignIds.push(partArray[i]);
               }
@@ -96,11 +97,10 @@ internals.applyRoutes = function (server, next) {
           }
 
 
-
           // only zero/one result, no need to search further
           if (request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
-              return reply({"debug": results});
+              return reply({'debug': results});
             }
 
             if (bioDesignIds.length === 1) {
@@ -122,7 +122,7 @@ internals.applyRoutes = function (server, next) {
           var parameterArray = results.findParameters;
           var bioDesignIds = [];
           if (parameterArray != null) {
-            for (var i = 0; i < parameterArray.length; i++) {
+            for (var i = 0; i < parameterArray.length; ++i) {
               if (parameterArray[i]['bioDesignId'] !== null && parameterArray[i]['bioDesignId'] !== undefined) {
                 bioDesignIds.push(parameterArray[i]['bioDesignId'].toString());
               } else if (typeof parameterArray[i] == 'string') {
@@ -136,7 +136,7 @@ internals.applyRoutes = function (server, next) {
           // only zero/one result, no need to search further
           if (request.payload.parameters !== null && request.payload.parameters != undefined) {
             if (bioDesignIds.length === 0) {
-              return reply({"debug": results});
+              return reply({'debug': results});
             }
 
             if (bioDesignIds.length === 1) {
@@ -163,9 +163,9 @@ internals.applyRoutes = function (server, next) {
             for (let module of moduleArray) {
               if (module['bioDesignId'] !== null) {
                 bioDesignIds.push(module['bioDesignId'].toString());
-              } else if (typeof moduleArray[i] == 'string') {
+              } else if (typeof module == 'string') {
                 // Prior steps found multiple bd ids, but parameter was undefined.
-                bioDesignIds.push(moduleArray[i]);
+                bioDesignIds.push(module);
               }
             }
           }
@@ -173,7 +173,7 @@ internals.applyRoutes = function (server, next) {
           // only zero/one result, no need to search further
           if (request.payload.role !== null && request.payload.role !== undefined) {
             if (bioDesignIds.length === 0) {
-              return reply({"debug": results});
+              return reply({'debug': results});
             }
 
             if (bioDesignIds.length === 1) {
@@ -247,6 +247,7 @@ internals.applyRoutes = function (server, next) {
 
       Async.auto({
         createBioDesign: function (done) {
+
           BioDesign.create(
             request.payload.name,
             null, // description
@@ -264,10 +265,12 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < param.length; ++i) {
               Parameter.create(
+                request.payload.name,
                 request.auth.credentials.user._id.toString(),
                 bioDesignId,
                 param[i]['value'],
                 param[i]['variable'],
+                param[i]['units'],
                 done);
             }
           }
@@ -349,30 +352,25 @@ internals.applyRoutes = function (server, next) {
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
 
-          if (results.createAnnotation._id === undefined) {
-            var annotationId = null;
-          }
-          else {
-            var annotationId = results.createAnnotation._id.toString();
+          var annotationId = null, moduleId = null;
+          if (results.createAnnotation._id !== undefined) {
+            annotationId = results.createAnnotation._id.toString();
           }
 
-          if (results.createModule._id === undefined) {
-            var moduleId = null;
-          }
-          else {
-            var moduleId = results.createModule._id.toString();
+          if (results.createModule._id !== undefined) {
+            moduleId = results.createModule._id.toString();
           }
 
-          if (annotationId !== null  && moduleId !== null) {
-          Feature.create(
-            request.payload.name,
-            null, // description
-            request.auth.credentials.user._id.toString(),
-            request.payload.displayId,
-            request.payload.role,
-            annotationId,
-            moduleId,
-            done);
+          if (annotationId !== null && moduleId !== null) {
+            Feature.create(
+              request.payload.name,
+              null, // description
+              request.auth.credentials.user._id.toString(),
+              request.payload.displayId,
+              request.payload.role,
+              annotationId,
+              moduleId,
+              done);
           }
           else {
             done(null, []);

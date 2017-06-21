@@ -326,11 +326,14 @@ lab.experiment('Bio Design Plugin Update', () => {
   });
 
   lab.test('it updates the document successfully', (done) => {
+
     stub.BioDesign.findByIdAndUpdate = function (id, update, callback) {
+
       callback(null, {});
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
 
@@ -339,22 +342,28 @@ lab.experiment('Bio Design Plugin Update', () => {
   });
 
   lab.test('it returns an error', (done) => {
+
     stub.BioDesign.findByIdAndUpdate = function (id, update, callback) {
+
       callback(Error('error'));
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(500);
       done();
     });
   });
 
   lab.test('the bio design is not found', (done) => {
+
     stub.BioDesign.findByIdAndUpdate = function (id, update, callback) {
-    callback(null, null);
-  };
+
+      callback(null, null);
+    };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(404);
       done();
     });

@@ -124,7 +124,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           description: Joi.string().required(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').insensitive(), // Case-insensitive.
-          accenssion: Joi.string().optional(),
+          accession: Joi.string().optional(),
           isLinear: Joi.boolean().optional(),
           isSingleStranded: Joi.boolean().optional(),
           displayId: Joi.string().optional(),
@@ -134,6 +134,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       const id = request.params.id;
 
       const update = {
@@ -141,7 +142,7 @@ internals.applyRoutes = function (server, next) {
           name: request.payload.name,
           description: request.payload.description,
           sequence: request.payload.sequence,
-          accenssion: request.payload.accenssion,
+          accession: request.payload.accession,
           isLinear: request.payload.isLinear,
           isSingleStranded: request.payload.isSingleStranded,
           displayId: request.payload.displayId,
@@ -152,6 +153,7 @@ internals.applyRoutes = function (server, next) {
 
       // TODO: add findByIdAndUpdate() method in the sequence.js object file. Add here after.
       Sequence.findByIdAndUpdate(id, update, (err, sequence) => {
+
         if (err) {
           return reply(err);
         }

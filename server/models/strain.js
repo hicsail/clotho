@@ -4,6 +4,7 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class Strain extends MongoModels {
+
   static create(name, description, userId, callback) {
 
     const document = {
