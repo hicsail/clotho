@@ -19,8 +19,11 @@ jobs:
       - run:
           name: test
           command: npm test
+      - add_ssh_keys:
+          fingerprints:
+            - "$SSH_KEY_FINGERPRINT"
       - deploy:
           name: Deploy
           command: |
                 rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/$CIRCLE_PROJECT_REPONAME/production/
-                ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/production/ && docker-compose build && docker-compose up -d'
+                ssh circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/production/ && docker-compose build && docker-compose up -d'
