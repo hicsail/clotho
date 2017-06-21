@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/clotho
     docker:
-      - image: circleci/node:6.11.0
+      - image: node:6.11.0
       - image: mongo:3.4.4
     steps:
       - checkout
