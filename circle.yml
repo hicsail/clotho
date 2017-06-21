@@ -1,3 +1,23 @@
 machine:
+  environment:
+    NODE_ENV: test
+    CXX: g++-4.8
   node:
-    version: 6.7.0
+    version: 6.11.0
+
+dependencies:
+  override:
+    - sudo apt-get install unicode-data
+    - nvm install 8.1.2
+
+test:
+  override:
+    - nvm use 6.11.0 && npm test
+    - rm -rf node_modules && nvm use 8.1.2 && npm install && npm test
+
+deployment:
+  deploy_to_staging:
+    branch: deployment
+    commands:
+      - rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/clotho/
+      - ssh circleci@$SERVER_IP 'cd /home/circleci/clotho && docker-compose build && docker-compose up -d'
