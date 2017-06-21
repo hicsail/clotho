@@ -14,3 +14,9 @@ test:
   override:
     - nvm use 6.11.0 && npm test
     - rm -rf node_modules && nvm use 8.1.2 && npm install && npm test
+
+deployment:
+  deploy_to_staging:
+    branch: deployment
+    commands:
+      - rm -rf node_modules && rsync -r ./* circleci@$server_ip:/home/circleci/clotho/
