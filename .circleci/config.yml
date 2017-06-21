@@ -23,4 +23,4 @@ jobs:
           name: Deploy
           command: |
                 rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/$CIRCLE_PROJECT_REPONAME/production/
-                ssh -oStrictHostKeyChecking=no circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/production/ && docker-compose build && docker-compose up -d'
+                ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/production/ && docker-compose build && docker-compose up -d'
