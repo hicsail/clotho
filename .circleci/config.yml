@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/clotho
     docker:
-      - image: node:6.11.0
+      - image: lukyth/node-firebase-rsync
       - image: mongo:3.4.4
     steps:
       - checkout
@@ -19,9 +19,6 @@ jobs:
       - run:
           name: test
           command: npm test
-      - run:
-          name: install rsync
-          command: apt-get -y install rsync
       - deploy:
           name: Deploy
           command: |
