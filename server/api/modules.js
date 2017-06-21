@@ -146,11 +146,11 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!module) {
-        return reply(Boom.notFound('Module not found.'));
-      }
+          return reply(Boom.notFound('Module not found.'));
+        }
 
-      reply(module);
-    });
+        reply(module);
+      });
     }
   });
 

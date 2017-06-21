@@ -40,7 +40,7 @@ class BioDesign extends MongoModels {
     var query2 = {};
 
     if (typeof bioDesignIds !== 'string') {
-      for (var i = 0; i < bioDesignIds.length; i++) {
+      for (var i = 0; i < bioDesignIds.length; ++i) {
         bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i].toString());
       }
 
@@ -52,76 +52,78 @@ class BioDesign extends MongoModels {
     for (var attrname in query) {
       query2[attrname] = query[attrname];
     }
-    console.log(query2);
+    //console.log(query2);
 
     this.find(query2, (err, bioDesigns) => {
 
 
-      // dealing with error
-      if (err) {
-        return callback(err);
-      }
-
-      // otherwise buildup biodesign objects
-      var allPromises = [];
-      for (var i = 0; i < bioDesigns.length; i++) {
-        // fetch aggregate of part, module, parameter (informally, components)
-        // and combine with main biodesign object
-        var promise = new Promise((resolve, reject) => {
-          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
-
-            if (errGet) {
-              reject(errGet);
-            }
-            resolve(components);
-          });
-        });
-        allPromises.push(promise);
-      }
-
-      Promise.all(allPromises).then((resolve,reject)=>{
-        for(var i = 0; i < bioDesigns.length; i++){
-          bioDesigns[i]['parts'] = resolve[i]['parts'];
-          bioDesigns[i]['modules'] = resolve[i]['modules'];
-          bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+        // dealing with error
+        if (err) {
+          return callback(err);
         }
-        return callback(null, bioDesigns);
-      });
-    }
-  );
-}
+
+        // otherwise buildup biodesign objects
+        var allPromises = [];
+        for (var i = 0; i < bioDesigns.length; ++i) {
+          // fetch aggregate of part, module, parameter (informally, components)
+          // and combine with main biodesign object
+          var promise = new Promise((resolve, reject) => {
+
+            this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
+
+              if (errGet) {
+                reject(errGet);
+              }
+              resolve(components);
+            });
+          });
+          allPromises.push(promise);
+        }
+
+        Promise.all(allPromises).then((resolve, reject) => {
+
+          for (var i = 0; i < bioDesigns.length; ++i) {
+            bioDesigns[i]['parts'] = resolve[i]['parts'];
+            bioDesigns[i]['modules'] = resolve[i]['modules'];
+            bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+          }
+          return callback(null, bioDesigns);
+        });
+      }
+    );
+  }
 
 // based on biodesignId, fetches all children
-static getBioDesign(bioDesignId, callback) {
+  static getBioDesign(bioDesignId, callback) {
 
-  Part.findByBioDesignId(bioDesignId, (err, parts) => {
-
-    if (err) {
-      return callback(err);
-    }
-
-
-    Module.findByBioDesignId(bioDesignId, (err, modules) => {
+    Part.findByBioDesignId(bioDesignId, (err, parts) => {
 
       if (err) {
         return callback(err);
       }
 
-      Parameter.getParameterByBioDesignId(bioDesignId, null, (err, parameters) => {
+
+      Module.findByBioDesignId(bioDesignId, (err, modules) => {
 
         if (err) {
           return callback(err);
         }
 
+        Parameter.getParameterByBioDesignId(bioDesignId, null, (err, parameters) => {
 
-        return callback(null, {parts: parts, modules: modules, parameters: parameters});
+          if (err) {
+            return callback(err);
+          }
+
+
+          return callback(null, {parts: parts, modules: modules, parameters: parameters});
+        });
+
       });
 
     });
 
-  });
-
-}
+  }
 }
 
 

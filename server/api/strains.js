@@ -131,10 +131,10 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!strain) {
-        return reply(Boom.notFound('Strain not found.'));
+          return reply(Boom.notFound('Strain not found.'));
         }
 
-      reply(strain);
+        reply(strain);
       });
     }
   });

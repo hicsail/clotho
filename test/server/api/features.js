@@ -313,7 +313,7 @@ lab.experiment('Features Plugin Update', () => {
   lab.beforeEach((done) => {
 
     request = {
-      method: "PUT",
+      method: 'PUT',
       url: '/feature/420000000000000000000000',
       payload: {
         name: 'ibs',
@@ -329,11 +329,14 @@ lab.experiment('Features Plugin Update', () => {
   });
 
   lab.test('it updates the document successfully', (done) => {
+
     stub.Feature.findByIdAndUpdate = function (id, update, callback) {
+
       callback(null, {});
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
 
@@ -342,22 +345,28 @@ lab.experiment('Features Plugin Update', () => {
   });
 
   lab.test('it returns an error', (done) => {
+
     stub.Feature.findByIdAndUpdate = function (id, update, callback) {
+
       callback(Error('error'));
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(500);
       done();
     });
   });
 
   lab.test('the feature is not found', (done) => {
+
     stub.Feature.findByIdAndUpdate = function (id, update, callback) {
-    callback(null, null);
-  };
+
+      callback(null, null);
+    };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(404);
       done();
     });

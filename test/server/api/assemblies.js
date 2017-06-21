@@ -251,6 +251,7 @@ lab.experiment('Assembly Plugin Delete', () => {
 lab.experiment('Assembly Plugin Update', () => {
 
   lab.beforeEach((done) => {
+
     request = {
       method: 'PUT',
       url: '/assembly/420000000000000000000000',
@@ -265,11 +266,14 @@ lab.experiment('Assembly Plugin Update', () => {
   });
 
   lab.test('it updates the document successfully', (done) => {
+
     stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+
       callback(null, {});
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
 
@@ -278,22 +282,28 @@ lab.experiment('Assembly Plugin Update', () => {
   });
 
   lab.test('it returns an error', (done) => {
+
     stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+
       callback(Error('error'));
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(500);
       done();
     });
   });
 
   lab.test('the assembly is not found', (done) => {
+
     stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
-    callback(null, null);
-  };
+
+      callback(null, null);
+    };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(404);
       done();
     });
@@ -302,65 +312,65 @@ lab.experiment('Assembly Plugin Update', () => {
 });
 
 /*
-lab.experiment('Assembly Plugin Create', () => {
+ lab.experiment('Assembly Plugin Create', () => {
 
-  lab.beforeEach((done) => {
+ lab.beforeEach((done) => {
 
-    request = {
-      method: 'POST',
-      url: '/assembly',
-      payload: {
-        sequenceId: 'seq1',
-        name: 'sequence1',
-        start: 1,
-        end: 2,
-        isForwardStrand: true
-      },
-      credentials: AuthenticatedUser
-    };
+ request = {
+ method: 'POST',
+ url: '/assembly',
+ payload: {
+ sequenceId: 'seq1',
+ name: 'sequence1',
+ start: 1,
+ end: 2,
+ isForwardStrand: true
+ },
+ credentials: AuthenticatedUser
+ };
 
-    done();
-  });
+ done();
+ });
 
-  lab.test('it returns an error when create fails', (done) => {
+ lab.test('it returns an error when create fails', (done) => {
 
-    stub.Assembly.findOne = function (conditions, callback) {
+ stub.Assembly.findOne = function (conditions, callback) {
 
-      callback();
-    };
+ callback();
+ };
 
-    stub.Assembly.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+ stub.Assembly.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
 
-      callback(Error('create failed'));
-    };
+ callback(Error('create failed'));
+ };
 
-    server.inject(request, (response) => {
+ server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(500);
+ Code.expect(response.statusCode).to.equal(500);
 
-      done();
-    });
-  });
+ done();
+ });
+ });
 
-  lab.test('it creates a document successfully', (done) => {
+ lab.test('it creates a document successfully', (done) => {
 
-    stub.Assembly.findOne = function (conditions, callback) {
+ stub.Assembly.findOne = function (conditions, callback) {
 
-      callback();
-    };
+ callback();
+ };
 
-    stub.Assembly.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+ stub.Assembly.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
 
-      callback(null, {});
-    };
+ callback(null, {});
+ };
 
-    server.inject(request, (response) => {
+ server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
+ Code.expect(response.statusCode).to.equal(200);
+ Code.expect(response.result).to.be.an.object();
 
-      done();
-    });
-  });
-});
-*/
+ done();
+ });
+ });
+ });
+ */

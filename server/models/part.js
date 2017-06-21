@@ -27,7 +27,8 @@ class Part extends MongoModels {
 
   // helper method for strings query
   static getParts(partIds, callback) {
-    for (var i = 0; i < partIds.length; i++)  {
+
+    for (var i = 0; i < partIds.length; ++i)  {
       partIds[i] = new MongoModels.ObjectID(partIds[i]);
     }
 

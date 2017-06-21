@@ -270,7 +270,7 @@ lab.experiment('Medium Plugin Create', () => {
       callback();
     };
 
-    stub.Medium.create = function (name,description,userId,callback) {
+    stub.Medium.create = function (name, description, userId, callback) {
 
       callback(Error('create failed'));
     };
@@ -290,7 +290,7 @@ lab.experiment('Medium Plugin Create', () => {
       callback();
     };
 
-    stub.Medium.create = function (name,description,userId,callback) {
+    stub.Medium.create = function (name, description, userId, callback) {
 
       callback(null, {});
     };
@@ -310,7 +310,7 @@ lab.experiment('Media Plugin Update', () => {
   lab.beforeEach((done) => {
 
     request = {
-      method: "PUT",
+      method: 'PUT',
       url: '/medium/420000000000000000000000',
       payload: {
         name: 'ibs',
@@ -323,11 +323,14 @@ lab.experiment('Media Plugin Update', () => {
   });
 
   lab.test('it updates the document successfully', (done) => {
+
     stub.Medium.findByIdAndUpdate = function (id, update, callback) {
+
       callback(null, {});
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
 
@@ -336,22 +339,28 @@ lab.experiment('Media Plugin Update', () => {
   });
 
   lab.test('it returns an error', (done) => {
+
     stub.Medium.findByIdAndUpdate = function (id, update, callback) {
+
       callback(Error('error'));
     };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(500);
       done();
     });
   });
 
   lab.test('the medium is not found', (done) => {
+
     stub.Medium.findByIdAndUpdate = function (id, update, callback) {
-    callback(null, null);
-  };
+
+      callback(null, null);
+    };
 
     server.inject(request, (response) => {
+
       Code.expect(response.statusCode).to.equal(404);
       done();
     });

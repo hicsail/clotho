@@ -138,13 +138,13 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (!part) {
-        return reply(Boom.notFound('Sub-part not found.'));
-      }
+          return reply(Boom.notFound('Sub-part not found.'));
+        }
 
-      reply(part);
-    });
-}
-});
+        reply(part);
+      });
+    }
+  });
 
   server.route({
     method: 'DELETE',

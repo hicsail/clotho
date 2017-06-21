@@ -129,10 +129,12 @@ internals.applyRoutes = function (server, next) {
             for (var i = 0; i < param.length; ++i) {
 
               Parameter.create(
+                request.payload.name,
                 request.auth.credentials.user._id.toString(),
                 bioDesignId,
                 param[i]['value'],
                 param[i]['variable'],
+                param[i]['units'],
                 done);
             }
           }
@@ -223,18 +225,13 @@ internals.applyRoutes = function (server, next) {
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
 
-          if (results.createAnnotation._id === undefined) {
-            var annotationId = null;
-          }
-          else {
-            var annotationId = results.createAnnotation._id.toString();
+          var annotationId = null, moduleId = null;
+          if (results.createAnnotation._id !== undefined) {
+            annotationId = results.createAnnotation._id.toString();
           }
 
-          if (results.createModule._id === undefined) {
-            var moduleId = null;
-          }
-          else {
-            var moduleId = results.createModule._id.toString();
+          if (results.createModule._id !== undefined) {
+            moduleId = results.createModule._id.toString();
           }
 
           if (annotationId !== null  && moduleId !== null) {
