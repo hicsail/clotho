@@ -4,8 +4,6 @@ machine:
     CXX: g++-4.8
   node:
     version: 6.11.0
-  mongodb:
-    version: 3.4
 
 dependencies:
   override:

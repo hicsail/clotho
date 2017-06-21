@@ -2,6 +2,9 @@ version: 2
 jobs:
   build:
     working_directory: ~/clotho
+    environment:
+      - NODE_ENV: test
+      - CXX: g++-4.8
     docker:
       - image: node:6.11.0
       - image: mongo:3.4.4
