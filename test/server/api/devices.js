@@ -62,3 +62,54 @@ lab.after((done) => {
 
   done();
 });
+
+
+lab.experiment('Device Plugin Result List', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/device',
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when paged find fails', (done) => {
+
+    stub.Device.pagedFind = function () {
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('find failed'));
+    };
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an array of documents successfully', (done) => {
+
+    stub.Device.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {data: [{}, {}, {}]});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
+    });
+  });
+});
