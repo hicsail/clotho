@@ -1,0 +1,44 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/clotho
+    environment:
+      - NODE_ENV: test
+    docker:
+      - image: node:6.11.0
+      - image: mongo:3.4.4
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: npm-install
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - .node_modules
+      - run:
+          name: test
+          command: npm test
+      - deploy:
+          name: Master Deploy
+          command: |
+             if [ "${CIRCLE_BRANCH}" == "master"
+                then rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/$CIRCLE_PROJECT_REPONAME/production/
+                then ssh circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/production/ && docker-compose build && docker-compose up -d'
+             fi
+     - deploy:
+         name: Staging Deploy
+         command: |
+            if [ "${CIRCLE_BRANCH}" == "staging"
+               then rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/$CIRCLE_PROJECT_REPONAME/staging/
+               then ssh circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/staging/ && docker-compose build && docker-compose up -d'
+            fi
+    - deploy:
+        name: Testing All Branches Deploy
+        command: |
+           if [ "${CIRCLE_BRANCH}" != "master" && "${CIRCLE_BRANCH}" != "staging"
+              then rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH/
+              then ssh circleci@$SERVER_IP 'cd /home/circleci/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH/ && docker-compose build && docker-compose up -d'
+           fi
