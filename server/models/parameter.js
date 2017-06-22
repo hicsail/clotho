@@ -25,7 +25,7 @@ class Parameter extends MongoModels {
     });
   }
 
-
+  // Can pass in biodesignids, parameters, or both.
   static getParameterByBioDesignId(bioDesignIds, parameters, callback) {
 
     var query = {};
@@ -35,41 +35,82 @@ class Parameter extends MongoModels {
       query = {bioDesignId: {$in: bioDesignIds}};
     }
 
+    // No array, just look for bioDesignIds.
+    if (parameters === null || parameters.length === 0) {
+      this.find(query, (err, results) => {
+        if (err) {
+          callback(err);
+        }
+
+        return callback(err, results);
+      });
+    }
+
 
     var parameterLabels = ['name', 'value', 'variable', 'units'];
-    if (parameters !== null) {
-      var parameterQueries = {'name': [], 'value': [], 'variable': [], 'units': []};
-      for (let para of parameters) {
-        if (para['value'] !== undefined && para['value'] !== null && !isNaN(para['value'])) {
-          para['value'] = +para['value']; // convert to number
-        }
-        for (let p of parameterLabels) {
-          if (para[p] !== undefined && para[p] !== null) {
-            parameterQueries[p].push(para[p]);
+
+    var allPromises = [];
+
+    for (let parameterObj of parameters) {
+
+      // Reset query.
+      if (typeof bioDesignIds == 'string') {
+        query = {bioDesignId: bioDesignIds};
+      } else if (bioDesignIds.length > 0) {
+        query = {bioDesignId: {$in: bioDesignIds}};
+      }
+
+      // Reformat query so that name and variable have regex, value is cast to number.
+      for (let label of parameterLabels) {
+        if (parameterObj[label] !== undefined && parameterObj[label] !== null) {
+          if (label == 'name' || label == 'variable') {
+            query[label] = {$regex: parameterObj[label]};
+          } else if (label === 'value' && !isNaN(parameterObj['value'])) {
+            query[label] = +parameterObj['value'];
+          } else if (label === 'units') {
+            query[label] = parameterObj[label];
           }
         }
-
       }
 
-      for (let p of parameterLabels) {
-        if (parameterQueries[p].length > 0) {
-          query[p] = {$in: parameterQueries[p]};
-        }
-      }
+      // Perform find for given parameter.
+      var promise = new Promise((resolve, reject) => {
 
-     // console.log(query);
+        this.find(query, (errGet, results) => {
+
+
+          if (errGet) {
+            return callback(reject(errGet));
+          }
+
+
+          // If any one of the parameters doesn't match, don't perform any more finds.
+
+          if (results.length !== undefined && results.length !== null && results.length === 0) {
+            return callback(null, results);
+          }
+          resolve(results);
+        });
+      });
+      allPromises.push(promise);
 
     }
 
-    this.find(query, (err, results) => {
-
-      if (err) {
-        return callback(err);
+    // For multiple parameter searches.
+    Promise.all(allPromises).then((resolve, reject) => {
+      if (resolve.length !== undefined && resolve.length !== null) {
+        if (resolve.length > 1) {
+          return callback(null, [].concat.apply([], resolve));
+        } else if (resolve.length === 1) {
+          return callback(null, resolve[0]);
+        }
       }
-
-      callback(err, results);
+      return callback(reject);
     });
+
+
   }
+
 
 }
 
