@@ -31,7 +31,7 @@ class Parameter extends MongoModels {
     var query = {};
     if (typeof bioDesignIds == 'string') {
       query = {bioDesignId: bioDesignIds};
-    } else {
+    } else if (bioDesignIds.length > 0) {
       query = {bioDesignId: {$in: bioDesignIds}};
     }
 
@@ -57,6 +57,8 @@ class Parameter extends MongoModels {
         }
       }
 
+     // console.log(query);
+
     }
 
     this.find(query, (err, results) => {
@@ -80,7 +82,7 @@ Parameter.schema = Joi.object().keys({
   userId: Joi.string().required(),
   bioDesignId: Joi.string(),
   derivation: Joi.object(), // Not using Derivation model.
-  unit: Joi.string().required(), // These should be updated.
+  units: Joi.string().required(), // These should be updated.
   value: Joi.number().required(),
   variable: Joi.string().required() // This was originally a Variable object/a ShareableObjBase.
 });

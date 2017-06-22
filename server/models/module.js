@@ -35,7 +35,7 @@ class Module extends MongoModels {
 
     if (typeof bioDesignId == 'string') {
       query['bioDesignId'] = bioDesignId;
-    } else {
+    } else if (bioDesignId !== undefined && bioDesignId !== null && bioDesignId.length > 0) {
       query['bioDesignId'] = {$in: bioDesignId};
     }
 

@@ -31,7 +31,7 @@ class BioDesign extends MongoModels {
     });
   }
 
-  // accepts array of bioDesignIds
+  // Accepts array of bioDesignIds or single string.
   static getBioDesignIds(bioDesignIds, query, callback) {
 
     if (query == null) {
@@ -44,7 +44,10 @@ class BioDesign extends MongoModels {
         bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i].toString());
       }
 
-      query2 = {_id: {$in: bioDesignIds}};
+      if (bioDesignIds.length > 0) {
+        query2 = {_id: {$in: bioDesignIds}};
+      }
+
     } else {
       query2 = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
@@ -52,10 +55,9 @@ class BioDesign extends MongoModels {
     for (var attrname in query) {
       query2[attrname] = query[attrname];
     }
-    //console.log(query2);
+
 
     this.find(query2, (err, bioDesigns) => {
-
 
         // dealing with error
         if (err) {
@@ -87,6 +89,7 @@ class BioDesign extends MongoModels {
             bioDesigns[i]['modules'] = resolve[i]['modules'];
             bioDesigns[i]['parameters'] = resolve[i]['parameters'];
           }
+
           return callback(null, bioDesigns);
         });
       }
