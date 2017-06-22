@@ -106,10 +106,6 @@ internals.applyRoutes = function (server, next) {
               //return reply({'debug': results});
             }
 
-            if (bioDesignIds.length === 1) {
-              // should get full BioDesign
-              return BioDesign.getBioDesignIds(bioDesignIds, null, done);
-            }
           }
 
           // otherwise keep going with parameters search
@@ -121,7 +117,6 @@ internals.applyRoutes = function (server, next) {
 
         }],
         findModules: ['findParameters', function (results, done) {
-          console.log(results);
           // collect bioDesign Ids
           var parameterArray = results.findParameters;
           var bioDesignIds = [];
@@ -138,16 +133,12 @@ internals.applyRoutes = function (server, next) {
 
 
           // only zero/one result, no need to search further
-          if (request.payload.parameters != undefined && request.payload.parameters !== null) {
+          if (request.payload.sequence === undefined && request.payload.parameters != undefined && request.payload.parameters !== null) {
             if (bioDesignIds.length === 0) {
               return reply([]);
               //return reply({'debug': results});
             }
 
-            if (bioDesignIds.length === 1) {
-              // should get full BioDesign
-              return BioDesign.getBioDesignIds(bioDesignIds, null, done);
-            }
           }
 
 
@@ -176,16 +167,11 @@ internals.applyRoutes = function (server, next) {
             }
           }
 
-          // only zero/one result, no need to search further
-          if (request.payload.role !== undefined && request.payload.role !== null) {
+          // No result, no need to search further
+          if (request.payload.sequence === undefined && request.payload.parameters != undefined && request.payload.role !== undefined && request.payload.role !== null) {
             if (bioDesignIds.length === 0) {
               return reply([]);
               //return reply({'debug': results});
-            }
-
-            if (bioDesignIds.length === 1) {
-              // should get full BioDesign
-              return BioDesign.getBioDesignIds(bioDesignIds, null, done);
             }
           }
 
@@ -199,8 +185,16 @@ internals.applyRoutes = function (server, next) {
           }
 
 
-          // Get full biodesigns.
-          return BioDesign.getBioDesignIds(bioDesignIds, query, done);
+          // Should not return anything if all arguments are empty.
+          if (request.payload.name === undefined && request.payload.displayId === undefined
+          && request.payload.sequence === undefined && request.payload.parameters === undefined
+          && request.payload.role === undefined) {
+            return reply([]);
+          } else {
+            // Get full biodesigns.
+            return BioDesign.getBioDesignIds(bioDesignIds, query, done);
+          }
+
 
         }]
       }, (err, results) => {

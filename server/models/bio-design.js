@@ -40,6 +40,7 @@ class BioDesign extends MongoModels {
     var query2 = {};
 
     if (typeof bioDesignIds !== 'string') {
+      // Convert strings to mongo ids.
       for (var i = 0; i < bioDesignIds.length; ++i) {
         bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i].toString());
       }
@@ -53,6 +54,14 @@ class BioDesign extends MongoModels {
     }
 
     for (var attrname in query) {
+      // Convert to regex.
+      if (attrname === 'name') {
+          query['name'] = {$regex: query['name'], $options: 'i'};
+
+        if (attrname === 'displayId') {
+          query['displayId'] = {$regex: query['displayId'], $options: 'i'};
+        }
+      }
       query2[attrname] = query[attrname];
     }
 
@@ -112,7 +121,7 @@ class BioDesign extends MongoModels {
           return callback(err);
         }
 
-        Parameter.getParameterByBioDesignId(bioDesignId, null, (err, parameters) => {
+        Parameter.getParameterByBioDesignId(bioDesignId, [], (err, parameters) => {
 
           if (err) {
             return callback(err);
