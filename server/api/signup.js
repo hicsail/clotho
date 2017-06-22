@@ -22,7 +22,7 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission none
    *
-   * @apiParam {String} username  user's username or email address. Must be lowercase.
+   * @apiParam {String} username  user's username or email address.
    * @apiParam {String} password  user's password.
    * @apiParam {String} email     user's email.
    * @apiParam {String} name      user's full name.

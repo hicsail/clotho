@@ -23,7 +23,7 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission none
    *
-   * @apiParam {String} username  user's username or email address. Must be lowercase.
+   * @apiParam {String} username  user's username or email address.
    * @apiParam {String} password  user's password.
    * @apiParam {String} application  current application name using the api.
    *
@@ -181,7 +181,40 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {post} /api/login/forgot Forgot Password
+   * @apiName Forgot Password
+   * @apiDescription Send email to user who forgot password
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} email  user's email address.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "email":"clotho@clotho.com"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *  "message": "success"
+   * }
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   *  "statusCode": 404,
+   *  "error": "Not Found",
+   *  "message": "There is no user with that email address"
+   * }
+   *
+   * @apiErrorExample {json} Email SMTP not properly configured:
+   * {
+   *  "statusCode": 500,
+   *  "error": "Internal Server Error",
+   *  "message": "An internal server error occurred"
+   * }
+   */
   server.route({
     method: 'POST',
     path: '/login/forgot',
@@ -206,7 +239,7 @@ internals.applyRoutes = function (server, next) {
             }
 
             if (!user) {
-              return reply({message: 'Success.'}).takeover();
+              return reply(Boom.notFound('There is no user with that email address'));
             }
 
             reply(user);
@@ -262,7 +295,37 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {post} /api/login/reset Reset Password
+   * @apiName Reset Password
+   * @apiDescription Send email to user who forgot password
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} key  reset key given by reset email.
+   * @apiParam {String} email  user's email address.
+   * @apiParam {String} password  user's new password.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "key":"9f753360-42bf-4203-bdfa-25e132c3225c",
+   *    "email":"clotho@clotho.com",
+   *    "password": "password"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *  "message": "success"
+   * }
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   *  "statusCode": 400,
+   *  "error": "Bad Request",
+   *  "message": "Invalid email or key."
+   * }
+   */
   server.route({
     method: 'POST',
     path: '/login/reset',

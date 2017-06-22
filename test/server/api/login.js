@@ -304,7 +304,7 @@ lab.experiment('Login Plugin Forgot Password', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.statusCode).to.equal(404);
 
       done();
     });

@@ -52,12 +52,12 @@ const config = {
   },
   system: {
     fromAddress: {
-      name: 'Frame',
-      address: 'jedireza@gmail.com'
+      name: 'Clotho',
+      address: 'do-not-reply@clotho.com'
     },
     toAddress: {
-      name: 'Frame',
-      address: 'jedireza@gmail.com'
+      name: 'Clotho',
+      address: 'do-not-reply@clotho.com'
     }
   }
 };
