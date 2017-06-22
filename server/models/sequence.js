@@ -88,15 +88,6 @@ class Sequence extends MongoModels {
     });
   }
 
-  // Should these be moved to Annotation file?
-
-  createAnnotation(name, description, start, end, isForwardStrand, userId) {
-
-  }
-
-  addAnnotation(annotation) {
-
-  }
 
   // Original Java.
   /*
