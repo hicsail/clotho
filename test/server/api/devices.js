@@ -184,31 +184,97 @@ lab.after((done) => {
 // });
 
 
-lab.experiment('Device Plugin Create', () => {
+// lab.experiment('Device Plugin Create', () => {
+//
+//   lab.beforeEach((done) => {
+//
+//     request = {
+//       method: 'POST',
+//       url: '/device',
+//       payload: {
+//         name: 'ibs',
+//         userId: 'Test user id',
+//         displayId: 'Test display id',
+//         role: 'Test role',
+//         partIds: ['test', 'array'],
+//         createSeqFromParts: true,
+//         sequence: 'Test sequence',
+//         parameters: []
+//       },
+//       credentials: AuthenticatedUser
+//     };
+//
+//     done();
+//   });
+//
+//   lab.test('Create BioDesign Fails', (done) => {
+//     stub.BioDesign.findOne = function (conditions, callback) {
+//
+//       callback();
+//     }
+//
+//     stub.BioDesign.create = function (name, userId, displayId, role, partIds, createSeqFromParts, sequence, parameters, callback) {
+//       callback();
+//     }
+//   });
+//
+// });
 
-  lab.beforeEach((done) => {
-
-    request = {
-      method: 'POST',
-      url: '/device',
-      payload: {
-        name: 'ibs',
-        userId: 'Test user id',
-        displayId: 'Test display id',
-        role: 'Test role',
-        partIds: ['test', 'array'],
-        createSeqFromParts: true,
-        sequence: 'Test sequence',
-        parameters: []
-      },
-      credentials: AuthenticatedUser
-    };
-
-    done();
-  });
-
-  lab.test('Create BioDesign Fails', (done) => {
-    stub.BioDesign
-  })
-
-})
+// lab.experiment('Device Plugin Delete', () => {
+//
+//   lab.beforeEach((done) => {
+//
+//     request = {
+//       method: 'DELETE',
+//       url: '/device/42000000000',
+//       credentials: AuthenticatedUser
+//     };
+//
+//     done();
+//   });
+//
+//   lab.test('it returns an error when delete by id fails', (done) => {
+//     stub.Device.findByIdAndDelete = function (id, callback) {
+//       callback(Error('delete by id failed'));
+//     };
+//
+//     server.inject(request, (response) => {
+//       Code.expect(response.statusCode).to.equal(500);
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('it returns a not found when delete by id misses', (done) => {
+//
+//     stub.Device.findByIdAndDelete = function (id, callback) {
+//
+//       callback(null, undefined);
+//     };
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(404);
+//       Code.expect(response.result.message).to.match(/document not found/i);
+//
+//       done();
+//     });
+//   });
+//
+//
+//   lab.test('it deletes a document successfully', (done) => {
+//
+//     stub.Device.findByIdAndDelete = function (id, callback) {
+//
+//       callback(null, 1);
+//     };
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result.message).to.match(/success/i);
+//
+//       done();
+//     });
+//   });
+// });
