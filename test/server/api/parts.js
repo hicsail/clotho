@@ -198,7 +198,7 @@ lab.experiment('Part Plugin Create', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object().and.to.include({createParameters:[]});
+      Code.expect(response.result).to.be.a.string();
 
       done();
     });
@@ -209,7 +209,7 @@ lab.experiment('Part Plugin Create', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
+      Code.expect(response.result).to.be.a.string();
 
       done();
     });
@@ -222,7 +222,7 @@ lab.experiment('Part Plugin Create', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object().and.to.include({createModule: []});
+      Code.expect(response.result).to.be.a.string();
 
       done();
     });
@@ -233,7 +233,7 @@ lab.experiment('Part Plugin Create', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
+      Code.expect(response.result).to.be.a.string();
 
       done();
     });
