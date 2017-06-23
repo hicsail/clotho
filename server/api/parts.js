@@ -202,7 +202,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-        return reply(results);
+        return reply(results.findBioDesigns);
       });
 
     }
@@ -390,7 +390,10 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-        return reply(results);
+
+        var bioDesignId = results.createBioDesign._id.toString();
+
+        return reply(bioDesignId);
       });
     }
   })
