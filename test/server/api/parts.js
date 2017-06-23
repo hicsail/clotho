@@ -103,66 +103,66 @@ lab.experiment('Influences Plugin Update', () => {
 
 });
 
-// lab.experiment('Part Plugin Read', () => {
-//
-//   lab.beforeEach((done) => {
-//
-//     request = {
-//       method: 'GET',
-//       url: '/part/42000000000',
-//       credentials: AuthenticatedUser
-//     };
-//
-//     done();
-//   });
-//
-//   lab.test('it returns an error when find by id fails', (done) => {
-//
-//     stub.Part.findById = function (id, callback) {
-//
-//       callback(Error('find by id failed'));
-//     };
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(500);
-//
-//       done();
-//     });
-//   });
-//
-//   lab.test('it returns a not found when find by id misses', (done) => {
-//
-//     stub.Part.findById = function (id, callback) {
-//
-//       callback();
-//     };
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(404);
-//       Code.expect(response.result.message).to.match(/document not found/i);
-//
-//       done();
-//     });
-//   });
-//
-//   lab.test('it returns a document successfully', (done) => {
-//
-//     stub.Part.findById = function (id, callback) {
-//
-//       callback(null, {});
-//     };
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(200);
-//       Code.expect(response.result).to.be.an.object();
-//
-//       done();
-//     });
-//   });
-// });
+lab.experiment('Part Plugin Read', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/part/42000000000',
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when find by id fails', (done) => {
+
+    stub.Part.findById = function (id, callback) {
+
+      callback(Error('find by id failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('it returns a not found when find by id misses', (done) => {
+
+    stub.Part.findById = function (id, callback) {
+
+      callback();
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.match(/document not found/i);
+
+      done();
+    });
+  });
+
+  lab.test('it returns a document successfully', (done) => {
+
+    stub.Part.findById = function (id, callback) {
+
+      callback(null, {});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
 
 lab.experiment('Part Plugin Create', () => {
 
@@ -174,8 +174,13 @@ lab.experiment('Part Plugin Create', () => {
       payload: {
         name: 'ibs',
         displayId: 'test display id',
-        role: 'test role',
-        parameters: null,
+        role: 'GENE',
+        parameters: [
+          {"value": 25,
+          "variable": "y",
+          "units": "mg"
+          }
+        ],
         sequence: 'test sequence'
       },
       credentials: AuthenticatedUser
@@ -185,6 +190,54 @@ lab.experiment('Part Plugin Create', () => {
   });
 
   //TODO: Tests go here
+
+  lab.test('createParameters set to empty array because parameters is undefined', (done) => {
+
+    delete request.payload.parameters;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object().and.to.include({createParameters:[]});
+
+      done();
+    });
+  });
+
+  lab.test('createParameters is set because parameters is not undefined', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+
+  lab.test('createModule is set to empty array because role is undefined', (done) => {
+
+    delete request.payload.role;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object().and.to.include({createModule: []});
+
+      done();
+    });
+  });
+
+  lab.test('part is created successfully', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
 });
 
 // lab.experiment('Part Plugin Delete', () => {
