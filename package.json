@@ -27,6 +27,7 @@
     "apidoc": "^0.17.6",
     "async": "2.x.x",
     "bcrypt": "1.x.x",
+    "bionode": "^4.0.1",
     "boom": "4.x.x",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",
