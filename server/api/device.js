@@ -94,7 +94,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           userId: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().optional(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           partIds: Joi.array().items(Joi.string().required()),
           createSeqFromParts: Joi.boolean().required(),
           sequence: Joi.string().optional(),

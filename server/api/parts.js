@@ -30,7 +30,7 @@ internals.applyRoutes = function (server, next) {
           page: Joi.number().default(1),
           name: Joi.string(),
           displayId: Joi.string(),
-          role: Joi.string(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           sequence: Joi.string(),
           parameters: Joi.array().items(
             Joi.object().keys({
@@ -245,7 +245,7 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
-          role: Joi.string().optional(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
           sequence: Joi.string().optional()
         }
