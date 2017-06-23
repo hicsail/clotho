@@ -176,9 +176,9 @@ lab.experiment('Part Plugin Create', () => {
         displayId: 'test display id',
         role: 'GENE',
         parameters: [
-          {"value": 25,
-          "variable": "y",
-          "units": "mg"
+          {'value': 25,
+          'variable': 'y',
+          'units': 'mg'
           }
         ],
         sequence: 'test sequence'
@@ -191,7 +191,7 @@ lab.experiment('Part Plugin Create', () => {
 
   //TODO: Tests go here
 
-  lab.test('createParameters set to empty array because parameters is undefined', (done) => {
+  lab.test('parameters is undefined', (done) => {
 
     delete request.payload.parameters;
 
@@ -204,7 +204,7 @@ lab.experiment('Part Plugin Create', () => {
     });
   });
 
-  lab.test('createParameters is set because parameters is not undefined', (done) => {
+  lab.test('parameters is not undefined', (done) => {
 
     server.inject(request, (response) => {
 
@@ -215,7 +215,7 @@ lab.experiment('Part Plugin Create', () => {
     });
   });
 
-  lab.test('createModule is set to empty array because role is undefined', (done) => {
+  lab.test('role is undefined', (done) => {
 
     delete request.payload.role;
 
@@ -228,7 +228,7 @@ lab.experiment('Part Plugin Create', () => {
     });
   });
 
-  lab.test('part is created successfully', (done) => {
+  lab.test('role is not undefined', (done) => {
 
     server.inject(request, (response) => {
 
@@ -238,6 +238,81 @@ lab.experiment('Part Plugin Create', () => {
       done();
     });
   });
+
+  lab.test('part is created successfully', (done) => {
+
+    // request = {
+    //   name: name,
+    //   description: description,
+    //   userId: userId,
+    //   displayId: displayId,
+    //   bioDesignId: bioDesignId
+    // }
+    stub.Part.create = function (name, description, userId, displayId, bioDesignId, callback) {
+
+      callback(null, {});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+  lab.test('part creation returns an error', (done) => {
+
+    stub.Part.create = function (name, description, userId, displayId, bioDesignId, callback) {
+
+      callback(Error('create failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('sequence is undefined', (done) => {
+
+    delete request.payload.sequence;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+  lab.test('sequence is not undefined', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+
+  // lab.test('part is created successfully', (done) => {
+  //
+  //   server.inject(request, (response) => {
+  //
+  //     Code.expect(response.statusCode).to.equal(200);
+  //     Code.expect(response.result).to.be.a.string();
+  //
+  //     done();
+  //   });
+  // });
+
 });
 
 // lab.experiment('Part Plugin Delete', () => {
