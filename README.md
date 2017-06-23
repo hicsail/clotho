@@ -1,10 +1,19 @@
-# Clotho
+# ![Clotho Logo](http://user-images.githubusercontent.com/5147346/27489828-09be9d72-580a-11e7-88ef-b79c8b5fa069.png) Clotho
+[![CircleCI](https://circleci.com/gh/hicsail/clotho/tree/master.svg?style=svg&circle-token=b9f8fd47abba8c98cde2c1b04ca736ef4362a054)](http://circleci.com/gh/hicsail/clotho/tree/master)
+
 Clotho is a framework for engineering synthetic biological systems and managing the data used to create them. You can author data schemas, run functions and algorithms, and tie Clotho into existing applications.
+
+## Live Demo
+
+We have continuous integration set up with [CircleCI](http://circleci.com) which deploys the master branch onto our server.
+Check it out at [128.31.25.91:9000](http://128.31.25.91:9000/)
 
 ## Technology
 
-Frame is built with the [hapi](https://hapijs.com/) framework. We're
+Clotho is built with the [hapi](https://hapijs.com/) framework. We're
 using [MongoDB](http://www.mongodb.org/) as a data store.
+
+We are using [Docker](http://www.docker.com/) for all production level deployments.
 
 ## Requirements
 
@@ -16,13 +25,28 @@ secrets. If you have issues during installation related to `bcrypt` then [refer
 to this wiki
 page](https://github.com/jedireza/frame/wiki/bcrypt-Installation-Trouble).
 
+### Production Requirements
+
+You will need to install [Docker](http://www.docker.com/) if you wish to simplify installing of the application, or run it in production mode. We are using [Docker Compose](https://github.com/docker/compose) to run the application in an isolated environment with the correct requirements. [Docker Compose](https://github.com/docker/compose) will install all needed requirements when building.
 
 ## Installation
 
 ```bash
-$ git clone git@github.com:hicsail/clotho.git
-$ cd clotho
-$ npm install
+git clone git@github.com:hicsail/clotho.git
+cd clotho
+npm install
+```
+
+### Production Installation
+
+```bash
+docker-compose up
+```
+This will build the application and start running the application on port 9000
+If you wish just to build the application run the following command.
+
+```bash
+docker-compose build
 ```
 
 ## Configuration
@@ -47,7 +71,7 @@ they exist: `accounts`, `adminGroups`, `admins`, `authAttempts`, `sessions`,
 `statuses`, and `users`.
 
 ```bash
-$ npm run first-time-setup
+npm run first-time-setup
 
 # > node first-time-setup.js
 
@@ -59,7 +83,7 @@ $ npm run first-time-setup
 ## Running the app
 
 ```bash
-$ npm start
+npm start
 
 # > ./node_modules/nodemon/bin/nodemon.js -e js,md server
 
@@ -67,11 +91,16 @@ $ npm start
 # ...
 ```
 
-Now you should be able to point your browser to http://localhost:9000/ and
-see the home page.
-
 [`nodemon`](https://github.com/remy/nodemon) watches for changes in server
 code and restarts the app automatically.
+
+### Running the app with Docker
+```bash
+docker-compose up
+```
+
+Now you should be able to point your browser to http://localhost:9000/ and
+see the home page.
 
 ## Running in production
 
@@ -107,7 +136,7 @@ want to submit an issue before creating a large pull request.
 use to write all of our tests.
 
 ```bash
-$ npm test
+npm test
 
 # > ./node_modules/lab/bin/lab -c
 
