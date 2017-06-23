@@ -176,7 +176,7 @@ internals.applyRoutes = function (server, next) {
    *
    * @apiSuccessExample {json} Success-Response:
    *  {
-   *    "sequence":"TACTGGGACTTCCACTT"
+   *    "sequence":"TTCACCTTCAGGGTCAT"
    *  }
    *
    */

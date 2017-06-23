@@ -163,7 +163,98 @@ lab.experiment('Function Plugin Reverse Complement', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.result.sequence).to.equal('TACTGGGACTTCCACTT');
+      Code.expect(response.result.sequence).to.equal('TTCACCTTCAGGGTCAT');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Function Plugin Reverse Complement', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/removeIntrons',
+      payload: {
+        sequence: 'ATGACCCTGAAGGTGAATGACAG',
+        exons: [[1,8]]
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns the correct type based on the sequence', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.sequence).to.equal('TGACCCT');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+
+lab.experiment('Function Plugin Reverse Complement', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/removeExons',
+      payload: {
+        sequence: 'ATGACCCTGAAGGTGAATGACAG',
+        exons: [[1,8]]
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns the correct type based on the sequence', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.sequence).to.equal('AATGACA');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+
+lab.experiment('Function Plugin Reverse Complement', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/transcribe',
+      payload: {
+        sequence: 'ATGACCCTGAAGGTGAA'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns the correct type based on the sequence', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.sequence).to.equal('AUGACCCUGAAGGUGAA');
       Code.expect(response.statusCode).to.equal(200);
 
       done();
