@@ -31,7 +31,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string(),
           displayId: Joi.string(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
-          sequence: Joi.string(),
+          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -187,8 +187,8 @@ internals.applyRoutes = function (server, next) {
 
           // Should not return anything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
-          && request.payload.sequence === undefined && request.payload.parameters === undefined
-          && request.payload.role === undefined) {
+            && request.payload.sequence === undefined && request.payload.parameters === undefined
+            && request.payload.role === undefined) {
             return reply([]);
           } else {
             // Get full biodesigns.
@@ -247,7 +247,7 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
-          sequence: Joi.string().optional()
+          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive()
         }
       }
     },
@@ -272,16 +272,39 @@ internals.applyRoutes = function (server, next) {
             var bioDesignId = results.createBioDesign._id.toString();
             var param = request.payload.parameters;
 
+
+            var allPromises = [];
             for (var i = 0; i < param.length; ++i) {
-              Parameter.create(
-                request.payload.name,
-                request.auth.credentials.user._id.toString(),
-                bioDesignId,
-                param[i]['value'],
-                param[i]['variable'],
-                param[i]['units'],
-                done);
+              var promise = new Promise((resolve, reject) => {
+                Parameter.create(
+                  request.payload.name,
+                  request.auth.credentials.user._id.toString(),
+                  bioDesignId,
+                  param[i]['value'],
+                  param[i]['variable'],
+                  param[i]['units'],
+                  (err, results) => {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve(results);
+                    }
+                  }
+                  );
+
+              });
+
+
+              allPromises.push(promise);
             }
+
+
+            Promise.all(allPromises).then((resolve, reject) => {
+
+              done(null, allPromises);
+            });
+
+
           }
           else {
             done(null, []);

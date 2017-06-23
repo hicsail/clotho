@@ -97,7 +97,7 @@ internals.applyRoutes = function (server, next) {
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           partIds: Joi.array().items(Joi.string().required()),
           createSeqFromParts: Joi.boolean().required(),
-          sequence: Joi.string().optional(),
+          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parameters: Joi.array().optional() //List<Parameters> parameters, insert parameter schema here
         }
       }
