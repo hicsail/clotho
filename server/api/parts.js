@@ -31,7 +31,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string(),
           displayId: Joi.string(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
-          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -220,7 +220,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findById(request.params.id, (err, bioDesign) => {
+      BioDesign.getBioDesignIds(request.params.id, null, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
@@ -231,7 +231,9 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(bioDesign);
+
       });
+
     }
   });
 
@@ -248,7 +250,7 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
-          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive()
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive()
         }
       }
     },
@@ -286,6 +288,7 @@ internals.applyRoutes = function (server, next) {
             var allPromises = [];
             for (var i = 0; i < param.length; ++i) {
               var promise = new Promise((resolve, reject) => {
+
                 Parameter.create(
                   param[i]['name'],
                   request.auth.credentials.user._id.toString(),
@@ -294,13 +297,14 @@ internals.applyRoutes = function (server, next) {
                   param[i]['variable'],
                   param[i]['units'],
                   (err, results) => {
+
                     if (err) {
                       reject(err);
                     } else {
                       resolve(results);
                     }
                   }
-                  );
+                );
 
               });
 

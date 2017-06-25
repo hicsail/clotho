@@ -39,6 +39,7 @@ class Parameter extends MongoModels {
     // No array, just look for bioDesignIds.
     if (parameters === null || parameters.length === 0) {
       this.find(query, (err, results) => {
+
         if (err) {
           callback(err);
         }
@@ -57,6 +58,7 @@ class Parameter extends MongoModels {
 
         // Perform find for given parameter object.
         var promise = new Promise((resolve, reject) => {
+
           query = {};
           // Initialize
           if (typeof bioDesignIds == 'string') {
@@ -80,7 +82,6 @@ class Parameter extends MongoModels {
 
           this.find(query, (errGet, results) => {
 
-
             if (errGet) {
               return reject(errGet);
             }
@@ -98,19 +99,20 @@ class Parameter extends MongoModels {
 
       // For multiple parameter searches, need to find intersection of matching parameter documents.
       Promise.all(allPromises).then((resolve, reject) => {
+
         if (resolve.length !== undefined && resolve.length !== null) {
           if (resolve.length > 1 && resolve.indexOf(null) === -1) {
             var foundBioDesignIds = [];
             // Loop through parameter queries to get list of biodesignids.
-            for (var q = 0; q < resolve.length; q++) {
+            for (var q = 0; q < resolve.length; ++q) {
               foundBioDesignIds.push([]);
-              for (var p = 0; p < resolve[q].length; p++) {
+              for (var p = 0; p < resolve[q].length; ++p) {
                 foundBioDesignIds[q].push(resolve[q][p].bioDesignId);
               }
             }
             // Find the intersection of all BioDesignIds.
             var bioDesignIntersection = foundBioDesignIds[0];
-            for (var p = 1; p < foundBioDesignIds.length; p++) {
+            for (var p = 1; p < foundBioDesignIds.length; ++p) {
               if (bioDesignIntersection.length === 0) break;
               bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[p]);
             }
@@ -121,9 +123,9 @@ class Parameter extends MongoModels {
 
             var returnedParameters = []; // Parameter documents to return.
             var allParameters = [].concat.apply([], resolve);
-            for (var p = 0; p < allParameters.length; p++) {
-              if (bioDesignIntersection.indexOf(allParameters[p].bioDesignId) !== -1) {
-                returnedParameters.push(allParameters[p]);
+            for (let parameter of allParameters) {
+              if (bioDesignIntersection.indexOf(parameter.bioDesignId) !== -1) {
+                returnedParameters.push(parameter);
               }
             }
 

@@ -56,7 +56,7 @@ class BioDesign extends MongoModels {
     for (var attrname in query) {
       // Convert to regex.
       if (attrname === 'name') {
-          query['name'] = {$regex: query['name'], $options: 'i'};
+        query['name'] = {$regex: query['name'], $options: 'i'};
       }
 
       if (attrname === 'displayId') {
@@ -69,42 +69,40 @@ class BioDesign extends MongoModels {
 
     this.find(query2, (err, bioDesigns) => {
 
-
-        // dealing with error
-        if (err) {
-          return callback(err);
-        }
-
-        // otherwise buildup biodesign objects
-        var allPromises = [];
-        for (var i = 0; i < bioDesigns.length; ++i) {
-          // fetch aggregate of part, module, parameter (informally, components)
-          // and combine with main biodesign object
-          var promise = new Promise((resolve, reject) => {
-
-            this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
-
-              if (errGet) {
-                reject(errGet);
-              }
-              resolve(components);
-            });
-          });
-          allPromises.push(promise);
-        }
-
-        Promise.all(allPromises).then((resolve, reject) => {
-
-          for (var i = 0; i < bioDesigns.length; ++i) {
-            bioDesigns[i]['parts'] = resolve[i]['parts'];
-            bioDesigns[i]['modules'] = resolve[i]['modules'];
-            bioDesigns[i]['parameters'] = resolve[i]['parameters'];
-          }
-
-          return callback(null, bioDesigns);
-        });
+      // dealing with error
+      if (err) {
+        return callback(err);
       }
-    );
+
+      // otherwise buildup biodesign objects
+      var allPromises = [];
+      for (var i = 0; i < bioDesigns.length; ++i) {
+        // fetch aggregate of part, module, parameter (informally, components)
+        // and combine with main biodesign object
+        var promise = new Promise((resolve, reject) => {
+
+          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
+
+            if (errGet) {
+              reject(errGet);
+            }
+            resolve(components);
+          });
+        });
+        allPromises.push(promise);
+      }
+
+      Promise.all(allPromises).then((resolve, reject) => {
+
+        for (var i = 0; i < bioDesigns.length; ++i) {
+          bioDesigns[i]['parts'] = resolve[i]['parts'];
+          bioDesigns[i]['modules'] = resolve[i]['modules'];
+          bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+        }
+
+        return callback(null, bioDesigns);
+      });
+    });
   }
 
 // based on biodesignId, fetches all children
