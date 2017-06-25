@@ -49,7 +49,7 @@ class BioDesign extends MongoModels {
         query2 = {_id: {$in: bioDesignIds}};
       }
 
-    } else {
+    } else if (bioDesignIds !== undefined && bioDesignIds !== null) {
       query2 = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
@@ -57,16 +57,18 @@ class BioDesign extends MongoModels {
       // Convert to regex.
       if (attrname === 'name') {
           query['name'] = {$regex: query['name'], $options: 'i'};
-
-        if (attrname === 'displayId') {
-          query['displayId'] = {$regex: query['displayId'], $options: 'i'};
-        }
       }
+
+      if (attrname === 'displayId') {
+        query['displayId'] = {$regex: query['displayId'], $options: 'i'};
+      }
+
       query2[attrname] = query[attrname];
     }
 
 
     this.find(query2, (err, bioDesigns) => {
+
 
         // dealing with error
         if (err) {
@@ -126,7 +128,6 @@ class BioDesign extends MongoModels {
           if (err) {
             return callback(err);
           }
-
 
           return callback(null, {parts: parts, modules: modules, parameters: parameters});
         });
