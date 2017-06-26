@@ -100,221 +100,227 @@ lab.experiment('Influences Plugin Update', () => {
   });
 
   //TODO: Put the tests for PUT here.
-
+    // In part api, there is no id in the path. Mistake??
 });
 
+// GET Tests
 lab.experiment('Part Plugin Read', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/part/42000000000',
+      url: '/part/121212121212',
       credentials: AuthenticatedUser
     };
 
     done();
   });
 
-  lab.test('it returns an error when find by id fails', (done) => {
+  // TODO: Both of the following two tests are giving a 200 status code they should be
+  //       giving 500 and 404 respectively.
+  lab.test('it returns an error when get BioDesignsId fails', (done) => {
 
-    stub.Part.findById = function (id, callback) {
+    stub.BioDesign.getBioDesignIds = function (id, query, callback) {
 
-      callback(Error('find by id failed'));
+      callback(Error('find id failed'));
     };
 
     server.inject(request, (response) => {
 
+      Code.expect(response.statusCode).to.be.an.error();
       Code.expect(response.statusCode).to.equal(500);
+
 
       done();
     });
   });
 
-  lab.test('it returns a not found when find by id misses', (done) => {
+  lab.test('it returns a not found error when find by id misses', (done) => {
 
-    stub.Part.findById = function (id, callback) {
+    stub.BioDesign.getBioDesignIds = function(id, query, callback) {
 
       callback();
     };
 
     server.inject(request, (response) => {
 
+      Code.expect(response.result.message).to.be.an.error();
       Code.expect(response.statusCode).to.equal(404);
-      Code.expect(response.result.message).to.match(/document not found/i);
+
 
       done();
-    });
+    })
   });
 
   lab.test('it returns a document successfully', (done) => {
 
-    stub.Part.create = function (id, callback) {
+    stub.BioDesign.getBioDesignIds = function (id, query, callback) {
 
-      callback(null, {});
+      callback(null, {id: 121212121212});
     };
 
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
+      Code.expect(response.result).to.be.an.array();
 
       done();
     });
   });
 });
 
-lab.experiment('Part Plugin Create', () => {
-
-  lab.beforeEach((done) => {
-
-    request = {
-      method: 'POST',
-      url: '/part',
-      payload: {
-        name: 'ibs',
-        displayId: 'test display id',
-        role: 'GENE',
-        parameters: [
-          {
-            'value': 25,
-            'variable': 'y',
-            'units': 'mg'
-          }
-        ],
-        sequence: 'test sequence'
-      },
-      credentials: AuthenticatedUser
-    };
-
-    done();
-  });
-
-  //TODO: Tests go here
-
-  lab.test('parameters is undefined', (done) => {
-
-    delete request.payload.parameters;
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-  lab.test('parameters is not undefined', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-  lab.test('role is undefined', (done) => {
-
-    delete request.payload.role;
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-  lab.test('role is not undefined', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-  lab.test('part is created successfully', (done) => {
-
-    // request = {
-    //   name: name,
-    //   description: description,
-    //   userId: userId,
-    //   displayId: displayId,
-    //   bioDesignId: bioDesignId
-    // }
-    stub.Part.create = function (name, description, userId, displayId, bioDesignId, callback) {
-
-      callback(null, {});
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-  lab.test('part creation returns an error', (done) => {
-
-    stub.Part.create = function (name, description, userId, displayId, bioDesignId, callback) {
-
-      callback(Error('create failed'));
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
-    });
-  });
-
-  lab.test('sequence is undefined', (done) => {
-
-    delete request.payload.sequence;
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-  lab.test('sequence is not undefined', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.a.string();
-
-      done();
-    });
-  });
-
-
-  // lab.test('part is created successfully', (done) => {
-  //
-  //   server.inject(request, (response) => {
-  //
-  //     Code.expect(response.statusCode).to.equal(200);
-  //     Code.expect(response.result).to.be.a.string();
-  //
-  //     done();
-  //   });
-  // });
-
-});
+// lab.experiment('Part Plugin Create', () => {
+//
+//   lab.beforeEach((done) => {
+//
+//     request = {
+//       method: 'POST',
+//       url: '/part',
+//       payload: {
+//         name: 'ibs',
+//         displayId: 'test display id',
+//         role: 'GENE',
+//         parameters: [
+//           {
+//             'value': 25,
+//             'variable': 'y',
+//             'units': 'mg'
+//           }
+//         ],
+//         sequence: 'test sequence'
+//       },
+//       credentials: AuthenticatedUser
+//     };
+//
+//     done();
+//   });
+// });
+//   //TODO: Tests go here
+//
+//   lab.test('parameters is undefined', (done) => {
+//
+//     delete request.payload.parameters;
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('parameters is not undefined', (done) => {
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('role is undefined', (done) => {
+//
+//     delete request.payload.role;
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('role is not undefined', (done) => {
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('part is created successfully', (done) => {
+//
+//     // request = {
+//     //   name: name,
+//     //   description: description,
+//     //   userId: userId,
+//     //   displayId: displayId,
+//     //   bioDesignId: bioDesignId
+//     // }
+//     stub.Part.create = function (name, description, userId, displayId, bioDesignId, callback) {
+//
+//       callback(null, {});
+//     };
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('part creation returns an error', (done) => {
+//
+//     stub.Part.create = function (name, description, userId, displayId, bioDesignId, callback) {
+//
+//       callback(Error('create failed'));
+//     };
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(500);
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('sequence is undefined', (done) => {
+//
+//     delete request.payload.sequence;
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//   lab.test('sequence is not undefined', (done) => {
+//
+//     server.inject(request, (response) => {
+//
+//       Code.expect(response.statusCode).to.equal(200);
+//       Code.expect(response.result).to.be.a.string();
+//
+//       done();
+//     });
+//   });
+//
+//
+//   // lab.test('part is created successfully', (done) => {
+//   //
+//   //   server.inject(request, (response) => {
+//   //
+//   //     Code.expect(response.statusCode).to.equal(200);
+//   //     Code.expect(response.result).to.be.a.string();
+//   //
+//   //     done();
+//   //   });
+//   // });
+//
+// });
 
 // lab.experiment('Part Plugin Delete', () => {
 //
@@ -322,7 +328,7 @@ lab.experiment('Part Plugin Create', () => {
 //
 //     request = {
 //       method: 'DELETE',
-//       url: '/part/42000000000',
+//       url: '/part/59515202d8ba1948a9e187e4',
 //       credentials: AuthenticatedUser
 //     };
 //
@@ -331,7 +337,7 @@ lab.experiment('Part Plugin Create', () => {
 //
 //   lab.test('it returns an error when delete by id fails', (done) => {
 //
-//     stub.Part.findByIdAndDelete = function (id, callback) {
+//     stub.BioDesign.findByIdAndDelete = function (id, callback) {
 //
 //       callback(Error('delete by id failed'));
 //     };
@@ -346,12 +352,12 @@ lab.experiment('Part Plugin Create', () => {
 //
 //   lab.test('it returns a not found when delete by id misses', (done) => {
 //
-//     stub.Part.findByIdAndDelete = function (id, callback) {
+//     stub.BioDesign.findByIdAndDelete = function (id, callback) {
 //
 //       callback(null, undefined);
 //     };
 //
-//     sever.inject(request, (response) => {
+//     server.inject(request, (response) => {
 //
 //       Code.expect(response.statusCode).to.equal(404);
 //       Code.expect(response.result.message).to.match(/document not found/i);
@@ -362,9 +368,9 @@ lab.experiment('Part Plugin Create', () => {
 //
 //   lab.test('it deletes a document successfully', (done) => {
 //
-//     stub.Part.findByIdAndDelete = function (id, callback) {
+//     stub.BioDesign.findByIdAndDelete = function () {
 //
-//       callback(null, 1);
+//       callback({message: 'Success.'});
 //     };
 //
 //     server.inject(request, (response) => {
