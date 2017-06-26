@@ -85,7 +85,7 @@ lab.experiment('Influences Plugin Update', () => {
         name: 'Test name',
         displayId: 'Test display id',
         role: 'Test role',
-        sequence: 'Test sequence',
+        sequence: 'ACT',
         parameters: [{
           name: 'Test name',
           units: 'Test units',
@@ -149,7 +149,7 @@ lab.experiment('Part Plugin Read', () => {
 
   lab.test('it returns a document successfully', (done) => {
 
-    stub.Part.findById = function (id, callback) {
+    stub.Part.create = function (id, callback) {
 
       callback(null, {});
     };
