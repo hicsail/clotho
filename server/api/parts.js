@@ -31,7 +31,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string(),
           displayId: Joi.string(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
-          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -61,7 +61,7 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findParts: ['findSequences', function (results, done) {
-          console.log(results);
+
           // get Sequence ids from array
           var seqArr = results.findSequences;
           var partIds = [];
@@ -81,7 +81,7 @@ internals.applyRoutes = function (server, next) {
 
         }],
         findParameters: ['findParts', function (results, done) {
-          console.log(results);
+
           // using part documents from last step, get biodesigns
           var partArray = results.findParts;
           var bioDesignIds = [];
@@ -133,7 +133,7 @@ internals.applyRoutes = function (server, next) {
 
 
           // only zero/one result, no need to search further
-          if (request.payload.sequence === undefined && request.payload.parameters != undefined && request.payload.parameters !== null) {
+          if ((request.payload.sequence !== undefined && request.payload.sequence !== null) || (request.payload.parameters != undefined && request.payload.parameters !== null)) {
             if (bioDesignIds.length === 0) {
               return reply([]);
               //return reply({'debug': results});
@@ -152,7 +152,7 @@ internals.applyRoutes = function (server, next) {
         }],
         findBioDesigns: ['findModules', function (results, done) {
 
-          console.log(results);
+
           // collect biodesign Ids
           var moduleArray = results.findModules;
           var bioDesignIds = [];
@@ -167,8 +167,9 @@ internals.applyRoutes = function (server, next) {
             }
           }
 
+
           // No result, no need to search further
-          if (request.payload.sequence === undefined && request.payload.parameters != undefined && request.payload.role !== undefined && request.payload.role !== null) {
+          if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
             if (bioDesignIds.length === 0) {
               return reply([]);
               //return reply({'debug': results});
@@ -219,7 +220,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findById(request.params.id, (err, bioDesign) => {
+      BioDesign.getBioDesignIds(request.params.id, null, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
@@ -230,7 +231,9 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(bioDesign);
+
       });
+
     }
   });
 
@@ -247,7 +250,7 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
-          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive()
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive()
         }
       }
     },
@@ -271,26 +274,37 @@ internals.applyRoutes = function (server, next) {
 
             var bioDesignId = results.createBioDesign._id.toString();
             var param = request.payload.parameters;
+            var parameterLabels = ['name', 'value', 'variable', 'units'];
+
+            for (let p of param) {
+              for (let label of parameterLabels) {
+                if (p[label] === undefined) {
+                  p[label] = null;
+                }
+              }
+            }
 
 
             var allPromises = [];
             for (var i = 0; i < param.length; ++i) {
               var promise = new Promise((resolve, reject) => {
+
                 Parameter.create(
-                  request.payload.name,
+                  param[i]['name'],
                   request.auth.credentials.user._id.toString(),
                   bioDesignId,
                   param[i]['value'],
                   param[i]['variable'],
                   param[i]['units'],
                   (err, results) => {
+
                     if (err) {
                       reject(err);
                     } else {
                       resolve(results);
                     }
                   }
-                  );
+                );
 
               });
 

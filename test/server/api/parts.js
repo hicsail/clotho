@@ -176,9 +176,10 @@ lab.experiment('Part Plugin Create', () => {
         displayId: 'test display id',
         role: 'GENE',
         parameters: [
-          {'value': 25,
-          'variable': 'y',
-          'units': 'mg'
+          {
+            'value': 25,
+            'variable': 'y',
+            'units': 'mg'
           }
         ],
         sequence: 'test sequence'

@@ -19,17 +19,30 @@ internals.applyRoutes = function (server, next) {
   const Annotation = server.plugins['hapi-mongo-models'].Annotation;
 
   server.route({
-    method: 'GET',
+    method: 'PUT',
     path: '/device',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
-        query: {
+        payload: {
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
-          page: Joi.number().default(1)
+          page: Joi.number().default(1),
+          name: Joi.string(),
+          displayId: Joi.string(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
+          parts: Joi.array().items(Joi.object()), // List of part objects.
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(), // These should be updated.
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional()
         }
       }
     },
@@ -97,14 +110,21 @@ internals.applyRoutes = function (server, next) {
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           partIds: Joi.array().items(Joi.string().required()),
           createSeqFromParts: Joi.boolean().required(),
-          sequence:  Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
-          parameters: Joi.array().optional() //List<Parameters> parameters, insert parameter schema here
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(), // These should be updated.
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional()
         }
       }
     },
 
     handler: function (request, reply) {
-    //Used to create a Device consisting of a BioDesign, Part, and Assembly.
+      //Used to create a Device consisting of a BioDesign, Part, and Assembly.
       // Optionally, may also create a Sequence, Feature, BasicModule, Parameters, and Annotations.
       //async.auto task `createAssembly` has a non-existent dependency `createSubAssemblyIds`
       // in createSubpart, createSubAssemblyIds
@@ -129,7 +149,7 @@ internals.applyRoutes = function (server, next) {
             for (var i = 0; i < param.length; ++i) {
 
               Parameter.create(
-                request.payload.name,
+                param[i]['name'],
                 request.auth.credentials.user._id.toString(),
                 bioDesignId,
                 param[i]['value'],
@@ -234,7 +254,7 @@ internals.applyRoutes = function (server, next) {
             moduleId = results.createModule._id.toString();
           }
 
-          if (annotationId !== null  && moduleId !== null) {
+          if (annotationId !== null && moduleId !== null) {
             Feature.create(
               request.payload.name,
               null, // description
@@ -258,7 +278,6 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
-
 
 
   server.route({
