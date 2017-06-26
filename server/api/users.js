@@ -17,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -69,7 +69,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       pre: [
@@ -93,20 +93,48 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {get} /api/users/my Get Current User
+   * @apiName /api/users/my
+   * @apiDescription Get current user
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "username": "clotho",
+   *    "email": "clotho@clotho.com",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'GET',
     path: '/users/my',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: ['admin', 'account']
       }
     },
     handler: function (request, reply) {
 
       const id = request.auth.credentials.user._id.toString();
-      const fields = User.fieldsAdapter('username email roles');
+      const fields = User.fieldsAdapter('username name email roles');
 
       User.findById(id, fields, (err, user) => {
 
@@ -129,14 +157,15 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
         payload: {
           username: Joi.string().token().lowercase().required(),
           password: Joi.string().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -191,8 +220,9 @@ internals.applyRoutes = function (server, next) {
       const username = request.payload.username;
       const password = request.payload.password;
       const email = request.payload.email;
+      const name = request.payload.name;
 
-      User.create(username, password, email, (err, user) => {
+      User.create(username, password, email, name, (err, user) => {
 
         if (err) {
           return reply(err);
@@ -209,7 +239,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -219,7 +249,8 @@ internals.applyRoutes = function (server, next) {
         payload: {
           isActive: Joi.boolean().required(),
           username: Joi.string().token().lowercase().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -278,7 +309,8 @@ internals.applyRoutes = function (server, next) {
         $set: {
           isActive: request.payload.isActive,
           username: request.payload.username,
-          email: request.payload.email
+          email: request.payload.email,
+          name: request.payload.name
         }
       };
 
@@ -297,19 +329,62 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {put} /api/users/my Update Current User
+   * @apiName Update Current User
+   * @apiDescription Update current user's username, email, or name
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} username  user's new username.
+   * @apiParam {String} email     user's new email.
+   * @apiParam {String} name      user's new full name.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "username":"clotho2",
+   *    "email":"clotho2@clotho.com",
+   *    "name": "Clotho2 User",
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "isActive": true,
+   *    "username": "clotho2",
+   *    "email": "clotho2@clotho.com",
+   *    "name": "Clotho2 User",
+   *    "timeCreated": "2017-06-14T18:49:01.255Z",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'PUT',
     path: '/users/my',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: ['admin', 'account']
       },
       validate: {
         payload: {
           username: Joi.string().token().lowercase().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -367,11 +442,12 @@ internals.applyRoutes = function (server, next) {
       const update = {
         $set: {
           username: request.payload.username,
-          email: request.payload.email
+          email: request.payload.email,
+          name: request.payload.name,
         }
       };
       const findOptions = {
-        fields: User.fieldsAdapter('username email roles')
+        fields: User.fieldsAdapter('username email name roles')
       };
 
       User.findByIdAndUpdate(id, update, findOptions, (err, user) => {
@@ -391,7 +467,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}/password',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -440,13 +516,52 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {put} /api/users/my/password Change Password
+   * @apiName Change Password
+   * @apiDescription Change User's Password
+   * @apiGroup User
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} password  user's new password.
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   *    "password":"clotho"
+   *  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   *    "_id": "59416fb93b81ca1e4a0c2523",
+   *    "isActive": true,
+   *    "username": "clotho",
+   *    "password": "$2a$10$T0wK82pi7gzZAqdcEbt38uEBTAB5bhu0mqPYwCAHYwBo7/C0IFjMm",
+   *    "email": "clotho@clotho.com",
+   *    "name": "Clotho User",
+   *    "timeCreated": "2017-06-14T18:49:01.255Z",
+   *    "roles": {
+   *      "account": {
+   *        "id": "59416fb93b81ca1e4a0c2524",
+   *        "name": "Clotho User"
+   *      }
+   *    }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response :
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication"
+   * }
+   *
+   */
   server.route({
     method: 'PUT',
     path: '/users/my/password',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: ['admin', 'account']
       },
       validate: {
@@ -501,7 +616,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {

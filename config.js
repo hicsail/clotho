@@ -12,7 +12,7 @@ const criteria = {
 
 const config = {
   $meta: 'This file configures the plot device.',
-  projectName: 'Frame',
+  projectName: 'Clotho',
   port: {
     web: {
       $filter: 'env',
@@ -46,18 +46,18 @@ const config = {
     port: 465,
     secure: true,
     auth: {
-      user: 'jedireza@gmail.com',
+      user: process.env.SMTP_USERNAME,
       pass: process.env.SMTP_PASSWORD
     }
   },
   system: {
     fromAddress: {
-      name: 'Frame',
-      address: 'jedireza@gmail.com'
+      name: 'Clotho',
+      address: 'do-not-reply@clotho.com'
     },
     toAddress: {
-      name: 'Frame',
-      address: 'jedireza@gmail.com'
+      name: 'Clotho',
+      address: 'do-not-reply@clotho.com'
     }
   }
 };

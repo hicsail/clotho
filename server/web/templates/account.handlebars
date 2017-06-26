@@ -1,0 +1,75 @@
+{{> nav}}
+<div class="hero-body">
+  <div class="container">
+    {{> alert}}
+    <h1 class="title">Account</h1>
+    <div class="columns">
+      <div class="column is-4">
+        <aside class="menu">
+          <p class="menu-label">Change Account Settings</p>
+          <ul class="menu-list">
+            <li id="changeUserAccountInfo"><a id="actInfo" class="is-active">Change Account Information</a></li>
+            <li id="changePassword"><a id="pwd">Change Password</a></li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="column is-offset-1 is-6">
+        <div id="userAccountInfo" style="overflow: hidden">
+          <form id="changeAccountInfoForm">
+            <h1 class="title">Change User Account Information</h1>
+
+            <label class="label" id="nameLabel"><b>Name</b></label>
+            <p class="control has-icons-left">
+              <input class="input" id="name" type="text" name="name" value="{{user.name}}">
+              <span class="icon is-small is-left">
+                <i class="fa fa-user-circle"></i>
+              </span>
+            </p>
+
+            <label class="label" id="usernameLabel"><b>Username</b></label>
+            <p class="control has-icons-left">
+              <input class="input" id="username" type="text" name="username" value="{{user.username}}">
+              <span class="icon is-small is-left">
+                <i class="fa fa-user"></i>
+              </span>
+            </p>
+
+            <label class="label" id="emailLabel"><b>Email</b></label>
+            <p class="control has-icons-left">
+              <input class="input" id="email" type="text" name="email" value="{{user.email}}">
+              <span class="icon is-small is-left">
+                <i class="fa fa-envelope"></i>
+              </span>
+            </p>
+
+            <input class="button is-primary" id="submit" type="submit" value="Submit">
+          </form>
+        </div>
+
+        <div id="userPassword" style="overflow: hidden">
+          <form id="changePasswordForm">
+            <h1 class="title">Change Password</h1>
+            <label class="label" id="passwordLabel"><b>New Password</b></label>
+            <p class="control has-icons-left">
+              <input class="input" id="password" type="password" name="password">
+              <span class="icon is-small is-left">
+                <i class="fa fa-lock"></i>
+              </span>
+            </p>
+
+            <label class="label" id="retypePasswordLabel"><b>Retype New Password</b></label>
+            <p class="control has-icons-left">
+              <input class="input" id="retypePassword" type="password" name="retypePassword">
+              <span class="icon is-small is-left">
+                <i class="fa fa-lock"></i>
+              </span>
+            </p>
+            <input class="button is-primary" id="submit" type="submit" value="Submit">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="../public/mini-js/account.min.js"></script>

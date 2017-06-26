@@ -19,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -59,7 +59,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       pre: [
@@ -89,7 +89,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -122,7 +122,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -171,7 +171,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}/permissions',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -212,7 +212,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}/groups',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -253,7 +253,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}/user',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -370,7 +370,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}/user',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       validate: {
@@ -463,7 +463,7 @@ internals.applyRoutes = function (server, next) {
     path: '/admins/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategies: ['simple','session'],
         scope: 'admin'
       },
       pre: [

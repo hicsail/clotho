@@ -1,8 +1,10 @@
 'use strict';
+const AuthPlugin = require('../../../server/auth');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
+const HapiAuthCookie = require('hapi-auth-cookie');
 const Lab = require('lab');
 const MailerPlugin = require('../../../server/mailer');
 const MakeMockModel = require('../fixtures/make-mock-model');
@@ -46,7 +48,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, ModelsPlugin, MailerPlugin, SignupPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
   server = new Hapi.Server();
   server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {
@@ -79,7 +81,8 @@ lab.experiment('Signup Plugin', () => {
         name: 'Muddy Mudskipper',
         username: 'muddy',
         password: 'dirtandwater',
-        email: 'mrmud@mudmail.mud'
+        email: 'mrmud@mudmail.mud',
+        application: 'Web 1'
       }
     };
 
@@ -178,7 +181,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(Error('create failed'));
     };
@@ -199,7 +202,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {_id: 'BL4M0'});
     };
@@ -233,7 +236,7 @@ lab.experiment('Signup Plugin', () => {
       callback(new Error('Whoops.'));
     };
 
-    stub.Session.create = function (username, callback) {
+    stub.Session.create = function (username, application, callback) {
 
       callback(null, {});
     };
@@ -263,7 +266,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {_id: 'BL4M0'});
     };
@@ -297,7 +300,7 @@ lab.experiment('Signup Plugin', () => {
       callback(null, {});
     };
 
-    stub.Session.create = function (username, callback) {
+    stub.Session.create = function (username, application, callback) {
 
       callback(null, {});
     };
@@ -308,6 +311,207 @@ lab.experiment('Signup Plugin', () => {
       Code.expect(response.result).to.be.an.object();
 
       server.plugins.mailer.sendEmail = realSendEmail;
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+        username: 'muddy',
+        email: 'mrmud@mudmail.mud'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when find one fails for username check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.username) {
+        callback(Error('find one failed'));
+      }
+      else {
+        callback();
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns a not available when find one hits for username check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.username) {
+        callback(null, {});
+      }
+      else {
+        callback(null, {});
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.username.status).to.equal('taken');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns an error when find one fails for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.email) {
+        callback(Error('find one failed'));
+      }
+      else {
+        callback();
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns not available when find one hits for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.email) {
+        callback(null, {});
+      }
+      else {
+        callback(null, {});
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.email.status).to.equal('taken');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error with invaild input', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+        email: 'myemail@email.com'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns not available when find one hits for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.email) {
+        callback(null, null);
+      }
+      else {
+        callback(null, null);
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.email.status).to.equal('available');
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {
+        username: 'myusername'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns available when find one hits for email check', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      if (conditions.username) {
+        callback(null, null);
+      }
+      else {
+        callback(null, null);
+      }
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.username.status).to.equal('available');
+      Code.expect(response.statusCode).to.equal(200);
 
       done();
     });

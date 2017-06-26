@@ -6,6 +6,7 @@ const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
+const HapiAuthCookie = require('hapi-auth-cookie');
 const Lab = require('lab');
 const LoginPlugin = require('../../../server/api/login');
 const MailerPlugin = require('../../../server/mailer');
@@ -51,7 +52,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, ModelsPlugin, AuthPlugin, MailerPlugin, LoginPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, MailerPlugin, LoginPlugin];
   server = new Hapi.Server();
   server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {
@@ -82,7 +83,8 @@ lab.experiment('Login Plugin (Create Session)', () => {
       url: '/login',
       payload: {
         username: 'ren',
-        password: 'baddog'
+        password: 'baddog',
+        application: 'App1'
       }
     };
 
@@ -214,7 +216,7 @@ lab.experiment('Login Plugin (Create Session)', () => {
       callback(null, new User({_id: '1D', username: 'ren'}));
     };
 
-    stub.Session.create = function (username, callback) {
+    stub.Session.create = function (username, application, callback) {
 
       callback(Error('create session failed'));
     };
@@ -245,9 +247,9 @@ lab.experiment('Login Plugin (Create Session)', () => {
       callback(null, new User({_id: '1D', username: 'ren'}));
     };
 
-    stub.Session.create = function (username, callback) {
+    stub.Session.create = function (username, application, callback) {
 
-      callback(null, new Session({_id: '2D', userId: '1D'}));
+      callback(null, new Session({_id: '2D', userId: '1D', application: 'App1'}));
     };
 
     server.inject(request, (response) => {
@@ -302,7 +304,7 @@ lab.experiment('Login Plugin Forgot Password', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.statusCode).to.equal(404);
 
       done();
     });

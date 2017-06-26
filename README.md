@@ -1,46 +1,19 @@
-# Frame
+# ![Clotho Logo](http://user-images.githubusercontent.com/5147346/27489828-09be9d72-580a-11e7-88ef-b79c8b5fa069.png) Clotho
+[![CircleCI](https://circleci.com/gh/hicsail/clotho/tree/master.svg?style=svg&circle-token=b9f8fd47abba8c98cde2c1b04ca736ef4362a054)](http://circleci.com/gh/hicsail/clotho/tree/master)
 
-A user system API starter. Bring your own front-end.
+Clotho is a framework for engineering synthetic biological systems and managing the data used to create them. You can author data schemas, run functions and algorithms, and tie Clotho into existing applications.
 
-[![Build Status](https://travis-ci.org/jedireza/frame.svg?branch=master)](https://travis-ci.org/jedireza/frame)
-[![Dependency Status](https://david-dm.org/jedireza/frame.svg?style=flat)](https://david-dm.org/jedireza/frame)
-[![devDependency Status](https://david-dm.org/jedireza/frame/dev-status.svg?style=flat)](https://david-dm.org/jedireza/frame#info=devDependencies)
+## Live Demo
 
-
-## Features
-
- - Login system with forgot password and reset password
- - Abusive login attempt detection
- - User roles for accounts and admins
- - Admins only notes and status history for accounts
- - Admin groups with shared permissions
- - Admin level permissions that override group permissions
-
+We have continuous integration set up with [CircleCI](http://circleci.com) which deploys the master branch onto our server.
+Check it out at [128.31.25.91:9000](http://128.31.25.91:9000/)
 
 ## Technology
 
-Frame is built with the [hapi](https://hapijs.com/) framework. We're
+Clotho is built with the [hapi](https://hapijs.com/) framework. We're
 using [MongoDB](http://www.mongodb.org/) as a data store.
 
-
-## Bring your own front-end
-
-Frame is only a restful JSON API. If you'd like a ready made front-end,
-checkout [Aqua](https://github.com/jedireza/aqua). Or better yet, fork
-this repo and build one on top of Frame.
-
-
-## Live demo
-
-| url                                                                        | username | password |
-|:-------------------------------------------------------------------------- |:-------- |:-------- |
-| [https://getframe.herokuapp.com/](https://getframe.herokuapp.com/)         | root     | root     |
-| [https://getframe.herokuapp.com/docs](https://getframe.herokuapp.com/docs) | ----     | ----     |
-
-[Postman](http://www.getpostman.com/) is a great tool for testing and
-developing APIs. See the wiki for details on [how to
-login](https://github.com/jedireza/frame/wiki/How-to-login).
-
+We are using [Docker](http://www.docker.com/) for all production level deployments.
 
 ## Requirements
 
@@ -52,32 +25,28 @@ secrets. If you have issues during installation related to `bcrypt` then [refer
 to this wiki
 page](https://github.com/jedireza/frame/wiki/bcrypt-Installation-Trouble).
 
+### Production Requirements
+
+You will need to install [Docker](http://www.docker.com/) if you wish to simplify installing of the application, or run it in production mode. We are using [Docker Compose](https://github.com/docker/compose) to run the application in an isolated environment with the correct requirements. [Docker Compose](https://github.com/docker/compose) will install all needed requirements when building.
 
 ## Installation
 
 ```bash
-$ git clone git@github.com:jedireza/frame.git
-$ cd frame
-$ npm install
-```
-### bcyrpt installation help
-
-Install node-gyp and dependencies
-```
-npm install -g node-gyp
-brew install make
-brew install gcc
-```
-use python 2.7
-get the python path with ```which python```
-set npm python config with python path
-```bash
-npm config set python [PATH]
+git clone git@github.com:hicsail/clotho.git
+cd clotho
+npm install
 ```
 
-install bcyrpt
+### Production Installation
+
 ```bash
-npm i bcyrpt
+docker-compose up
+```
+This will build the application and start running the application on port 9000
+If you wish just to build the application run the following command.
+
+```bash
+docker-compose build
 ```
 
 ## Configuration
@@ -102,42 +71,36 @@ they exist: `accounts`, `adminGroups`, `admins`, `authAttempts`, `sessions`,
 `statuses`, and `users`.
 
 ```bash
-$ npm run first-time-setup
+npm run first-time-setup
 
-# > frame@0.0.0 first-time-setup /home/jedireza/projects/frame
 # > node first-time-setup.js
 
-# MongoDB URL: (mongodb://localhost:27017/frame)
+# MongoDB URL: (mongodb://localhost:27017/clotho)
 # Root user email: jedireza@gmail.com
 # Root user password:
 # Setup complete.
 ```
-
-
 ## Running the app
 
 ```bash
-$ npm start
+npm start
 
-# > frame@0.0.0 start /Users/jedireza/projects/frame
 # > ./node_modules/nodemon/bin/nodemon.js -e js,md server
 
 # 09 Sep 03:47:15 - [nodemon] v1.10.2
 # ...
 ```
 
-Now you should be able to point your browser to http://127.0.0.1:9000/ and
-see the welcome message.
-
 [`nodemon`](https://github.com/remy/nodemon) watches for changes in server
 code and restarts the app automatically.
 
-We also pass the `--inspect` flag to Node so you have a debugger available.
-Watch the output of `$ npm start` and look for the debugging URL and open it in
-Chrome. It looks something like this:
+### Running the app with Docker
+```bash
+docker-compose up
+```
 
-`chrome-devtools://devtools/remote/serve_file/@62cd277117e6f8ec53e31b1be58290a6f7ab42ef/inspector.html?experiments=true&v8only=true&ws=localhost:9229/node`
-
+Now you should be able to point your browser to http://localhost:9000/ and
+see the home page.
 
 ## Running in production
 
@@ -173,9 +136,8 @@ want to submit an issue before creating a large pull request.
 use to write all of our tests.
 
 ```bash
-$ npm test
+npm test
 
-# > frame@0.0.0 test /Users/jedireza/projects/frame
 # > ./node_modules/lab/bin/lab -c
 
 # ..................................................
@@ -195,8 +157,3 @@ $ npm test
 ## License
 
 MIT
-
-
-## Don't forget
-
-What you build with Frame is more important than Frame.

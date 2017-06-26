@@ -1,29 +1,36 @@
 'use strict';
-
+const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
 
+
 const internals = {};
+
 
 internals.applyRoutes = function (server, next) {
 
   const Strain = server.plugins['hapi-mongo-models'].Strain;
-  //console.log(Strain);
+
 
   server.route({
     method: 'GET',
-    path: '/strain',
+    path: '/strains',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session'],
+        scope: 'admin'
       },
       validate: {
         query: {
+          fields: Joi.string(),
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
           page: Joi.number().default(1)
         }
-      }
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root')
+      ]
     },
     handler: function (request, reply) {
 
@@ -44,13 +51,18 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
   server.route({
     method: 'GET',
-    path: '/strain/{id}',
+    path: '/strains/{id}',
     config: {
       auth: {
-        strategy: 'simple',
-      }
+        strategies: ['simple','session'],
+        scope: 'admin'
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root')
+      ]
     },
     handler: function (request, reply) {
 
@@ -69,93 +81,105 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
   server.route({
     method: 'POST',
-    path: '/strain',
+    path: '/strains',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session'],
+        scope: 'admin'
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          description: Joi.string().required()
+          pivot: Joi.string().required(),
+          name: Joi.string().required()
         }
-      }
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root')
+      ]
     },
     handler: function (request, reply) {
 
-      Strain.create(
-        request.payload.name,
-        request.payload.description,
-        request.auth.credentials.user._id.toString(),
-        (err, strain) => {
+      const pivot = request.payload.pivot;
+      const name = request.payload.name;
 
-          if (err) {
-            return reply(err);
-          }
-          return reply(strain);
+      Strain.create(pivot, name, (err, strains) => {
 
-        });
+        if (err) {
+          return reply(err);
+        }
+
+        reply(strains);
+      });
     }
   });
 
+
   server.route({
     method: 'PUT',
-    path: '/strain/{id}',
+    path: '/strains/{id}',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session'],
+        scope: 'admin'
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          description: Joi.string().required()
+          name: Joi.string().required()
         }
-      }
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root')
+      ]
     },
     handler: function (request, reply) {
 
       const id = request.params.id;
       const update = {
         $set: {
-          name: request.payload.name,
-          description: request.payload.description
+          name: request.payload.name
         }
       };
 
-      Strain.findByIdAndUpdate(id, update, (err, strain) => {
+      Strain.findByIdAndUpdate(id, update, (err, strains) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!strain) {
-          return reply(Boom.notFound('Strain not found.'));
+        if (!strains) {
+          return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(strain);
+        reply(strains);
       });
     }
   });
 
+
   server.route({
     method: 'DELETE',
-    path: '/strain/{id}',
+    path: '/strains/{id}',
     config: {
       auth: {
-        strategy: 'simple',
-      }
+        strategies: ['simple','session'],
+        scope: 'admin'
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root')
+      ]
     },
     handler: function (request, reply) {
 
-      Strain.findByIdAndDelete(request.params.id, (err, strain) => {
+      Strain.findByIdAndDelete(request.params.id, (err, strains) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!strain) {
+        if (!strains) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -163,6 +187,7 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
 
   next();
 };
@@ -177,5 +202,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'strain'
+  name: 'strains'
 };

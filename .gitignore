@@ -4,4 +4,6 @@ test/artifacts/*
 .idea
 /nbproject/private/
 nbproject
-**/npm-debug.log
+/npm-debug.log
+server/web/public/documentation
+server/web/public/mini-js

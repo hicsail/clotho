@@ -5,6 +5,7 @@
 // const Config = require('../../../config');
 // const Hapi = require('hapi');
 // const HapiAuthBasic = require('hapi-auth-basic');
+// const HapiAuthCookie = require('hapi-auth-cookie');
 // const Lab = require('lab');
 // const MakeMockModel = require('../fixtures/make-mock-model');
 // const Manifest = require('../../../manifest');
@@ -42,7 +43,7 @@
 //     })[0].plugin.options
 //   };
 //
-//   const plugins = [HapiAuthBasic, ModelsPlugin, AuthPlugin, StrainPlugin];
+//   const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, StrainPlugin];
 //   server = new Hapi.Server();
 //   server.connection({port: Config.get('/port/web')});
 //   server.register(plugins, (err) => {

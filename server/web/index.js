@@ -1,17 +1,38 @@
 'use strict';
+const internals = {};
 
-
-exports.register = function (server, options, next) {
+internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
     path: '/',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
     handler: function (request, reply) {
 
-      return reply.view('index');
+      var user = null;
+      if(request.auth.isAuthenticated) {
+        user = request.auth.credentials.user;
+      }
+      return reply.view('index',{ user:user });
     }
   });
 
+  next();
+};
+
+exports.register = function (server, options, next) {
+
+  server.dependency(['auth'], internals.applyRoutes);
 
   next();
 };

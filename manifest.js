@@ -29,6 +29,9 @@ const manifest = {
       plugin: 'hapi-auth-basic'
     },
     {
+      plugin: 'hapi-auth-cookie'
+    },
+    {
       plugin: 'lout'
     },
     {
@@ -42,7 +45,11 @@ const manifest = {
         register: 'visionary',
         options: {
           engines: {handlebars: 'handlebars'},
-          path: './server/web'
+          path: './server/web/templates',
+          layout: 'layout',
+          layoutPath: './server/web/layouts',
+          partialsPath: './server/web/partials',
+          //helpersPath: './server/web/helpers',
         }
       }
     },
@@ -229,7 +236,34 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/clotho',
+      options: {
+        routes: {prefix: '/clotho'}
+      }
+    },
+    {
+      plugin: './server/api/functions',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/web/index'
+    },
+    {
+      plugin: './server/web/public'
+    },
+    {
+      plugin: './server/web/documentation'
+    },
+    {
+      plugin: './server/web/login/index'
+    },
+    {
+      plugin: './server/web/signup/index'
+    },
+    {
+      plugin: './server/web/account/index'
     }
   ]
 };

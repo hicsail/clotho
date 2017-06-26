@@ -1,13 +1,14 @@
 {
   "name": "clotho",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Store, Exchange, and Interact with Synthetic Biological Data",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon server.js -e handlebars,js,css",
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
-    "lint": "lab -dL"
+    "lint": "lab -dL",
+    "prestart": "./scripts/minify.sh && ./scripts/generateDocs.sh"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
   "repository": {
@@ -18,9 +19,15 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "apidoc": {
+    "title": "Clotho API Docs",
+    "name": "Clotho"
+  },
   "dependencies": {
+    "apidoc": "^0.17.6",
     "async": "2.x.x",
     "bcrypt": "1.x.x",
+    "bionode": "^4.0.1",
     "boom": "4.x.x",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",
@@ -28,19 +35,22 @@
     "handlebars": "4.x.x",
     "hapi": "16.x.x",
     "hapi-auth-basic": "4.x.x",
+    "hapi-auth-cookie": "7.x.x",
     "hapi-mongo-models": "6.x.x",
     "hoek": "4.x.x",
     "inert": "4.x.x",
     "jade": "1.x.x",
     "joi": "10.x.x",
+    "jsdoc": "^3.4.3",
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
     "mongodb": "2.x.x",
-    "uuid": "3.x.x",
     "nodemailer": "3.x.x",
     "nodemailer-markdown": "1.x.x",
     "object-assign": "4.x.x",
     "slug": "0.9.x",
+    "uglify-js": "^2.4.11",
+    "uuid": "3.x.x",
     "vision": "4.x.x",
     "visionary": "6.x.x"
   },

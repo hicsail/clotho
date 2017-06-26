@@ -9,7 +9,35 @@ internals.applyRoutes = function (server, next) {
 
   const Session = server.plugins['hapi-mongo-models'].Session;
 
-
+  /**
+   * @api {delete} /api/logout Logout
+   * @apiName Logout
+   * @apiDescription Remove Users Session
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+   * "message": "Success."
+   * }
+   *
+   * @apiErrorExample {json} 401:
+   * {
+   *  "statusCode": 401,
+   *  "error": "Unauthorized",
+   *  "message": "Missing authentication."
+   * }
+   *
+   * @apiErrorExample {json} 404:
+   * {
+   *  "statusCode": 404,
+   *  "error": "Not Found",
+   *  "message": "Document not found."
+   * }
+   *
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/logout',
@@ -23,6 +51,10 @@ internals.applyRoutes = function (server, next) {
 
       const credentials = request.auth.credentials || {session: {}};
       const session = credentials.session || {};
+
+      if(!request.auth.isAuthenticated) {
+        return reply(Boom.unauthorized('Missing authentication'));
+      }
 
       Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
 

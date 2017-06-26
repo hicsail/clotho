@@ -1,2 +1,5 @@
 node_modules/*
 .idea/
+server/web/public/*
+server/web/documentation/*
+server/web/scripts/*
