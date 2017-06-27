@@ -242,6 +242,60 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {post} /api/part
+   * @apiName createPart
+   * @apiDescription Create part based on arguments
+   * @apiGroup Authentication
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} name  name of part.
+   * @apiParam {String} displayId  displayId of part.
+   * @apiParam {String} role  role of the feature BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR
+   * @apiParam (Object) parameters  can include name, units, value, variable
+   * @apiParam (String) sequence  nucleotide sequence (ATUCGRYKMSWBDHVN). Case-insensitive.
+   *
+   * @apiParamExample {json} Request-Example:
+   *
+   *{
+   * "name": "BBa_R0040",
+   * "displayId": "TetR repressible promoter",
+   * "role": "PROMOTER",
+   * "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+   * "parameters": [
+   *  {
+   *  "name": "promoter unbinding rate",
+   *  "value": 0.03,
+   *  "variable": "K7",
+   *	"units": "min-1"
+   *  },
+   *  {
+   *	"name": "mRNA degradation rate",
+   *	"value": 0.02,
+   *	"variable": "dmrna",
+   *	"units": "min-1"
+   *   }
+   * ]
+   *}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * 5952e539ed2e7c2df88b7f8a
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   *  "statusCode": 400,
+   *  "error": "Bad Request",
+   *  "message": "child \"role\" fails because [\"role\" must be one of [BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR]]"
+   *  "validation": {
+        "source": "payload",
+        "keys": [
+            "role"
+        ]
+    }
+   * }
+   */
+
   server.route({
     method: 'POST',
     path: '/part',
