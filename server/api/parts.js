@@ -203,6 +203,11 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
+
+        if (results.findBioDesigns.length === 0) {
+          return reply(Boom.notFound('Document not found.'));
+        }
+
         return reply(results.findBioDesigns);
       });
 
@@ -226,7 +231,7 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
 
-        if (!bioDesign) {
+        if (!bioDesign || bioDesign.length === 0) {
           return reply(Boom.notFound('Document not found.'));
         }
 
