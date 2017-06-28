@@ -206,7 +206,7 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
-            return reply([]);
+            return done(null, []);
           }
         },
         findParts: ['findSequences', function (results, done) {
@@ -225,7 +225,7 @@ internals.applyRoutes = function (server, next) {
             Part.getParts(partIds, done);
 
           } else {
-            return reply([]);
+            return done(null, []);
           }
 
         }],
@@ -248,14 +248,16 @@ internals.applyRoutes = function (server, next) {
           }
 
 
+
           // only zero/one result, no need to search further
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
-             return reply([]);
+             return done(null, []);
               //return reply({'debug': results});
             }
 
           }
+
 
           // otherwise keep going with parameters search
           if (request.payload.parameters !== null && request.payload.parameters !== undefined) {
@@ -280,12 +282,10 @@ internals.applyRoutes = function (server, next) {
             }
           }
 
-          console.log(bioDesignIds);
-
           // only zero/one result, no need to search further
           if ((request.payload.sequence !== undefined && request.payload.sequence !== null) || (request.payload.parameters != undefined && request.payload.parameters !== null)) {
             if (bioDesignIds.length === 0) {
-              return reply([]);
+              return done(null, []);
               //return reply({'debug': results});
             }
 
@@ -321,7 +321,7 @@ internals.applyRoutes = function (server, next) {
           // No result, no need to search further
           if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
             if (bioDesignIds.length === 0) {
-              return reply([]);
+              return done(null, []);
               //return reply({'debug': results});
             }
           }
@@ -340,7 +340,7 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.name === undefined && request.payload.displayId === undefined
             && request.payload.sequence === undefined && request.payload.parameters === undefined
             && request.payload.role === undefined) {
-            return reply([]);
+            return done(null, []);
           } else {
             // Get full biodesigns.
             return BioDesign.getBioDesignIds(bioDesignIds, query, done);
@@ -651,7 +651,7 @@ internals.applyRoutes = function (server, next) {
 
           }
           else {
-            return reply([]);
+            return done(null, []);
           }
         }],
         createModule: ['createBioDesign', function (results, done) {
@@ -670,7 +670,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            return reply([]);
+            return done(null, []);
           }
         }],
         createSubpart: ['createBioDesign', function (results, done) {
@@ -704,7 +704,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            return reply([]);
+            return done(null, []);
           }
         }],
         createAnnotation: ['createSequence', function (results, done) {
@@ -723,7 +723,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            return reply([]);
+            return done(null, []);
           }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
@@ -749,7 +749,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            return reply([]);
+            return done(null, []);
           }
         }]
       }, (err, results) => {
