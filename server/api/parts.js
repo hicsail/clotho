@@ -16,6 +16,155 @@ internals.applyRoutes = function (server, next) {
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
 
+  /**
+   * @api {put} /api/part getPart
+   * @apiName getPart
+   * @apiDescription Get part based on arguments (uses PUT call for payload).
+   * @apiGroup ConvenienceMethods
+   * @apiVersion 4.0.0
+   * @apiPermission none
+   *
+   * @apiParam {String} name  name of part.
+   * @apiParam {String} displayId  displayId of part.
+   * @apiParam {String} role  role of the feature BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR
+   * @apiParam (String) sequence  nucleotide sequence using nucleic acid abbreviation (ATUCGRYKMSWBDHVN). Case-insensitive.
+   * @apiParam (Object) parameters can include "name", "units", "value", "variable"
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+ "name": "BBa_R0040",
+ "displayId": "TetR repressible promoter",
+ "role": "PROMOTER",
+ "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+ "parameters": [
+  {
+  "name": "promoter unbinding rate",
+  "value": 0.03,
+  "variable": "K7",
+  "units": "min-1"
+  },
+  {
+  "name": "mRNA degradation rate",
+  "value": 0.02,
+  "variable": "dmrna",
+  "units": "min-1"
+   }
+ ]
+}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * [
+   {
+       "_id": "5952e539ed2e7c2df88b7f8a",
+       "name": "BBa_R0040",
+       "description": null,
+       "userId": "5939ba97b8e96112986d3be8",
+       "displayId": "TetR repressible promoter",
+       "imageURL": null,
+       "parts": [
+           {
+               "_id": "5952e539ed2e7c2df88b7f8e",
+               "name": "BBa_R0040",
+               "description": null,
+               "userId": "5939ba97b8e96112986d3be8",
+               "displayId": "TetR repressible promoter",
+               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "sequences": [
+                   {
+                       "_id": "5952e539ed2e7c2df88b7f8f",
+                       "name": "BBa_R0040",
+                       "description": null,
+                       "userId": "5939ba97b8e96112986d3be8",
+                       "displayId": "TetR repressible promoter",
+                       "featureId": null,
+                       "partId": "5952e539ed2e7c2df88b7f8e",
+                       "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+                       "isLinear": null,
+                       "isSingleStranded": null,
+                       "annotations": [
+                           {
+                               "_id": "5952e539ed2e7c2df88b7f90",
+                               "name": "BBa_R0040",
+                               "description": null,
+                               "userId": "5939ba97b8e96112986d3be8",
+                               "sequenceId": "5952e539ed2e7c2df88b7f8f",
+                               "start": 1,
+                               "end": 54,
+                               "isForwardStrand": true,
+                               "features": [
+                                   {
+                                       "_id": "5952e539ed2e7c2df88b7f91",
+                                       "name": "BBa_R0040",
+                                       "description": null,
+                                       "userId": "5939ba97b8e96112986d3be8",
+                                       "displayId": "TetR repressible promoter",
+                                       "role": "PROMOTER",
+                                       "annotationId": "5952e539ed2e7c2df88b7f90",
+                                       "moduleId": "5952e539ed2e7c2df88b7f8d"
+                                   }
+                               ]
+                           }
+                       ]
+                   }
+               ]
+           }
+       ],
+       "modules": [
+           {
+               "_id": "5952e539ed2e7c2df88b7f8d",
+               "name": "BBa_R0040",
+               "description": null,
+               "userId": "5939ba97b8e96112986d3be8",
+               "displayId": "TetR repressible promoter",
+               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "role": "PROMOTER",
+               "submoduleIds": null,
+               "features": [
+                   {
+                       "_id": "5952e539ed2e7c2df88b7f91",
+                       "name": "BBa_R0040",
+                       "description": null,
+                       "userId": "5939ba97b8e96112986d3be8",
+                       "displayId": "TetR repressible promoter",
+                       "role": "PROMOTER",
+                       "annotationId": "5952e539ed2e7c2df88b7f90",
+                       "moduleId": "5952e539ed2e7c2df88b7f8d"
+                   }
+               ]
+           }
+       ],
+       "parameters": [
+           {
+               "_id": "5952e539ed2e7c2df88b7f8b",
+               "name": "promoter unbinding rate",
+               "userId": "5939ba97b8e96112986d3be8",
+               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "value": 0.03,
+               "variable": "K7",
+               "units": "min-1"
+           },
+           {
+               "_id": "5952e539ed2e7c2df88b7f8c",
+               "name": "mRNA degradation rate",
+               "userId": "5939ba97b8e96112986d3be8",
+               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "value": 0.02,
+               "variable": "dmrna",
+               "units": "min-1"
+           }
+       ]
+   }
+   ]
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   * "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+   * }
+   */
+
+
   server.route({
     method: 'PUT',
     path: '/part',
@@ -57,7 +206,7 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
-            done(null, []);
+            return reply([]);
           }
         },
         findParts: ['findSequences', function (results, done) {
@@ -76,7 +225,7 @@ internals.applyRoutes = function (server, next) {
             Part.getParts(partIds, done);
 
           } else {
-            done(null, []);
+            return reply([]);
           }
 
         }],
@@ -102,7 +251,7 @@ internals.applyRoutes = function (server, next) {
           // only zero/one result, no need to search further
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
-              return reply([]);
+             return reply([]);
               //return reply({'debug': results});
             }
 
@@ -131,6 +280,7 @@ internals.applyRoutes = function (server, next) {
             }
           }
 
+          console.log(bioDesignIds);
 
           // only zero/one result, no need to search further
           if ((request.payload.sequence !== undefined && request.payload.sequence !== null) || (request.payload.parameters != undefined && request.payload.parameters !== null)) {
@@ -216,8 +366,8 @@ internals.applyRoutes = function (server, next) {
   ;
 
   /**
-   * @api {get} /api/part/:id GetPart
-   * @apiName GetPart
+   * @api {get} /api/part/:id getPartById
+   * @apiName getPartById
    * @apiDescription Get complete Part by ID
    * @apiGroup ConvenienceMethods
    * @apiVersion 4.0.0
@@ -367,7 +517,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/part createPart
    * @apiName createPart
    * @apiDescription Create part based on arguments
-   * @apiGroup Convenience Methods
+   * @apiGroup ConvenienceMethods
    * @apiVersion 4.0.0
    * @apiPermission none
    *
@@ -501,7 +651,7 @@ internals.applyRoutes = function (server, next) {
 
           }
           else {
-            done(null, []);
+            return reply([]);
           }
         }],
         createModule: ['createBioDesign', function (results, done) {
@@ -520,7 +670,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            done(null, []);
+            return reply([]);
           }
         }],
         createSubpart: ['createBioDesign', function (results, done) {
@@ -554,7 +704,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            done(null, []);
+            return reply([]);
           }
         }],
         createAnnotation: ['createSequence', function (results, done) {
@@ -573,7 +723,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            done(null, []);
+            return reply([]);
           }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
@@ -599,7 +749,7 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            done(null, []);
+            return reply([]);
           }
         }]
       }, (err, results) => {
