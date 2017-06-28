@@ -65,7 +65,7 @@ class Parameter extends MongoModels {
             query.bioDesignId = bioDesignIds;
           } else if (bioDesignIds.length > 0) {
             // Combine list of biodesignIds.
-            query.bioDesignIds = {$in: bioDesignIds};
+            query.bioDesignId = {$in: bioDesignIds};
           }
           // Reformat query so that name and variable have regex, value is cast to number.
           for (let label of parameterLabels) {
@@ -139,6 +139,9 @@ class Parameter extends MongoModels {
           }
         }
         return callback(reject);
+      })
+      .catch((error) => {
+        assert.isNotOk(error, 'Promise error');
       });
 
 

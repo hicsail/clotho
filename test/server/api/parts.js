@@ -111,7 +111,7 @@ lab.experiment('Part Plugin Read', () => {
 
     request = {
       method: 'GET',
-      url: '/part/121212121212',
+      url: '/part/5952967356dc2954e85b4095',
       credentials: AuthenticatedUser
     };
 
@@ -129,10 +129,8 @@ lab.experiment('Part Plugin Read', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.be.an.error();
       Code.expect(response.statusCode).to.equal(500);
-
-
+      
       done();
     });
   });
@@ -146,8 +144,8 @@ lab.experiment('Part Plugin Read', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.result.message).to.be.an.error();
       Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.match(/document not found/i);
 
 
       done();
@@ -158,7 +156,7 @@ lab.experiment('Part Plugin Read', () => {
 
     stub.BioDesign.getBioDesignIds = function (id, query, callback) {
 
-      callback(null, {id: 121212121212});
+      callback(null, {id: '5952967356dc2954e85b4095'});
     };
 
     server.inject(request, (response) => {
