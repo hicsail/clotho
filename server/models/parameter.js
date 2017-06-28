@@ -139,6 +139,9 @@ class Parameter extends MongoModels {
           }
         }
         return callback(reject);
+      })
+      .catch((error) => {
+        assert.isNotOk(error, 'Promise error');
       });
 
 
