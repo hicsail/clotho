@@ -32,17 +32,16 @@ class Part extends MongoModels {
       partIds[i] = new MongoModels.ObjectID(partIds[i]);
     }
 
-
     const query = {_id: {$in: partIds}};
 
-    this.find(query, (err, parts) => {
+    this.find(query, (err, partIds) => {
 
       if (err) {
         return callback(err);
       }
-
-
-      callback(null, parts);
+      if (callback) {
+        callback(null, partIds);
+      }
     });
   }
 
@@ -132,7 +131,7 @@ Part.schema = Joi.object().keys({
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   bioDesignId: Joi.string(),
-  sequenceId: Joi.string()
+  sequenceId: Joi.string(),
 });
 
 Part.indexes = [

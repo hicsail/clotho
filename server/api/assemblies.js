@@ -78,7 +78,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           parts: Joi.array().items(Joi.object()), // original set of Parts
-          subAssemblyIds: Joi.array().items(Joi.string())
+          subBioDesignIds: Joi.array().items(Joi.string())
         }
       }
     },
@@ -86,6 +86,8 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Assembly.create(
+        request.payload.partIds,
+
         (err, assembly) => {
 
           if (err) {
@@ -106,7 +108,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           parts: Joi.array().items(Joi.object()), // original set of Parts
-          subAssemblyIds: Joi.array().items(Joi.string())
+          subBioDesignIds: Joi.array().items(Joi.string())
         }
       }
     },
@@ -116,7 +118,7 @@ internals.applyRoutes = function (server, next) {
       const update = {
         $set: {
           parts: request.payload.parts,
-          subAssemblyIds: request.payload.subAssemblyIds
+          subBioDesignIds: request.payload.subBioDesignIds
         }
       };
 

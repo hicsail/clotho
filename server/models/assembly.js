@@ -6,11 +6,11 @@ const Part = require('./part');
 
 class Assembly extends MongoModels {
 
-  static create(part, subAssemblyIds, callback) {
+  static create(part, subBioDesignIds, callback) {
 
     const document = {
       part: part,
-      subAssemblyIds: subAssemblyIds
+      subBioDesignIds: subBioDesignIds
     };
 
     this.insertOne(document, (err, docs) => {
@@ -50,7 +50,7 @@ Assembly.collection = 'assemblies';
 Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   parts: Joi.array().items(Part.schema),
-  subAssemblyIds: Joi.array().items(Joi.string())
+  subBioDesignIds: Joi.array().items(Joi.string())
 });
 
 // @Getter

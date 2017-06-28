@@ -128,6 +128,7 @@ internals.applyRoutes = function (server, next) {
       // Optionally, may also create a Sequence, Feature, BasicModule, Parameters, and Annotations.
       //async.auto task `createAssembly` has a non-existent dependency `createSubAssemblyIds`
       // in createSubpart, createSubAssemblyIds
+      //noinspection JSDuplicatedDeclaration
       Async.auto({
         createBioDesign: function (done) {
 
@@ -141,22 +142,46 @@ internals.applyRoutes = function (server, next) {
         },
         createParameters: ['createBioDesign', function (results, done) {
 
-          if (request.payload.parameters !== undefined) {
+          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
 
             var bioDesignId = results.createBioDesign._id.toString();
             var param = request.payload.parameters;
+            var parameterLabels = ['name', 'value', 'variable', 'units'];
 
-            for (var i = 0; i < param.length; ++i) {
-
-              Parameter.create(
-                param[i]['name'],
-                request.auth.credentials.user._id.toString(),
-                bioDesignId,
-                param[i]['value'],
-                param[i]['variable'],
-                param[i]['units'],
-                done);
+            for (let p of param) {
+              for (let label of parameterLabels) {
+                if (p[label] === undefined) {
+                  p[label] = null;
+                }
+              }
             }
+
+            var allPromises = [];
+            for (var i = 0; i < param.length; ++i) {
+              var promise = new Promise((resolve, reject) => {
+
+                Parameter.create(
+                  param[i]['name'],
+                  request.auth.credentials.user._id.toString(),
+                  bioDesignId,
+                  param[i]['value'],
+                  param[i]['variable'],
+                  param[i]['units'],
+                  (err, results) => {
+
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve(results);
+                    }
+                  });
+              });
+              allPromises.push(promise);
+            }
+
+            Promise.all(allPromises).then((resolve, reject) => {
+              done(null, allPromises);
+            });
           }
           else {
             done(null, []);
@@ -164,7 +189,7 @@ internals.applyRoutes = function (server, next) {
         }],
         createModule: ['createBioDesign', function (results, done) {
 
-          if (request.payload.role !== undefined) {
+          if (request.payload.role !== undefined && request.payload.role !== null) {
             var bioDesignId = results.createBioDesign._id.toString();
 
             Module.create(
@@ -193,13 +218,17 @@ internals.applyRoutes = function (server, next) {
             bioDesignId,
             done);
         }],
-        createAssembly: ['createSubpart', 'createSubAssemblyIds', function (results, done) {
+        createAssembly: ['createSubpart', function (results, done) {
 
-          var subpart = results.createSubpart._id.toString();
-          var subAssemblyIds = results.createSubAssemblyIds._id.toString();
+          var subBioDesignIds = request.payload.partIds;
+          var subPartIds = Part.getParts(["595409572a170f7522dc328c"]);
+
+          if (subPartIds == undefined) {
+            subPartIds = null;
+          }
           Assembly.create(
-            subpart,
-            subAssemblyIds,
+            subPartIds,
+            subBioDesignIds,
             done);
         }],
         createSequence: ['createSubpart', function (results, done) {
@@ -265,11 +294,14 @@ internals.applyRoutes = function (server, next) {
               moduleId,
               done);
           }
+
+
           else {
             done(null, []);
           }
         }]
-      }, (err, results) => {
+
+    }, (err, results) => {
 
         if (err) {
           return reply(err);
