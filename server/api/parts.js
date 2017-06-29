@@ -17,17 +17,17 @@ internals.applyRoutes = function (server, next) {
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
 
   /**
-   * @api {put} /api/part getPart
-   * @apiName getPart
-   * @apiDescription Get part based on arguments (uses PUT call for payload).
-   * @apiGroup ConvenienceMethods
+   * @api {put} /api/part Get Part
+   * @apiName Get Part
+   * @apiDescription Get part based on arguments.
+   * @apiGroup Convenience Methods
    * @apiVersion 4.0.0
-   * @apiPermission none
+   * @apiPermission user
    *
    * @apiParam {String} name  name of part.
    * @apiParam {String} displayId  displayId of part.
-   * @apiParam {String} role  role of the feature BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR
-   * @apiParam (String) sequence  nucleotide sequence using nucleic acid abbreviation (ATUCGRYKMSWBDHVN). Case-insensitive.
+   * @apiParam {String=BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR} role  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} sequence  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) parameters can include "name", "units", "value", "variable"
    *
    * @apiParamExample {json} Request-Example:
@@ -366,13 +366,14 @@ internals.applyRoutes = function (server, next) {
   ;
 
   /**
-   * @api {get} /api/part/:id getPartById
-   * @apiName getPartById
+   * @api {get} /api/part/:id Get Part By Id
+   * @apiName Get Part By Id
    * @apiDescription Get complete Part by ID
-   * @apiGroup ConvenienceMethods
+   * @apiGroup Convenience Methods
    * @apiVersion 4.0.0
-   * @apiPermission none
+   * @apiPermission user
    *
+   * @apiParam {String} id Part unique ID.
    *
    * @apiSuccessExample {json} Success-Response:
    * [
@@ -514,18 +515,18 @@ internals.applyRoutes = function (server, next) {
   });
 
   /**
-   * @api {post} /api/part createPart
-   * @apiName createPart
+   * @api {post} /api/part Create Part
+   * @apiName Create Part
    * @apiDescription Create part based on arguments
-   * @apiGroup ConvenienceMethods
+   * @apiGroup Convenience Methods
    * @apiVersion 4.0.0
-   * @apiPermission none
+   * @apiPermission user
    *
    * @apiParam {String} name  name of part.
    * @apiParam {String} [displayId]  displayId of part.
-   * @apiParam {String} [role]  role of the feature - must be one of the following: BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR
+   * @apiParam {String=BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR} [role]  role of the feature
    * @apiParam {Object} [parameters]  can include "name", "units", "value", "variable"
-   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation (ATUCGRYKMSWBDHVN). Case-insensitive.
+   * @apiParam {String=ATUCGRYKMSWBDHVN} sequence  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    *
    * @apiParamExample {json} Request-Example:
    *
@@ -640,7 +641,7 @@ internals.applyRoutes = function (server, next) {
 
               allPromises.push(promise);
             }
-            
+
             Promise.all(allPromises).then((resolve, reject) => {
 
               done(null, allPromises);
