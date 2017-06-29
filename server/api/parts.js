@@ -638,17 +638,13 @@ internals.applyRoutes = function (server, next) {
 
               });
 
-
               allPromises.push(promise);
             }
-
-
+            
             Promise.all(allPromises).then((resolve, reject) => {
 
               done(null, allPromises);
             });
-
-
           }
           else {
             return done(null, []);

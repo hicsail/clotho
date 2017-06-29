@@ -194,7 +194,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParamExample {json} Request-Example:
    *  {
    *    "email":"clotho@clotho.com"
-   *  }
+   *   }
    *
    * @apiSuccessExample {json} Success-Response:
    * {

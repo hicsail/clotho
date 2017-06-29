@@ -115,7 +115,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           description: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          bioDesignId: Joi.string().optional()
+          bioDesignId: Joi.string().optional(),
         }
       }
     },
