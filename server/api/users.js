@@ -6,6 +6,12 @@ const Joi = require('joi');
 
 const internals = {};
 
+/**
+ * @apiDefine AuthHeader
+ * @apiHeader (Authorization) {String} Authorization Basic Authorization value.
+ * @apiHeaderExample {String} Authorization Header
+ * "Authorization: Basic NTk1NTA1NDliOGQwYjIxNDJlNTRjNDdjOjVjNjg0ZGQyLTkwZmYtNDY0Ni04YjUxLTc2MGVhMzljYWI4YQ=="
+ */
 
 internals.applyRoutes = function (server, next) {
 
@@ -100,6 +106,7 @@ internals.applyRoutes = function (server, next) {
    * @apiGroup User
    * @apiVersion 4.0.0
    * @apiPermission user
+   * @apiUse AuthHeader
    *
    * @apiSuccessExample {json} Success-Response:
    * {
@@ -336,6 +343,7 @@ internals.applyRoutes = function (server, next) {
    * @apiGroup User
    * @apiVersion 4.0.0
    * @apiPermission user
+   * @apiUse AuthHeader
    *
    * @apiParam {String} username  user's new username.
    * @apiParam {String} email     user's new email.
@@ -523,6 +531,7 @@ internals.applyRoutes = function (server, next) {
    * @apiGroup User
    * @apiVersion 4.0.0
    * @apiPermission user
+   * @apiUse AuthHeader
    *
    * @apiParam {String} password  user's new password.
    *
