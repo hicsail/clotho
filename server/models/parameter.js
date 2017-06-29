@@ -104,17 +104,17 @@ class Parameter extends MongoModels {
           if (resolve.length > 1 && resolve.indexOf(null) === -1) {
             var foundBioDesignIds = [];
             // Loop through parameter queries to get list of biodesignids.
-            for (var q = 0; q < resolve.length; ++q) {
+            for (var i = 0; i < resolve.length; ++i) {
               foundBioDesignIds.push([]);
-              for (var p = 0; p < resolve[q].length; ++p) {
-                foundBioDesignIds[q].push(resolve[q][p].bioDesignId);
+              for (var j = 0; j < resolve[i].length; ++j) {
+                foundBioDesignIds[i].push(resolve[i][j].bioDesignId);
               }
             }
             // Find the intersection of all BioDesignIds.
             var bioDesignIntersection = foundBioDesignIds[0];
-            for (var p = 1; p < foundBioDesignIds.length; ++p) {
+            for (i = 1; i < foundBioDesignIds.length; ++i) {
               if (bioDesignIntersection.length === 0) break;
-              bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[p]);
+              bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[i]);
             }
 
             // Then obtain all unique Parameter documents that matched the biodesignIds in intersection.
