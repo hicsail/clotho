@@ -230,6 +230,7 @@ internals.applyRoutes = function (server, next) {
           Assembly.create(
             subPartIds,
             subBioDesignIds,
+            request.auth.credentials.user._id.toString(),
             done);
         }],
         createSequence: ['createSubpart', function (results, done) {

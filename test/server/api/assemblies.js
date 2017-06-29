@@ -32,10 +32,7 @@ lab.before((done) => {
     register: Proxyquire('hapi-mongo-models', proxy),
     options: Manifest.get('/registrations').filter((reg) => {
 
-      if (reg.plugin &&
-        reg.plugin.register &&
-        reg.plugin.register === 'hapi-mongo-models') {
-
+      if (reg.plugin && reg.plugin.register && reg.plugin.register === 'hapi-mongo-models') {
         return true;
       }
 
@@ -258,7 +255,7 @@ lab.experiment('Assembly Plugin Update', () => {
       url: '/assembly/420000000000000000000000',
       payload: {
         parts: [{}], //not sure how to put an object here
-        subAssemblyIds: ['firstItem', 'secondItem', 'thirdItem']
+        subBioDesignIds: ['firstItem', 'secondItem', 'thirdItem']
       },
       credentials: AuthenticatedUser
     };
@@ -312,66 +309,126 @@ lab.experiment('Assembly Plugin Update', () => {
 
 });
 
-/*
- lab.experiment('Assembly Plugin Create', () => {
 
- lab.beforeEach((done) => {
+lab.experiment('Assembly Plugin Create', () => {
 
- request = {
- method: 'POST',
- url: '/assembly',
- payload: {
- sequenceId: 'seq1',
- name: 'sequence1',
- start: 1,
- end: 2,
- isForwardStrand: true
- },
- credentials: AuthenticatedUser
- };
+  lab.beforeEach((done) => {
 
- done();
- });
+    request = {
+      method: 'POST',
+      url: '/assembly',
+      payload: {
+        parts: [{part:'myPart'}],
+        subBioDesignIds: ['bioDesignId']
+      },
+      credentials: AuthenticatedUser
+    };
 
- lab.test('it returns an error when create fails', (done) => {
+    done();
+  });
 
- stub.Assembly.findOne = function (conditions, callback) {
+  lab.test('it returns an error when create fails', (done) => {
 
- callback();
- };
+    stub.Assembly.findOne = function (conditions, callback) {
 
- stub.Assembly.create = function (sequenceId,name,description,start,end,isForwardStrand,userId,callback) {
+      callback();
+    };
 
- callback(Error('create failed'));
- };
+    stub.Assembly.create = function (part, subBioDesignIds, userId, callback) {
 
- server.inject(request, (response) => {
+      callback(Error('create failed'));
+    };
 
- Code.expect(response.statusCode).to.equal(500);
+    server.inject(request, (response) => {
 
- done();
- });
- });
+      Code.expect(response.statusCode).to.equal(500);
 
- lab.test('it creates a document successfully', (done) => {
+      done();
+    });
+  });
 
- stub.Assembly.findOne = function (conditions, callback) {
+  lab.test('it creates a document successfully', (done) => {
 
- callback();
- };
+    stub.Assembly.findOne = function (conditions, callback) {
 
- stub.Assembly.create = function (name,description,sequence,isLinear,isSingleStranded,featureId,userId,callback) {
+      callback();
+    };
 
- callback(null, {});
- };
+    stub.Assembly.create = function (npart, subBioDesignIds, userId,callback) {
 
- server.inject(request, (response) => {
+      callback(null, {});
+    };
 
- Code.expect(response.statusCode).to.equal(200);
- Code.expect(response.result).to.be.an.object();
+    server.inject(request, (response) => {
 
- done();
- });
- });
- });
- */
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Assembly Plugin Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'put',
+      url: '/assembly/4200000000',
+      payload: {
+        parts: [{part:'myPart'}],
+        subBioDesignIds: ['bioDesignId']
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it updates a document successfully', (done) => {
+
+    stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(null,{_id:'assemblyId'});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when document doesnt exsist', (done) => {
+
+    stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(null,null);
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(404);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when update fails', (done) => {
+
+    stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(Error('failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+});

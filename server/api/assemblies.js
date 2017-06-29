@@ -87,7 +87,8 @@ internals.applyRoutes = function (server, next) {
 
       Assembly.create(
         request.payload.partIds,
-
+        request.payload.subBioDesignIds,
+        request.auth.credentials.user._id.toString(),
         (err, assembly) => {
 
           if (err) {

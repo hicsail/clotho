@@ -6,11 +6,12 @@ const Part = require('./part');
 
 class Assembly extends MongoModels {
 
-  static create(part, subBioDesignIds, callback) {
+  static create(part, subBioDesignIds, userId, callback) {
 
     const document = {
       part: part,
-      subBioDesignIds: subBioDesignIds
+      subBioDesignIds: subBioDesignIds,
+      userId: userId
     };
 
     this.insertOne(document, (err, docs) => {
