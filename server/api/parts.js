@@ -29,6 +29,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String=BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR} role  role of the feature
    * @apiParam {String=ATUCGRYKMSWBDHVN} sequence  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) parameters can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    *
    * @apiParamExample {json} Request-Example:
    *  {
@@ -36,6 +37,7 @@ internals.applyRoutes = function (server, next) {
  "displayId": "TetR repressible promoter",
  "role": "PROMOTER",
  "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+ "userSpace": true,
  "parameters": [
   {
   "name": "promoter unbinding rate",
@@ -188,7 +190,8 @@ internals.applyRoutes = function (server, next) {
               value: Joi.number(),
               variable: Joi.string()
             })
-          ).optional()
+          ).optional(),
+          userSpace: Joi.boolean().default(false)
         }
       }
     },
@@ -335,6 +338,9 @@ internals.applyRoutes = function (server, next) {
             query['displayId'] = request.payload.displayId;
           }
 
+          if (request.payload.userSpace) {
+            query['userId'] = request.auth.credentials.user._id.toString();
+          }
 
           // Should not return anything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined

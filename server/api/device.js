@@ -42,7 +42,8 @@ internals.applyRoutes = function (server, next) {
               value: Joi.number(),
               variable: Joi.string()
             })
-          ).optional()
+          ).optional(),
+          userSpace: Joi.boolean().default(false)
         }
       }
     },
