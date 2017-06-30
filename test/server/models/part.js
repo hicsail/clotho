@@ -195,4 +195,37 @@ lab.experiment('Part Class Methods', () => {
       done();
     });
   });
+
+  lab.test('it returns an error when getParts fails', (done) => {
+
+    const realFind = Part.find;
+    Part.find = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    Part.getParts(['123456789012'], (err, results) => {
+
+      Code.expect(err).to.be.an.object();
+      Code.expect(results).to.not.exist();
+
+      Part.find = realFind;
+
+      done();
+    });
+  });
+
+  lab.test('it returns an instance when getParts succeeds', (done) => {
+
+    Part.getParts(['123456789012'], (err, results) => {
+
+      Code.expect(err).to.not.exist();
+      Code.expect(results).to.equal([]);
+
+      done();
+    });
+  });
 });

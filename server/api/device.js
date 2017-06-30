@@ -181,6 +181,7 @@ internals.applyRoutes = function (server, next) {
             }
 
             Promise.all(allPromises).then((resolve, reject) => {
+
               done(null, allPromises);
             });
           }
@@ -222,7 +223,7 @@ internals.applyRoutes = function (server, next) {
         createAssembly: ['createSubpart', function (results, done) {
 
           var subBioDesignIds = request.payload.partIds;
-          var subPartIds = Part.getParts(["595409572a170f7522dc328c"]);
+          var subPartIds = Part.getParts(['595409572a170f7522dc328c']);
 
           if (subPartIds == undefined) {
             subPartIds = null;
@@ -295,15 +296,11 @@ internals.applyRoutes = function (server, next) {
               annotationId,
               moduleId,
               done);
-          }
-
-
-          else {
+          } else {
             done(null, []);
           }
         }]
-
-    }, (err, results) => {
+      }, (err, results) => {
 
         if (err) {
           return reply(err);

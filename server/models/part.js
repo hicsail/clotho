@@ -39,9 +39,7 @@ class Part extends MongoModels {
       if (err) {
         return callback(err);
       }
-      if (callback) {
-        callback(null, partIds);
-      }
+      callback(null, partIds);
     });
   }
 

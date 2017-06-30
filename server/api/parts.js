@@ -255,7 +255,7 @@ internals.applyRoutes = function (server, next) {
           // only zero/one result, no need to search further
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
-             return done(null, []);
+              return done(null, []);
               //return reply({'debug': results});
             }
 

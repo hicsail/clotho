@@ -34,15 +34,15 @@ lab.before((done) => {
   };
 
   const proxy = {};
+  proxy[Path.join(process.cwd(), './server/models/part')] = stub.Part;
   proxy[Path.join(process.cwd(), './server/models/device')] = stub.Device;
+  proxy[Path.join(process.cwd(), './server/models/bio-design')] = stub.BioDesign;
 
   const ModelsPlugin = {
     register: Proxyquire('hapi-mongo-models', proxy),
     options: Manifest.get('/registrations').filter((reg) => {
 
-      if (reg.plugin &&
-        reg.plugin.register &&
-        reg.plugin.register === 'hapi-mongo-models') {
+      if (reg.plugin && reg.plugin.register && reg.plugin.register === 'hapi-mongo-models') {
 
         return true;
       }
@@ -118,8 +118,6 @@ lab.experiment('Part Plugin Read', () => {
     done();
   });
 
-  // TODO: Both of the following two tests are giving a 200 status code they should be
-  //       giving 500 and 404 respectively.
   lab.test('it returns an error when get BioDesignsId fails', (done) => {
 
     stub.BioDesign.getBioDesignIds = function (id, query, callback) {
@@ -130,7 +128,7 @@ lab.experiment('Part Plugin Read', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(500);
-      
+
       done();
     });
   });
@@ -139,7 +137,7 @@ lab.experiment('Part Plugin Read', () => {
 
     stub.BioDesign.getBioDesignIds = function(id, query, callback) {
 
-      callback();
+      callback(null, []);
     };
 
     server.inject(request, (response) => {
@@ -149,14 +147,14 @@ lab.experiment('Part Plugin Read', () => {
 
 
       done();
-    })
+    });
   });
 
   lab.test('it returns a document successfully', (done) => {
 
     stub.BioDesign.getBioDesignIds = function (id, query, callback) {
 
-      callback(null, {id: '5952967356dc2954e85b4095'});
+      callback(null, [{id: '5952967356dc2954e85b4095'}]);
     };
 
     server.inject(request, (response) => {
