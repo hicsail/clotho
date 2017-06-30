@@ -77,8 +77,9 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          parts: Joi.array().items(Joi.object()), // original set of Parts
-          subBioDesignIds: Joi.array().items(Joi.string())
+          subBioDesignIds: Joi.array().items(Joi.string()),
+          partIds: Joi.array().items(Joi.string())
+
         }
       }
     },
@@ -86,8 +87,8 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Assembly.create(
-        request.payload.partIds,
         request.payload.subBioDesignIds,
+        request.payload.partIds,
         request.auth.credentials.user._id.toString(),
         (err, assembly) => {
 
@@ -108,8 +109,9 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          parts: Joi.array().items(Joi.object()), // original set of Parts
-          subBioDesignIds: Joi.array().items(Joi.string())
+          subBioDesignIds: Joi.array().items(Joi.string()),
+          partIds: Joi.array().items(Joi.string())
+
         }
       }
     },
@@ -118,8 +120,8 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          parts: request.payload.parts,
-          subBioDesignIds: request.payload.subBioDesignIds
+          subBioDesignIds: request.payload.subBioDesignIds,
+          parts: request.payload.parts
         }
       };
 

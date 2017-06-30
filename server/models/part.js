@@ -45,16 +45,84 @@ class Part extends MongoModels {
 
   static findByBioDesignId(bioDesignId, callback) {
 
-    const query = {bioDesignId: bioDesignId};
-    this.find(query, (err, parts) => {
+    if (bioDesignId == null) {
+      bioDesignId = {};
+    }
 
-      if (err) {
-        return callback(err);
+    var query = [];
+    var partIds = [];
+
+
+    if (typeof bioDesignId !== 'string') {
+
+      if (bioDesignId.length > 0) {
+
+        var allPromises = [];
+        for (var i = 0; i < bioDesignId.length; ++i) {
+
+          query.push({bioDesignId: bioDesignId[i]})
+
+          var promise = new Promise((resolve, reject) => {
+            this.find(query[i], (err, part) => {
+
+              if (err) {
+                return callback(err);
+              }
+              partIds.push({"_id": part[0]["_id"].toString()});
+              resolve(partIds);
+            });
+          });
+          allPromises.push(promise);
+        }
+
+        Promise.all(allPromises).then((resolve, reject) => {
+          this.getSequence(0, partIds, callback);
+        });
       }
 
-      this.getSequence(0, parts, callback);
-    });
+    } else if (bioDesignId !== undefined && bioDesignId !== null) {
+      query[0] = {bioDesignId: bioDesignId};
+
+      this.find(query[0], (err, parts) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        this.getSequence(0, parts, callback);
+      })
+    };
   }
+
+
+
+
+
+      //
+      //   for (var i = 0; i < bioDesignId.length; ++i) {
+      //     query[i] = {bioDesignId: bioDesignId[i]};
+      //
+      //     this.find(query[i], (err, part) => {
+      //
+      //       if (err) {
+      //         return callback(err);
+      //       }
+      //       console.log("This is mini parts");
+      //       console.log(part[0]);
+      //       parts.push(part[0]);
+      //       console.log("This is full parts");
+      //       console.log(parts);
+      //
+      //     })
+      //     // query = {bioDesignId: {$in: bioDesignId}};
+      //   }
+      //   console.log("Out of for loop");
+      //   console.log(parts);
+      //   this.getSequence(0, parts, callback);
+      // }
+
+
+
 
   //most likely one sequence only, may have to review this function
   static getSequence(index, parts, callback) {

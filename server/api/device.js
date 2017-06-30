@@ -224,30 +224,19 @@ internals.applyRoutes = function (server, next) {
 
           var subBioDesignIds = request.payload.partIds;
 
-          Part.findByBioDesignId('595409572a170f7522dc328c', (err, results) => {
+          Part.findByBioDesignId(request.payload.partIds, (err, results) => {
             console.log(results);
             if (err) {
               return done(err);
-
             }
             else {
               Assembly.create(
-                results,
                 subBioDesignIds,
+                results,
                 request.auth.credentials.user._id.toString(),
                 done);
             }
-          }
-          );
-
-          // if (subPartIds == undefined) {
-          //   subPartIds = null;
-          // }
-          // Assembly.create(
-          //   subPartIds,
-          //   subBioDesignIds,
-          //   request.auth.credentials.user._id.toString(),
-          //   done);
+          });
         }],
         createSequence: ['createSubpart', function (results, done) {
 
