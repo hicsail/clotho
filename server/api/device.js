@@ -142,7 +142,7 @@ internals.applyRoutes = function (server, next) {
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {
-
+          console.log("parameters");
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
 
             var bioDesignId = results.createBioDesign._id.toString();
@@ -209,7 +209,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSubpart: ['createBioDesign', function (results, done) {
-
+          console.log("subparts");
           var bioDesignId = results.createBioDesign._id.toString();
 
           Part.create(
@@ -223,16 +223,31 @@ internals.applyRoutes = function (server, next) {
         createAssembly: ['createSubpart', function (results, done) {
 
           var subBioDesignIds = request.payload.partIds;
-          var subPartIds = Part.getParts(['595409572a170f7522dc328c']);
 
-          if (subPartIds == undefined) {
-            subPartIds = null;
+          Part.findByBioDesignId('595409572a170f7522dc328c', (err, results) => {
+            console.log(results);
+            if (err) {
+              return done(err);
+
+            }
+            else {
+              Assembly.create(
+                results,
+                subBioDesignIds,
+                request.auth.credentials.user._id.toString(),
+                done);
+            }
           }
-          Assembly.create(
-            subPartIds,
-            subBioDesignIds,
-            request.auth.credentials.user._id.toString(),
-            done);
+          );
+
+          // if (subPartIds == undefined) {
+          //   subPartIds = null;
+          // }
+          // Assembly.create(
+          //   subPartIds,
+          //   subBioDesignIds,
+          //   request.auth.credentials.user._id.toString(),
+          //   done);
         }],
         createSequence: ['createSubpart', function (results, done) {
 
@@ -276,7 +291,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
-
+          console.log("feature");
           var annotationId = null, moduleId = null;
           if (results.createAnnotation._id !== undefined) {
             annotationId = results.createAnnotation._id.toString();
