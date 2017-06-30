@@ -133,12 +133,15 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         createBioDesign: function (done) {
 
+          var subBioDesignIds = request.payload.partIds;
+
           BioDesign.create(
             request.payload.name,
             null, // description
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
-            null,
+            null, //imageUrl
+            subBioDesignIds,
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {

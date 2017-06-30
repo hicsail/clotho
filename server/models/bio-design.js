@@ -12,14 +12,15 @@ const Module = require('./module');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId,
       displayId: displayId,
-      imageURL: imageURL
+      imageURL: imageURL,
+      subBioDesignIds: subBioDesignIds
     };
 
     this.insertOne(document, (err, docs) => {
@@ -215,7 +216,7 @@ BioDesign.schema = Joi.object().keys({
   displayId: Joi.string().optional(),
   moduleId: Joi.string(),
   parentDesignId: Joi.string(),
-  subDesignIds: Joi.array().items(Joi.string()),
+  subBioDesignIds: Joi.array().items(Joi.string()),
   media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
   strains: Joi.array().items(Strain.schema)

@@ -80,7 +80,8 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           description: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          imageURL: Joi.string().optional()
+          imageURL: Joi.string().optional(),
+          subBioDesignIds: Joi.array().items(Joi.string()).optional()
         }
       }
     },
@@ -93,6 +94,7 @@ internals.applyRoutes = function (server, next) {
         request.auth.credentials.user._id.toString(),
         request.payload.displayId,
         request.payload.imageURL,
+        request.payload.subBioDesignIds,
         (err, bioDesign) => {
 
           if (err) {
@@ -115,7 +117,8 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           description: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          imageURL: Joi.string().optional()
+          imageURL: Joi.string().optional(),
+          subBioDesignIds: Joi.array().items(Joi.string()).optional()
         }
       }
     },
@@ -127,7 +130,8 @@ internals.applyRoutes = function (server, next) {
           name: request.payload.name,
           description: request.payload.description,
           displayId: request.payload.displayId,
-          imageURL: request.payload.imageURL
+          imageURL: request.payload.imageURL,
+          subBioDesignIds: request.payload.subBioDesignIds
         }
       };
 
