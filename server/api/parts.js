@@ -256,7 +256,6 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             if (bioDesignIds.length === 0) {
               return done(null, []);
-              //return reply({'debug': results});
             }
 
           }
@@ -289,7 +288,7 @@ internals.applyRoutes = function (server, next) {
           if ((request.payload.sequence !== undefined && request.payload.sequence !== null) || (request.payload.parameters != undefined && request.payload.parameters !== null)) {
             if (bioDesignIds.length === 0) {
               return done(null, []);
-              //return reply({'debug': results});
+
             }
 
           }
@@ -325,7 +324,7 @@ internals.applyRoutes = function (server, next) {
           if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
             if (bioDesignIds.length === 0) {
               return done(null, []);
-              //return reply({'debug': results});
+
             }
           }
 

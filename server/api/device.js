@@ -34,15 +34,18 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string(),
           role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
-          parts: Joi.array().items(Joi.object()), // List of part objects.
-          parameters: Joi.array().items(
-            Joi.object().keys({
-              name: Joi.string().optional(),
-              units: Joi.string(), // These should be updated.
-              value: Joi.number(),
-              variable: Joi.string()
-            })
-          ).optional(),
+          parts: Joi.array().items(Joi.object().keys({
+            name: Joi.string(),
+            description: Joi.string(),
+            displayId: Joi.string(),
+            _id: Joi.string()
+          })).optional(), // List of Part objects. (not subparts)
+          parameters: Joi.array().items(Joi.object().keys({
+            name: Joi.string().optional(),
+            units: Joi.string(), // These should be updated.
+            value: Joi.number(),
+            variable: Joi.string()
+          })).optional(),
           userSpace: Joi.boolean().default(false)
         }
       }
@@ -145,7 +148,7 @@ internals.applyRoutes = function (server, next) {
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {
-          console.log("parameters");
+          console.log('parameters');
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
 
             var bioDesignId = results.createBioDesign._id.toString();
@@ -212,7 +215,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSubpart: ['createBioDesign', function (results, done) {
-          console.log("subparts");
+          console.log('subparts');
           var bioDesignId = results.createBioDesign._id.toString();
 
           Part.create(
@@ -283,7 +286,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
-          console.log("feature");
+          console.log('feature');
           var annotationId = null, moduleId = null;
           if (results.createAnnotation._id !== undefined) {
             annotationId = results.createAnnotation._id.toString();

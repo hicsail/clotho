@@ -2,7 +2,6 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Part = require('./part');
 
 class Assembly extends MongoModels {
 
@@ -43,7 +42,6 @@ class Assembly extends MongoModels {
 //   }
 //   subAssemblies.add(subAssembly);
 // }
-
 
 
 Assembly.collection = 'assemblies';

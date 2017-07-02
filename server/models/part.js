@@ -21,6 +21,7 @@ class Part extends MongoModels {
       if (err) {
         return callback(err);
       }
+
       callback(null, docs[0]);
     });
   }
@@ -60,15 +61,16 @@ class Part extends MongoModels {
         var allPromises = [];
         for (var i = 0; i < bioDesignId.length; ++i) {
 
-          query.push({bioDesignId: bioDesignId[i]})
+          query.push({bioDesignId: bioDesignId[i]});
 
           var promise = new Promise((resolve, reject) => {
+
             this.find(query[i], (err, part) => {
 
               if (err) {
                 return callback(err);
               }
-              partIds.push({"_id": part[0]["_id"].toString()});
+              partIds.push({'_id': part[0]['_id'].toString()});
               resolve(partIds);
             });
           });
@@ -76,6 +78,7 @@ class Part extends MongoModels {
         }
 
         Promise.all(allPromises).then((resolve, reject) => {
+
           this.getSequence(0, partIds, callback);
         });
       }
@@ -90,8 +93,8 @@ class Part extends MongoModels {
         }
 
         this.getSequence(0, parts, callback);
-      })
-    };
+      });
+    }
   }
 
 
@@ -107,16 +110,16 @@ class Part extends MongoModels {
       //       if (err) {
       //         return callback(err);
       //       }
-      //       console.log("This is mini parts");
+      //       console.log('This is mini parts');
       //       console.log(part[0]);
       //       parts.push(part[0]);
-      //       console.log("This is full parts");
+      //       console.log('This is full parts');
       //       console.log(parts);
       //
       //     })
       //     // query = {bioDesignId: {$in: bioDesignId}};
       //   }
-      //   console.log("Out of for loop");
+      //   console.log('Out of for loop');
       //   console.log(parts);
       //   this.getSequence(0, parts, callback);
       // }
