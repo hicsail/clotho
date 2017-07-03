@@ -147,7 +147,6 @@ class Part extends MongoModels {
     });
   }
 
-
 }
 
 // Original Java
@@ -200,6 +199,7 @@ Part.schema = Joi.object().keys({
   displayId: Joi.string().optional(),
   bioDesignId: Joi.string(),
   sequenceId: Joi.string(),
+  assemblyId: Joi.string()
 });
 
 Part.indexes = [

@@ -33,9 +33,9 @@ lab.experiment('Assembly Class Methods', () => {
   lab.test('it returns a new instance when create succeeds', (done) => {
 
     Assembly.create(
-      ['assembly'],
-      ['assembly description'],
+      ['subBioDesignIds'],
       'userid12test',
+      ['subPartIds'],
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -57,9 +57,9 @@ lab.experiment('Assembly Class Methods', () => {
     };
 
     Assembly.create(
-      ['assembly'],
-      ['assembly description'],
+      ['subBioDesignIds'],
       'userid12test',
+      ['subPartIds'],
     (err, result) => {
 
       Code.expect(err).to.be.an.object();

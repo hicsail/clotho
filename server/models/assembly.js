@@ -5,12 +5,12 @@ const MongoModels = require('mongo-models');
 
 class Assembly extends MongoModels {
 
-  static create(subBioDesignIds, partIds, userId, callback) {
+  static create(subBioDesignIds, userId, masterSubPartIds, callback) {
 
     const document = {
       subBioDesignIds: subBioDesignIds,
-      partIds: partIds,
-      userId: userId
+      userId: userId,
+      masterSubPartIds: masterSubPartIds
     };
 
     this.insertOne(document, (err, docs) => {
@@ -52,7 +52,7 @@ Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   userId: Joi.string(),
   subBioDesignIds: Joi.array().items(Joi.string()),
-  partIds: Joi.array().items(Joi.string())
+  masterSubPartIds: Joi.array().items(Joi.string())
 });
 
 // @Getter

@@ -228,7 +228,7 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           } else {
             // Get full biodesigns.
-            return BioDesign.getDeviceIds(bioDesignIds, query, done);
+            return BioDesign.getBioDesignIds(bioDesignIds, query, done);
           }
 
 
@@ -258,17 +258,18 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Device.findById(request.params.id, (err, device) => {
+      BioDesign.getBioDesignIds(request.params.id, null, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!device) {
+        if (!bioDesign || bioDesign.length === 0) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(device);
+        reply(bioDesign);
+
       });
     }
   });
@@ -407,21 +408,58 @@ internals.applyRoutes = function (server, next) {
         }],
         createAssembly: ['createSubpart', function (results, done) {
 
+          // Links assembly to subpart of current Device.
+
+          var superSubPartId = results.createSubpart._id.toString();
           var subBioDesignIds = request.payload.partIds;
 
-          Part.findByBioDesignId(request.payload.partIds, (err, results) => {
-            console.log(results);
-            if (err) {
-              return done(err);
+          if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
+            Assembly.create(
+              subBioDesignIds,
+              request.auth.credentials.user._id.toString(),
+              [superSubPartId],
+              done);
+          } else {
+            done(null, []);
+          }
+        }],
+        updateSubDesignSubParts: ['createAssembly', function (results, done) {
+
+          // Need to update subparts that belong to subdesigns
+          // so that they have new assemblyId associated
+          var assemblyId = results.createAssembly._id.toString();
+          var subBioDesignIds = request.payload.partIds;
+
+          if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
+            var allPromises = [];
+
+
+            for (var i = 0; i < subBioDesignIds.length; ++i) {
+              var promise = new Promise((resolve, reject) => {
+                Part.updateMany({bioDesignId: subBioDesignIds[i]}, {$set: {assemblyId: assemblyId}}, (err, results) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    console.log('results', results);
+                    resolve(results);
+                  }
+                });
+              });
+              allPromises.push(promise);
             }
-            else {
-              Assembly.create(
-                subBioDesignIds,
-                results,
-                request.auth.credentials.user._id.toString(),
-                done);
-            }
-          });
+
+            Promise.all(allPromises).then((resolve, reject) => {
+              console.log(resolve);
+              if (reject) {
+                reply(reject);
+              }
+
+              done(null, resolve);
+            });
+          } else {
+            done(null, []);
+          }
+
         }],
         createSequence: ['createSubpart', function (results, done) {
 
