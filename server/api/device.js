@@ -325,10 +325,43 @@ internals.applyRoutes = function (server, next) {
             request.payload.displayId,
             null, //imageUrl
             subBioDesignIds,
+            null, //superBioDesignIds
             done);
         },
+        updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {
+
+          // Need to update superDesign that belong to subdesigns
+          // so that they have new bioDesginId associated
+          var superBioDesignId = results.createBioDesign._id.toString();
+          var subBioDesignIds = request.payload.partIds;
+
+          if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
+            var allPromises = [];
+
+            for (var i = 0; i < subBioDesignIds.length; ++i) {
+              var promise = new Promise((resolve, reject) => {
+                BioDesign.findByIdAndUpdate(subBioDesignIds[i], {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    resolve(results);
+                  }
+                });
+              });
+              allPromises.push(promise);
+            }
+            Promise.all(allPromises).then((resolve, reject) => {
+              if (reject) {
+                reply(reject);
+              }
+              done(null, resolve);
+            });
+          } else {
+            done(null, []);
+          }
+
+        }],
         createParameters: ['createBioDesign', function (results, done) {
-          console.log('parameters');
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
 
             var bioDesignId = results.createBioDesign._id.toString();
@@ -395,7 +428,6 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSubpart: ['createBioDesign', function (results, done) {
-          console.log('subparts');
           var bioDesignId = results.createBioDesign._id.toString();
 
           Part.create(
@@ -440,7 +472,6 @@ internals.applyRoutes = function (server, next) {
                   if (err) {
                     reject(err);
                   } else {
-                    console.log('results', results);
                     resolve(results);
                   }
                 });
@@ -449,7 +480,6 @@ internals.applyRoutes = function (server, next) {
             }
 
             Promise.all(allPromises).then((resolve, reject) => {
-              console.log(resolve);
               if (reject) {
                 reply(reject);
               }
@@ -503,7 +533,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
-          console.log('feature');
+
           var annotationId = null, moduleId = null;
           if (results.createAnnotation._id !== undefined) {
             annotationId = results.createAnnotation._id.toString();

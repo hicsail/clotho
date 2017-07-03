@@ -13,7 +13,7 @@ const Underscore = require('underscore');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, subBioDesignIds, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, callback) {
 
     const document = {
       name: name,
@@ -21,7 +21,8 @@ class BioDesign extends MongoModels {
       userId: userId,
       displayId: displayId,
       imageURL: imageURL,
-      subBioDesignIds: subBioDesignIds
+      subBioDesignIds: subBioDesignIds,
+      superBioDesignId: superBioDesignId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -374,6 +375,7 @@ BioDesign.schema = Joi.object().keys({
   moduleId: Joi.string(),
   parentDesignId: Joi.string(),
   subBioDesignIds: Joi.array().items(Joi.string()),
+  superBioDesignId: Joi.string().optional(),
   media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
   strains: Joi.array().items(Strain.schema)
