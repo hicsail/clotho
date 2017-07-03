@@ -63,9 +63,11 @@ class BioDesign extends MongoModels {
     return query;
   }
 
-  // Get complete device.
-  // Should merge with getBioDesignIds.
-  static getDeviceIds(bioDesignIds, query, callback) {
+
+
+  // Get complete device or part. If no subbiodesign exists, is treated as a part.
+  // Accepts array of bioDesignIds or single string.
+  static getBioDesignIds(bioDesignIds, query, callback) {
 
     if (query == null) {
       query = {};
@@ -99,7 +101,8 @@ class BioDesign extends MongoModels {
         allPromises.push(promise);
 
         // Also get subdesigns.
-        if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null) {
+        if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+          && bioDesigns[i].subBioDesignIds.length !== 0) {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
             this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, (errSub, components) => {
@@ -122,6 +125,10 @@ class BioDesign extends MongoModels {
           bioDesigns[i]['parts'] = resolve[i]['parts'];
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+
+          if (subBioDesignPromises.length === 0) {
+            return callback(null, bioDesigns);
+          }
         }
 
         Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
@@ -139,53 +146,6 @@ class BioDesign extends MongoModels {
 
   }
 
-
-  // Accepts array of bioDesignIds or single string.
-  static getBioDesignIds(bioDesignIds, query, callback) {
-
-    if (query == null) {
-      query = {};
-    }
-    var query2 = this.convertBD(bioDesignIds, query);
-
-
-    this.find(query2, (err, bioDesigns) => {
-
-      // dealing with error
-      if (err) {
-        return callback(err);
-      }
-
-      // otherwise buildup biodesign objects
-      var allPromises = [];
-      for (var i = 0; i < bioDesigns.length; ++i) {
-        // fetch aggregate of part, module, parameter (informally, components)
-        // and combine with main biodesign object
-        var promise = new Promise((resolve, reject) => {
-
-          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
-
-            if (errGet) {
-              reject(errGet);
-            }
-            resolve(components);
-          });
-        });
-        allPromises.push(promise);
-      }
-
-      Promise.all(allPromises).then((resolve, reject) => {
-
-        for (var i = 0; i < bioDesigns.length; ++i) {
-          bioDesigns[i]['parts'] = resolve[i]['parts'];
-          bioDesigns[i]['modules'] = resolve[i]['modules'];
-          bioDesigns[i]['parameters'] = resolve[i]['parameters'];
-        }
-
-        return callback(null, bioDesigns);
-      });
-    });
-  }
 
 // based on biodesignId, fetches all children
   static getBioDesign(bioDesignId, callback) {
