@@ -126,7 +126,6 @@ class Part extends MongoModels {
 
 
 
-
   //most likely one sequence only, may have to review this function
   static getSequence(index, parts, callback) {
 

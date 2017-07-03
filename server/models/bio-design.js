@@ -8,6 +8,7 @@ const Medium = require('./medium');
 const Part = require('./part');
 const Parameter = require('./parameter');
 const Module = require('./module');
+const Underscore = require('underscore');
 
 
 class BioDesign extends MongoModels {
@@ -32,13 +33,10 @@ class BioDesign extends MongoModels {
     });
   }
 
-  // Accepts array of bioDesignIds or single string.
-  static getBioDesignIds(bioDesignIds, query, callback) {
+  // Helper function to clean up query
+  static convertBD(bioDesignIds, extra) {
 
-    if (query == null) {
-      query = {};
-    }
-    var query2 = {};
+    var query = {};
 
     if (typeof bioDesignIds !== 'string') {
       // Convert strings to mongo ids.
@@ -47,25 +45,108 @@ class BioDesign extends MongoModels {
       }
 
       if (bioDesignIds.length > 0) {
-        query2 = {_id: {$in: bioDesignIds}};
+        query = {_id: {$in: bioDesignIds}};
       }
 
     } else if (bioDesignIds !== undefined && bioDesignIds !== null) {
-      query2 = {_id: new MongoModels.ObjectID(bioDesignIds)};
+      query = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
-    for (var attrname in query) {
-      // Convert to regex.
-      if (attrname === 'name') {
-        query['name'] = {$regex: query['name'], $options: 'i'};
-      }
 
-      if (attrname === 'displayId') {
-        query['displayId'] = {$regex: query['displayId'], $options: 'i'};
-      }
-
-      query2[attrname] = query[attrname];
+    if (extra['name'] !== undefined) {
+      query['name'] = {$regex: extra['name'], $options: 'i'};
+    } else if (extra['displayId'] !== undefined) {
+      query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
     }
+
+
+    return query;
+  }
+
+  // Get complete device.
+  // Should merge with getBioDesignIds.
+  static getDeviceIds(bioDesignIds, query, callback) {
+
+    if (query == null) {
+      query = {};
+    }
+    var query2 = this.convertBD(bioDesignIds, query);
+
+    this.find(query2, (err, bioDesigns) => {
+
+      // dealing with error
+      if (err) {
+        return callback(err);
+      }
+
+      // otherwise buildup biodesign objects
+      var allPromises = [];
+      var subBioDesignPromises = [];
+
+      for (var i = 0; i < bioDesigns.length; ++i) {
+        // fetch aggregate of part, module, parameter (informally, components)
+        // and combine with main biodesign object
+        var promise = new Promise((resolve, reject) => {
+
+          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
+
+            if (errGet) {
+              reject(errGet);
+            }
+            resolve(components);
+          });
+        });
+        allPromises.push(promise);
+
+        // Also get subdesigns.
+        if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null) {
+
+          var subBioDesignPromise = new Promise((resolve, reject) => {
+            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, (errSub, components) => {
+
+              if (errSub) {
+                reject(errSub);
+              }
+              resolve(components);
+            });
+          });
+
+          subBioDesignPromises.push(subBioDesignPromise);
+        }
+
+      }
+
+      Promise.all(allPromises).then((resolve, reject) => {
+
+        for (var i = 0; i < bioDesigns.length; ++i) {
+          bioDesigns[i]['parts'] = resolve[i]['parts'];
+          bioDesigns[i]['modules'] = resolve[i]['modules'];
+          bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+        }
+
+        Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
+
+          for (var i = 0; i < bioDesigns.length; ++i) {
+            bioDesigns[i]['subdesigns'] = subresolve[i];
+          }
+
+          return callback(null, bioDesigns);
+
+        });
+      });
+
+    });
+
+  }
+
+
+  // Accepts array of bioDesignIds or single string.
+  static getBioDesignIds(bioDesignIds, query, callback) {
+
+    if (query == null) {
+      query = {};
+    }
+    var query2 = this.convertBD(bioDesignIds, query);
 
 
     this.find(query2, (err, bioDesigns) => {
@@ -136,6 +217,120 @@ class BioDesign extends MongoModels {
     });
 
   }
+
+
+  static getSubDesignByBioDesignId(bioDesignIds, subDesigns, callback) {
+
+  }
+  //
+  // static getSubDesignByBioDesignId(bioDesignIds, subDesigns, callback) {
+  //
+  //   var query = {};
+  //   if (typeof bioDesignIds == 'string') {
+  //     query = {bioDesignId: bioDesignIds};
+  //   } else if (bioDesignIds.length > 0) {
+  //     query = {bioDesignId: {$in: bioDesignIds}};
+  //   }
+  //
+  //   // No array, just look for bioDesignIds.
+  //   if (subDesigns === null || subDesigns.length === 0) {
+  //     this.find(query, (err, results) => {
+  //
+  //       if (err) {
+  //         callback(err);
+  //       }
+  //
+  //       return callback(err, results);
+  //     });
+  //   } else {
+  //
+  //     var subDesignLabels = ['name', 'displayId', 'description', '_id'];
+  //
+  //     var allPromises = [];
+  //
+  //     // Loop through subDesign objects passed in.
+  //
+  //     for (let subDesignObj of subDesigns) {
+  //
+  //       // Perform find for given subDesign object.
+  //       var promise = new Promise((resolve, reject) => {
+  //
+  //         query = {};
+  //         // Initialize
+  //         if (typeof bioDesignIds == 'string') {
+  //           query.bioDesignId = bioDesignIds;
+  //         } else if (bioDesignIds.length > 0) {
+  //           // Combine list of biodesignIds.
+  //           query.bioDesignId = {$in: bioDesignIds};
+  //         }
+  //         // Reformat query so that name and variable have regex, value is cast to number.
+  //         for (let label of subDesignLabels) {
+  //           if (subDesignObj[label] !== undefined && subDesignObj[label] !== null) {
+  //             if (label === 'name' || label === 'displayId' || label === 'description') {
+  //               query[label] = {$regex: subDesignObj[label]};
+  //             } else if (label === '_id') {
+  //               query[label] = new MongoModels.ObjectID(subDesignObj[label]);
+  //             }
+  //           }
+  //         }
+  //
+  //         this.find(query, (errGet, results) => {
+  //
+  //           if (errGet) {
+  //             return reject(errGet);
+  //           }
+  //
+  //           if (results.length !== undefined && results.length !== null && results.length === 0) {
+  //             resolve([]);
+  //           }
+  //
+  //           resolve(results);
+  //         });
+  //       });
+  //       allPromises.push(promise);
+  //
+  //     }
+  //
+  //     // For multiple subDesign searches, need to find intersection of matching subDesign documents.
+  //     Promise.all(allPromises).then((resolve, reject) => {
+  //
+  //       if (resolve.length !== undefined && resolve.length !== null) {
+  //         if (resolve.length > 1 && resolve.indexOf(null) === -1) {
+  //           var foundBioDesignIds = [];
+  //           // Loop through subDesign queries to get list of parent biodesignids.
+  //           for (var q = 0; q < resolve.length; ++q) {
+  //             foundBioDesignIds.push([]);
+  //             for (var p = 0; p < resolve[q].length; ++p) {
+  //               foundBioDesignIds[q].push(resolve[q][p].parentDesignId);
+  //             }
+  //           }
+  //           // Find the intersection of all BioDesignIds.
+  //           var bioDesignIntersection = foundBioDesignIds[0];
+  //           for (var p = 1; p < foundBioDesignIds.length; ++p) {
+  //             if (bioDesignIntersection.length === 0) break;
+  //             bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[p]);
+  //           }
+  //
+  //           if (bioDesignIntersection.length === 0) return callback(null, []);
+  //
+  //           return callback(null, bioDesignIntersection);
+  //
+  //
+  //         } else if (resolve.length === 1) {
+  //           return callback(null, resolve[0].parentDesignId);
+  //         } else if (resolve.length > 1 && resolve.indexOf(null) !== -1) {
+  //           return callback(null, []);
+  //         }
+  //       }
+  //       return callback(reject);
+  //     });
+  //
+  //
+  //   }
+  //
+  // }
+
+
 }
 
 

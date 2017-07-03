@@ -21,7 +21,9 @@ class Assembly extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
 }
+
 
 // public Assembly createSubAssembly() {
 //   Assembly subAssembly = new Assembly();
@@ -47,9 +49,10 @@ class Assembly extends MongoModels {
 Assembly.collection = 'assemblies';
 
 Assembly.schema = Joi.object().keys({
+  _id: Joi.object(),
+  userId: Joi.string(),
   subBioDesignIds: Joi.array().items(Joi.string()),
-  partIds: Joi.array().items(Joi.string()),
-  _id: Joi.object()
+  partIds: Joi.array().items(Joi.string())
 });
 
 // @Getter
@@ -61,7 +64,7 @@ Assembly.schema = Joi.object().keys({
 // protected List<Assembly> subAssemblies;
 
 Assembly.indexes = [
-  {key: {_id: 1}}
+  {key: {userId: 1}}
 ];
 
 module.exports = Assembly;
