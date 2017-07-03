@@ -2,15 +2,16 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Part = require('./part');
 
 class Assembly extends MongoModels {
 
-  static create(subBioDesignIds, userId, masterSubPartIds, callback) {
+  static create(subBioDesignIds, userId, superSubPartIds, callback) {
 
     const document = {
       subBioDesignIds: subBioDesignIds,
       userId: userId,
-      masterSubPartIds: masterSubPartIds
+      superSubPartIds: superSubPartIds
     };
 
     this.insertOne(document, (err, docs) => {
@@ -22,6 +23,46 @@ class Assembly extends MongoModels {
     });
   }
 
+
+  // Given master id, search.
+  static findByPartId(partId, callback) {
+
+    const query = {superSubPartIds: partId};
+
+    console.log(query);
+
+    this.find(query, (err, assemblies) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      console.log(assemblies);
+
+      this.getSubParts(0, assemblies, callback);
+    });
+  }
+
+  // Get subparts that are under the assembly.
+  static getSubParts(index, assemblies, callback) {
+
+    if (index == assemblies.length) {
+      return callback(null, assemblies);
+    }
+
+    Part.findByAssemblyId(assemblies[index]['_id'].toString(), (err, subBioDesignSubParts) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (subBioDesignSubParts.length != 0) {
+        assemblies[index].subBioDesignSubParts = subBioDesignSubParts;
+      }
+
+      return this.getSubParts(index + 1, assemblies, callback);
+    });
+  }
 }
 
 
@@ -52,7 +93,7 @@ Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   userId: Joi.string(),
   subBioDesignIds: Joi.array().items(Joi.string()),
-  masterSubPartIds: Joi.array().items(Joi.string())
+  superSubPartIds: Joi.array().items(Joi.string())
 });
 
 // @Getter

@@ -105,6 +105,7 @@ class BioDesign extends MongoModels {
           && bioDesigns[i].subBioDesignIds.length !== 0) {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
+
             this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, (errSub, components) => {
 
               if (errSub) {
@@ -180,6 +181,7 @@ class BioDesign extends MongoModels {
 
 
   static getSubDesignByBioDesignId(bioDesignIds, subDesigns, callback) {
+    // Search for subdesigns.
 
   }
   //
