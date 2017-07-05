@@ -6,6 +6,10 @@ const MongoModels = require('mongo-models');
 class Role extends MongoModels {
   static create(name, userId, callback) {
 
+    if (typeof name === 'string') {
+      name = name.toUpperCase();
+    }
+
     const document = {
       name: name,
       userId: userId
@@ -18,6 +22,20 @@ class Role extends MongoModels {
       }
       callback(null, docs[0]);
     });
+  }
+
+  // Check for whether role matches.
+  static checkValidRole(role, callback) {
+    this.findOne({name: role}, (err, results) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      return callback(null, err === null && results !== null);
+
+    });
+
   }
 }
 

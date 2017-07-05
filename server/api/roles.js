@@ -1,38 +1,29 @@
 'use strict';
-const AuthPlugin = require('../auth');
+
 const Boom = require('boom');
 const Joi = require('joi');
 const ObjectID = require('mongo-models').ObjectID;
 
-
 const internals = {};
-
 
 internals.applyRoutes = function (server, next) {
 
   const Role = server.plugins['hapi-mongo-models'].Role;
 
-
   server.route({
     method: 'GET',
-    path: '/roles',
+    path: '/role',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: 'admin'
+        strategy: 'simple'
       },
       validate: {
         query: {
-          fields: Joi.string(),
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
-          page: Joi.number().default(1),
-          name: Joi.string().required()
+          page: Joi.number().default(1)
         }
-      },
-      pre: [
-        AuthPlugin.preware.ensureAdminGroup('root')
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -53,18 +44,13 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
   server.route({
     method: 'GET',
-    path: '/roles/{id}',
+    path: '/role/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: 'admin'
-      },
-      pre: [
-        AuthPlugin.preware.ensureAdminGroup('root')
-      ]
+        strategy: 'simple'
+      }
     },
     handler: function (request, reply) {
 
@@ -83,57 +69,46 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
   server.route({
     method: 'POST',
-    path: '/roles',
+    path: '/role',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: 'admin'
+        strategy: 'simple'
       },
       validate: {
         payload: {
           name: Joi.string().required()
         }
-      },
-      pre: [
-        AuthPlugin.preware.ensureAdminGroup('root')
-      ]
+      }
     },
     handler: function (request, reply) {
 
-      const name = request.payload.name;
-      const userId = request.auth.credentials.user._id.toString();
+      Role.create(
+        request.payload.name,
+        request.auth.credentials.user._id.toString(),
+        (err, role) => {
 
-      Role.create(name, userId, (err, roles) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply(roles);
-      });
+          if (err) {
+            return reply(err);
+          }
+          return reply(role);
+        });
     }
   });
 
-
   server.route({
     method: 'PUT',
-    path: '/roles/{id}',
+    path: '/role/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: 'admin'
+        strategy: 'simple'
       },
       validate: {
         payload: {
           name: Joi.string().required()
         }
-      },
-      pre: [
-        AuthPlugin.preware.ensureAdminGroup('root')
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -144,43 +119,39 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Role.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, roles) => {
+      Role.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, role) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!roles) {
-          return reply(Boom.notFound('Document not found.'));
+        if (!role) {
+          return reply(Boom.notFound('Role not found.'));
         }
 
-        reply(roles);
+        reply(role);
       });
     }
-  });
 
+  });
 
   server.route({
     method: 'DELETE',
-    path: '/roles/{id}',
+    path: '/role/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: 'admin'
-      },
-      pre: [
-        AuthPlugin.preware.ensureAdminGroup('root')
-      ]
+        strategy: 'simple',
+      }
     },
     handler: function (request, reply) {
 
-      Role.findByIdAndDelete(request.params.id, (err, roles) => {
+      Role.findByIdAndDelete(request.params.id, (err, role) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!roles) {
+        if (!role) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -188,8 +159,6 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
-
-
   next();
 };
 
@@ -203,5 +172,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'roles'
+  name: 'role'
 };
