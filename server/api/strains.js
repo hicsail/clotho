@@ -2,6 +2,7 @@
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
+const ObjectID = require('mongo-models').ObjectID;
 
 
 const internals = {};
@@ -143,7 +144,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Strain.findByIdAndUpdate(id, update, (err, strains) => {
+      Strain.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, strains) => {
 
         if (err) {
           return reply(err);

@@ -2,6 +2,7 @@
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
+const ObjectID = require('mongo-models').ObjectID;
 
 
 const internals = {};
@@ -144,7 +145,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      AdminGroup.findByIdAndUpdate(id, update, (err, adminGroup) => {
+      AdminGroup.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, adminGroup) => {
 
         if (err) {
           return reply(err);
@@ -189,7 +190,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      AdminGroup.findByIdAndUpdate(id, update, (err, adminGroup) => {
+      AdminGroup.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, adminGroup) => {
 
         if (err) {
           return reply(err);

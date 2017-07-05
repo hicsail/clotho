@@ -2,6 +2,7 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -123,7 +124,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Assembly.findByIdAndUpdate(id, update, (err, assembly) => {
+      Assembly.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, assembly) => {
 
         if (err) {
           return reply(err);

@@ -3,6 +3,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Async = require('async');
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -340,7 +341,7 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
-                BioDesign.findByIdAndUpdate(subBioDesignIds[i], {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
+                BioDesign.findOneAndUpdate({_id: ObjectID(subBioDesignIds[i]), $isolated: 1}, {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
                   if (err) {
                     reject(err);
                   } else {
@@ -468,7 +469,7 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
-                Part.updateMany({bioDesignId: subBioDesignIds[i]}, {$set: {assemblyId: assemblyId}}, (err, results) => {
+                Part.updateMany({bioDesignId: subBioDesignIds[i], $isolated: 1}, {$set: {assemblyId: assemblyId}}, (err, results) => {
                   if (err) {
                     reject(err);
                   } else {

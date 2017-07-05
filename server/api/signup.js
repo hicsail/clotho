@@ -3,7 +3,7 @@ const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
-
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -172,7 +172,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Account.findByIdAndUpdate(id, update, done);
+          Account.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
         }],
         linkAccount: ['account', function (results, done) {
 
@@ -188,7 +188,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findByIdAndUpdate(id, update, done);
+          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
         }],
         welcome: ['linkUser', 'linkAccount', function (results, done) {
 
