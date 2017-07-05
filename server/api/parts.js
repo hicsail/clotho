@@ -24,11 +24,11 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String} name  name of part.
-   * @apiParam {String} displayId  displayId of part.
-   * @apiParam {String=BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR} role  role of the feature
-   * @apiParam {String=ATUCGRYKMSWBDHVN} sequence  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
-   * @apiParam (Object) parameters can include "name", "units", "value", "variable"
+   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String=BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    *
    * @apiParamExample {json} Request-Example:
@@ -179,10 +179,10 @@ internals.applyRoutes = function (server, next) {
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
           page: Joi.number().default(1),
-          name: Joi.string(),
-          displayId: Joi.string(),
-          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
+          name: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -531,7 +531,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String=BARCODE, CDS, DEGRADATION_TAG, GENE, LOCALIZATION_TAG, OPERATOR, PROMOTER, SCAR, SPACER, RBS, RIBOZYME, TERMINATOR} [role]  role of the feature
    * @apiParam {Object} [parameters]  can include "name", "units", "value", "variable"
-   * @apiParam {String=ATUCGRYKMSWBDHVN} sequence  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    *
    * @apiParamExample {json} Request-Example:
    *
@@ -584,9 +584,9 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
-          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR'),
+          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').optional(),
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive()
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional()
         }
       }
     },
