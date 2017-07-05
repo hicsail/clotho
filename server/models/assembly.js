@@ -6,12 +6,12 @@ const Part = require('./part');
 
 class Assembly extends MongoModels {
 
-  static create(subBioDesignIds, userId, superSubPartIds, callback) {
+  static create(subBioDesignIds, userId, superSubPartId, callback) {
 
     const document = {
       subBioDesignIds: subBioDesignIds,
       userId: userId,
-      superSubPartIds: superSubPartIds
+      superSubPartId: superSubPartId
     };
 
     this.insertOne(document, (err, docs) => {
@@ -27,7 +27,7 @@ class Assembly extends MongoModels {
   // Given master id, search.
   static findByPartId(partId, callback) {
 
-    const query = {superSubPartIds: partId};
+    const query = {superSubPartId: partId};
 
     console.log(query);
 
@@ -93,7 +93,7 @@ Assembly.schema = Joi.object().keys({
   _id: Joi.object(),
   userId: Joi.string(),
   subBioDesignIds: Joi.array().items(Joi.string()),
-  superSubPartIds: Joi.array().items(Joi.string())
+  superSubPartId: Joi.string()
 });
 
 // @Getter

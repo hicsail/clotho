@@ -123,7 +123,7 @@ class BioDesign extends MongoModels {
       Promise.all(allPromises).then((resolve, reject) => {
 
         for (var i = 0; i < bioDesigns.length; ++i) {
-          bioDesigns[i]['parts'] = resolve[i]['parts'];
+          bioDesigns[i]['subparts'] = resolve[i]['subparts'];
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
 
@@ -151,7 +151,7 @@ class BioDesign extends MongoModels {
 // based on biodesignId, fetches all children
   static getBioDesign(bioDesignId, callback) {
 
-    Part.findByBioDesignId(bioDesignId, (err, parts) => {
+    Part.findByBioDesignId(bioDesignId, (err, subparts) => {
 
       if (err) {
         return callback(err);
@@ -170,7 +170,7 @@ class BioDesign extends MongoModels {
             return callback(err);
           }
 
-          return callback(null, {parts: parts, modules: modules, parameters: parameters});
+          return callback(null, {subparts: subparts, modules: modules, parameters: parameters});
         });
 
       });
@@ -180,117 +180,112 @@ class BioDesign extends MongoModels {
   }
 
 
+// Search for subdesigns.
   static getSubDesignByBioDesignId(bioDesignIds, subDesigns, callback) {
-    // Search for subdesigns.
+
+    var query = {};
+    if (typeof bioDesignIds == 'string') {
+      query = {parentDesignId: bioDesignIds};
+    } else if (bioDesignIds.length > 0) {
+      query = {parentDesignId: {$in: bioDesignIds}};
+    }
+
+    // No array, just look for bioDesignIds.
+    if (subDesigns === null || subDesigns.length === 0) {
+      this.find(query, (err, results) => {
+
+        if (err) {
+          callback(err);
+        }
+
+        return callback(err, results);
+      });
+    } else {
+
+      var subDesignLabels = ['name', 'displayId', 'description', '_id'];
+
+      var allPromises = [];
+
+      // Loop through subDesign objects passed in.
+
+      for (let subDesignObj of subDesigns) {
+
+        // Perform find for given subDesign object.
+        var promise = new Promise((resolve, reject) => {
+
+          query = {};
+          // Initialize
+          if (typeof bioDesignIds == 'string') {
+            query = {parentDesignId: bioDesignIds};
+          } else if (bioDesignIds.length > 0) {
+            query = {parentDesignId: {$in: bioDesignIds}};
+          }
+          // Reformat query so that name and variable have regex, value is cast to number.
+          for (let label of subDesignLabels) {
+            if (subDesignObj[label] !== undefined && subDesignObj[label] !== null) {
+              if (label === 'name' || label === 'displayId' || label === 'description') {
+                query[label] = {$regex: subDesignObj[label]};
+              } else if (label === '_id') {
+                query[label] = new MongoModels.ObjectID(subDesignObj[label]);
+              }
+            }
+          }
+
+          this.find(query, (errGet, results) => {
+
+            if (errGet) {
+              return reject(errGet);
+            }
+
+            if (results.length !== undefined && results.length !== null && results.length === 0) {
+              resolve([]);
+            }
+
+            resolve(results);
+          });
+        });
+        allPromises.push(promise);
+
+      }
+
+      // For multiple subDesign searches, need to find intersection of matching subDesign documents.
+      Promise.all(allPromises).then((resolve, reject) => {
+
+        if (resolve.length !== undefined && resolve.length !== null) {
+          if (resolve.length > 1 && resolve.indexOf(null) === -1) {
+            var foundBioDesignIds = [];
+            // Loop through subDesign queries to get list of parent biodesignids.
+            for (var q = 0; q < resolve.length; ++q) {
+              foundBioDesignIds.push([]);
+              for (var p = 0; p < resolve[q].length; ++p) {
+                foundBioDesignIds[q].push(resolve[q][p].parentDesignId);
+              }
+            }
+            // Find the intersection of all BioDesignIds.
+            var bioDesignIntersection = foundBioDesignIds[0];
+            for (var p = 1; p < foundBioDesignIds.length; ++p) {
+              if (bioDesignIntersection.length === 0) break;
+              bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[p]);
+            }
+
+            if (bioDesignIntersection.length === 0) return callback(null, []);
+
+            return callback(null, bioDesignIntersection);
+
+
+          } else if (resolve.length === 1) {
+            return callback(null, resolve[0].parentDesignId);
+          } else if (resolve.length > 1 && resolve.indexOf(null) !== -1) {
+            return callback(null, []);
+          }
+        }
+        return callback(reject);
+      });
+
+
+    }
 
   }
-  //
-  // static getSubDesignByBioDesignId(bioDesignIds, subDesigns, callback) {
-  //
-  //   var query = {};
-  //   if (typeof bioDesignIds == 'string') {
-  //     query = {bioDesignId: bioDesignIds};
-  //   } else if (bioDesignIds.length > 0) {
-  //     query = {bioDesignId: {$in: bioDesignIds}};
-  //   }
-  //
-  //   // No array, just look for bioDesignIds.
-  //   if (subDesigns === null || subDesigns.length === 0) {
-  //     this.find(query, (err, results) => {
-  //
-  //       if (err) {
-  //         callback(err);
-  //       }
-  //
-  //       return callback(err, results);
-  //     });
-  //   } else {
-  //
-  //     var subDesignLabels = ['name', 'displayId', 'description', '_id'];
-  //
-  //     var allPromises = [];
-  //
-  //     // Loop through subDesign objects passed in.
-  //
-  //     for (let subDesignObj of subDesigns) {
-  //
-  //       // Perform find for given subDesign object.
-  //       var promise = new Promise((resolve, reject) => {
-  //
-  //         query = {};
-  //         // Initialize
-  //         if (typeof bioDesignIds == 'string') {
-  //           query.bioDesignId = bioDesignIds;
-  //         } else if (bioDesignIds.length > 0) {
-  //           // Combine list of biodesignIds.
-  //           query.bioDesignId = {$in: bioDesignIds};
-  //         }
-  //         // Reformat query so that name and variable have regex, value is cast to number.
-  //         for (let label of subDesignLabels) {
-  //           if (subDesignObj[label] !== undefined && subDesignObj[label] !== null) {
-  //             if (label === 'name' || label === 'displayId' || label === 'description') {
-  //               query[label] = {$regex: subDesignObj[label]};
-  //             } else if (label === '_id') {
-  //               query[label] = new MongoModels.ObjectID(subDesignObj[label]);
-  //             }
-  //           }
-  //         }
-  //
-  //         this.find(query, (errGet, results) => {
-  //
-  //           if (errGet) {
-  //             return reject(errGet);
-  //           }
-  //
-  //           if (results.length !== undefined && results.length !== null && results.length === 0) {
-  //             resolve([]);
-  //           }
-  //
-  //           resolve(results);
-  //         });
-  //       });
-  //       allPromises.push(promise);
-  //
-  //     }
-  //
-  //     // For multiple subDesign searches, need to find intersection of matching subDesign documents.
-  //     Promise.all(allPromises).then((resolve, reject) => {
-  //
-  //       if (resolve.length !== undefined && resolve.length !== null) {
-  //         if (resolve.length > 1 && resolve.indexOf(null) === -1) {
-  //           var foundBioDesignIds = [];
-  //           // Loop through subDesign queries to get list of parent biodesignids.
-  //           for (var q = 0; q < resolve.length; ++q) {
-  //             foundBioDesignIds.push([]);
-  //             for (var p = 0; p < resolve[q].length; ++p) {
-  //               foundBioDesignIds[q].push(resolve[q][p].parentDesignId);
-  //             }
-  //           }
-  //           // Find the intersection of all BioDesignIds.
-  //           var bioDesignIntersection = foundBioDesignIds[0];
-  //           for (var p = 1; p < foundBioDesignIds.length; ++p) {
-  //             if (bioDesignIntersection.length === 0) break;
-  //             bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[p]);
-  //           }
-  //
-  //           if (bioDesignIntersection.length === 0) return callback(null, []);
-  //
-  //           return callback(null, bioDesignIntersection);
-  //
-  //
-  //         } else if (resolve.length === 1) {
-  //           return callback(null, resolve[0].parentDesignId);
-  //         } else if (resolve.length > 1 && resolve.indexOf(null) !== -1) {
-  //           return callback(null, []);
-  //         }
-  //       }
-  //       return callback(reject);
-  //     });
-  //
-  //
-  //   }
-  //
-  // }
 
 
 }

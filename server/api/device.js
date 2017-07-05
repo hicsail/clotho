@@ -417,7 +417,7 @@ internals.applyRoutes = function (server, next) {
             Assembly.create(
               subBioDesignIds,
               request.auth.credentials.user._id.toString(),
-              [superSubPartId],
+              superSubPartId,
               done);
           } else {
             done(null, []);
