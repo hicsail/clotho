@@ -217,9 +217,9 @@ class BioDesign extends MongoModels {
           query = {};
           // Initialize
           if (typeof bioDesignIds == 'string') {
-            query = {parentDesignId: bioDesignIds};
+            query = {superBioDesignId: bioDesignIds};
           } else if (bioDesignIds.length > 0) {
-            query = {parentDesignId: {$in: bioDesignIds}};
+            query = {superBioDesignId: {$in: bioDesignIds}};
           }
           // Reformat query so that name and variable have regex, value is cast to number.
           for (let label of subDesignLabels) {
@@ -259,7 +259,7 @@ class BioDesign extends MongoModels {
             for (var q = 0; q < resolve.length; ++q) {
               foundBioDesignIds.push([]);
               for (var p = 0; p < resolve[q].length; ++p) {
-                foundBioDesignIds[q].push(resolve[q][p].parentDesignId);
+                foundBioDesignIds[q].push(resolve[q][p].superBioDesignId);
               }
             }
             // Find the intersection of all BioDesignIds.
@@ -275,7 +275,7 @@ class BioDesign extends MongoModels {
 
 
           } else if (resolve.length === 1) {
-            return callback(null, resolve[0].parentDesignId);
+            return callback(null, resolve[0].superBioDesignId);
           } else if (resolve.length > 1 && resolve.indexOf(null) !== -1) {
             return callback(null, []);
           }
