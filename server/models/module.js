@@ -6,10 +6,9 @@ const Feature = require('./feature');
 const Role = require('./role');
 
 class Module extends MongoModels {
-
   static create(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
-    // Check role is valid before insertion.
+    // Check role is valid before insertion
     if (role !== undefined && role !== null) {
       role = role.toUpperCase();
 
@@ -78,11 +77,9 @@ class Module extends MongoModels {
 
       callback(err, results);
     });
-
   }
 
-  static
-  findByBioDesignId(bioDesignId, callback) {
+  static findByBioDesignId(bioDesignId, callback) {
 
     const query = {bioDesignId: bioDesignId};
 
@@ -96,8 +93,7 @@ class Module extends MongoModels {
     });
   }
 
-  static
-  getFeatures(index, modules, callback) {
+  static getFeatures(index, modules, callback) {
 
     if (index == modules.length) {
       return callback(null, modules);
@@ -128,28 +124,24 @@ class Module extends MongoModels {
 // }
 
 
-Module
-  .collection = 'modules';
+Module.collection = 'modules';
 
-Module
-  .schema = Joi.object().keys({
+Module.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   bioDesignId: Joi.string(),
-  role: Joi.string().required(),
+  role: Joi.string().uppercase().required(),
   featureIds: Joi.array().items(Joi.string()),
   influenceIds: Joi.array().items(Joi.string()), // Should this be an array of schemas instead?
   parentModuleId: Joi.string(),
   submoduleIds: Joi.array().items(Joi.string())
 });
 
-Module
-  .indexes = [
+Module.indexes = [
   {key: {userId: 1}}
 ];
 
-module
-  .exports = Module;
+module.exports = Module;

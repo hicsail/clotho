@@ -82,7 +82,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
           description: Joi.string().optional(),
-          role: Joi.string().required(),
+          role: Joi.string().uppercase().required(),
           annotationId: Joi.string().required(),
           moduleId: Joi.string()
         }
@@ -125,7 +125,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
           description: Joi.string().optional(),
-          role: Joi.string().required(),
+          role: Joi.string().uppercase().required(),
           annotationId: Joi.string().required(),
           moduleId: Joi.string()
         }
@@ -136,7 +136,9 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
 
       if (request.payload.role !== undefined && request.payload.role !== null) {
+
         Role.checkValidRole(request.payload.role, (err, results) => {
+
           if (err || !results) {
             return reply(Boom.badRequest('Role invalid.'));
           } else {

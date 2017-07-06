@@ -35,6 +35,7 @@ class Feature extends MongoModels {
   }
 
   static createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback) {
+
     const document = {
       name: name,
       description: description,

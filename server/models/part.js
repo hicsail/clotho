@@ -100,6 +100,7 @@ class Part extends MongoModels {
 
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, callback) {
+
     this.getSequence(index, parts, callback);
     if (parts[index] !== undefined && parts[index].assemblyId !== undefined
       && parts[index].assemblyId !== null && parts[index].assemblyId !== '') {
@@ -156,6 +157,7 @@ class Part extends MongoModels {
 
   // Given master subparts, find assembly.
   static getAssembly(index, parts, callback) {
+
     if (index == parts.length) {
       return callback(null, parts);
     }
@@ -185,6 +187,7 @@ class Part extends MongoModels {
 
   // Given assemblyId, retrieve subparts under it.
   static findByAssemblyId(assemblyId, callback) {
+
     const query = {assemblyId: assemblyId};
     this.find(query, (err, subparts) => {
 

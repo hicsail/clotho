@@ -207,8 +207,10 @@ internals.applyRoutes = function (server, next) {
 
       Async.auto({
         checkRole: function (done) {
+
           if (request.payload.role !== undefined && request.payload.role !== null) {
             Role.checkValidRole(request.payload.role, (err, results) => {
+
               if (err || !results) {
                 return reply(Boom.badRequest('Role invalid.'));
               } else {
@@ -602,12 +604,14 @@ internals.applyRoutes = function (server, next) {
 
       Async.auto({
         checkRole: function (done) {
+
           if (request.payload.role !== undefined && request.payload.role !== null) {
             Role.checkValidRole(request.payload.role, (err, results) => {
+
               if (err || !results) {
                 return reply(Boom.badRequest('Role invalid.'));
               } else {
-               done(null, true);
+                done(null, true);
               }
             });
           } else {

@@ -83,7 +83,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string(),
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
-          role: Joi.string().required(),
+          role: Joi.string().uppercase().required(),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -126,7 +126,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string(),
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
-          role: Joi.string().required(),
+          role: Joi.string().uppercase().required(),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -136,7 +136,9 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
 
       if (request.payload.role !== undefined && request.payload.role !== null) {
+
         Role.checkValidRole(request.payload.role, (err, results) => {
+
           if (err || !results) {
             return reply(Boom.badRequest('Role invalid.'));
           } else {
@@ -150,8 +152,6 @@ internals.applyRoutes = function (server, next) {
                 submoduleIds: request.payload.submoduleIds
               }
             };
-
-
 
             Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
 

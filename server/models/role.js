@@ -10,23 +10,47 @@ class Role extends MongoModels {
       name = name.toUpperCase();
     }
 
-    const document = {
-      name: name,
-      userId: userId
-    };
-
-    this.insertOne(document, (err, docs) => {
+    // Check if role already exists.
+    this.findOne({name: name}, (err, results) => {
 
       if (err) {
+
         return callback(err);
       }
-      callback(null, docs[0]);
+
+      if (results === null) {
+        const document = {
+          name: name,
+          userId: userId
+        };
+
+        this.insertOne(document, (err, docs) => {
+
+          if (err) {
+
+            return callback(err);
+          }
+
+          callback(null, docs[0]);
+        });
+      } else {
+
+        callback(Error('Role already exists.'));
+      }
+
     });
+
   }
 
   // Check for whether role matches.
   static checkValidRole(role, callback) {
-    this.findOne({name: role}, (err, results) => {
+
+    if (role === undefined || role === null) {
+      return callback(null, false);
+    }
+
+
+    this.findOne({name: role.toUpperCase()}, (err, results) => {
 
       if (err) {
         return callback(err);

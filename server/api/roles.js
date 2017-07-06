@@ -90,7 +90,11 @@ internals.applyRoutes = function (server, next) {
         (err, role) => {
 
           if (err) {
-            return reply(err);
+            if (err.message === 'Role already exists.') {
+              return reply(Boom.badRequest('Role already exists.'));
+            } else {
+              return reply(err);
+            }
           }
           return reply(role);
         });
@@ -115,7 +119,7 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          name: request.payload.name
+          name: request.payload.name.toUpperCase()
         }
       };
 
