@@ -29,15 +29,11 @@ class Assembly extends MongoModels {
 
     const query = {superSubPartId: partId};
 
-    console.log(query);
-
     this.find(query, (err, assemblies) => {
 
       if (err) {
         return callback(err);
       }
-
-      console.log(assemblies);
 
       this.getSubParts(0, assemblies, callback);
     });

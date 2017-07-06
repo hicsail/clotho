@@ -102,8 +102,7 @@ class Part extends MongoModels {
   static getChildren(index, parts, callback) {
 
     this.getSequence(index, parts, callback);
-    if (parts[index] !== undefined && parts[index].assemblyId !== undefined
-      && parts[index].assemblyId !== null && parts[index].assemblyId !== '') {
+    if (parts[index] !== undefined) {
       parts = this.getAssembly(index, parts, callback);
     }
     return parts;
@@ -189,7 +188,7 @@ class Part extends MongoModels {
         return callback(err);
       }
 
-      this.getChildren(0, subparts, callback);
+      return this.getChildren(0, subparts, callback);
     });
   }
 
