@@ -601,7 +601,9 @@ internals.applyRoutes = function (server, next) {
             null, // description
             request.auth.credentials.user._id.toString(),
             request.payload.displayId,
-            null,
+            null, //imageURL
+            null, //subBioDesignIds
+            null, //superBioDesignId
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {
