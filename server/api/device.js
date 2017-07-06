@@ -18,6 +18,7 @@ internals.applyRoutes = function (server, next) {
   const Module = server.plugins['hapi-mongo-models'].Module;
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
   const Annotation = server.plugins['hapi-mongo-models'].Annotation;
+  const Role = server.plugins['hapi-mongo-models'].Role;
 
   server.route({
     method: 'PUT',
@@ -33,7 +34,7 @@ internals.applyRoutes = function (server, next) {
           page: Joi.number().default(1),
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').optional(),
+          role: Joi.string().optional(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parts: Joi.array().items(Joi.object().keys({
             name: Joi.string(),
@@ -59,15 +60,29 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
+
       Async.auto({
-        findSequences: function (done) {
+        checkRole: function (done) {
+          if (request.payload.role !== undefined && request.payload.role !== null) {
+            Role.checkValidRole(request.payload.role, (err, results) => {
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                done(null, true);
+              }
+            });
+          } else {
+            done(null, true);
+          }
+        },
+        findSequences: ['checkRole', function (done) {
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
             return done(null, []);
           }
-        },
+        }],
         findSubParts: ['findSequences', function (results, done) {
 
           // get Sequence ids from array
@@ -160,33 +175,33 @@ internals.applyRoutes = function (server, next) {
         }],
         findParts: ['findModules', function (results, done) {
 
-        var resultsArray = results.findModules;
-        var bioDesignIds = [];
+          var resultsArray = results.findModules;
+          var bioDesignIds = [];
 
 
-        if (resultsArray !== null) {
-          for (var i = 0; i < resultsArray.length; ++i) {
-            if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
-              bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
-            } else if (typeof resultsArray[i] == 'string') {
-              // Prior steps found multiple bd ids, but sequence/part was undefined.
-              bioDesignIds.push(resultsArray[i]);
+          if (resultsArray !== null) {
+            for (var i = 0; i < resultsArray.length; ++i) {
+              if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
+                bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
+              } else if (typeof resultsArray[i] == 'string') {
+                // Prior steps found multiple bd ids, but sequence/part was undefined.
+                bioDesignIds.push(resultsArray[i]);
+              }
             }
           }
-        }
 
-        // Equivalent of finding subdesigns
-        // Match by subdesigns id, name, displayId, etc.
-        // Return list of parent biodesigns.
-        // To do - add parts !== undefined to other sections of async call.
-        if (request.payload.parts !== undefined && request.payload.parts !== null) {
-          //BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
-          done(null, bioDesignIds);
-        } else {
-          done(null, bioDesignIds);
-        }
+          // Equivalent of finding subdesigns
+          // Match by subdesigns id, name, displayId, etc.
+          // Return list of parent biodesigns.
+          // To do - add parts !== undefined to other sections of async call.
+          if (request.payload.parts !== undefined && request.payload.parts !== null) {
+            //BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
+            done(null, bioDesignIds);
+          } else {
+            done(null, bioDesignIds);
+          }
 
-      }],
+        }],
         findBioDesigns: ['findParts', function (results, done) {
 
           // collect biodesign Ids
@@ -292,7 +307,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           userId: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').optional(),
+          role: Joi.string().optional(),
           partIds: Joi.array().items(Joi.string().required()),
           createSeqFromParts: Joi.boolean().required(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
@@ -309,13 +324,27 @@ internals.applyRoutes = function (server, next) {
     },
 
     handler: function (request, reply) {
+
       //Used to create a Device consisting of a BioDesign, Part, and Assembly.
       // Optionally, may also create a Sequence, Feature, BasicModule, Parameters, and Annotations.
       //async.auto task `createAssembly` has a non-existent dependency `createSubAssemblyIds`
       // in createSubpart, createSubAssemblyIds
       //noinspection JSDuplicatedDeclaration
       Async.auto({
-        createBioDesign: function (done) {
+        checkRole: function (done) {
+          if (request.payload.role !== undefined && request.payload.role !== null) {
+            Role.checkValidRole(request.payload.role, (err, results) => {
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                done(null, true);
+              }
+            });
+          } else {
+            done(null, true);
+          }
+        },
+        createBioDesign: ['checkRole', function (results, done) {
 
           var subBioDesignIds = request.payload.partIds;
 
@@ -328,7 +357,7 @@ internals.applyRoutes = function (server, next) {
             subBioDesignIds,
             null, //superBioDesignIds
             done);
-        },
+        }],
         updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {
 
           // Need to update superDesign that belong to subdesigns
@@ -341,7 +370,10 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
-                BioDesign.findOneAndUpdate({_id: ObjectID(subBioDesignIds[i]), $isolated: 1}, {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
+                BioDesign.findOneAndUpdate({
+                  _id: ObjectID(subBioDesignIds[i]),
+                  $isolated: 1
+                }, {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
                   if (err) {
                     reject(err);
                   } else {
@@ -469,7 +501,10 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
-                Part.updateMany({bioDesignId: subBioDesignIds[i], $isolated: 1}, {$set: {assemblyId: assemblyId}}, (err, results) => {
+                Part.updateMany({
+                  bioDesignId: subBioDesignIds[i],
+                  $isolated: 1
+                }, {$set: {assemblyId: assemblyId}}, (err, results) => {
                   if (err) {
                     reject(err);
                   } else {

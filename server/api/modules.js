@@ -9,6 +9,7 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
   const Module = server.plugins['hapi-mongo-models'].Module;
+  const Role = server.plugins['hapi-mongo-models'].Role;
 
   server.route({
     method: 'GET',
@@ -82,7 +83,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string(),
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
-          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+          role: Joi.string().required(),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -101,7 +102,11 @@ internals.applyRoutes = function (server, next) {
         (err, module) => {
 
           if (err) {
-            return reply(err);
+            if (err.message === 'Role invalid.') {
+              return reply(Boom.badRequest('Role invalid.'));
+            } else {
+              return reply(err);
+            }
           }
           return reply(module);
         });
@@ -121,7 +126,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string(),
           displayId: Joi.string().optional(),
           bioDesignId: Joi.string(),
-          role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+          role: Joi.string().required(),
           submoduleIds: Joi.array().items(Joi.string())
         }
       }
@@ -129,29 +134,68 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const id = request.params.id;
-      const update = {
-        $set: {
-          name: request.payload.name,
-          description: request.payload.description,
-          displayId: request.payload.displayId,
-          bioDesignId: request.payload.bioDesignId,
-          role: request.payload.role,
-          submoduleIds: request.payload.submoduleIds
-        }
-      };
 
-      Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
+      if (request.payload.role !== undefined && request.payload.role !== null) {
+        Role.checkValidRole(request.payload.role, (err, results) => {
+          if (err || !results) {
+            return reply(Boom.badRequest('Role invalid.'));
+          } else {
+            const update = {
+              $set: {
+                name: request.payload.name,
+                description: request.payload.description,
+                displayId: request.payload.displayId,
+                bioDesignId: request.payload.bioDesignId,
+                role: request.payload.role,
+                submoduleIds: request.payload.submoduleIds
+              }
+            };
 
-        if (err) {
-          return reply(err);
-        }
 
-        if (!module) {
-          return reply(Boom.notFound('Module not found.'));
-        }
 
-        reply(module);
-      });
+            Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              if (!module) {
+                return reply(Boom.notFound('Module not found.'));
+              }
+
+              reply(module);
+            });
+          }
+        });
+      } else {
+
+        const update = {
+          $set: {
+            name: request.payload.name,
+            description: request.payload.description,
+            displayId: request.payload.displayId,
+            bioDesignId: request.payload.bioDesignId,
+            role: request.payload.role,
+            submoduleIds: request.payload.submoduleIds
+          }
+        };
+
+
+
+        Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
+
+          if (err) {
+            return reply(err);
+          }
+
+          if (!module) {
+            return reply(Boom.notFound('Module not found.'));
+          }
+
+          reply(module);
+        });
+      }
+
     }
   });
 

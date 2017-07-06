@@ -8,11 +8,9 @@
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
     "lint": "lab -dL",
-    "minify":"./scripts/minify.sh",
+    "minify": "./scripts/minify.sh",
     "docs": "./scripts/generateDocs.sh",
-    "setup": "npm run minify && npm run docs",
-    "postinstall": "npm run setup",
-    "prestart": "npm run setup"
+    "setup": "npm run minify && npm run docs"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
   "repository": {
@@ -32,6 +30,7 @@
     "async": "2.x.x",
     "bcrypt": "1.x.x",
     "bionode": "^4.0.1",
+    "bionode-seq": "^0.1.1",
     "boom": "4.x.x",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",

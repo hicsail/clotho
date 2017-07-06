@@ -3,10 +3,39 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Feature = require('./feature');
+const Role = require('./role');
 
 class Module extends MongoModels {
 
   static create(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
+
+    // Check role is valid before insertion.
+    if (role !== undefined && role !== null) {
+      role = role.toUpperCase();
+
+      Role.findOne({name: role}, (roleErr, results) => {
+
+        if (roleErr) {
+          callback(roleErr);
+        }
+
+        if (roleErr === null && results !== null) {
+
+          this.createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback);
+        } else {
+
+          callback(Error('Role invalid.'));
+        }
+      });
+
+    } else {
+
+      this.createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback);
+    }
+
+  }
+
+  static createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
     const document = {
       name: name,
@@ -52,7 +81,8 @@ class Module extends MongoModels {
 
   }
 
-  static findByBioDesignId(bioDesignId, callback) {
+  static
+  findByBioDesignId(bioDesignId, callback) {
 
     const query = {bioDesignId: bioDesignId};
 
@@ -66,23 +96,24 @@ class Module extends MongoModels {
     });
   }
 
-  static getFeatures(index,modules,callback) {
+  static
+  getFeatures(index, modules, callback) {
 
-    if(index == modules.length){
+    if (index == modules.length) {
       return callback(null, modules);
     }
 
-    Feature.findByModuleId(modules[index]['_id'].toString(), (err,features) => {
+    Feature.findByModuleId(modules[index]['_id'].toString(), (err, features) => {
 
-      if(err) {
-        return callback(err,null);
+      if (err) {
+        return callback(err, null);
       }
 
-      if(features.length != 0) {
+      if (features.length != 0) {
         modules[index].features = features;
       }
 
-      return this.getFeatures(index+1, modules,callback);
+      return this.getFeatures(index + 1, modules, callback);
     });
   }
 
@@ -97,24 +128,28 @@ class Module extends MongoModels {
 // }
 
 
-Module.collection = 'modules';
+Module
+  .collection = 'modules';
 
-Module.schema = Joi.object().keys({
+Module
+  .schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
   description: Joi.string(),
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   bioDesignId: Joi.string(),
-  role: Joi.string().valid('TRANSCRIPTION', 'TRANSLATION', 'EXPRESSION', 'COMPARTMENTALIZATION', 'LOCALIZATION', 'SENSOR', 'REPORTER', 'ACTIVATION', 'REPRESSION').required(),
+  role: Joi.string().required(),
   featureIds: Joi.array().items(Joi.string()),
   influenceIds: Joi.array().items(Joi.string()), // Should this be an array of schemas instead?
   parentModuleId: Joi.string(),
   submoduleIds: Joi.array().items(Joi.string())
 });
 
-Module.indexes = [
+Module
+  .indexes = [
   {key: {userId: 1}}
 ];
 
-module.exports = Module;
+module
+  .exports = Module;

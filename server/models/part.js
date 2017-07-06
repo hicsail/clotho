@@ -103,7 +103,7 @@ class Part extends MongoModels {
     this.getSequence(index, parts, callback);
     if (parts[index] !== undefined && parts[index].assemblyId !== undefined
       && parts[index].assemblyId !== null && parts[index].assemblyId !== '') {
-      parts = this.getAssembly(index, parts, callback);
+      //parts = this.getAssembly(index, parts, callback);
     }
     return parts;
   }
