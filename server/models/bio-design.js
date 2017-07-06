@@ -186,9 +186,9 @@ class BioDesign extends MongoModels {
 
     var query = {};
     if (typeof bioDesignIds == 'string') {
-      query = {parentDesignId: bioDesignIds};
+      query = {superBioDesignId: bioDesignIds};
     } else if (bioDesignIds.length > 0) {
-      query = {parentDesignId: {$in: bioDesignIds}};
+      query = {superBioDesignId: {$in: bioDesignIds}};
     }
 
     // No array, just look for bioDesignIds.
@@ -275,7 +275,7 @@ class BioDesign extends MongoModels {
 
 
           } else if (resolve.length === 1) {
-            return callback(null, resolve[0].superBioDesignId);
+            return callback(null, resolve[0]);
           } else if (resolve.length > 1 && resolve.indexOf(null) !== -1) {
             return callback(null, []);
           }
@@ -368,7 +368,6 @@ BioDesign.schema = Joi.object().keys({
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   moduleId: Joi.string(),
-  parentDesignId: Joi.string(),
   subBioDesignIds: Joi.array().items(Joi.string()),
   superBioDesignId: Joi.string().optional(),
   media: Joi.array().items(Medium.schema),

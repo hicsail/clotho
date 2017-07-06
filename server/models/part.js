@@ -3,7 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Sequence = require('./sequence');
-const Assembly = require('./assembly');
+
 
 class Part extends MongoModels {
 
@@ -104,7 +104,7 @@ class Part extends MongoModels {
     this.getSequence(index, parts, callback);
     if (parts[index] !== undefined && parts[index].assemblyId !== undefined
       && parts[index].assemblyId !== null && parts[index].assemblyId !== '') {
-      //parts = this.getAssembly(index, parts, callback);
+      parts = this.getAssembly(index, parts, callback);
     }
     return parts;
   }
@@ -162,13 +162,7 @@ class Part extends MongoModels {
       return callback(null, parts);
     }
 
-    // console.log(parts);
-    // console.log(typeof Assembly !== "undefined");
-    // console.log(typeof this.getSequence !== "undefined");
-    // console.log(typeof Sequence.findByPartId !== "undefined");
-    // console.log(typeof Assembly.getSubParts !== 'undefined');
-    // console.log(typeof Assembly.create !== 'undefined');
-    // console.log(typeof Assembly.findByPartId !== "undefined");
+    const Assembly = require('./assembly');
 
     Assembly.findByPartId(parts[index]['_id'].toString(), (err, assemblies) => {
 

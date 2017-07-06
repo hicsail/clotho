@@ -75,7 +75,7 @@ internals.applyRoutes = function (server, next) {
             done(null, true);
           }
         },
-        findSequences: ['checkRole', function (done) {
+        findSequences: ['checkRole', function (results, done) {
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
@@ -195,8 +195,7 @@ internals.applyRoutes = function (server, next) {
           // Return list of parent biodesigns.
           // To do - add parts !== undefined to other sections of async call.
           if (request.payload.parts !== undefined && request.payload.parts !== null) {
-            //BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
-            done(null, bioDesignIds);
+            BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
           } else {
             done(null, bioDesignIds);
           }
@@ -204,16 +203,19 @@ internals.applyRoutes = function (server, next) {
         }],
         findBioDesigns: ['findParts', function (results, done) {
 
+
           // collect biodesign Ids
-          var resultsArray = results.findModules;
+          var resultsArray = results.findParts;
           var bioDesignIds = [];
           if (resultsArray != null && resultsArray.length > 0) {
-            for (let module of resultsArray) {
-              if (module['bioDesignId'] !== undefined && module['bioDesignId'] !== null) {
-                bioDesignIds.push(module['bioDesignId'].toString());
-              } else if (typeof module == 'string') {
+            for (let result of resultsArray) {
+              if (result['bioDesignId'] !== undefined && result['bioDesignId'] !== null) {
+                bioDesignIds.push(result['bioDesignId'].toString());
+              } else if (result['superBioDesignId'] !== undefined && result['superBioDesignId'] !== null) {
+                bioDesignIds.push(result['superBioDesignId']);
+              } else if (typeof result == 'string') {
                 // Prior steps found multiple bd ids, but parameter was undefined.
-                bioDesignIds.push(module);
+                bioDesignIds.push(result);
               }
             }
           }
@@ -259,7 +261,7 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        return reply(results.findBioDesigns);
+        return reply(results);
       });
     }
   });
@@ -308,7 +310,7 @@ internals.applyRoutes = function (server, next) {
           userId: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          partIds: Joi.array().items(Joi.string().required()),
+          partIds: Joi.array().items(Joi.string().required()).required(),
           createSeqFromParts: Joi.boolean().required(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parameters: Joi.array().items(
