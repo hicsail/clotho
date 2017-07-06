@@ -3,6 +3,7 @@
 const Joi = require('joi');
 const { execFile } = require('child_process');
 const fs = require('fs');
+const wreck = require('wreck');
 
 const internals = {};
 
@@ -28,13 +29,20 @@ internals.applyRoutes = function (server, next) {
 
     handler: function (request, reply) {
       const payload = request.payload;
-      var sequence = $.post('/api/part', payload, function (data) {
+      var sequence = wreck.post('./api/part', {payload: payload}, (err, res, payload) => {
         return {
-          seq: data[0].parts[0].sequences[0].sequence,
-          seqId: data[0].parts[0].sequences[0]._id,
-          name: data[0].parts[0].sequences[0].name
+          seq: res[0].parts[0].sequences[0].sequence,
+          seqId: res[0].parts[0].sequences[0]._id,
+          name: res[0].parts[0].sequences[0].name
         };
       });
+      // var sequence = $.post('/api/part', payload, function (data) {
+      //   return {
+      //     seq: data[0].parts[0].sequences[0].sequence,
+      //     seqId: data[0].parts[0].sequences[0]._id,
+      //     name: data[0].parts[0].sequences[0].name
+      //   };
+      // });
 
       const directory = './blast/temp' + sequence.seqId;
       const mkdir = execFile('mkdir', ['-p', directory], (err, stdout, stderr) => {
@@ -57,7 +65,7 @@ internals.applyRoutes = function (server, next) {
 
       reply.file(fileLocation); // Reply with the fasta file
 
-      const deleteDir = execFile('rm', ['-f', directory], (err, stdout, stderr) => {
+      const deleteDir = execFile('rm', ['-rf', directory], (err, stdout, stderr) => {
           if (err){
             console.log(err);
           } else {
@@ -66,4 +74,19 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+  next();
 };
+
+exports.register = function (server, options, next) {
+
+  server.dependency(['auth', 'hapi-mongo-models'], internals.applyRoutes);
+
+  next();
+};
+
+
+exports.register.attributes = {
+  name: 'blast'
+};
+

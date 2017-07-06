@@ -248,6 +248,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/blasts',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/web/index'
     },
     {
