@@ -542,7 +542,7 @@ internals.applyRoutes = function (server, next) {
               request.payload.displayId,
               null, // featureId null
               partId,
-              request.payload.sequence,
+              null, //creat null sequence and update later
               null,
               null,
               done);
@@ -569,7 +569,8 @@ internals.applyRoutes = function (server, next) {
           else {
             done(null, []);
           }
-        }],        createSubAnnotations: ['createSequence', function (results, done) {
+        }],
+        createSubAnnotations: ['createSequence', function (results, done) {
 
           // Create subAnnotations for all subBioDesigns connected to subFeatures
           if (request.payload.sequence !== undefined) {
@@ -579,7 +580,6 @@ internals.applyRoutes = function (server, next) {
 
             if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
               var allPromises = [];
-
 
               for (var i = 0; i < subBioDesignIds.length; ++i) {
                 var promise = new Promise((resolve, reject) => {
