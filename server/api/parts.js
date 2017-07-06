@@ -3,6 +3,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Async = require('async');
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -779,6 +780,23 @@ internals.applyRoutes = function (server, next) {
           else {
             return done(null, []);
           }
+        }],
+        updateSequenceFeatureId: ['createFeature', 'createSequence', function (results, done) {
+
+          var featureId = results.createFeature._id.toString();
+          var sequenceId = results.createSequence._id.toString();
+
+          Sequence.findOneAndUpdate({
+            _id: ObjectID(sequenceId),
+            $isolated: 1
+          }, {$set: {featureId: featureId}}, (err, results) => {
+            if (err) {
+              reject(err);
+            } else {
+              done(null, []);
+            }
+          });
+
         }]
       }, (err, results) => {
 

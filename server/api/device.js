@@ -567,6 +567,89 @@ internals.applyRoutes = function (server, next) {
           else {
             done(null, []);
           }
+        }],        createSubAnnotations: ['createSequence', function (results, done) {
+
+          // Create subAnnotations for all subBioDesigns connected to subFeatures
+          if (request.payload.sequence !== undefined) {
+
+            var sequenceId = results.createSequence._id.toString();
+            var subBioDesignIds = request.payload.partIds;
+
+            if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
+              var allPromises = [];
+
+
+              for (var i = 0; i < subBioDesignIds.length; ++i) {
+                var promise = new Promise((resolve, reject) => {
+                  Annotation.create(
+                    request.payload.name,
+                    null, // description,
+                    request.auth.credentials.user._id.toString(),
+                    sequenceId, // sequenceId
+                    1, // start
+                    request.payload.sequence.length, // end
+                    true, // isForwardString
+                    done);
+                });
+                allPromises.push(promise);
+              }
+
+              Promise.all(allPromises).then((resolve, reject) => {
+                if (reject) {
+                  reply(reject);
+                }
+
+                done(null, resolve);
+              });
+            } else {
+              done(null, []);
+            }
+          }
+          else {
+            done(null, []);
+          }
+        }],
+        updateSubFeaturesAnnotationId: ['createSubAnnotations', function (results, done) {
+
+          // Create subAnnotations for all subBioDesigns connected to subFeatures
+          if (request.payload.sequence !== undefined) {
+
+            var sequenceId = results.createSequence._id.toString();
+            var subBioDesignIds = request.payload.partIds;
+
+            if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
+              var allPromises = [];
+
+
+              for (var i = 0; i < subBioDesignIds.length; ++i) {
+                var promise = new Promise((resolve, reject) => {
+                  Annotation.create(
+                    request.payload.name,
+                    null, // description,
+                    request.auth.credentials.user._id.toString(),
+                    sequenceId, // sequenceId
+                    1, // start
+                    request.payload.sequence.length, // end
+                    true, // isForwardString
+                    done);
+                });
+                allPromises.push(promise);
+              }
+
+              Promise.all(allPromises).then((resolve, reject) => {
+                if (reject) {
+                  reply(reject);
+                }
+
+                done(null, resolve);
+              });
+            } else {
+              done(null, []);
+            }
+          }
+          else {
+            done(null, []);
+          }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
 

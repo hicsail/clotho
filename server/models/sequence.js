@@ -126,6 +126,7 @@ Sequence.schema = Joi.object().keys({
   description: Joi.string().optional(),
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
+  featureId: Joi.string().optional(),
   partId: Joi.string().optional(),
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),
