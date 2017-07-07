@@ -778,24 +778,27 @@ internals.applyRoutes = function (server, next) {
               done);
           }
           else {
-            return done(null, []);
+            return done(null);
           }
         }],
         updateSequenceFeatureId: ['createFeature', 'createSequence', function (results, done) {
 
-          var featureId = results.createFeature._id.toString();
-          var sequenceId = results.createSequence._id.toString();
+          if(results.createFeature) {
+            var featureId = results.createFeature._id.toString();
+            var sequenceId = results.createSequence._id.toString();
 
-          Sequence.findOneAndUpdate({
-            _id: ObjectID(sequenceId),
-            $isolated: 1
-          }, {$set: {featureId: featureId}}, (err, results) => {
-            if (err) {
-              reject(err);
-            } else {
-              done(null, []);
-            }
-          });
+            Sequence.findOneAndUpdate({
+              _id: ObjectID(sequenceId),
+              $isolated: 1
+            }, {$set: {featureId: featureId}}, (err, results) => {
+              if (err) {
+                reject(err);
+              } else {
+                return done(null, []);
+              }
+            });
+          }
+          return done(null);
 
         }]
       }, (err, results) => {
@@ -803,10 +806,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-
-        var bioDesignId = results.createBioDesign._id.toString();
-
-        return reply(bioDesignId);
+        return reply(results.createBioDesign._id.toString());
       });
     }
   })
