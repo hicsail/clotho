@@ -2,7 +2,6 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Role = require('./role');
 
 class Feature extends MongoModels {
 

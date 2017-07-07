@@ -179,8 +179,10 @@ internals.applyRoutes = function (server, next) {
       pre: [{
         assign: 'checkrole',
         method: function (request, reply) {
+
           var role = request.payload.role;
           if (role !== undefined && role !== null) {
+
             Role.checkValidRole(role, (err, results) => {
 
               if (err || !results) {
@@ -444,7 +446,7 @@ internals.applyRoutes = function (server, next) {
         method: 'PUT',
         payload: request.payload,
         credentials: request.auth.credentials
-      }
+      };
 
       server.inject(newRequest, (response) => {
 
@@ -684,8 +686,10 @@ internals.applyRoutes = function (server, next) {
       pre: [{
         assign: 'checkrole',
         method: function (request, reply) {
+
           var role = request.payload.role;
           if (role !== undefined && role !== null) {
+
             Role.checkValidRole(role, (err, results) => {
 
               if (err || !results) {

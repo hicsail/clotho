@@ -4,7 +4,7 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
 class Role extends MongoModels {
-  static create(name, userId, callback) {
+  static create(name, userId, type, callback) {
 
     if (typeof name === 'string') {
       name = name.toUpperCase();
@@ -21,7 +21,8 @@ class Role extends MongoModels {
       if (results === null) {
         const document = {
           name: name,
-          userId: userId
+          userId: userId,
+          type: type
         };
 
         this.insertOne(document, (err, docs) => {
@@ -69,6 +70,7 @@ Role.collection = 'roles';
 Role.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().uppercase().required(),
+  type: Joi.array().items(Joi.string().valid('MODULE', 'FEATURE')).default(['MODULE', 'FEATURE']),
   userId: Joi.string().required()
 });
 

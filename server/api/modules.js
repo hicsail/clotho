@@ -80,8 +80,10 @@ internals.applyRoutes = function (server, next) {
       pre: [{
         assign: 'checkrole',
         method: function (request, reply) {
+
           var role = request.payload.role;
           if (role !== undefined && role !== null) {
+
             Role.checkValidRole(role, (err, results) => {
 
               if (err || !results) {
@@ -137,8 +139,10 @@ internals.applyRoutes = function (server, next) {
       pre: [{
         assign: 'checkrole',
         method: function (request, reply) {
+
           var role = request.payload.role;
           if (role !== undefined && role !== null) {
+
             Role.checkValidRole(role, (err, results) => {
 
               if (err || !results) {

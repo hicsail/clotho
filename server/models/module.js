@@ -3,7 +3,6 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Feature = require('./feature');
-const Role = require('./role');
 
 class Module extends MongoModels {
   static create(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {

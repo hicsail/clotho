@@ -78,7 +78,8 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          name: Joi.string().required()
+          name: Joi.string().required(),
+          type: Joi.array().items(Joi.string().valid('MODULE', 'FEATURE')).default(['MODULE', 'FEATURE'])
         }
       }
     },
@@ -87,6 +88,7 @@ internals.applyRoutes = function (server, next) {
       Role.create(
         request.payload.name,
         request.auth.credentials.user._id.toString(),
+        request.payload.type,
         (err, role) => {
 
           if (err) {
@@ -101,6 +103,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
   server.route({
     method: 'PUT',
     path: '/role/{id}',
@@ -110,7 +113,8 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          name: Joi.string().required()
+          name: Joi.string().required(),
+          type: Joi.array().items(Joi.string().valid('MODULE', 'FEATURE')).default(['MODULE', 'FEATURE'])
         }
       }
     },
@@ -119,7 +123,8 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          name: request.payload.name.toUpperCase()
+          name: request.payload.name.toUpperCase(),
+          type: request.payload.type
         }
       };
 
