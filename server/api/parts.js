@@ -387,6 +387,94 @@ internals.applyRoutes = function (server, next) {
   })
   ;
 
+
+  server.route({
+    method: 'PUT',
+    path: '/part/{filter}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      pre: [{
+        assign: 'checkfilter',
+        method: function (request, reply) {
+
+          // Check if filter is valid.
+          var schema = Joi.string().valid('parameters', 'modules', 'subparts').required();
+          var filter = request.params.filter;
+
+          schema.validate(filter, (err, result) => {
+            if (err === null) {
+              reply(true);
+            } else {
+              return reply(Boom.badRequest(err));
+            }
+          });
+
+        }
+      }],
+      validate: {
+        payload: {
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1),
+          name: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          role: Joi.string().optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(), // These should be updated.
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional(),
+          userSpace: Joi.boolean().default(false)
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      var newRequest = {
+        url: '/api/part',
+        method: 'PUT',
+        payload: request.payload,
+        credentials: request.auth.credentials
+      }
+
+      server.inject(newRequest, (response) => {
+
+        // Check for error. Includes no document found error.
+        if (response.statusCode !== 200) {
+          return reply(response.result);
+        }
+
+        // Otherwise loop through and remove keys.
+
+        var resultArr = response.result;
+        const acceptedFilters = ['subparts', 'parameters', 'modules'];
+        const filter = request.params.filter;
+
+        var filteredArr = [];
+
+        for (let result of resultArr) {
+          var filteredResult = {};
+          for (let key of Object.keys(result)) {
+            if (acceptedFilters.indexOf(key) === -1 || key === filter) {
+              filteredResult[key] = result[key];
+            }
+          }
+          filteredArr.push(filteredResult);
+        }
+
+        return reply(filteredArr);
+
+      });
+    }
+  })
+  ;
+
   /**
    * @api {get} /api/part/:id Get Part By Id
    * @apiName Get Part By Id
@@ -604,22 +692,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        checkRole: function (done) {
-
-          if (request.payload.role !== undefined && request.payload.role !== null) {
-            Role.checkValidRole(request.payload.role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                done(null, true);
-              }
-            });
-          } else {
-            done(null, true);
-          }
-        },
-        createBioDesign: ['checkRole', function (results, done) {
+       createBioDesign:  function (done) {
 
           BioDesign.create(
             request.payload.name,
@@ -630,7 +703,7 @@ internals.applyRoutes = function (server, next) {
             null, //subBioDesignIds
             null, //superBioDesignId
             done);
-        }],
+        },
         createParameters: ['createBioDesign', function (results, done) {
 
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
