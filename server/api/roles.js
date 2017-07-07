@@ -78,7 +78,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
+          name: Joi.string().uppercase().required(),
           type: Joi.array().items(Joi.string().valid('MODULE', 'FEATURE')).default(['MODULE', 'FEATURE'])
         }
       }
@@ -111,9 +111,39 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+
+          const role = request.payload.name;
+          const id = request.params.id;
+
+          // Want to ensure new name doesn't duplicate existing role.
+          Role.find({name: role}, (err, results) => {
+
+            if (err) {
+              return reply(Boom.badRequest(err));
+            }
+
+            if (results.length === 0) {
+              reply(true);
+            }
+            else if (results.length > 0) {
+              for (var i = 0; i < results.length; i++) {
+                if (results[i]._id.toString() !== id) {
+                  return reply(Boom.badRequest('Role already exists.'));
+                }
+              }
+              reply(true);
+            }
+
+          });
+
+        }
+      }],
       validate: {
         payload: {
-          name: Joi.string().required(),
+          name: Joi.string().uppercase().required(),
           type: Joi.array().items(Joi.string().valid('MODULE', 'FEATURE')).default(['MODULE', 'FEATURE'])
         }
       }
@@ -127,6 +157,7 @@ internals.applyRoutes = function (server, next) {
           type: request.payload.type
         }
       };
+
 
       Role.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, role) => {
 
