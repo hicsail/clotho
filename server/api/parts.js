@@ -176,6 +176,24 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
       validate: {
         payload: {
           sort: Joi.string().default('_id'),
@@ -207,29 +225,14 @@ internals.applyRoutes = function (server, next) {
 
 
       Async.auto({
-        checkRole: function (done) {
-
-          if (request.payload.role !== undefined && request.payload.role !== null) {
-            Role.checkValidRole(request.payload.role, (err, results) => {
-
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                done(null, true);
-              }
-            });
-          } else {
-            done(null, true);
-          }
-        },
-        findSequences: ['checkRole', function (results, done) {
+        findSequences: function (done) {
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
             return done(null, []);
           }
-        }],
+        },
         findParts: ['findSequences', function (results, done) {
 
           // get Sequence ids from array
@@ -400,10 +403,10 @@ internals.applyRoutes = function (server, next) {
         method: function (request, reply) {
 
           // Check if filter is valid.
-          var schema = Joi.string().valid('parameters', 'modules', 'subparts').required();
-          var filter = request.params.filter;
+          var schema = {filter: Joi.string().valid('parameters', 'modules', 'subparts').required()};
+          var filter = {filter: request.params.filter};
 
-          schema.validate(filter, (err, result) => {
+          Joi.validate(filter, schema, (err, result) => {
             if (err === null) {
               reply(true);
             } else {
@@ -678,11 +681,29 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
-          role: Joi.string().optional(),
+          role: Joi.string().uppercase().optional(),
           parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional()
         }
@@ -692,7 +713,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-       createBioDesign:  function (done) {
+        createBioDesign: function (done) {
 
           BioDesign.create(
             request.payload.name,
@@ -856,7 +877,7 @@ internals.applyRoutes = function (server, next) {
         }],
         updateSequenceFeatureId: ['createFeature', 'createSequence', function (results, done) {
 
-          if(results.createFeature) {
+          if (results.createFeature) {
             var featureId = results.createFeature._id.toString();
             var sequenceId = results.createSequence._id.toString();
 

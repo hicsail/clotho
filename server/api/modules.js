@@ -77,6 +77,24 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
       validate: {
         payload: {
           name: Joi.string().required(),
@@ -102,11 +120,7 @@ internals.applyRoutes = function (server, next) {
         (err, module) => {
 
           if (err) {
-            if (err.message === 'Role invalid.') {
-              return reply(Boom.badRequest('Role invalid.'));
-            } else {
-              return reply(err);
-            }
+            return reply(err);
           }
           return reply(module);
         });
@@ -120,6 +134,24 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
       validate: {
         payload: {
           name: Joi.string().required(),
@@ -135,68 +167,33 @@ internals.applyRoutes = function (server, next) {
 
       const id = request.params.id;
 
-      if (request.payload.role !== undefined && request.payload.role !== null) {
-
-        Role.checkValidRole(request.payload.role, (err, results) => {
-
-          if (err || !results) {
-            return reply(Boom.badRequest('Role invalid.'));
-          } else {
-            const update = {
-              $set: {
-                name: request.payload.name,
-                description: request.payload.description,
-                displayId: request.payload.displayId,
-                bioDesignId: request.payload.bioDesignId,
-                role: request.payload.role,
-                submoduleIds: request.payload.submoduleIds
-              }
-            };
-
-            Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
-
-              if (err) {
-                return reply(err);
-              }
-
-              if (!module) {
-                return reply(Boom.notFound('Module not found.'));
-              }
-
-              reply(module);
-            });
-          }
-        });
-      } else {
-
-        const update = {
-          $set: {
-            name: request.payload.name,
-            description: request.payload.description,
-            displayId: request.payload.displayId,
-            bioDesignId: request.payload.bioDesignId,
-            role: request.payload.role,
-            submoduleIds: request.payload.submoduleIds
-          }
-        };
+      const update = {
+        $set: {
+          name: request.payload.name,
+          description: request.payload.description,
+          displayId: request.payload.displayId,
+          bioDesignId: request.payload.bioDesignId,
+          role: request.payload.role,
+          submoduleIds: request.payload.submoduleIds
+        }
+      };
 
 
+      Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
 
-        Module.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, module) => {
+        if (err) {
+          return reply(err);
+        }
 
-          if (err) {
-            return reply(err);
-          }
+        if (!module) {
+          return reply(Boom.notFound('Module not found.'));
+        }
 
-          if (!module) {
-            return reply(Boom.notFound('Module not found.'));
-          }
-
-          reply(module);
-        });
-      }
-
+        reply(module);
+      });
     }
+
+
   });
 
   server.route({

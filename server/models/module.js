@@ -8,34 +8,6 @@ const Role = require('./role');
 class Module extends MongoModels {
   static create(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
-    // Check role is valid before insertion
-    if (role !== undefined && role !== null) {
-      role = role.toUpperCase();
-
-      Role.findOne({name: role}, (roleErr, results) => {
-
-        if (roleErr) {
-          callback(roleErr);
-        }
-
-        if (roleErr === null && results !== null) {
-
-          this.createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback);
-        } else {
-
-          callback(Error('Role invalid.'));
-        }
-      });
-
-    } else {
-
-      this.createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback);
-    }
-
-  }
-
-  static createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
-
     const document = {
       name: name,
       description: description,
@@ -53,7 +25,9 @@ class Module extends MongoModels {
       }
       callback(null, docs[0]);
     });
+
   }
+
 
   static getModuleByBioDesignId(bioDesignId, query, callback) {
 

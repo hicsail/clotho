@@ -27,6 +27,24 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
       validate: {
         payload: {
           sort: Joi.string().default('_id'),
@@ -34,7 +52,7 @@ internals.applyRoutes = function (server, next) {
           page: Joi.number().default(1),
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().optional(),
+          role: Joi.string().uppercase().optional(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parts: Joi.array().items(Joi.object().keys({
             name: Joi.string(),
@@ -62,27 +80,14 @@ internals.applyRoutes = function (server, next) {
 
 
       Async.auto({
-        checkRole: function (done) {
-          if (request.payload.role !== undefined && request.payload.role !== null) {
-            Role.checkValidRole(request.payload.role, (err, results) => {
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                done(null, true);
-              }
-            });
-          } else {
-            done(null, true);
-          }
-        },
-        findSequences: ['checkRole', function (results, done) {
+        findSequences: function (done) {
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
             return done(null, []);
           }
-        }],
+        },
         findSubParts: ['findSequences', function (results, done) {
 
           // get Sequence ids from array
@@ -304,12 +309,30 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
       validate: {
         payload: {
           name: Joi.string().required(),
           userId: Joi.string().optional(),
           displayId: Joi.string().optional(),
-          role: Joi.string().optional(),
+          role: Joi.string().uppercase().optional(),
           partIds: Joi.array().items(Joi.string().required()).required(),
           createSeqFromParts: Joi.boolean().required(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
@@ -333,20 +356,7 @@ internals.applyRoutes = function (server, next) {
       // in createSubpart, createSubAssemblyIds
       //noinspection JSDuplicatedDeclaration
       Async.auto({
-        checkRole: function (done) {
-          if (request.payload.role !== undefined && request.payload.role !== null) {
-            Role.checkValidRole(request.payload.role, (err, results) => {
-              if (err || !results) {
-                return reply(Boom.badRequest('Role invalid.'));
-              } else {
-                done(null, true);
-              }
-            });
-          } else {
-            done(null, true);
-          }
-        },
-        createBioDesign: ['checkRole', function (results, done) {
+        createBioDesign: function (done) {
 
           var subBioDesignIds = request.payload.partIds;
 
@@ -359,7 +369,7 @@ internals.applyRoutes = function (server, next) {
             subBioDesignIds,
             null, //superBioDesignIds
             done);
-        }],
+        },
         updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {
 
           // Need to update superDesign that belong to subdesigns
