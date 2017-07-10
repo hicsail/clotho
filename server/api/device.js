@@ -370,6 +370,7 @@ internals.applyRoutes = function (server, next) {
             null, //imageUrl
             subBioDesignIds,
             null, //superBioDesignIds
+            'DEVICE',
             done);
         },
         updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {

@@ -748,6 +748,7 @@ internals.applyRoutes = function (server, next) {
             null, //imageURL
             null, //subBioDesignIds
             null, //superBioDesignId
+            'PART',
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {

@@ -3,8 +3,6 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Sequence = require('./sequence');
-const Strain = require('./strain');
-const Medium = require('./medium');
 const Part = require('./part');
 const Parameter = require('./parameter');
 const Module = require('./module');
@@ -13,7 +11,7 @@ const Underscore = require('underscore');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
 
     const document = {
       name: name,
@@ -22,7 +20,8 @@ class BioDesign extends MongoModels {
       displayId: displayId,
       imageURL: imageURL,
       subBioDesignIds: subBioDesignIds,
-      superBioDesignId: superBioDesignId
+      superBioDesignId: superBioDesignId,
+      type: type
     };
 
     this.insertOne(document, (err, docs) => {
@@ -102,7 +101,7 @@ class BioDesign extends MongoModels {
         allPromises.push(promise);
 
         // Also get subdesigns.
-        if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+        if (/*bioDesigns[i].type === 'DEVICE' && */bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
           && bioDesigns[i].subBioDesignIds.length !== 0) {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
@@ -368,12 +367,12 @@ BioDesign.schema = Joi.object().keys({
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   moduleId: Joi.string(),
+  mediaIds: Joi.array().items(Joi.string()),
+  strainIds: Joi.array().items(Joi.string()),
   subBioDesignIds: Joi.array().items(Joi.string()),
   superBioDesignId: Joi.string().optional(),
-  media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
-  strains: Joi.array().items(Strain.schema),
-  type: Joi.string()
+  type: Joi.string().uppercase().optional()
 });
 
 BioDesign.indexes = [
