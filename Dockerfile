@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 FROM mongo:3.4.5
 FROM node:6.11.0
 
-WORKDIR /usr/src/clotho/server
+WORKDIR /usr/src/clotho
 COPY package.json /usr/src/clotho/
 
 RUN apt-get update
@@ -17,4 +17,4 @@ RUN npm install -g pm2
 
 EXPOSE 9000
 
-CMD sh ../docker-run.sh
+CMD sh docker-run.sh
