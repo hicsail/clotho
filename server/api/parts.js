@@ -208,7 +208,7 @@ internals.applyRoutes = function (server, next) {
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
-              units: Joi.string(), // These should be updated.
+              units: Joi.string(),
               value: Joi.number(),
               variable: Joi.string()
             })
@@ -914,11 +914,12 @@ internals.applyRoutes = function (server, next) {
               if (err) {
                 return reply(err);
               } else {
-                return done(null, []);
+                done(null, results);
               }
             });
+          } else {
+            done(null, results);
           }
-          return done(null);
 
         }]
       }, (err, results) => {
@@ -931,6 +932,177 @@ internals.applyRoutes = function (server, next) {
     }
   })
   ;
+
+  server.route({
+    method: 'PUT',
+    path: '/part/update/{id}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
+      validate: {
+        payload: {
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1),
+          name: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          role: Joi.string().optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(),
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional(),
+          userSpace: Joi.boolean().default(false)
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+
+      Async.auto({
+        removeReference: function (done) {
+
+          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
+            var update = {$set: {bioDesignId: null}};
+
+            // Remove reference of bioDesign on old parameters.
+            Parameter.updateMany({bioDesignId: request.params.id, $isolated: 1}, update, (err, parameter) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              // No parameter originally associated with bioDesign.
+              if (!parameter) {
+                done(null, 0);
+              } else {
+                done(null, parameter);
+              }
+            });
+
+          } else {
+            done(null, 0);
+          }
+
+        },
+        createParameters: ['removeReference', function (results, done) {
+
+          // Then create new parameters if needed.
+
+          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
+            var param = request.payload.parameters;
+            var parameterLabels = ['name', 'value', 'variable', 'units'];
+
+            for (let p of param) {
+              for (let label of parameterLabels) {
+                if (p[label] === undefined) {
+                  p[label] = null;
+                }
+              }
+            }
+
+
+            var allPromises = [];
+            for (var i = 0; i < param.length; ++i) {
+              var promise = new Promise((resolve, reject) => {
+
+                Parameter.create(
+                  param[i]['name'],
+                  request.auth.credentials.user._id.toString(),
+                  request.params.id,
+                  param[i]['value'],
+                  param[i]['variable'],
+                  param[i]['units'],
+                  (err, results) => {
+
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve(results);
+                    }
+                  }
+                );
+
+              });
+
+              allPromises.push(promise);
+            }
+
+            Promise.all(allPromises).then((resolve, reject) => {
+
+              if (reject) {
+                done(reject, []);
+              } else {
+                done(null, resolve);
+              }
+            });
+
+          } else {
+            done(null, []);
+          }
+
+        }]
+      }, (err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+        // Then update biodesign.
+
+        var newPayload = {
+          name: request.payload.name,
+          displayId: request.payload.displayId,
+          role: request.payload.role,
+          sequence: request.payload.sequence
+        };
+
+        var newRequest = {
+          url: '/api/bio-design/' + request.params.id,
+          method: 'PUT',
+          payload: newPayload,
+          credentials: request.auth.credentials
+        };
+        server.inject(newRequest, (response) => {
+
+          if (response.statusCode !== 200) {
+            return reply(response.result);
+          }
+
+          return reply(response.result);
+
+        });
+      });
+
+
+    }
+  })
+  ;
+
 
   server.route({
     method: 'DELETE',

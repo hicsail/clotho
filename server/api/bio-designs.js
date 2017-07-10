@@ -108,6 +108,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
   server.route({
     method: 'PUT',
     path: '/bio-design/{id}',
@@ -129,16 +130,16 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const id = request.params.id;
-      const update = {
-        $set: {
-          name: request.payload.name,
-          description: request.payload.description,
-          displayId: request.payload.displayId,
-          imageURL: request.payload.imageURL,
-          subBioDesignIds: request.payload.subBioDesignIds,
-          superBioDesignId: request.payload.superBioDesignId
+      var update = { $set: {}};
+
+      // Check for null values.
+      for (let key of Object.keys(request.payload)) {
+        if (request.payload[key] !== undefined && request.payload[key] !== null) {
+          update['$set'][key] =  request.payload[key];
+        } else if (key === 'name') {
+          update['$set']['name'] = request.payload['name'];
         }
-      };
+      }
 
       BioDesign.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, bio_design) => {
 
