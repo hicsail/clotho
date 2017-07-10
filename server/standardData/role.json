@@ -1,0 +1,77 @@
+[
+  {
+    "name": "BARCODE",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "CDS",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "DEGRADATION_TAG",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "GENE",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "LOCALIZATION_TAG",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "OPERATOR",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "PROMOTER",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "SCAR",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "SPACER",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "RBS",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "RIBOZYME",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "TERMINATOR",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "GLYCEROL",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "VECTOR",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  },
+  {
+    "name": "FP",
+    "type": ["MODULE", "FEATURE"],
+    "userId": "000000000000000000000000"
+  }
+]

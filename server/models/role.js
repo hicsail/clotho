@@ -75,7 +75,8 @@ Role.schema = Joi.object().keys({
 });
 
 Role.indexes = [
-  {key: {userId: 1}}
+  {key: {userId: 1}},
+  {key: {name: 1}, unique: 1}
 ];
 
 module.exports = Role;
