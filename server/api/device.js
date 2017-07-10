@@ -542,21 +542,92 @@ internals.applyRoutes = function (server, next) {
           }
 
         }],
-        createSequence: ['createSubpart', function (results, done) {
+        getSubSubPartIds: ['createSubpart', function (results, done) {
 
-            var partId = results.createSubpart._id.toString();
+          var subBioDesignIds = request.payload.partIds;
+          var allPromises = [];
+          var subSubPartIds = []
 
-            Sequence.create(
-              request.payload.name,
-              null, // no description
-              request.auth.credentials.user._id.toString(),
-              request.payload.displayId,
-              null, // featureId null
-              partId,
-              null, //create null sequence and update later
-              null,
-              null,
-              done);
+          for (var i = 0; i < subBioDesignIds.length; ++i) {
+            var promise = new Promise((resolve, reject) => {
+
+              Part.findByBioDesignIdOnly(subBioDesignIds[i], (err, results) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  var subSubPartId = results[0]["_id"];
+                  subSubPartIds = subSubPartIds.concat([subSubPartId]);
+                  resolve(subSubPartIds);   //fix resulting array structure --> change accordingly in createSequence
+                }
+              });
+            });
+            allPromises.push(promise);
+          }
+          Promise.all(allPromises).then((resolve, reject) => {
+            if (reject) {
+              reply(reject);
+            }
+            done(null, resolve);
+          });
+
+
+        }],
+        createSequence: ['createSubpart', 'getSubSubPartIds', function (results, done) {
+
+          //get all sequences and concatenate --> assume no overlap for now
+          var partId = results.createSubpart._id.toString();
+          var subSubPartIds = results.getSubSubPartIds;
+          var subBioDesignIds = request.payload.partIds;
+
+          var superSequence = "";
+          console.log(subSubPartIds)
+          var arr1 = [ "5963d14539f53707ea819936",
+            "5963d15239f53707ea81993d",
+            "5963d13639f53707ea81992f"]
+          for (var i = 0; i < 3; ++i) {
+            var promise = new Promise((resolve, reject) => {
+              Sequence.findByPartIdOnly(arr1[i], (err, results) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  console.log(results[0]["sequence"]);
+                  var seq = results[0]["sequence"];
+                  superSequence = superSequence.concat(seq);
+                  console.log(superSequence);
+                  resolve(results);
+                }
+              });
+            });
+            allPromises.push(promise);
+          }
+
+          Promise.all(allPromises).then((resolve, reject) => {
+            if (reject) {
+              reply(reject);
+            }
+
+            else {
+              console.log("here instead");
+              console.log(superSequence);
+
+              console.log(resolve);
+              Sequence.create(
+                request.payload.name,
+                null, // no description
+                request.auth.credentials.user._id.toString(),
+                request.payload.displayId,
+                null, // featureId null
+                partId,
+                superSequence, //create null sequence and update later
+                null,
+                null,
+                done);
+
+            }
+
+            done(null, resolve);
+          });
+
 
 
         }],

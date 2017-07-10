@@ -27,7 +27,7 @@ var annotateMe = function (server, partIds) {
   //var partIds = ['1234','34567','7890'];
   //for each partId:
 
-
+  console.log(automata.push(1));
 
   var data = [1,2,3,4,5,6,7,8,9]
   for(var state=automata, i=0; i<data.length; ) {

@@ -98,6 +98,28 @@ class Part extends MongoModels {
     }
   }
 
+//return only part
+  static findByBioDesignIdOnly(bioDesignId, callback) {
+
+    var query = [];
+
+    if (bioDesignId !== undefined && bioDesignId !== null) {
+      query[0] = {bioDesignId: bioDesignId};
+
+      this.find(query[0], (err, parts) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        callback(null, parts);
+      });
+    }
+  }
+
+
+
+
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, callback) {
 

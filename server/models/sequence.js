@@ -68,6 +68,23 @@ class Sequence extends MongoModels {
     });
   }
 
+  static findByPartIdOnly(partId, callback) {
+    console.log("finding");
+    const query = {partId: partId.toString()};
+    this.find(query, (err, sequences) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, sequences);
+
+    });
+
+  }
+
+
+
   static getAnnotations(index, sequences, callback) {
 
     if (index == sequences.length) {
