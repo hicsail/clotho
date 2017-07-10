@@ -405,10 +405,15 @@ internals.applyRoutes = function (server, next) {
         method: function (request, reply) {
 
           // Check if filter is valid.
-          var schema = {filter: Joi.string().valid('parameters', 'modules', 'subparts').required()};
+          // TODO - update with any new biodesign attributes
+          var schema = {
+            filter: Joi.string().valid('parameters', 'modules', 'subparts',
+              '_id', 'name', 'description', 'userId', 'displayId', 'moduleId', 'subBioDesignId', 'superBioDesignId').required()
+          };
           var filter = {filter: request.params.filter};
 
           Joi.validate(filter, schema, (err, result) => {
+
             if (err === null) {
               reply(true);
             } else {
@@ -458,20 +463,36 @@ internals.applyRoutes = function (server, next) {
         // Otherwise loop through and remove keys.
 
         var resultArr = response.result;
-        const acceptedFilters = ['subparts', 'parameters', 'modules'];
-        const filter = request.params.filter;
-
         var filteredArr = [];
 
-        for (let result of resultArr) {
-          var filteredResult = {};
-          for (let key of Object.keys(result)) {
-            if (acceptedFilters.indexOf(key) === -1 || key === filter) {
-              filteredResult[key] = result[key];
+        const acceptedFilters = ['subparts', 'parameters', 'modules'];
+        const acceptedBioDesignFilters = ['_id', 'name', 'description', 'userId', 'displayId', 'moduleId', 'subBioDesignId', 'superBioDesignId'];
+        const filter = request.params.filter;
+
+        // If filtered attribute is that of a general biodesign, only that attribute is returned. (e.g. _id)
+
+        if (acceptedBioDesignFilters.indexOf(filter) !== -1) {
+          for (let result of resultArr) {
+            if (result[filter] !== undefined && result[filter] !== null) {
+              filteredArr.push(result[filter]);
+            } else {
+              filteredArr.push(null);
             }
           }
-          filteredArr.push(filteredResult);
+
+          // Otherwise return general biodesign and attribute (e.g. parameters + general biodesign).
+        } else {
+          for (let result of resultArr) {
+            var filteredResult = {};
+            for (let key of Object.keys(result)) {
+              if (acceptedFilters.indexOf(key) === -1 || key === filter) {
+                filteredResult[key] = result[key];
+              }
+            }
+            filteredArr.push(filteredResult);
+          }
         }
+
 
         return reply(filteredArr);
 
@@ -889,8 +910,9 @@ internals.applyRoutes = function (server, next) {
               _id: ObjectID(sequenceId),
               $isolated: 1
             }, {$set: {featureId: featureId}}, (err, results) => {
+
               if (err) {
-                reject(err);
+                return reply(err);
               } else {
                 return done(null, []);
               }

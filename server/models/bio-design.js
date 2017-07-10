@@ -372,7 +372,8 @@ BioDesign.schema = Joi.object().keys({
   superBioDesignId: Joi.string().optional(),
   media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
-  strains: Joi.array().items(Strain.schema)
+  strains: Joi.array().items(Strain.schema),
+  type: Joi.string()
 });
 
 BioDesign.indexes = [

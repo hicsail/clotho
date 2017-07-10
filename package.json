@@ -48,6 +48,7 @@
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
     "mongodb": "2.x.x",
+    "node-aho-corasick": "0.0.2",
     "nodemailer": "3.x.x",
     "nodemailer-markdown": "1.x.x",
     "object-assign": "4.x.x",

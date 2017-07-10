@@ -129,7 +129,7 @@ internals.applyRoutes = function (server, next) {
               reply(true);
             }
             else if (results.length > 0) {
-              for (var i = 0; i < results.length; i++) {
+              for (var i = 0; i < results.length; ++i) {
                 if (results[i]._id.toString() !== id) {
                   return reply(Boom.badRequest('Role already exists.'));
                 }
