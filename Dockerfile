@@ -13,6 +13,7 @@ RUN apt-get install -y netcat
 COPY . /usr/src/clotho
 
 RUN npm install
+RUN npm install -g pm2
 
 EXPOSE 9000
 

@@ -8,7 +8,9 @@
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
     "lint": "lab -dL",
-    "prestart": "./scripts/minify.sh && ./scripts/generateDocs.sh"
+    "minify": "./scripts/minify.sh",
+    "docs": "./scripts/generateDocs.sh",
+    "setup": "npm run minify && npm run docs"
   },
   "author": "SAIL BU <hicsail@bu.edu> (http://sail.bu.edu/)",
   "repository": {
