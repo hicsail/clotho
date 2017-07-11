@@ -577,15 +577,15 @@ internals.applyRoutes = function (server, next) {
         }],
         createSequence: ['createSubpart', 'getSubSubPartIds', function (results, done) {
 
-          //get all sequences and concatenate --> assume no overlap for now
+          //get all subSequences and concatenates them to create the superSequence!
           var partId = results.createSubpart._id.toString();
           var subSubPartIds = results.getSubSubPartIds;
           var subBioDesignIds = request.payload.partIds;
           var allPromises = [];
 
-          //array fo exact length created to
+          //array for exact length created to
+          var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
           var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
-
 
           for (var i = 0; i < subBioDesignIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
@@ -596,27 +596,22 @@ internals.applyRoutes = function (server, next) {
                   return reject(err);
                 } else {
                   var key = results[0];
-                  var resSeq = results[1][0]["sequence"];
-                  superSequenceArr[key] = resSeq;
+                  superSequenceArr[key] = results[1][0]["sequence"];;
+                  subSequenceIds[key] = results[1][0]["_id"];
+
                   resolve(results);
                 }
               });
             });
             allPromises.push(promise);
           }
-
           Promise.all(allPromises).then((resolve, reject) => {
             if (reject) {
               reply(reject);
             }
-
-
             else {
-              console.log("here instead");
               var superSequence = superSequenceArr.join("");
-              console.log(superSequence);
 
-              console.log(resolve);
               Sequence.create(
                 request.payload.name,
                 null, // no description
@@ -635,69 +630,105 @@ internals.applyRoutes = function (server, next) {
                   }
                 });
             }
+            done(null, [subSequenceIds, superSequenceArr, superSequence, resolve]);
+          });
+
+        }],
+        createSubAnnotations: ['createSequence', 'getSubSubPartIds', function (results, done) {
+          console.log("creating subAnnotation")
+
+          // Create subAnnotations for all subBioDesigns connected to subFeatures
+
+
+          //What do we need?
+          // sequenceIds --> to get featureIds later
+          // array of sequences --> to get start/end integers
+
+          //either get sequenceIds again here --> we'll need it again later for featureIds
+          //Or get an array of it above, and return it
+
+          var superSequenceResults = results.createSequence;
+          // console.log("here?");
+          //
+          // var superSequenceId = results.createSequence._id.toString();//FIX THIS AND ADD superSequenceId to annotation
+          // console.log("here?");
+          //
+          //
+          // var subSequenceIds = superSequenceResults[0];
+          // var superSequenceArr = superSequenceResults[1];
+          // var superSequence = superSequenceResults[2];
+          // var superSequenceId = superSequenceResults[3]._id.toString();
+          // console.log(superSequenceId);
+
+          var allPromises = [];
+
+          var position = 1; //sequences start at 1
+
+          for (var i = 0; i < superSequenceArr.size; ++i) {
+            console.log("in for loop");       //CHECK FOR LOOP --> not working yet
+            var promise = new Promise((resolve, reject) => {
+
+              var subSequence =  superSequenceArr[i];
+              var subSequenceLength = subSequence.length;
+              var start = position;
+              var end = position + subSequenceLength;
+              position = end + 1; //setup for next annotation
+
+              Annotation.create(
+                request.payload.name,
+                null, // description,
+                request.auth.credentials.user._id.toString(),
+                subSequenceIds[i], // sequenceId
+                start, // start
+                end, // end
+                true, // isForwardString
+                done);
+            });
+            allPromises.push(promise);
+          }
+
+          Promise.all(allPromises).then((resolve, reject) => {
+            if (reject) {
+              reply(reject);
+            }
+            console.log("HERE");
             done(null, resolve);
           });
 
-
-
         }],
-        createAnnotation: ['createSequence', function (results, done) {
-            console.log("creating annotation")
-            var seq = results.createSequence._id.toString();
-            Annotation.create(
-              request.payload.name,
-              null, // description,
-              request.auth.credentials.user._id.toString(),
-              seq, // sequenceId
-              1, // start
-              null, // add this later
-              true, // isForwardString
-              done);
-
-        }],
-        // createSubAnnotations: ['createSequence', function (results, done) {
-        //   console.log("creating subAnnotation")
-        //
-        //   // Create subAnnotations for all subBioDesigns connected to subFeatures
-        //   var sequenceId = results.createSequence._id.toString();
-        //   var subBioDesignIds = request.payload.partIds;
-        //
-        //   if (subBioDesignIds !== undefined && subBioDesignIds !== null) {
-        //     var allPromises = [];
-        //
-        //     for (var i = 0; i < subBioDesignIds.length; ++i) {
-        //       var promise = new Promise((resolve, reject) => {
-        //         Annotation.create(
-        //           request.payload.name,
-        //           null, // description,
-        //           request.auth.credentials.user._id.toString(),
-        //           sequenceId, // sequenceId
-        //           1, // start
-        //           request.payload.sequence.length, // end
-        //           true, // isForwardString
-        //           done);
-        //       });
-        //       allPromises.push(promise);
-        //     }
-        //
-        //     Promise.all(allPromises).then((resolve, reject) => {
-        //       if (reject) {
-        //         reply(reject);
-        //       }
-        //       done(null, resolve);
-        //     });
-        //
-        //   }
-        // }],
         updateSubFeaturesAnnotationId: ['createSequence', function (results, done) {
           console.log("updateSubFeaturesAnnotationId");
 
           // Create subAnnotations for all subBioDesigns connected to subFeatures
-            var sequenceId = results.createSequence._id.toString();
+          var superSequenceResults = results.createSequence;
+          var sequenceId = results.createSequence._id.toString();
+          var subSubPartIds = results.getSubSubPartIds;
+
+          var subSequenceIds = superSequenceResults[0];
+          var superSequenceArr = superSequenceResults[1];
+          var superSequence = superSequenceResults[2];
+
+          var allPromises = [];
+
+          var sequenceId = results.createSequence._id.toString();
             var partIds = request.payload.partIds;
 
             var test = utilities.annotateMe(server, partIds);
             console.log(test);
+
+        }],
+        createAnnotation: ['createSequence', function (results, done) {
+          console.log("creating annotation")
+          var seq = results.createSequence._id.toString();
+          Annotation.create(
+            request.payload.name,
+            null, // description,
+            request.auth.credentials.user._id.toString(),
+            seq, // sequenceId
+            1, // start
+            null, // add this later
+            true, // isForwardString
+            done);
 
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
