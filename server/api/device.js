@@ -546,18 +546,21 @@ internals.applyRoutes = function (server, next) {
 
           var subBioDesignIds = request.payload.partIds;
           var allPromises = [];
-          var subSubPartIds = []
+          var subSubPartIds = {};
 
           for (var i = 0; i < subBioDesignIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
 
-              Part.findByBioDesignIdOnly(subBioDesignIds[i], (err, results) => {
+              //sends value i to function so that order is kept track of
+              Part.findByBioDesignIdOnly(i, subBioDesignIds[i], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
-                  var subSubPartId = results[0]["_id"];
-                  subSubPartIds = subSubPartIds.concat([subSubPartId]);
-                  resolve(subSubPartIds);   //fix resulting array structure --> change accordingly in createSequence
+                  var key = results[0];  //i is returned here, partId is saved under i
+                  var resPart = results[1];
+                  var subSubPartId = resPart[0]["_id"];
+                  subSubPartIds[key] = subSubPartId;
+                  resolve(results);
                 }
               });
             });
@@ -567,7 +570,7 @@ internals.applyRoutes = function (server, next) {
             if (reject) {
               reply(reject);
             }
-            done(null, resolve);
+            done(null, subSubPartIds);
           });
 
 
@@ -578,22 +581,23 @@ internals.applyRoutes = function (server, next) {
           var partId = results.createSubpart._id.toString();
           var subSubPartIds = results.getSubSubPartIds;
           var subBioDesignIds = request.payload.partIds;
+          var allPromises = [];
 
-          var superSequence = "";
-          console.log(subSubPartIds)
-          var arr1 = [ "5963d14539f53707ea819936",
-            "5963d15239f53707ea81993d",
-            "5963d13639f53707ea81992f"]
-          for (var i = 0; i < 3; ++i) {
+          //array fo exact length created to
+          var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
+
+
+          for (var i = 0; i < subBioDesignIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
-              Sequence.findByPartIdOnly(arr1[i], (err, results) => {
+
+              //sends value i to function so that order is kept track of
+              Sequence.findByPartIdOnly(i, subSubPartIds[i], (err, results) => {
                 if (err) {
-                  reject(err);
+                  return reject(err);
                 } else {
-                  console.log(results[0]["sequence"]);
-                  var seq = results[0]["sequence"];
-                  superSequence = superSequence.concat(seq);
-                  console.log(superSequence);
+                  var key = results[0];
+                  var resSeq = results[1][0]["sequence"];
+                  superSequenceArr[key] = resSeq;
                   resolve(results);
                 }
               });
@@ -606,8 +610,10 @@ internals.applyRoutes = function (server, next) {
               reply(reject);
             }
 
+
             else {
               console.log("here instead");
+              var superSequence = superSequenceArr.join("");
               console.log(superSequence);
 
               console.log(resolve);
@@ -619,12 +625,16 @@ internals.applyRoutes = function (server, next) {
                 null, // featureId null
                 partId,
                 superSequence, //create null sequence and update later
-                null,
-                null,
-                done);
-
+                null,//isLinear
+                null,//isSingleStranded
+                (err, results) => {
+                  if (err) {
+                    return reject(err);
+                  } else {
+                    return results;
+                  }
+                });
             }
-
             done(null, resolve);
           });
 

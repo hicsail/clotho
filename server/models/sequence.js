@@ -25,7 +25,9 @@ class Sequence extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      else {
+        callback(null, docs[0]);
+      }
     });
   }
 
@@ -68,16 +70,15 @@ class Sequence extends MongoModels {
     });
   }
 
-  static findByPartIdOnly(partId, callback) {
-    console.log("finding");
+  static findByPartIdOnly(i, partId, callback) {
+
     const query = {partId: partId.toString()};
     this.find(query, (err, sequences) => {
 
       if (err) {
         return callback(err);
       }
-
-      callback(null, sequences);
+      callback(null, [i, sequences]);
 
     });
 

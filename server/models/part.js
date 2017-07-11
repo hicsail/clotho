@@ -99,7 +99,7 @@ class Part extends MongoModels {
   }
 
 //return only part
-  static findByBioDesignIdOnly(bioDesignId, callback) {
+  static findByBioDesignIdOnly(i, bioDesignId, callback) {
 
     var query = [];
 
@@ -112,7 +112,7 @@ class Part extends MongoModels {
           return callback(err);
         }
 
-        callback(null, parts);
+        callback(null, [i, parts]);
       });
     }
   }
