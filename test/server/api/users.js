@@ -23,10 +23,12 @@ let stub;
 lab.before((done) => {
 
   stub = {
+    AuthAttempt: MakeMockModel(),
     User: MakeMockModel()
   };
 
   const proxy = {};
+  proxy[Path.join(process.cwd(), './server/models/auth-attempt')] = stub.AuthAttempt;
   proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
   const ModelsPlugin = {
@@ -806,6 +808,25 @@ lab.experiment('Users Plugin Set Password', () => {
     });
   });
 
+  lab.test('it returns an error when there is no user fails', (done) => {
+
+    stub.User.generatePasswordHash = function (password, callback) {
+
+      callback(null, {password: '', hash: ''});
+    };
+
+    stub.User.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(null,null);
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(404);
+
+      done();
+    });
+  });
 
   lab.test('it sets the password successfully', (done) => {
 

@@ -56,6 +56,20 @@ class AuthAttempt extends MongoModels {
       callback(null, ipLimitReached || ipUserLimitReached);
     });
   }
+
+  static deleteAuthAttempts(ip, username, callback) {
+
+    Async.auto({
+      deleteUsername: function (done) {
+
+        AuthAttempt.deleteMany({username:username}, done);
+      },
+      deleteIP: function (done) {
+
+        AuthAttempt.deleteMany({ip:ip}, done);
+      }
+    }, callback);
+  }
 }
 
 

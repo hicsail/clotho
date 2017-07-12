@@ -1,4 +1,5 @@
 'use strict';
+const AuthAttempt = require('../models/auth-attempt');
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
@@ -511,7 +512,15 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
 
-        reply(user);
+        if(!user) {
+          return reply(Boom.notFound('User not found by that id'));
+        }
+
+        const username = user.username;
+        AuthAttempt.deleteAuthAttempts(null, username, (err, hash) => {
+
+          reply(user);
+        });
       });
     }
   });
@@ -570,8 +579,7 @@ internals.applyRoutes = function (server, next) {
         }
       },
       pre: [
-        AuthPlugin.preware.ensureNotRoot,
-        {
+        AuthPlugin.preware.ensureNotRoot, {
           assign: 'password',
           method: function (request, reply) {
 
@@ -581,7 +589,12 @@ internals.applyRoutes = function (server, next) {
                 return reply(err);
               }
 
-              reply(hash);
+              const ip = request.info.remoteAddress;
+              const username = request.auth.credentials.user.username;
+              AuthAttempt.deleteAuthAttempts(ip, username, (err, user) => {
+
+                reply(hash);
+              });
             });
           }
         }
