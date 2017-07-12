@@ -70,12 +70,10 @@ class Parameter extends MongoModels {
           // Reformat query so that name and variable have regex, value is cast to number.
           for (let label of parameterLabels) {
             if (parameterObj[label] !== undefined && parameterObj[label] !== null) {
-              if (label === 'name' || label === 'variable') {
+              if (label === 'name' || label === 'variable' || label == 'units') {
                 query[label] = {$regex: parameterObj[label]};
               } else if (label === 'value' && !isNaN(parameterObj['value'])) {
                 query[label] = +parameterObj['value'];
-              } else if (label === 'units') {
-                query[label] = parameterObj[label];
               }
             }
           }

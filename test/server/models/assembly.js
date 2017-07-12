@@ -35,7 +35,7 @@ lab.experiment('Assembly Class Methods', () => {
     Assembly.create(
       ['subBioDesignIds'],
       'userid12test',
-      ['subPartIds'],
+      'subPartIds',
     (err, result) => {
 
       Code.expect(err).to.not.exist();
@@ -59,7 +59,7 @@ lab.experiment('Assembly Class Methods', () => {
     Assembly.create(
       ['subBioDesignIds'],
       'userid12test',
-      ['subPartIds'],
+      'subPartIds',
     (err, result) => {
 
       Code.expect(err).to.be.an.object();

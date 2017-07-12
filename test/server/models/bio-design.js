@@ -38,13 +38,15 @@ lab.experiment('BioDesign Class Methods', () => {
       'userid12test',
       'displayId',
       'imageURL',
-    (err, result) => {
+      null,
+      null,
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(BioDesign);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(BioDesign);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -64,14 +66,16 @@ lab.experiment('BioDesign Class Methods', () => {
       'userid12test',
       'displayId',
       'imageURL',
-    (err, result) => {
+      null,
+      null,
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      BioDesign.insertOne = realInsertOne;
+        BioDesign.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

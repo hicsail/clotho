@@ -2,10 +2,39 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Role = require('./role');
 
 class Feature extends MongoModels {
 
   static create(name, description, userId, displayId, role, annotationId, moduleId, callback) {
+
+    // Check that role is valid.
+    if (role !== undefined && role !== null) {
+      role = role.toUpperCase();
+
+      Role.findOne({name: role}, (roleErr, results) => {
+
+        if (roleErr) {
+          callback(roleErr);
+        }
+
+        if (roleErr === null && results !== null) {
+
+          this.createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback);
+
+        } else {
+          callback(Error('Role invalid.'));
+        }
+      });
+
+    } else {
+
+      this.createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback);
+
+    }
+  }
+
+  static createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback) {
 
     const document = {
       name: name,
@@ -79,7 +108,7 @@ Feature.schema = Joi.object().keys({
   description: Joi.string(),
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
-  role: Joi.string().valid('BARCODE', 'CDS', 'DEGRADATION_TAG', 'GENE', 'LOCALIZATION_TAG', 'OPERATOR', 'PROMOTER', 'SCAR', 'SPACER', 'RBS', 'RIBOZYME', 'TERMINATOR').required(),
+  role: Joi.string().uppercase().required(),
   annotationId: Joi.string().required(),
   genBankId: Joi.string(),
   moduleId: Joi.string(),

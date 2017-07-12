@@ -2,6 +2,7 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -123,7 +124,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Medium.findByIdAndUpdate(id, update, (err, medium) => {
+      Medium.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, medium) => {
 
         if (err) {
           return reply(err);

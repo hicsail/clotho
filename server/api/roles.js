@@ -8,11 +8,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Parameter = server.plugins['hapi-mongo-models'].Parameter;
+  const Role = server.plugins['hapi-mongo-models'].Role;
 
   server.route({
     method: 'GET',
-    path: '/parameter',
+    path: '/role',
     config: {
       auth: {
         strategy: 'simple'
@@ -33,7 +33,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Parameter.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Role.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -46,78 +46,71 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/parameter/{id}',
+    path: '/role/{id}',
     config: {
       auth: {
-        strategy: 'simple',
+        strategy: 'simple'
       }
     },
     handler: function (request, reply) {
 
-      Parameter.findById(request.params.id, (err, parameter) => {
+      Role.findById(request.params.id, (err, role) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!parameter) {
+        if (!role) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(parameter);
+        reply(role);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/parameter',
+    path: '/role',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          bioDesignId: Joi.string().optional(),
-          value: Joi.number().required(),
-          variable: Joi.string().required(), // This was originally a Variable object/a ShareableObjBase.
-          units: Joi.string().required()
+          name: Joi.string().required()
         }
       }
     },
-
     handler: function (request, reply) {
 
-      Parameter.create(
+      Role.create(
         request.payload.name,
         request.auth.credentials.user._id.toString(),
-        request.payload.bioDesignId,
-        request.payload.value,
-        request.payload.variable,
-        request.payload.units,
-        (err, parameter) => {
+        (err, role) => {
 
           if (err) {
-            return reply(err);
+            if (err.message === 'Role already exists.') {
+              return reply(Boom.badRequest('Role already exists.'));
+            } else {
+              return reply(err);
+            }
           }
-          return reply(parameter);
+          return reply(role);
         });
     }
   });
 
   server.route({
     method: 'PUT',
-    path: '/parameter/{id}',
+    path: '/role/{id}',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
-          bioDesignId: Joi.string().optional(),
-          value: Joi.number().required(),
-          variable: Joi.string().required()
+          name: Joi.string().required()
         }
       }
     },
@@ -126,30 +119,29 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          bioDesignId: request.payload.bioDesignId,
-          value: request.payload.value,
-          variable: request.payload.variable
+          name: request.payload.name.toUpperCase()
         }
       };
 
-      Parameter.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, parameter) => {
+      Role.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, role) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!parameter) {
-          return reply(Boom.notFound('Parameter not found.'));
+        if (!role) {
+          return reply(Boom.notFound('Role not found.'));
         }
 
-        reply(parameter);
+        reply(role);
       });
     }
+
   });
 
   server.route({
     method: 'DELETE',
-    path: '/parameter/{id}',
+    path: '/role/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -157,13 +149,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Parameter.findByIdAndDelete(request.params.id, (err, parameter) => {
+      Role.findByIdAndDelete(request.params.id, (err, role) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!parameter) {
+        if (!role) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -171,7 +163,6 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
-
   next();
 };
 
@@ -185,5 +176,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'parameter'
+  name: 'role'
 };

@@ -2,6 +2,7 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -81,7 +82,8 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string().optional(),
           displayId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
-          subBioDesignIds: Joi.array().items(Joi.string()).optional()
+          subBioDesignIds: Joi.array().items(Joi.string()).optional(),
+          superBioDesignId: Joi.string().optional()
         }
       }
     },
@@ -95,6 +97,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.displayId,
         request.payload.imageURL,
         request.payload.subBioDesignIds,
+        request.payload.superBioDesignId,
         (err, bioDesign) => {
 
           if (err) {
@@ -118,7 +121,8 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string().optional(),
           displayId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
-          subBioDesignIds: Joi.array().items(Joi.string()).optional()
+          subBioDesignIds: Joi.array().items(Joi.string()).optional(),
+          superBioDesignId: Joi.string().optional()
         }
       }
     },
@@ -131,11 +135,12 @@ internals.applyRoutes = function (server, next) {
           description: request.payload.description,
           displayId: request.payload.displayId,
           imageURL: request.payload.imageURL,
-          subBioDesignIds: request.payload.subBioDesignIds
+          subBioDesignIds: request.payload.subBioDesignIds,
+          superBioDesignId: request.payload.superBioDesignId
         }
       };
 
-      BioDesign.findByIdAndUpdate(id, update, (err, bio_design) => {
+      BioDesign.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, bio_design) => {
 
         if (err) {
           return reply(err);

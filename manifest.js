@@ -75,6 +75,7 @@ const manifest = {
             Module: './server/models/module',
             Parameter: './server/models/parameter',
             Part: './server/models/part',
+            Role: './server/models/role',
             SampleData: './server/models/sample-data',
             Sample: './server/models/sample',
             Sequence: './server/models/sequence',
@@ -195,6 +196,12 @@ const manifest = {
     },
     {
       plugin: './server/api/parts',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/roles',
       options: {
         routes: {prefix: '/api'}
       }

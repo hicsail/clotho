@@ -3,6 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Sequence = require('./sequence');
+const Assembly = require('./assembly');
 
 class Part extends MongoModels {
 
@@ -29,7 +30,7 @@ class Part extends MongoModels {
   // helper method for strings query
   static getParts(partIds, callback) {
 
-    for (var i = 0; i < partIds.length; ++i)  {
+    for (var i = 0; i < partIds.length; ++i) {
       partIds[i] = new MongoModels.ObjectID(partIds[i]);
     }
 
@@ -79,7 +80,7 @@ class Part extends MongoModels {
 
         Promise.all(allPromises).then((resolve, reject) => {
 
-          this.getSequence(0, partIds, callback);
+          this.getChildren(0, partIds, callback);
         });
       }
 
@@ -92,38 +93,45 @@ class Part extends MongoModels {
           return callback(err);
         }
 
-        this.getSequence(0, parts, callback);
+        this.getChildren(0, parts, callback);
       });
     }
   }
 
+  // Get sequence and assemblies under the subpart.
+  static getChildren(index, parts, callback) {
+
+    this.getSequence(index, parts, callback);
+    if (parts[index] !== undefined && parts[index].assemblyId !== undefined
+      && parts[index].assemblyId !== null && parts[index].assemblyId !== '') {
+      //parts = this.getAssembly(index, parts, callback);
+    }
+    return parts;
+  }
 
 
-
-
-      //
-      //   for (var i = 0; i < bioDesignId.length; ++i) {
-      //     query[i] = {bioDesignId: bioDesignId[i]};
-      //
-      //     this.find(query[i], (err, part) => {
-      //
-      //       if (err) {
-      //         return callback(err);
-      //       }
-      //       console.log('This is mini parts');
-      //       console.log(part[0]);
-      //       parts.push(part[0]);
-      //       console.log('This is full parts');
-      //       console.log(parts);
-      //
-      //     })
-      //     // query = {bioDesignId: {$in: bioDesignId}};
-      //   }
-      //   console.log('Out of for loop');
-      //   console.log(parts);
-      //   this.getSequence(0, parts, callback);
-      // }
-
+  //
+  //   for (var i = 0; i < bioDesignId.length; ++i) {
+  //     query[i] = {bioDesignId: bioDesignId[i]};
+  //
+  //     this.find(query[i], (err, part) => {
+  //
+  //       if (err) {
+  //         return callback(err);
+  //       }
+  //       console.log('This is mini parts');
+  //       console.log(part[0]);
+  //       parts.push(part[0]);
+  //       console.log('This is full parts');
+  //       console.log(parts);
+  //
+  //     })
+  //     // query = {bioDesignId: {$in: bioDesignId}};
+  //   }
+  //   console.log('Out of for loop');
+  //   console.log(parts);
+  //   this.getSequence(0, parts, callback);
+  // }
 
 
   //most likely one sequence only, may have to review this function
@@ -144,6 +152,50 @@ class Part extends MongoModels {
       }
 
       return this.getSequence(index + 1, parts, callback);
+    });
+  }
+
+  // Given master subparts, find assembly.
+  static getAssembly(index, parts, callback) {
+
+    if (index == parts.length) {
+      return callback(null, parts);
+    }
+
+    // console.log(parts);
+    // console.log(typeof Assembly !== "undefined");
+    // console.log(typeof this.getSequence !== "undefined");
+    // console.log(typeof Sequence.findByPartId !== "undefined");
+    // console.log(typeof Assembly.getSubParts !== 'undefined');
+    // console.log(typeof Assembly.create !== 'undefined');
+    // console.log(typeof Assembly.findByPartId !== "undefined");
+
+    Assembly.findByPartId(parts[index]['_id'].toString(), (err, assemblies) => {
+
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (assemblies.length != 0) {
+        parts[index].assemblies = assemblies;
+      }
+
+      return this.getAssembly(index + 1, parts, callback);
+    });
+  }
+
+  // Given assemblyId, retrieve subparts under it.
+  static findByAssemblyId(assemblyId, callback) {
+
+    const query = {assemblyId: assemblyId};
+    this.find(query, (err, subparts) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      this.getChildren(0, subparts, callback);
     });
   }
 

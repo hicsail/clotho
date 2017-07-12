@@ -2,6 +2,7 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
+const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -78,7 +79,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           subBioDesignIds: Joi.array().items(Joi.string()),
-          masterSubPartIds: Joi.array().items(Joi.string())
+          superSubPartId: Joi.string()
         }
       }
     },
@@ -88,7 +89,7 @@ internals.applyRoutes = function (server, next) {
       Assembly.create(
         request.payload.subBioDesignIds,
         request.auth.credentials.user._id.toString(),
-        request.payload.masterSubPartIds,
+        request.payload.superSubPartId,
         (err, assembly) => {
 
           if (err) {
@@ -109,7 +110,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           subBioDesignIds: Joi.array().items(Joi.string()),
-          masterSubPartIds: Joi.array().items(Joi.string())
+          superSubPartId: Joi.string()
         }
       }
     },
@@ -119,11 +120,11 @@ internals.applyRoutes = function (server, next) {
       const update = {
         $set: {
           subBioDesignIds: request.payload.subBioDesignIds,
-          masterSubPartIds: request.payload.masterSubPartIds
+          superSubPartId: request.payload.superSubPartId
         }
       };
 
-      Assembly.findByIdAndUpdate(id, update, (err, assembly) => {
+      Assembly.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, assembly) => {
 
         if (err) {
           return reply(err);
