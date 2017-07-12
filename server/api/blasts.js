@@ -40,8 +40,9 @@ internals.applyRoutes = function (server, next) {
     },
 
     handler: function (request, reply) {
+      var data = {};
 
-      Async.autoInject({
+      Async.auto({
         sequence: function (callback) {
           var req = {
             method: 'PUT',
@@ -54,18 +55,18 @@ internals.applyRoutes = function (server, next) {
           var j;
           var sequence = [];
           var response = server.inject(req, (response) => {
-            try{  // If there is an error then there was no part in the db that matched the sequence
-              console.log(response.result[0].subparts);
-              for (i = 0; i < response.result[0].subparts.length(); i++) {
-                for (j = 0; j < response.result[0].subparts[i].sequences.length(); j++){
+            try {  // If there is an error then there was no part in the db that matched the sequence
+              for (i = 0; i < response.result[0].subparts.length; i++) {
+                for (j = 0; j < response.result[0].subparts[i].sequences.length; j++){
                   sequence.push({seq: response.result[0].subparts[i].sequences[j].sequence,
                     seqId: response.result[0].subparts[i].sequences[j]._id,
                     name: response.result[0].subparts[i].sequences[j].name
                   });
                 }
-
               }
-              callback(null, sequence);
+              console.log('Successfully created sequence object');
+              data.sequence = sequence; // Add the sequence data into the dta object
+              // callback(sequence);
             } catch(e) {
               console.log('error');
               console.log(e + '\n\n\n');
@@ -80,21 +81,29 @@ internals.applyRoutes = function (server, next) {
                 console.log(err);
               } else {
                 console.log('Successfully created temp directory.');
-                callback(directory);
+                data.directory = directory; // Add directory path into the data object
+                // callback(directory);
               }
           });
         },
-        fileContent: ['sequence', 'mkdir', function (sequence, mkdir, callback) {
+        fileContent: ['sequence', 'mkdir', function (callback) {
+          var sequence = data.sequence; //reference sequence of data object
+          var directory = data.directory; //reference sequence of data object
+
           var fileContent = '';
+          console.log(sequence);
           for(i = 0; i < sequence.length; i++) {
             fileContent += '> ' + sequence[i].name + '-' + sequence[i].seqId + '\n' + sequence[i].seq + '\n\n';
           }
 
           // var fileContent = '> ' + sequence.name + '-' + sequence.seqId + '\n' + sequence.seq;  // Content of the fasta file
           var fileLocation = directory + '/' + sequence.name + '.fasta';  // File name and location
-          callback(null,fileContent, fileLocation);
+          data.fileContent = fileContent; // Add fileContent to data object
+          data.fileLocation = fileLocation; // Add fileLocation to data object
+          // callback(null,fileContent, fileLocation);
         }],
-        writeFile: ['fileContent', function (fileContent, callback) {
+        writeFile: ['fileContent', function (callback) {
+          var fileLocation = data.fileLocation;
           fs.writeFile(fileLocation, fileContent, function (err) {  // Write the fasta file
             if (err) {
               console.log(err);
@@ -104,7 +113,7 @@ internals.applyRoutes = function (server, next) {
           });
           reply.file(fileLocation); // Reply with the fasta file
         }],
-        deleteDir: ['writeFile', 'mkdir', function (writeFile, mkdir, callback) {
+        deleteDir: ['writeFile', 'mkdir', function (callback) {
           const deleteDir = execFile('rm', ['-rf', directory], (err, stdout, stderr) => {
             if (err){
               console.log(err);
