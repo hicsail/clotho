@@ -57,7 +57,7 @@ class AuthAttempt extends MongoModels {
     });
   }
 
-  static deleteAuthAttemps(ip, username, callback) {
+  static deleteAuthAttempts(ip, username, callback) {
 
     Async.auto({
       deleteUsername: function (done) {

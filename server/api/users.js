@@ -517,11 +517,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         const username = user.username;
-        AuthAttempt.deleteAuthAttemps(null, username, (err, hash) => {
-
-          if (err) {
-            return reply(err);
-          }
+        AuthAttempt.deleteAuthAttempts(null, username, (err, hash) => {
 
           reply(user);
         });
@@ -595,11 +591,7 @@ internals.applyRoutes = function (server, next) {
 
               const ip = request.info.remoteAddress;
               const username = request.auth.credentials.user.username;
-              AuthAttempt.deleteAuthAttemps(ip, username, (err, hash) => {
-
-                if (err) {
-                  return reply(err);
-                }
+              AuthAttempt.deleteAuthAttempts(ip, username, (err, user) => {
 
                 reply(hash);
               });

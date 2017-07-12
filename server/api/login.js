@@ -396,7 +396,7 @@ internals.applyRoutes = function (server, next) {
 
           const ip = request.info.remoteAddress;
           const username = results.user.username;
-          AuthAttempt.deleteAuthAttemps(ip, username, done);
+          AuthAttempt.deleteAuthAttempts(ip, username, done);
         }],
       }, (err, results) => {
 
