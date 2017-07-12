@@ -2,7 +2,7 @@
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
-const ObjectID = require('mongo-models').ObjectID;
+
 
 const internals = {};
 
@@ -321,7 +321,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, user) => {
+      User.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, user) => {
 
         if (err) {
           return reply(err);
@@ -458,7 +458,7 @@ internals.applyRoutes = function (server, next) {
         fields: User.fieldsAdapter('username email name roles')
       };
 
-      User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, findOptions, (err, user) => {
+      User.findOneAndUpdate({_id: id, $isolated: 1}, update, findOptions, (err, user) => {
 
         if (err) {
           return reply(err);
@@ -513,7 +513,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, user) => {
+      User.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, user) => {
 
         if (err) {
           return reply(err);
@@ -608,7 +608,7 @@ internals.applyRoutes = function (server, next) {
         fields: User.fieldsAdapter('username email')
       };
 
-      User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, findOptions, (err, user) => {
+      User.findOneAndUpdate({_id: id, $isolated: 1}, update, findOptions, (err, user) => {
 
         if (err) {
           return reply(err);

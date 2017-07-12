@@ -3,7 +3,7 @@ const Async = require('async');
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
-const ObjectID = require('mongo-models').ObjectID;
+
 
 
 const internals = {};
@@ -151,7 +151,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, admin) => {
+      Admin.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, admin) => {
 
         if (err) {
           return reply(err);
@@ -196,7 +196,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, admin) => {
+      Admin.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, admin) => {
 
         if (err) {
           return reply(err);
@@ -237,7 +237,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, admin) => {
+      Admin.findOneAndUpdate({_id: id, $isolated: 1}, update, (err, admin) => {
 
         if (err) {
           return reply(err);
@@ -338,7 +338,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          Admin.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
         },
         user: function (done) {
 
@@ -352,7 +352,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          User.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
         }
       }, (err, results) => {
 
@@ -434,7 +434,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          Admin.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
         },
         user: function (done) {
 
@@ -445,7 +445,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          User.findOneAndUpdate({_id: id, $isolated: 1}, update, done);
         }
       }, (err, results) => {
 
