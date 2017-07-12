@@ -64,9 +64,9 @@ internals.applyRoutes = function (server, next) {
                   });
                 }
               }
-              console.log('Successfully created sequence object');
-              data.sequence = sequence; // Add the sequence data into the dta object
-              // callback(sequence);
+              console.log('Sequence object created');
+              data.sequence = sequence; // Add the sequence data into the data object
+              callback(null, 'sequence');
             } catch(e) {
               console.log('error');
               console.log(e + '\n\n\n');
@@ -80,19 +80,18 @@ internals.applyRoutes = function (server, next) {
               if (err) {
                 console.log(err);
               } else {
-                console.log('Successfully created temp directory.');
+                console.log('Temp directory created');
                 data.directory = directory; // Add directory path into the data object
-                // callback(directory);
+                callback(null, 'directory');
               }
           });
         },
-        fileContent: ['sequence', 'mkdir', function (callback) {
-          var sequence = data.sequence; //reference sequence of data object
-          var directory = data.directory; //reference sequence of data object
+        fileContent: ['sequence', 'mkdir', function (results, callback) {
+          var sequence = data.sequence; // reference sequence element in data object
+          var directory = data.directory; // reference directory element in data object
 
           var fileContent = '';
-          console.log(sequence);
-          for(i = 0; i < sequence.length; i++) {
+          for(var i = 0; i < sequence.length; i++) {
             fileContent += '> ' + sequence[i].name + '-' + sequence[i].seqId + '\n' + sequence[i].seq + '\n\n';
           }
 
@@ -100,30 +99,38 @@ internals.applyRoutes = function (server, next) {
           var fileLocation = directory + '/' + sequence.name + '.fasta';  // File name and location
           data.fileContent = fileContent; // Add fileContent to data object
           data.fileLocation = fileLocation; // Add fileLocation to data object
-          // callback(null,fileContent, fileLocation);
+          console.log('File content created')
+          callback(null, 'fileContent');
         }],
-        writeFile: ['fileContent', function (callback) {
-          var fileLocation = data.fileLocation;
+        writeFile: ['fileContent', function (results, callback) {
+          var fileLocation = data.fileLocation; // reference fileLocation element in data object
+          var fileContent = data.fileContent; // reference fileContent element in data object
+
           fs.writeFile(fileLocation, fileContent, function (err) {  // Write the fasta file
             if (err) {
               console.log(err);
-            } else {
-              console.log('FASTA file was saved.');
             }
           });
+          console.log('FASTA file created')
           reply.file(fileLocation); // Reply with the fasta file
+          console.log('Sent FASTA file');
+          callback(null, 'replyFile');
         }],
-        deleteDir: ['writeFile', 'mkdir', function (callback) {
+        deleteDir: ['writeFile', 'mkdir', function (results, callback) {
+          var directory = data.directory; // reference directory element in data object
           const deleteDir = execFile('rm', ['-rf', directory], (err, stdout, stderr) => {
             if (err){
               console.log(err);
             } else {
-              console.log('Temp directory was successfully deleted');
+              console.log('Temp directory deleted');
             }
           });
+          callback(null, 'deleteDir');
         }]
       }, function (err, results) {
-        console.log('err= ', err);
+        if (err) {
+          console.log('err= ', err);
+        }
       });
 
       // var sequence = {
