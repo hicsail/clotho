@@ -18,7 +18,7 @@ const insertData = {
       //loop though files
       fs.readdir(__dirname, (err, items) => {
         for (var file of items) {
-          if (file != "insert.js") {
+          if (file != 'insert.js') {
             var data = require(Path.join(__dirname,file));
             var collection = require(Path.join(__dirname,'../models/',file.split('.')[0]));
             for(var document of data) {
@@ -32,7 +32,7 @@ const insertData = {
 
     });
   }
-}
+};
 
 module.exports = insertData;
 

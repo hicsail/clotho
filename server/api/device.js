@@ -159,33 +159,33 @@ internals.applyRoutes = function (server, next) {
         }],
         findParts: ['findModules', function (results, done) {
 
-        var resultsArray = results.findModules;
-        var bioDesignIds = [];
+          var resultsArray = results.findModules;
+          var bioDesignIds = [];
 
 
-        if (resultsArray !== null) {
-          for (var i = 0; i < resultsArray.length; ++i) {
-            if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
-              bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
-            } else if (typeof resultsArray[i] == 'string') {
+          if (resultsArray !== null) {
+            for (var i = 0; i < resultsArray.length; ++i) {
+              if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
+                bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
+              } else if (typeof resultsArray[i] == 'string') {
               // Prior steps found multiple bd ids, but sequence/part was undefined.
-              bioDesignIds.push(resultsArray[i]);
+                bioDesignIds.push(resultsArray[i]);
+              }
             }
           }
-        }
 
         // Equivalent of finding subdesigns
         // Match by subdesigns id, name, displayId, etc.
         // Return list of parent biodesigns.
         // To do - add parts !== undefined to other sections of async call.
-        if (request.payload.parts !== undefined && request.payload.parts !== null) {
+          if (request.payload.parts !== undefined && request.payload.parts !== null) {
           //BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
-          done(null, bioDesignIds);
-        } else {
-          done(null, bioDesignIds);
-        }
+            done(null, bioDesignIds);
+          } else {
+            done(null, bioDesignIds);
+          }
 
-      }],
+        }],
         findBioDesigns: ['findParts', function (results, done) {
 
           // collect biodesign Ids
