@@ -4,7 +4,6 @@ const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Sequence = require('./sequence');
 
-
 class Part extends MongoModels {
 
   static create(name, description, userId, displayId, bioDesignId, callback) {

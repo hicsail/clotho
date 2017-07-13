@@ -3,6 +3,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Async = require('async');
+const ObjectID = require('mongo-models').ObjectID;
 
 
 const internals = {};

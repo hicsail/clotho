@@ -7,6 +7,7 @@ const Part = require('./part');
 const Parameter = require('./parameter');
 const Module = require('./module');
 const Underscore = require('underscore');
+const ObjectID = require('mongo-models').ObjectID;
 
 
 class BioDesign extends MongoModels {
