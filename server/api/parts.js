@@ -371,7 +371,7 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           } else {
             // Get full biodesigns.
-            return BioDesign.getBioDesignIds(bioDesignIds, query, done);
+            return BioDesign.getBioDesignIds(bioDesignIds, query, false, done);
           }
 
 
@@ -475,9 +475,9 @@ internals.applyRoutes = function (server, next) {
         if (acceptedBioDesignFilters.indexOf(filter) !== -1) {
           for (let result of resultArr) {
             if (result[filter] !== undefined && result[filter] !== null) {
-              filteredArr.push(result[filter]);
+              filteredArr.push(result[filter].toString());
             } else {
-              filteredArr.push(null);
+              filteredArr.push('null');
             }
           }
 
@@ -494,8 +494,11 @@ internals.applyRoutes = function (server, next) {
           }
         }
 
-
-        return reply(filteredArr);
+        if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
+          return reply(filteredArr.join());
+        } else {
+          return reply(filteredArr);
+        }
 
       });
     }
@@ -634,7 +637,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.getBioDesignIds(request.params.id, null, (err, bioDesign) => {
+      BioDesign.getBioDesignIds(request.params.id, null, false, (err, bioDesign) => {
 
         if (err) {
           return reply(err);

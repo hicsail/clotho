@@ -44,7 +44,7 @@ class Part extends MongoModels {
     });
   }
 
-  static findByBioDesignId(bioDesignId, callback) {
+  static findByBioDesignId(bioDesignId, isDevice, callback) {
 
     if (bioDesignId == null) {
       bioDesignId = {};
@@ -54,6 +54,7 @@ class Part extends MongoModels {
     var partIds = [];
 
 
+    // Get multiple biodesigns.
     if (typeof bioDesignId !== 'string') {
 
       if (bioDesignId.length > 0) {
@@ -79,10 +80,11 @@ class Part extends MongoModels {
 
         Promise.all(allPromises).then((resolve, reject) => {
 
-          this.getChildren(0, partIds, callback);
+          this.getChildren(0, partIds, isDevice, callback);
         });
       }
 
+      // Get one biodesign.
     } else if (bioDesignId !== undefined && bioDesignId !== null) {
       query[0] = {bioDesignId: bioDesignId};
 
@@ -92,7 +94,7 @@ class Part extends MongoModels {
           return callback(err);
         }
 
-        this.getChildren(0, parts, callback);
+        this.getChildren(0, parts, isDevice, callback);
       });
     }
   }
@@ -117,13 +119,11 @@ class Part extends MongoModels {
   }
 
 
-
-
   // Get sequence and assemblies under the subpart.
-  static getChildren(index, parts, callback) {
+  static getChildren(index, parts, isDevice, callback) {
 
     this.getSequence(index, parts, callback);
-    if (parts[index] !== undefined) {
+    if (isDevice && parts[index] !== undefined) {
       parts = this.getAssembly(index, parts, callback);
     }
     return parts;
@@ -209,7 +209,7 @@ class Part extends MongoModels {
         return callback(err);
       }
 
-      return this.getChildren(0, subparts, callback);
+      return this.getChildren(0, subparts, true, callback);
     });
   }
 

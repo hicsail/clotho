@@ -228,7 +228,7 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           } else {
             // Get full biodesigns.
-            return BioDesign.getBioDesignIds(bioDesignIds, query, done);
+            return BioDesign.getBioDesignIds(bioDesignIds, query, true, done);
           }
 
 
@@ -326,6 +326,7 @@ internals.applyRoutes = function (server, next) {
             null, //imageUrl
             subBioDesignIds,
             null, //superBioDesignIds
+            'DEVICE',
             done);
         },
         updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {

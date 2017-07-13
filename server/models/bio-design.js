@@ -68,7 +68,7 @@ class BioDesign extends MongoModels {
 
   // Get complete device or part. If no subbiodesign exists, is treated as a part.
   // Accepts array of bioDesignIds or single string.
-  static getBioDesignIds(bioDesignIds, query, callback) {
+  static getBioDesignIds(bioDesignIds, query, isDevice, callback) {
 
     if (query == null) {
       query = {};
@@ -86,12 +86,15 @@ class BioDesign extends MongoModels {
       var allPromises = [];
       var subBioDesignPromises = [];
 
+
       for (var i = 0; i < bioDesigns.length; ++i) {
         // fetch aggregate of part, module, parameter (informally, components)
         // and combine with main biodesign object
         var promise = new Promise((resolve, reject) => {
 
-          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
+          console.log('example', isDevice);
+
+          this.getBioDesign(bioDesigns[i]._id.toString(), isDevice, (errGet, components) => {
 
             if (errGet) {
               reject(errGet);
@@ -102,12 +105,12 @@ class BioDesign extends MongoModels {
         allPromises.push(promise);
 
         // Also get subdesigns.
-        if (/*bioDesigns[i].type === 'DEVICE' && */bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+        if (/*bioDesigns[i].type === 'DEVICE' &&*/ bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
           && bioDesigns[i].subBioDesignIds.length !== 0) {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
 
-            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, (errSub, components) => {
+            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, isDevice, (errSub, components) => {
 
               if (errSub) {
                 reject(errSub);
@@ -150,9 +153,9 @@ class BioDesign extends MongoModels {
 
 
 // based on biodesignId, fetches all children
-  static getBioDesign(bioDesignId, callback) {
+  static getBioDesign(bioDesignId, isDevice, callback) {
 
-    Part.findByBioDesignId(bioDesignId, (err, subparts) => {
+    Part.findByBioDesignId(bioDesignId, isDevice, (err, subparts) => {
 
       if (err) {
         return callback(err);

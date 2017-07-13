@@ -41,6 +41,7 @@ class Sequence extends MongoModels {
       }
 
       this.getAnnotations(0, sequences, callback);
+
     });
   }
 
@@ -67,6 +68,29 @@ class Sequence extends MongoModels {
       }
 
       this.getAnnotations(0, sequences, callback);
+
+      // Check for potential of being supersequence.
+      this.getSubAnnotations(0, sequences, callback);
+    });
+  }
+
+  // Find subannotations (in case of being sequence in a device.)
+  static getSubAnnotations(index, sequences, callback) {
+    if (index == sequences.length) {
+      return callback(null, sequences);
+    }
+
+    Annotation.findBySuperSequenceId(sequences[index]['_id'].toString(), (err, subannotations) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (subannotations.length != 0) {
+        sequences[index].subannotations = subannotations;
+      }
+
+      return this.getSubAnnotations(index + 1, sequences, callback);
     });
   }
 
