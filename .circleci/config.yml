@@ -3,8 +3,8 @@ jobs:
   build:
     working_directory: ~/clotho
     docker:
-      - image: lukyth/node-firebase-rsync
-      - image: mongo:3.4.4
+      - image: frascog17/node8-rsync
+      - image: mongo:3.4.5
     steps:
       - checkout
       - restore_cache:
