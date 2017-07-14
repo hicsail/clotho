@@ -34,6 +34,7 @@ class BioDesign extends MongoModels {
     });
   }
 
+
   // Helper function to clean up query
   static convertBD(bioDesignIds, extra) {
 
@@ -66,6 +67,7 @@ class BioDesign extends MongoModels {
 
 
 
+
   // Get complete device or part. If no subbiodesign exists, is treated as a part.
   // Accepts array of bioDesignIds or single string.
   static getBioDesignIds(bioDesignIds, query, isDevice, callback) {
@@ -74,6 +76,7 @@ class BioDesign extends MongoModels {
       query = {};
     }
     var query2 = this.convertBD(bioDesignIds, query);
+
 
     this.find(query2, (err, bioDesigns) => {
 
@@ -94,16 +97,21 @@ class BioDesign extends MongoModels {
 
           this.getBioDesign(bioDesigns[i]._id.toString(), isDevice, (errGet, components) => {
 
+
             if (errGet) {
               reject(errGet);
             }
+
             resolve(components);
           });
         });
         allPromises.push(promise);
+      }
+
+      for (var i = 0; i < bioDesigns.length; ++i) {
 
         // Also get subdesigns.
-        if (/*bioDesigns[i].type === 'DEVICE' &&*/ bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+        if (isDevice && bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
           && bioDesigns[i].subBioDesignIds.length !== 0) {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
@@ -132,11 +140,11 @@ class BioDesign extends MongoModels {
           bioDesigns[i]['subparts'] = resolve[i]['subparts'];
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+        }
 
-          // If leaf node subdesign.
-          if (subBioDesignPromises.length === 0) {
-            return callback(null, bioDesigns);
-          }
+        // If leaf node subdesign.
+        if (subBioDesignPromises.length === 0) {
+          return callback(null, bioDesigns);
         }
 
         Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
@@ -145,8 +153,8 @@ class BioDesign extends MongoModels {
             return callback(subreject);
           }
 
-          for (var i = 0; i < bioDesigns.length; ++i) {
-            bioDesigns[i]['subdesigns'] = subresolve[i];
+          for (var j = 0; j < bioDesigns.length; ++j) {
+            bioDesigns[j]['subdesigns'] = subresolve[j];
           }
 
           return callback(null, bioDesigns);
