@@ -60,52 +60,55 @@ internals.applyRoutes = function (server, next) {
    * @apiSuccessExample {json} Success-Response:
    * [
    {
-       "_id": "5952e539ed2e7c2df88b7f8a",
-       "name": "BBa_R0040",
+       "_id": "5963b58bd9b90d1a0888a188",
+       "name": "example",
        "description": null,
        "userId": "5939ba97b8e96112986d3be8",
-       "displayId": "TetR repressible promoter",
+       "displayId": "TetR repressible enhancer",
        "imageURL": null,
-       "parts": [
+       "subBioDesignIds": null,
+       "superBioDesignId": null,
+       "type": "PART",
+       "subparts": [
            {
-               "_id": "5952e539ed2e7c2df88b7f8e",
-               "name": "BBa_R0040",
+               "_id": "5963b58bd9b90d1a0888a18c",
+               "name": "example",
                "description": null,
                "userId": "5939ba97b8e96112986d3be8",
-               "displayId": "TetR repressible promoter",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "displayId": "TetR repressible enhancer",
+               "bioDesignId": "5963b58bd9b90d1a0888a188",
                "sequences": [
                    {
-                       "_id": "5952e539ed2e7c2df88b7f8f",
-                       "name": "BBa_R0040",
+                       "_id": "5963b58bd9b90d1a0888a18d",
+                       "name": "example",
                        "description": null,
                        "userId": "5939ba97b8e96112986d3be8",
-                       "displayId": "TetR repressible promoter",
-                       "featureId": null,
-                       "partId": "5952e539ed2e7c2df88b7f8e",
-                       "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+                       "displayId": "TetR repressible enhancer",
+                       "featureId": "5963b58bd9b90d1a0888a18f",
+                       "partId": "5963b58bd9b90d1a0888a18c",
+                       "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
                        "isLinear": null,
                        "isSingleStranded": null,
                        "annotations": [
                            {
-                               "_id": "5952e539ed2e7c2df88b7f90",
-                               "name": "BBa_R0040",
+                               "_id": "5963b58bd9b90d1a0888a18e",
+                               "name": "example",
                                "description": null,
                                "userId": "5939ba97b8e96112986d3be8",
-                               "sequenceId": "5952e539ed2e7c2df88b7f8f",
+                               "sequenceId": "5963b58bd9b90d1a0888a18d",
                                "start": 1,
-                               "end": 54,
+                               "end": 38,
                                "isForwardStrand": true,
                                "features": [
                                    {
-                                       "_id": "5952e539ed2e7c2df88b7f91",
-                                       "name": "BBa_R0040",
+                                       "_id": "5963b58bd9b90d1a0888a18f",
+                                       "name": "example",
                                        "description": null,
                                        "userId": "5939ba97b8e96112986d3be8",
-                                       "displayId": "TetR repressible promoter",
+                                       "displayId": "TetR repressible enhancer",
                                        "role": "PROMOTER",
-                                       "annotationId": "5952e539ed2e7c2df88b7f90",
-                                       "moduleId": "5952e539ed2e7c2df88b7f8d"
+                                       "annotationId": "5963b58bd9b90d1a0888a18e",
+                                       "moduleId": "5963b58bd9b90d1a0888a18b"
                                    }
                                ]
                            }
@@ -116,43 +119,43 @@ internals.applyRoutes = function (server, next) {
        ],
        "modules": [
            {
-               "_id": "5952e539ed2e7c2df88b7f8d",
-               "name": "BBa_R0040",
+               "_id": "5963b58bd9b90d1a0888a18b",
+               "name": "example",
                "description": null,
                "userId": "5939ba97b8e96112986d3be8",
-               "displayId": "TetR repressible promoter",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "displayId": "TetR repressible enhancer",
+               "bioDesignId": "5963b58bd9b90d1a0888a188",
                "role": "PROMOTER",
                "submoduleIds": null,
                "features": [
                    {
-                       "_id": "5952e539ed2e7c2df88b7f91",
-                       "name": "BBa_R0040",
+                       "_id": "5963b58bd9b90d1a0888a18f",
+                       "name": "example",
                        "description": null,
                        "userId": "5939ba97b8e96112986d3be8",
-                       "displayId": "TetR repressible promoter",
+                       "displayId": "TetR repressible enhancer",
                        "role": "PROMOTER",
-                       "annotationId": "5952e539ed2e7c2df88b7f90",
-                       "moduleId": "5952e539ed2e7c2df88b7f8d"
+                       "annotationId": "5963b58bd9b90d1a0888a18e",
+                       "moduleId": "5963b58bd9b90d1a0888a18b"
                    }
                ]
            }
        ],
        "parameters": [
            {
-               "_id": "5952e539ed2e7c2df88b7f8b",
-               "name": "promoter unbinding rate",
+               "_id": "5963b58bd9b90d1a0888a189",
+               "name": "enhancer unbinding rate",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "bioDesignId": "5963b58bd9b90d1a0888a188",
                "value": 0.03,
                "variable": "K7",
                "units": "min-1"
            },
            {
-               "_id": "5952e539ed2e7c2df88b7f8c",
+               "_id": "5963b58bd9b90d1a0888a18a",
                "name": "mRNA degradation rate",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "bioDesignId": "5963b58bd9b90d1a0888a188",
                "value": 0.02,
                "variable": "dmrna",
                "units": "min-1"
@@ -393,6 +396,93 @@ internals.applyRoutes = function (server, next) {
   })
   ;
 
+  /**
+   * @api {put} /api/part/:filter Get Part With Filter
+   * @apiName Get Part With Filter
+   * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts, _id,
+   * name, description, userId, displayId, and superBioDesignId. Note that using the filters for
+   * parameters, modules, and subparts will return bioDesign-specific attributes as well.
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+ "name": "BBa_R0040",
+ "displayId": "TetR repressible promoter",
+ "role": "PROMOTER",
+ "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+ "userSpace": true,
+ "parameters": [
+  {
+  "name": "promoter unbinding rate",
+  "value": 0.03,
+  "variable": "K7",
+  "units": "min-1"
+  },
+  {
+  "name": "mRNA degradation rate",
+  "value": 0.02,
+  "variable": "dmrna",
+  "units": "min-1"
+   }
+ ]
+}
+
+   *
+   * @apiSuccessExample {string} Success-Response 1 (for api/part/_id):
+   5952e539ed2e7c2df88b7f8a,595d5dc4aee74b3680aa647d,595e603d7eb5543624b7778b,595e6f392731b23c04d4dd34
+   ]
+   * @apiSuccessExample {json} Success-Response 2 (for api/part/parameters):
+   *
+   * [
+   {
+       "_id": "59639e8234f69a3584defc9b",
+       "name": "example",
+       "description": null,
+       "userId": "5939ba97b8e96112986d3be8",
+       "displayId": "TetR repressible enhancer",
+       "imageURL": null,
+       "subBioDesignIds": null,
+       "superBioDesignId": null,
+       "parameters": [
+           {
+               "_id": "59639e8234f69a3584defc9c",
+               "name": "enhancer unbinding rate",
+               "userId": "5939ba97b8e96112986d3be8",
+               "bioDesignId": "59639e8234f69a3584defc9b",
+               "value": 0.03,
+               "variable": "K7",
+               "units": "min-1"
+           },
+           {
+               "_id": "59639e8234f69a3584defc9d",
+               "name": "mRNA degradation rate",
+               "userId": "5939ba97b8e96112986d3be8",
+               "bioDesignId": "59639e8234f69a3584defc9b",
+               "value": 0.02,
+               "variable": "dmrna",
+               "units": "min-1"
+           }
+       ]
+   }
+   ]
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   * "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+   * }
+   */
+
 
   server.route({
     method: 'PUT',
@@ -409,7 +499,7 @@ internals.applyRoutes = function (server, next) {
           // TODO - update with any new biodesign attributes
           var schema = {
             filter: Joi.string().valid('parameters', 'modules', 'subparts',
-              '_id', 'name', 'description', 'userId', 'displayId', 'moduleId', 'subBioDesignId', 'superBioDesignId').required()
+              '_id', 'name', 'description', 'userId', 'displayId', 'moduleId', 'superBioDesignId').required()
           };
           var filter = {filter: request.params.filter};
 
@@ -467,7 +557,7 @@ internals.applyRoutes = function (server, next) {
         var filteredArr = [];
 
         const acceptedFilters = ['subparts', 'parameters', 'modules'];
-        const acceptedBioDesignFilters = ['_id', 'name', 'description', 'userId', 'displayId', 'moduleId', 'subBioDesignId', 'superBioDesignId'];
+        const acceptedBioDesignFilters = ['_id', 'name', 'description', 'userId', 'displayId', 'superBioDesignId'];
         const filter = request.params.filter;
 
         // If filtered attribute is that of a general biodesign, only that attribute is returned. (e.g. _id)
