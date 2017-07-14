@@ -82,7 +82,8 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
           subBioDesignIds: Joi.array().items(Joi.string()).optional(),
-          superBioDesignId: Joi.string().optional()
+          superBioDesignId: Joi.string().optional(),
+          type: Joi.string().uppercase().optional()
         }
       }
     },
@@ -97,6 +98,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.imageURL,
         request.payload.subBioDesignIds,
         request.payload.superBioDesignId,
+        request.payload.type,
         (err, bioDesign) => {
 
           if (err) {

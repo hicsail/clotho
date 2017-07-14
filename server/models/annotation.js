@@ -27,17 +27,22 @@ class Annotation extends MongoModels {
     });
   }
 
+
   static findBySuperSequenceId(superSequenceId, callback) {
+
     const query = {superSequenceId: superSequenceId};
     this.find(query, (err, annotations) => {
+
       if (err) {
         return callback(err);
       }
 
       this.getFeatures(0, annotations, callback);
-    })
+    });
   }
 
+
+  // Retrieve annotation and get feature underneath.
   static findBySequenceId(sequenceId, callback) {
 
     const query = {'sequenceId': sequenceId};

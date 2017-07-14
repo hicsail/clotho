@@ -254,8 +254,8 @@ lab.experiment('Assembly Plugin Update', () => {
       method: 'PUT',
       url: '/assembly/420000000000000000000000',
       payload: {
-        parts: [{}], //not sure how to put an object here
-        subBioDesignIds: ['firstItem', 'secondItem', 'thirdItem']
+        subBioDesignIds: ['subId1', 'subId2'],
+        superSubPartId: 'superSubPartId'
       },
       credentials: AuthenticatedUser
     };
@@ -318,8 +318,8 @@ lab.experiment('Assembly Plugin Create', () => {
       method: 'POST',
       url: '/assembly',
       payload: {
-        parts: [{part:'myPart'}],
-        subBioDesignIds: ['bioDesignId']
+        subBioDesignIds: ['subId1', 'subId2'],
+        superSubPartId: 'superSubPartId'
       },
       credentials: AuthenticatedUser
     };
@@ -377,8 +377,8 @@ lab.experiment('Assembly Plugin Update', () => {
       method: 'put',
       url: '/assembly/4200000000',
       payload: {
-        parts: [{part:'myPart'}],
-        subBioDesignIds: ['bioDesignId']
+        subBioDesignIds: ['subId1', 'subId2'],
+        superSubPartId: 'superSubPartId'
       },
       credentials: AuthenticatedUser
     };

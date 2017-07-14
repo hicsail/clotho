@@ -44,6 +44,7 @@ class Part extends MongoModels {
     });
   }
 
+
   static findByBioDesignId(bioDesignId, isDevice, callback) {
 
     if (bioDesignId == null) {
@@ -130,6 +131,7 @@ class Part extends MongoModels {
 
     // Get Sequence
     this.getSequence(index, parts, (err, partsWithSeq) => {
+
       if (err) {
         return callback(err);
       }

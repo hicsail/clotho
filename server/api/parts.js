@@ -733,7 +733,14 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
-          parameters: Joi.array().items(Joi.object()).optional(), // assumed to be of the format (value, variable)
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(), // These should be updated.
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional(),
           sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional()
         }
       }

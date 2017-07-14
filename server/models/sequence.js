@@ -84,6 +84,7 @@ class Sequence extends MongoModels {
 
   // Find subannotations (in case of being sequence in a device.)
   static getSubAnnotations(index, sequences, callback) {
+
     if (index == sequences.length) {
       return callback(null, sequences);
     }
