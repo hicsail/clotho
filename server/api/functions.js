@@ -1,6 +1,7 @@
 'use strict';
 const Bionode = require('bionode-seq');
 const Joi = require('joi');
+const Request = require('request');
 
 const internals = {};
 
@@ -365,6 +366,90 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       return reply({sequence:Bionode.transcribe(request.payload.sequence)});
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/function/languages',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+    },
+    handler: function (request, reply) {
+      Request('http://localhost:8000/languages', (error, response, body) => {
+        reply(JSON.parse(body));
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/function/versions',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+    },
+    handler: function (request, reply) {
+      Request('http://localhost:8000/version', (error, response, body) => {
+        reply(JSON.parse(body));
+      });
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/function/run',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          language: Joi.string().required(),
+          code: Joi.string().required(),
+          inputs: Joi.string().required(),
+          outputs: Joi.array().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+      Request.post({url:'http://localhost:8000/compile', formData: request.payload}, (err, httpResponse, body) => {
+        if (err) {
+          return console.error('upload failed:', err);
+        }
+        reply(body);
+      });
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/function',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          language: Joi.string().required(),
+          code: Joi.string().required(),
+          inputs: Joi.array().required(),
+          outputs: Joi.array().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const request = {
+        
+      }
+      server.inject()
+      reply("test");
     }
   });
 

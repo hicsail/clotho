@@ -63,6 +63,7 @@ const manifest = {
             AdminGroup: './server/models/admin-group',
             Admin: './server/models/admin',
             AuthAttempt: './server/models/auth-attempt',
+            Function: './server/models/function',
             Session: './server/models/session',
             User: './server/models/user'
           },
