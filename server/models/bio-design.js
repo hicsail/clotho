@@ -92,8 +92,6 @@ class BioDesign extends MongoModels {
         // and combine with main biodesign object
         var promise = new Promise((resolve, reject) => {
 
-          console.log('example', isDevice);
-
           this.getBioDesign(bioDesigns[i]._id.toString(), isDevice, (errGet, components) => {
 
             if (errGet) {
@@ -126,17 +124,26 @@ class BioDesign extends MongoModels {
 
       Promise.all(allPromises).then((resolve, reject) => {
 
+        if (reject) {
+          return callback(reject);
+        }
+
         for (var i = 0; i < bioDesigns.length; ++i) {
           bioDesigns[i]['subparts'] = resolve[i]['subparts'];
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
 
+          // If leaf node subdesign.
           if (subBioDesignPromises.length === 0) {
             return callback(null, bioDesigns);
           }
         }
 
         Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
+
+          if (subreject) {
+            return callback(subreject);
+          }
 
           for (var i = 0; i < bioDesigns.length; ++i) {
             bioDesigns[i]['subdesigns'] = subresolve[i];

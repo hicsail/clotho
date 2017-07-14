@@ -54,7 +54,7 @@ class Part extends MongoModels {
     var partIds = [];
 
 
-    // Get multiple biodesigns.
+    // When passing in multiple biodesigns.
     if (typeof bioDesignId !== 'string') {
 
       if (bioDesignId.length > 0) {
@@ -66,6 +66,7 @@ class Part extends MongoModels {
 
           var promise = new Promise((resolve, reject) => {
 
+            // Find subparts.
             this.find(query[i], (err, part) => {
 
               if (err) {
@@ -84,7 +85,7 @@ class Part extends MongoModels {
         });
       }
 
-      // Get one biodesign.
+      // When passing in only one biodesign.
     } else if (bioDesignId !== undefined && bioDesignId !== null) {
       query[0] = {bioDesignId: bioDesignId};
 
@@ -122,11 +123,37 @@ class Part extends MongoModels {
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, isDevice, callback) {
 
-    this.getSequence(index, parts, callback);
-    if (isDevice && parts[index] !== undefined) {
-      parts = this.getAssembly(index, parts, callback);
+    if (parts !== undefined && index === parts.length) {
+      return callback(null, parts);
     }
-    return parts;
+
+
+    // Get Sequence
+    this.getSequence(index, parts, (err, partsWithSeq) => {
+      if (err) {
+        return callback(err);
+      }
+
+      // Then get assembly if needed.
+      if (isDevice && partsWithSeq[index] !== undefined) {
+
+        this.getAssembly(index, partsWithSeq, (err, partsWithAssembly) => {
+
+          if (err) {
+            return callback(err);
+          }
+
+          this.getChildren(index + 1, partsWithAssembly, isDevice, callback);
+
+        });
+      } else {
+
+        // Get assembly/sequence for next subpart.
+        this.getChildren(index + 1, partsWithSeq, isDevice, callback);
+      }
+
+    });
+
   }
 
 
@@ -209,7 +236,30 @@ class Part extends MongoModels {
         return callback(err);
       }
 
-      return this.getChildren(0, subparts, true, callback);
+
+      this.getChildren(0, subparts, false, callback);
+
+      // for (var i = 0; i < subparts.length; i++) {
+      //   var promise = new Promise((resolve, reject) => {
+      //     this.getChildren(0, subparts, false, (err, results) => {
+      //       if (err) {
+      //         reject(err);
+      //       } else {
+      //         resolve(results);
+      //       }
+      //     });
+      //   });
+      //   allPromises.push(promise);
+      // }
+      //
+      // Promise.all(allPromises).then((resolve, reject) => {
+      //   if (!reject) {
+      //     return callback(null, resolve);
+      //   } else {
+      //     return callback(reject);
+      //   }
+      // });
+
     });
   }
 
