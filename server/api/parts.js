@@ -406,6 +406,8 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
+   * @apiParam {String} filter parameters, modules, subparts, _id,
+   * name, description, userId, displayId, and superBioDesignId
    * @apiParam {String} [name]  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
@@ -439,7 +441,7 @@ internals.applyRoutes = function (server, next) {
    *
    * @apiSuccessExample {string} Success-Response 1 (for api/part/_id):
    5952e539ed2e7c2df88b7f8a,595d5dc4aee74b3680aa647d,595e603d7eb5543624b7778b,595e6f392731b23c04d4dd34
-   ]
+
    * @apiSuccessExample {json} Success-Response 2 (for api/part/parameters):
    *
    * [
@@ -755,7 +757,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} name  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
-   * @apiParam {Object} [parameters]  can include "name", "units", "value", "variable"
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    *
    * @apiParamExample {json} Request-Example:
@@ -789,6 +791,7 @@ internals.applyRoutes = function (server, next) {
    *  "statusCode": 400,
    *  "error": "Bad Request",
    *  "message": "Role invalid."
+   *  }
    */
 
   server.route({
@@ -822,7 +825,7 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           displayId: Joi.string().optional(),
-          role: Joi.string().uppercase().optional(),
+          role: Joi.string().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -837,6 +840,8 @@ internals.applyRoutes = function (server, next) {
     },
 
     handler: function (request, reply) {
+
+      console.log(request.payload);
 
       Async.auto({
         createBioDesign: function (done) {
@@ -1035,6 +1040,54 @@ internals.applyRoutes = function (server, next) {
   })
   ;
 
+  /**
+   * @api {put} /api/part/update/:id Update Part by Id
+   * @apiName  Update Part by Id
+   * @apiDescription Include arguments in payload to update part.
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   *
+   * @apiParamExample {json} Request-Example:
+   *
+   * {
+	"name": "BBa_E0040",
+	"displayId": "green fluorescent protein derived from jellyfish",
+	"role": "PROMOTER",
+	"parameters": [{
+		"name": "color",
+		"variable": "green",
+		"value": 1,
+		"units": "nM"
+	}],
+	"sequence": "ATGCGTAAA"
+
+}
+   *
+   * @apiSuccessExample {string} Success-Response:
+   *
+   * {
+    "_id": "5963a2f649bb762614bdaf63",
+    "name": "BBa_E0040",
+    "description": null,
+    "userId": "5939ba97b8e96112986d3be8",
+    "displayId": "green flourescent protein derived from jellyfish",
+    "imageURL": null,
+    "subBioDesignIds": null,
+    "superBioDesignId": null
+}
+   *
+   * @apiErrorExample {json} Error-Response 1:
+
+   */
+
   server.route({
     method: 'PUT',
     path: '/part/update/{id}',
@@ -1045,6 +1098,8 @@ internals.applyRoutes = function (server, next) {
       pre: [{
         assign: 'checkrole',
         method: function (request, reply) {
+
+          // Check role is valid before looking for request.
 
           var role = request.payload.role;
           if (role !== undefined && role !== null) {
@@ -1061,7 +1116,28 @@ internals.applyRoutes = function (server, next) {
             reply(true);
           }
         }
-      }],
+      },
+        {
+          assign: 'checkBioDesign',
+          method: function (request, reply) {
+
+            // Check that biodesign exists - should not perform update if biodesign does not exist.
+            var bioDesignId = request.params.id;
+
+            BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
+
+              if (err) {
+                  return reply(err);
+                } else if (!results || results.length === 0) {
+                  return reply(Boom.notFound('Part does not exist.'));
+                } else {
+                  reply(true);
+                }
+              }
+            );
+          }
+        }
+      ],
       validate: {
         payload: {
           sort: Joi.string().default('_id'),
@@ -1168,6 +1244,80 @@ internals.applyRoutes = function (server, next) {
             done(null, []);
           }
 
+        }],
+        updateSequence: ['createParameters', function (results, done) {
+
+          var bioDesignId = request.params.id;
+          var name = request.payload.name;
+          var displayId = request.payload.displayId;
+          var sequence = request.payload.sequence;
+          var userId = request.auth.credentials.user._id.toString();
+
+          if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
+            // Find existing sequence. Override if needed.
+
+            Sequence.updateSequenceByBioDesign(bioDesignId, name, displayId, userId, sequence, done);
+
+          } else {
+            // Need to deal with case where annotationId exists but not updating sequence.
+
+            Annotation.findOne({bioDesignId: bioDesignId}, (err, results) => {
+
+              if (err) return reply(err);
+
+              if (results._id) done(null, results._id);
+              else done(null, null);
+
+            });
+          }
+        }],
+        updateModule: ['updateSequence', function (results, done) {
+
+          var bioDesignId = request.params.id;
+          var name = request.payload.name;
+          var displayId = request.payload.displayId;
+          var role = request.payload.role;
+          var userId = request.auth.credentials.user._id.toString();
+
+          var annotationId = results.updateSequence;
+
+          if (request.payload.role !== undefined && request.payload.role !== null) {
+
+            Module.updateModule(bioDesignId, name, userId, displayId, role, annotationId, done);
+
+          } else {
+
+            // Get a featureId.
+
+            Feature.findOne({bioDesignId: bioDesignId}, (err, results) => {
+
+              if (err) return reply(err);
+
+              if (results._id) done(null, results._id);
+              else done(null, null);
+
+            });
+
+
+          }
+
+        }],
+        linkSequenceToFeature: ['updateModule', function (results, done) {
+
+          var featureId = results.updateModule;
+          var bioDesignId = request.params.id;
+
+          Sequence.findOneAndUpdate({
+            bioDesignId: bioDesignId
+          }, {$set: {featureId: featureId}}, (err, seq) => {
+
+            if (err) {
+              return reply(err);
+            } else {
+              done(null, seq);
+            }
+          });
+
         }]
       }, (err, result) => {
 
@@ -1178,9 +1328,7 @@ internals.applyRoutes = function (server, next) {
 
         var newPayload = {
           name: request.payload.name,
-          displayId: request.payload.displayId,
-          role: request.payload.role,
-          sequence: request.payload.sequence
+          displayId: request.payload.displayId
         };
 
         var newRequest = {

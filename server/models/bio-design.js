@@ -70,6 +70,8 @@ class BioDesign extends MongoModels {
 
   // Get complete device or part. If no subbiodesign exists, is treated as a part.
   // Accepts array of bioDesignIds or single string.
+
+  // isDevice can be null to indicate that we need to query biodesign(s) to determine its type.
   static getBioDesignIds(bioDesignIds, query, isDevice, callback) {
 
     if (query == null) {
@@ -79,6 +81,15 @@ class BioDesign extends MongoModels {
 
 
     this.find(query2, (err, bioDesigns) => {
+
+      // Accounts for non-top level calls - design type not known
+      if (isDevice === null) {
+        var isDeviceArr = [];
+        for (var i = 0; i < bioDesigns.length; ++i) {
+          isDeviceArr.push(bioDesigns[i].type === 'DEVICE');
+        }
+      }
+
 
       // dealing with error
       if (err) {
@@ -95,7 +106,13 @@ class BioDesign extends MongoModels {
         // and combine with main biodesign object
         var promise = new Promise((resolve, reject) => {
 
-          this.getBioDesign(bioDesigns[i]._id.toString(), isDevice, (errGet, components) => {
+          var isDeviceInput = isDevice;
+
+          if (isDevice === null) {
+            isDeviceInput = bioDesigns[i].type === 'DEVICE';
+          }
+
+          this.getBioDesign(bioDesigns[i]._id.toString(), isDeviceInput, (errGet, components) => {
 
 
             if (errGet) {
@@ -116,7 +133,7 @@ class BioDesign extends MongoModels {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
 
-            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, isDevice, (errSub, components) => {
+            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
 
               if (errSub) {
                 reject(errSub);

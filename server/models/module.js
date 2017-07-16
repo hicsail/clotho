@@ -86,6 +86,54 @@ class Module extends MongoModels {
     });
   }
 
+  // Update module and Feature with role.
+  static updateModule(bioDesignId, name, userId, displayId, role, annotationId, callback) {
+
+    this.findOne({bioDesignId: bioDesignId}, (err, modules) => {
+
+      if (err) return callback(err);
+
+      // No module found. Make new module.
+      if (modules === null && modules.length === 0) {
+
+        //Make new module.
+        this.create(name, null, userId, displayId, bioDesignId, role, null, (err, moduleId) => {
+
+          if (err) return callback(err);
+
+          // Make new feature, linking up with annotationId.
+
+          Feature.create(name, null, userId, displayId, role, annotationId, moduleId, callback);
+
+        });
+
+
+      } else {
+        // Module already exists.
+
+        this.updateOne({bioDesignId: bioDesignId}, {$set: {role: role}}, (err, count, moduleDoc) => {
+
+          if (err) return callback(err);
+
+          Feature.updateOne({bioDesignId: bioDesignId}, {
+            $set: {
+              role: role,
+              annotationId: annotationId
+            }
+          }, (err, count, featureDoc) => {
+
+            if (err) return callback(err);
+
+            return callback(null, featureDoc._id);
+          });
+        });
+
+
+      }
+
+    });
+  }
+
 }
 
 //

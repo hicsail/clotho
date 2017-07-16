@@ -30,6 +30,7 @@ lab.before((done) => {
     Sequence: MakeMockModel(),
     Annotation: MakeMockModel(),
     Feature: MakeMockModel(),
+    Role: MakeMockModel()
   };
 
   const proxy = {};
@@ -227,6 +228,10 @@ lab.experiment('Part Plugin Create', () => {
 
     delete request.payload.parameters;
 
+    stub.Role.checkValidRole = function (role, callback) {
+      return callback(true);
+    };
+
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
@@ -252,6 +257,10 @@ lab.experiment('Part Plugin Create', () => {
   lab.test('role is undefined', (done) => {
 
     delete request.payload.role;
+
+    stub.Role.checkValidRole = function (role, callback) {
+      return true;
+    };
 
     server.inject(request, (response) => {
 
@@ -311,14 +320,11 @@ lab.experiment('Part Plugin Create with multiple parameters', () => {
   });
 
 
-
 });
-
 
 
 //   //TODO: Tests go here
 //
-
 
 
 //
