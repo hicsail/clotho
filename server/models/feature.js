@@ -5,7 +5,7 @@ const MongoModels = require('mongo-models');
 
 class Feature extends MongoModels {
 
-  static create(name, description, userId, displayId, role, annotationId, moduleId, callback) {
+  static create(name, description, userId, displayId, role, annotationId, superAnnotationId, moduleId, callback) {
 
     const document = {
       name: name,
@@ -14,6 +14,7 @@ class Feature extends MongoModels {
       displayId: displayId,
       role: role,
       annotationId: annotationId,
+      superAnnotationId: superAnnotationId,
       moduleId: moduleId
     };
 
@@ -30,6 +31,20 @@ class Feature extends MongoModels {
   static findByAnnotationId(annotationId, callback) {
 
     const query = {'annotationId': annotationId};
+
+    this.find(query, (err, annotations) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, annotations);
+    });
+  }
+
+  static findBySuperAnnotationId(superAnnotationId, callback) {
+
+    const query = {'superAnnotationId': superAnnotationId};
 
     this.find(query, (err, annotations) => {
 
@@ -82,6 +97,7 @@ Feature.schema = Joi.object().keys({
   displayId: Joi.string().optional(),
   role: Joi.string().uppercase().required(),
   annotationId: Joi.string().required(),
+  superAnnotationId: Joi.string().required(),
   genBankId: Joi.string(),
   moduleId: Joi.string(),
   swissProtId: Joi.string(),

@@ -637,7 +637,6 @@ internals.applyRoutes = function (server, next) {
             done);
         }],
         createSubAnnotations: ['createSequence', 'getSequences', function (results, done) {
-          console.log("creating subAnnotation");
 
           // Create subAnnotations for all subBioDesigns connected to subFeatures
           var superSequenceId = results.createSequence._id.toString();
@@ -685,12 +684,11 @@ internals.applyRoutes = function (server, next) {
             }
             done(null, subAnnotationIds);
           });
-
         }],
-        updateSubFeaturesAnnotationId: ['createSequence', function (results, done) {
+        updateSubFeaturesAnnotationId: ['createSequence', 'createSubAnnotations', function (results, done) {
           console.log("updateSubFeaturesAnnotationId");
 
-          // Create subAnnotations for all subBioDesigns connected to subFeatures
+          // Update annotationIds in all subFeatures
           // var superSequenceResults = results.createSequence;
           // var sequenceId = results.createSequence._id.toString();
           // var subSubPartIds = results.getSubSubPartIds;

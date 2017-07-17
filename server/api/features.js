@@ -82,6 +82,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string().optional(),
           role: Joi.string().required(),
           annotationId: Joi.string().required(),
+          superAnnotationId: Joi.string().required(),
           moduleId: Joi.string()
         }
       }
@@ -95,6 +96,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.displayId,
         request.payload.role,
         request.payload.annotationId,
+        request.payload.superAnnotationId,
         request.payload.moduleId,
         (err, feature) => {
 
@@ -121,6 +123,7 @@ internals.applyRoutes = function (server, next) {
           description: Joi.string().optional(),
           role: Joi.string().required(),
           annotationId: Joi.string().required(),
+          superAnnotationId: Joi.string().required(),
           moduleId: Joi.string()
         }
       }
@@ -135,6 +138,7 @@ internals.applyRoutes = function (server, next) {
           description: request.payload.description,
           role: request.payload.role,
           annotationId: request.payload.annotationId,
+          superAnnotationId: request.payload.superAnnotationId,
           moduleId: request.payload.moduleId
         }
       };
