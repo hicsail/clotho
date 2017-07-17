@@ -36,23 +36,22 @@ internals.applyRoutes = function (server, next) {
    *
    * @apiParamExample {json} Request-Example:
    *  {
- "name": "BBa_R0040",
- "displayId": "TetR repressible promoter",
+ "name": "BBa_0123",
+ "displayId": "TetR repressible enhancer",
  "role": "PROMOTER",
- "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
- "userSpace": true,
+ "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
  "parameters": [
   {
-  "name": "promoter unbinding rate",
-  "value": 0.03,
-  "variable": "K7",
-  "units": "min-1"
+	"name": "enhancer unbinding rate",
+	"value": 0.03,
+	"variable": "K7",
+	"units": "min-1"
   },
   {
-  "name": "mRNA degradation rate",
-  "value": 0.02,
-  "variable": "dmrna",
-  "units": "min-1"
+	"name": "mRNA degradation rate",
+	"value": 0.02,
+	"variable": "dmrna",
+	"units": "min-1"
    }
  ]
 }
@@ -60,8 +59,8 @@ internals.applyRoutes = function (server, next) {
    * @apiSuccessExample {json} Success-Response:
    * [
    {
-       "_id": "5963b58bd9b90d1a0888a188",
-       "name": "example",
+       "_id": "596c0ddb2ef1192cc8a821af",
+       "name": "BBa_0123",
        "description": null,
        "userId": "5939ba97b8e96112986d3be8",
        "displayId": "TetR repressible enhancer",
@@ -71,44 +70,44 @@ internals.applyRoutes = function (server, next) {
        "type": "PART",
        "subparts": [
            {
-               "_id": "5963b58bd9b90d1a0888a18c",
-               "name": "example",
+               "_id": "596c0ddb2ef1192cc8a821b3",
+               "name": "BBa_0123",
                "description": null,
                "userId": "5939ba97b8e96112986d3be8",
                "displayId": "TetR repressible enhancer",
-               "bioDesignId": "5963b58bd9b90d1a0888a188",
+               "bioDesignId": "596c0ddb2ef1192cc8a821af",
                "sequences": [
                    {
-                       "_id": "5963b58bd9b90d1a0888a18d",
-                       "name": "example",
+                       "_id": "596c0ddb2ef1192cc8a821b4",
+                       "name": "BBa_0123",
                        "description": null,
                        "userId": "5939ba97b8e96112986d3be8",
                        "displayId": "TetR repressible enhancer",
-                       "featureId": "5963b58bd9b90d1a0888a18f",
-                       "partId": "5963b58bd9b90d1a0888a18c",
+                       "featureId": "596c0ddb2ef1192cc8a821b6",
+                       "partId": "596c0ddb2ef1192cc8a821b3",
                        "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
                        "isLinear": null,
                        "isSingleStranded": null,
                        "annotations": [
                            {
-                               "_id": "5963b58bd9b90d1a0888a18e",
-                               "name": "example",
+                               "_id": "596c0ddb2ef1192cc8a821b5",
+                               "name": "BBa_0123",
                                "description": null,
                                "userId": "5939ba97b8e96112986d3be8",
-                               "sequenceId": "5963b58bd9b90d1a0888a18d",
+                               "sequenceId": "596c0ddb2ef1192cc8a821b4",
                                "start": 1,
                                "end": 38,
                                "isForwardStrand": true,
                                "features": [
                                    {
-                                       "_id": "5963b58bd9b90d1a0888a18f",
-                                       "name": "example",
+                                       "_id": "596c0ddb2ef1192cc8a821b6",
+                                       "name": "BBa_0123",
                                        "description": null,
                                        "userId": "5939ba97b8e96112986d3be8",
                                        "displayId": "TetR repressible enhancer",
                                        "role": "PROMOTER",
-                                       "annotationId": "5963b58bd9b90d1a0888a18e",
-                                       "moduleId": "5963b58bd9b90d1a0888a18b"
+                                       "annotationId": "596c0ddb2ef1192cc8a821b5",
+                                       "moduleId": "596c0ddb2ef1192cc8a821b2"
                                    }
                                ]
                            }
@@ -119,43 +118,43 @@ internals.applyRoutes = function (server, next) {
        ],
        "modules": [
            {
-               "_id": "5963b58bd9b90d1a0888a18b",
-               "name": "example",
+               "_id": "596c0ddb2ef1192cc8a821b2",
+               "name": "BBa_0123",
                "description": null,
                "userId": "5939ba97b8e96112986d3be8",
                "displayId": "TetR repressible enhancer",
-               "bioDesignId": "5963b58bd9b90d1a0888a188",
+               "bioDesignId": "596c0ddb2ef1192cc8a821af",
                "role": "PROMOTER",
                "submoduleIds": null,
                "features": [
                    {
-                       "_id": "5963b58bd9b90d1a0888a18f",
-                       "name": "example",
+                       "_id": "596c0ddb2ef1192cc8a821b6",
+                       "name": "BBa_0123",
                        "description": null,
                        "userId": "5939ba97b8e96112986d3be8",
                        "displayId": "TetR repressible enhancer",
                        "role": "PROMOTER",
-                       "annotationId": "5963b58bd9b90d1a0888a18e",
-                       "moduleId": "5963b58bd9b90d1a0888a18b"
+                       "annotationId": "596c0ddb2ef1192cc8a821b5",
+                       "moduleId": "596c0ddb2ef1192cc8a821b2"
                    }
                ]
            }
        ],
        "parameters": [
            {
-               "_id": "5963b58bd9b90d1a0888a189",
+               "_id": "596c0ddb2ef1192cc8a821b0",
                "name": "enhancer unbinding rate",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "5963b58bd9b90d1a0888a188",
+               "bioDesignId": "596c0ddb2ef1192cc8a821af",
                "value": 0.03,
                "variable": "K7",
                "units": "min-1"
            },
            {
-               "_id": "5963b58bd9b90d1a0888a18a",
+               "_id": "596c0ddb2ef1192cc8a821b1",
                "name": "mRNA degradation rate",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "5963b58bd9b90d1a0888a188",
+               "bioDesignId": "596c0ddb2ef1192cc8a821af",
                "value": 0.02,
                "variable": "dmrna",
                "units": "min-1"
@@ -446,29 +445,30 @@ internals.applyRoutes = function (server, next) {
    *
    * [
    {
-       "_id": "59639e8234f69a3584defc9b",
-       "name": "example",
+       "_id": "596c0ddb2ef1192cc8a821af",
+       "name": "BBa_0123",
        "description": null,
        "userId": "5939ba97b8e96112986d3be8",
        "displayId": "TetR repressible enhancer",
        "imageURL": null,
        "subBioDesignIds": null,
        "superBioDesignId": null,
+       "type": "PART",
        "parameters": [
            {
-               "_id": "59639e8234f69a3584defc9c",
+               "_id": "596c0ddb2ef1192cc8a821b0",
                "name": "enhancer unbinding rate",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "59639e8234f69a3584defc9b",
+               "bioDesignId": "596c0ddb2ef1192cc8a821af",
                "value": 0.03,
                "variable": "K7",
                "units": "min-1"
            },
            {
-               "_id": "59639e8234f69a3584defc9d",
+               "_id": "596c0ddb2ef1192cc8a821b1",
                "name": "mRNA degradation rate",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "59639e8234f69a3584defc9b",
+               "bioDesignId": "596c0ddb2ef1192cc8a821af",
                "value": 0.02,
                "variable": "dmrna",
                "units": "min-1"
@@ -477,12 +477,19 @@ internals.applyRoutes = function (server, next) {
    }
    ]
    *
-   * @apiErrorExample {json} Error-Response 1:
+   * @apiErrorExample {json} Error-Response 1 - no parts match:
    * {
    * "statusCode": 404,
     "error": "Not Found",
     "message": "Document not found."
    * }
+   *
+   * @apiErrorExample {json} Error-Response 2 - invalid role:
+   * {
+    "statusCode": 400,
+    "error": "Bad Request",
+    "message": "Role invalid."
+}
    */
 
 
@@ -610,52 +617,56 @@ internals.applyRoutes = function (server, next) {
    * @apiSuccessExample {json} Success-Response:
    * [
    {
-       "_id": "5952e539ed2e7c2df88b7f8a",
-       "name": "BBa_R0040",
+       "_id": "5967e04fc68f3c2e640cf9c6",
+       "name": "B010",
        "description": null,
        "userId": "5939ba97b8e96112986d3be8",
-       "displayId": "TetR repressible promoter",
+       "displayId": "sample2",
        "imageURL": null,
-       "parts": [
+       "subBioDesignIds": null,
+       "superBioDesignId": "5967e0efc68f3c2e640cf9cd",
+       "type": "PART",
+       "subparts": [
            {
-               "_id": "5952e539ed2e7c2df88b7f8e",
-               "name": "BBa_R0040",
+               "_id": "5967e04fc68f3c2e640cf9c9",
+               "name": "B010",
                "description": null,
                "userId": "5939ba97b8e96112986d3be8",
-               "displayId": "TetR repressible promoter",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
+               "displayId": "sample2",
+               "bioDesignId": "5967e04fc68f3c2e640cf9c6",
+               "assemblyId": "5967e0efc68f3c2e640cf9d1",
                "sequences": [
                    {
-                       "_id": "5952e539ed2e7c2df88b7f8f",
-                       "name": "BBa_R0040",
+                       "_id": "5967e04fc68f3c2e640cf9ca",
+                       "name": "B010",
                        "description": null,
                        "userId": "5939ba97b8e96112986d3be8",
-                       "displayId": "TetR repressible promoter",
-                       "featureId": null,
-                       "partId": "5952e539ed2e7c2df88b7f8e",
-                       "sequence": "tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac",
+                       "displayId": "sample2",
+                       "featureId": "5967e04fc68f3c2e640cf9cc",
+                       "partId": "5967e04fc68f3c2e640cf9c9",
+                       "sequence": "CTTATT",
                        "isLinear": null,
                        "isSingleStranded": null,
                        "annotations": [
                            {
-                               "_id": "5952e539ed2e7c2df88b7f90",
-                               "name": "BBa_R0040",
+                               "_id": "5967e04fc68f3c2e640cf9cb",
+                               "name": "B010",
                                "description": null,
                                "userId": "5939ba97b8e96112986d3be8",
-                               "sequenceId": "5952e539ed2e7c2df88b7f8f",
+                               "sequenceId": "5967e04fc68f3c2e640cf9ca",
                                "start": 1,
-                               "end": 54,
+                               "end": 6,
                                "isForwardStrand": true,
                                "features": [
                                    {
-                                       "_id": "5952e539ed2e7c2df88b7f91",
-                                       "name": "BBa_R0040",
+                                       "_id": "5967e04fc68f3c2e640cf9cc",
+                                       "name": "B010",
                                        "description": null,
                                        "userId": "5939ba97b8e96112986d3be8",
-                                       "displayId": "TetR repressible promoter",
-                                       "role": "PROMOTER",
-                                       "annotationId": "5952e539ed2e7c2df88b7f90",
-                                       "moduleId": "5952e539ed2e7c2df88b7f8d"
+                                       "displayId": "sample2",
+                                       "role": "GENE",
+                                       "annotationId": "5967e04fc68f3c2e640cf9cb",
+                                       "moduleId": "5967e04fc68f3c2e640cf9c8"
                                    }
                                ]
                            }
@@ -666,46 +677,37 @@ internals.applyRoutes = function (server, next) {
        ],
        "modules": [
            {
-               "_id": "5952e539ed2e7c2df88b7f8d",
-               "name": "BBa_R0040",
+               "_id": "5967e04fc68f3c2e640cf9c8",
+               "name": "B010",
                "description": null,
                "userId": "5939ba97b8e96112986d3be8",
-               "displayId": "TetR repressible promoter",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
-               "role": "PROMOTER",
+               "displayId": "sample2",
+               "bioDesignId": "5967e04fc68f3c2e640cf9c6",
+               "role": "GENE",
                "submoduleIds": null,
                "features": [
                    {
-                       "_id": "5952e539ed2e7c2df88b7f91",
-                       "name": "BBa_R0040",
+                       "_id": "5967e04fc68f3c2e640cf9cc",
+                       "name": "B010",
                        "description": null,
                        "userId": "5939ba97b8e96112986d3be8",
-                       "displayId": "TetR repressible promoter",
-                       "role": "PROMOTER",
-                       "annotationId": "5952e539ed2e7c2df88b7f90",
-                       "moduleId": "5952e539ed2e7c2df88b7f8d"
+                       "displayId": "sample2",
+                       "role": "GENE",
+                       "annotationId": "5967e04fc68f3c2e640cf9cb",
+                       "moduleId": "5967e04fc68f3c2e640cf9c8"
                    }
                ]
            }
        ],
        "parameters": [
            {
-               "_id": "5952e539ed2e7c2df88b7f8b",
-               "name": "promoter unbinding rate",
+               "_id": "5967e04fc68f3c2e640cf9c7",
+               "name": "sodium",
                "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
-               "value": 0.03,
-               "variable": "K7",
-               "units": "min-1"
-           },
-           {
-               "_id": "5952e539ed2e7c2df88b7f8c",
-               "name": "mRNA degradation rate",
-               "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "5952e539ed2e7c2df88b7f8a",
-               "value": 0.02,
-               "variable": "dmrna",
-               "units": "min-1"
+               "bioDesignId": "5967e04fc68f3c2e640cf9c6",
+               "value": 99,
+               "variable": "Na",
+               "units": "mM"
            }
        ]
    }
@@ -786,7 +788,7 @@ internals.applyRoutes = function (server, next) {
    * @apiSuccessExample {string} Success-Response:
    * 5952e539ed2e7c2df88b7f8a
    *
-   * @apiErrorExample {json} Error-Response 1:
+   * @apiErrorExample {json} Error-Response 1 - Invalid role:
    * {
    *  "statusCode": 400,
    *  "error": "Bad Request",
@@ -1071,7 +1073,7 @@ internals.applyRoutes = function (server, next) {
 
 }
    *
-   * @apiSuccessExample {string} Success-Response:
+   * @apiSuccessExample {json} Success-Response:
    *
    * {
     "_id": "5963a2f649bb762614bdaf63",
@@ -1084,8 +1086,21 @@ internals.applyRoutes = function (server, next) {
     "superBioDesignId": null
 }
    *
-   * @apiErrorExample {json} Error-Response 1:
+   * @apiErrorExample {json} Error-Response 1 - Invalid part id:
 
+   {
+   * "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+   * }
+   *
+   *@apiErrorExample {json} Error-Response 2 - Invalid role:
+   * {
+   *  "statusCode": 400,
+   *  "error": "Bad Request",
+   *  "message": "Role invalid."
+   *  }
+   *
    */
 
   server.route({
