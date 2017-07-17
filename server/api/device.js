@@ -652,7 +652,7 @@ internals.applyRoutes = function (server, next) {
           //
           // var superSequenceId = results.createSequence._id.toString();//FIX THIS AND ADD superSequenceId to annotation
           // console.log("here?");
-          //
+          // hello - this is just a test
           //
           // var subSequenceIds = superSequenceResults[0];
           // var superSequenceArr = superSequenceResults[1];
