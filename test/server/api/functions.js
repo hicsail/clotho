@@ -261,3 +261,54 @@ lab.experiment('Function Plugin Reverse Complement', () => {
     });
   });
 });
+
+lab.experiment('Function Plugin Languages', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/function/languages',
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns languages', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+
+lab.experiment('Function Plugin Versions', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/function/versions',
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns languages versions', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});

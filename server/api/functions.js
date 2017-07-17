@@ -369,6 +369,18 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {get} /api/function/languages Get Languages
+   * @apiName Get Languages
+   * @apiDescription Get available languages to write custom function
+   * @apiGroup Custom Functions
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response-1:
+   *  ["node","java","python"]
+   *
+   */
   server.route({
     method: 'GET',
     path: '/function/languages',
@@ -378,12 +390,26 @@ internals.applyRoutes = function (server, next) {
       },
     },
     handler: function (request, reply) {
+
       Request('http://localhost:8000/languages', (error, response, body) => {
+
         reply(JSON.parse(body));
       });
     }
   });
 
+  /**
+   * @api {get} /api/function/versions Get Versions
+   * @apiName Get Versions
+   * @apiDescription Get available languages version
+   * @apiGroup Custom Functions
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response-1:
+   *  {"java":"1.8.0_102","node":"v7.9.0","python":"Python 2.7.10"}
+   *
+   */
   server.route({
     method: 'GET',
     path: '/function/versions',
@@ -393,7 +419,9 @@ internals.applyRoutes = function (server, next) {
       },
     },
     handler: function (request, reply) {
+
       Request('http://localhost:8000/version', (error, response, body) => {
+
         reply(JSON.parse(body));
       });
     }
@@ -416,7 +444,9 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       Request.post({url:'http://localhost:8000/compile', formData: request.payload}, (err, httpResponse, body) => {
+
         if (err) {
           return console.error('upload failed:', err);
         }
@@ -445,11 +475,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const request = {
-        
-      }
-      server.inject()
-      reply("test");
+      reply('test');
     }
   });
 
