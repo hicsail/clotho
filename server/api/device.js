@@ -575,9 +575,9 @@ internals.applyRoutes = function (server, next) {
 
 
         }],
-        createSequence: ['createSubpart', 'getSubSubPartIds', function (results, done) {
+        getSequences: ['createSubpart', 'getSubSubPartIds', function (results, done) {
 
-          //get all subSequences and concatenates them to create the superSequence!
+          //get all subSequences!
           var partId = results.createSubpart._id.toString();
           var subSubPartIds = results.getSubSubPartIds;
           var subBioDesignIds = request.payload.partIds;
@@ -609,80 +609,72 @@ internals.applyRoutes = function (server, next) {
             if (reject) {
               reply(reject);
             }
-            else {
-              var superSequence = superSequenceArr.join("");
-
-              Sequence.create(
-                request.payload.name,
-                null, // no description
-                request.auth.credentials.user._id.toString(),
-                request.payload.displayId,
-                null, // featureId null
-                partId,
-                superSequence, //create null sequence and update later
-                null,//isLinear
-                null,//isSingleStranded
-                (err, results) => {
-                  if (err) {
-                    return reject(err);
-                  } else {
-                    return results;
-                  }
-                });
-            }
-            done(null, [subSequenceIds, superSequenceArr, superSequence, resolve]);
+            done(null, [subSequenceIds, superSequenceArr]);
           });
 
         }],
-        createSubAnnotations: ['createSequence', 'getSubSubPartIds', function (results, done) {
-          console.log("creating subAnnotation")
+        createSequence: ['createSubpart', 'getSequences', function (results, done) {
+
+          //get all subSequences and concatenates them to create the superSequence!
+          var partId = results.createSubpart._id.toString();
+          var sequences = results.getSequences;
+
+          var superSequenceArr = sequences[1];
+          var subBioDesignIds = request.payload.partIds;
+
+          var superSequence = superSequenceArr.join("");
+
+          Sequence.create(
+            request.payload.name,
+            null, // no description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            null, // featureId null
+            partId,
+            superSequence, //create null sequence and update later
+            null,//isLinear
+            null,//isSingleStranded
+            done);
+        }],
+        createSubAnnotations: ['createSequence', 'getSequences', function (results, done) {
+          console.log("creating subAnnotation");
 
           // Create subAnnotations for all subBioDesigns connected to subFeatures
-
-
-          //What do we need?
-          // sequenceIds --> to get featureIds later
-          // array of sequences --> to get start/end integers
-
-          //either get sequenceIds again here --> we'll need it again later for featureIds
-          //Or get an array of it above, and return it
-
-          var superSequenceResults = results.createSequence;
-          // console.log("here?");
-          //
-          // var superSequenceId = results.createSequence._id.toString();//FIX THIS AND ADD superSequenceId to annotation
-          // console.log("here?");
-          // hello - this is just a test
-          //
-          // var subSequenceIds = superSequenceResults[0];
-          // var superSequenceArr = superSequenceResults[1];
-          // var superSequence = superSequenceResults[2];
-          // var superSequenceId = superSequenceResults[3]._id.toString();
-          // console.log(superSequenceId);
+          var superSequenceId = results.createSequence._id.toString();
+          var superSequenceArr = results.getSequences[1];
 
           var allPromises = [];
-
           var position = 1; //sequences start at 1
 
-          for (var i = 0; i < superSequenceArr.size; ++i) {
-            console.log("in for loop");       //CHECK FOR LOOP --> not working yet
+          var subAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,"0");
+
+          for (var i = 0; i < superSequenceArr.length; ++i) {
             var promise = new Promise((resolve, reject) => {
 
               var subSequence =  superSequenceArr[i];
               var subSequenceLength = subSequence.length;
               var start = position;
-              var end = position + subSequenceLength;
+              var end = position + subSequenceLength - 1;
               position = end + 1; //setup for next annotation
 
-              Annotation.create(
+              Annotation.createWithIndex(  //Check if this is okay
+                i,
                 request.payload.name,
                 null, // description,
                 request.auth.credentials.user._id.toString(),
-                subSequenceIds[i], // sequenceId
+                superSequenceId, // sequenceId
                 start, // start
                 end, // end
                 true, // isForwardString
-                done);
+                (err, results) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    var key = results[0]
+                    subAnnotationIds[key] = results[1]._id.toString();
+                    resolve(results[1]);
+                  }
+                });
             });
             allPromises.push(promise);
           }
@@ -691,8 +683,7 @@ internals.applyRoutes = function (server, next) {
             if (reject) {
               reply(reject);
             }
-            console.log("HERE");
-            done(null, resolve);
+            done(null, subAnnotationIds);
           });
 
         }],
@@ -700,61 +691,61 @@ internals.applyRoutes = function (server, next) {
           console.log("updateSubFeaturesAnnotationId");
 
           // Create subAnnotations for all subBioDesigns connected to subFeatures
-          var superSequenceResults = results.createSequence;
-          var sequenceId = results.createSequence._id.toString();
-          var subSubPartIds = results.getSubSubPartIds;
-
-          var subSequenceIds = superSequenceResults[0];
-          var superSequenceArr = superSequenceResults[1];
-          var superSequence = superSequenceResults[2];
-
-          var allPromises = [];
-
-          var sequenceId = results.createSequence._id.toString();
-            var partIds = request.payload.partIds;
-
-            var test = utilities.annotateMe(server, partIds);
-            console.log(test);
+          // var superSequenceResults = results.createSequence;
+          // var sequenceId = results.createSequence._id.toString();
+          // var subSubPartIds = results.getSubSubPartIds;
+          //
+          // var subSequenceIds = superSequenceResults[0];
+          // var superSequenceArr = superSequenceResults[1];
+          // var superSequence = superSequenceResults[2];
+          //
+          // var allPromises = [];
+          //
+          // var sequenceId = results.createSequence._id.toString();
+          // var partIds = request.payload.partIds;
+          //
+          // var test = utilities.annotateMe(server, partIds);
+          // console.log(test);
 
         }],
         createAnnotation: ['createSequence', function (results, done) {
           console.log("creating annotation")
-          var seq = results.createSequence._id.toString();
-          Annotation.create(
-            request.payload.name,
-            null, // description,
-            request.auth.credentials.user._id.toString(),
-            seq, // sequenceId
-            1, // start
-            null, // add this later
-            true, // isForwardString
-            done);
+          // var seq = results.createSequence._id.toString();
+          // Annotation.create(
+          //   request.payload.name,
+          //   null, // description,
+          //   request.auth.credentials.user._id.toString(),
+          //   seq, // sequenceId
+          //   1, // start
+          //   null, // add this later
+          //   true, // isForwardString
+          //   done);
 
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
           console.log("createFeature");
-          var annotationId = null, moduleId = null;
-          if (results.createAnnotation._id !== undefined) {
-            annotationId = results.createAnnotation._id.toString();
-          }
-
-          if (results.createModule._id !== undefined) {
-            moduleId = results.createModule._id.toString();
-          }
-
-          if (annotationId !== null && moduleId !== null) {
-            Feature.create(
-              request.payload.name,
-              null, // description
-              request.auth.credentials.user._id.toString(),
-              request.payload.displayId,
-              request.payload.role,
-              annotationId,
-              moduleId,
-              done);
-          } else {
-            done(null, []);
-          }
+          // var annotationId = null, moduleId = null;
+          // if (results.createAnnotation._id !== undefined) {
+          //   annotationId = results.createAnnotation._id.toString();
+          // }
+          //
+          // if (results.createModule._id !== undefined) {
+          //   moduleId = results.createModule._id.toString();
+          // }
+          //
+          // if (annotationId !== null && moduleId !== null) {
+          //   Feature.create(
+          //     request.payload.name,
+          //     null, // description
+          //     request.auth.credentials.user._id.toString(),
+          //     request.payload.displayId,
+          //     request.payload.role,
+          //     annotationId,
+          //     moduleId,
+          //     done);
+          // } else {
+          //   done(null, []);
+          // }
         }]
       }, (err, results) => {
 

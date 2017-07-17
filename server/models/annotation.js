@@ -23,7 +23,32 @@ class Annotation extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      else {
+        callback(null, docs[0]);
+      }
+    });
+  }
+
+  static createWithIndex(i, name, description, userId, sequenceId, start, end, isForwardStrand, callback) {
+
+    const document = {
+      name: name,
+      description: description,
+      userId: userId,
+      sequenceId: sequenceId,
+      start: start,
+      end: end,
+      isForwardStrand: isForwardStrand
+    };
+
+    this.insertOne(document, (err, docs) => {
+
+      if (err) {
+        return callback(err);
+      }
+      else {
+        callback(null, [i,docs[0]]);
+      }
     });
   }
 
