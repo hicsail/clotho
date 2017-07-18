@@ -4,6 +4,7 @@ const Boom = require('boom');
 const Joi = require('joi');
 const Request = require('request');
 const Rp = require('request-promise');
+const Function = require('../models/function');
 
 const internals = {};
 
@@ -462,7 +463,7 @@ internals.applyRoutes = function (server, next) {
 
             var validate = Joi.validate(payload,schema);
 
-            if(validate.err) {
+            if(validate.error) {
               return reply(Boom.badRequest(validate.err));
             }
 
@@ -484,9 +485,8 @@ internals.applyRoutes = function (server, next) {
         headers: {'Content-Type':'text/plain'},
         json: false
       }).then(function (parsedBody) {
+
         return reply(parsedBody);
-      }).catch(function (err) {
-        return reply(err);
       });
     }
   });
@@ -503,7 +503,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           description: Joi.string().optional(),
           language: Joi.string().required(),
-          code: Joi.string().required(),
+          code: Joi.array().required(),
           inputs: Joi.array().required(),
           outputs: Joi.array().required()
         }
@@ -511,7 +511,39 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      reply('test');
+      var input = `[${request.payload.inputs.join(',')}]`;
+      var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
+      const runRequest = {
+        method: 'POST',
+        url: '/function/run',
+        payload: payload,
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        credentials: request.auth.credentials
+      };
+
+      server.inject(runRequest, (response) => {
+
+        var output = response.result.split('\n').slice(0,-1);
+        if(output.toString() != request.payload.outputs.toString()) {
+          return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
+        }
+
+        Function.create(
+          request.payload.name,
+          request.payload.description,
+          request.auth.credentials.user._id.toString(),
+          request.payload.language,
+          request.payload.code,
+          request.payload.inputs,
+          request.payload.outputs,
+          true,
+          (err, result) => {
+
+            reply(result);
+          });
+      });
     }
   });
 

@@ -55,7 +55,7 @@ Function.schema = Joi.object().keys({
 
 
 Function.indexes = [
-  {key: {'name': 1}}
+  {key: {name: 1, unique: 1}}
 ];
 
 
