@@ -511,11 +511,11 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      var input = `[${request.payload.inputs.join(',')}]`;
+      var input = `["${request.payload.inputs.join(',')}"]`;
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
       const runRequest = {
         method: 'POST',
-        url: '/function/run',
+        url: '/api/function/run',
         payload: payload,
         headers: {
           'Content-Type': 'text/plain'

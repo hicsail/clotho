@@ -172,6 +172,9 @@ const manifest = {
     },
     {
       plugin: './server/web/account/index'
+    },
+    {
+      plugin: './server/web/function/index'
     }
   ]
 };

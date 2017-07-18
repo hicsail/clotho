@@ -1,0 +1,83 @@
+'use strict';
+const internals = {};
+const Funtion = require('../../models/function');
+
+internals.applyRoutes = function (server, next) {
+
+  const Session = server.plugins['hapi-mongo-models'].Session;
+
+  server.route({
+    method: 'GET',
+    path: '/function',
+    config: {
+      auth: {
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: '/login',
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      Funtion.find({}, (err, response) => {
+
+        return reply.view('function',{
+          functions: response,
+          user: request.auth.credentials.user
+        });
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/function/view/{id}',
+    config: {
+      auth: {
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: '/login',
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const languageRequest = {
+        method: 'GET',
+        url: '/api/function/language',
+        credentials: request.auth.credentials
+      };
+
+      server.inject(languageRequest, (languages) => {
+
+        Funtion.findById(request.params.id, (err, response) => {
+
+          return reply.view('functionView',{
+            functions: response,
+            languages: languages.result,
+            user: request.auth.credentials.user
+          });
+        });
+      });
+    }
+  });
+
+  next();
+};
+
+exports.register = function (server, options, next) {
+
+  server.dependency(['auth'], internals.applyRoutes);
+
+  next();
+};
+
+
+exports.register.attributes = {
+  name: 'function',
+  dependencies: 'visionary'
+};

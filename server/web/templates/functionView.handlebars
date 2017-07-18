@@ -1,0 +1,72 @@
+{{> nav}}
+<section class="hero">
+  <div class="hero-heading">
+    {{> alert}}
+    <div class="container" style="padding: 10px">
+      <h1 class="title">
+        {{functions.name}}
+      </h1>
+      <a class="button is-light" href="/function/edit/{{functions._id}}">Edit</a>
+    </div>
+  </div>
+  <div class="hero-body">
+    <div class="container">
+      <div class="box">
+        <div class="columns">
+          <div class="column is-1">
+            <label class="label">Language</label>
+          </div>
+          <div class="column is-10">
+            <div class="select">
+              <select disabled>
+                {{#each languages}}
+                  <option>{{this}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          <div class="column is-1">
+            {{#if functions.working}}
+              <span class="tag is-success">Tested</span>
+            {{else}}
+              <span class="tag is-danger">Tests Failed</span>
+            {{/if}}
+
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-1">
+            <label class="label">Inputs</label>
+          </div>
+          <div class="column is-5">
+            <textarea id="inputs" disabled class="textarea" placeholder="Write test inputs line by line">{{functions.inputs}}</textarea>
+          </div>
+          <div class="column is-1">
+            <label class="label">Outputs</label>
+          </div>
+          <div class="column is-5">
+            <textarea id="outputs" disabled class="textarea" placeholder="Write each expected output line by line">{{functions.outputs}}</textarea>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-1">
+            <label class="label">Function</label>
+          </div>
+          <div class="column is-11">
+            <textarea disabled class="textarea" placeholder="Function">{{functions.code}}</textarea>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-1 is-offset-11">
+            <div class="button is-primary">Run</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  $(() => {
+
+  });
+</script>
