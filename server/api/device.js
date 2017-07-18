@@ -687,15 +687,16 @@ internals.applyRoutes = function (server, next) {
         }],
         getSubSubAnnotationIds: ['getSequences', function (results, done) {
 
-        var sequences = results.getSequences;
-        var subSequenceIds = sequences[0];
+          var sequences = results.getSequences;
+          var subSequenceIds = sequences[0];
 
           var allPromises = [];
 
-          var subSubAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,'0');
+          var subSubAnnotationIds = Array.apply(null, Array(subSequenceIds.length)).map(String.prototype.valueOf,'0');
 
           for (var i = 0; i < subSequenceIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
+              console.log("hello");
 
               //sends value i to function so that order is kept track of
               Annotation.findBySequenceIdOnly(i, subSequenceIds[i], (err, results) => {
@@ -703,7 +704,8 @@ internals.applyRoutes = function (server, next) {
                   return reject(err);
                 } else {
                   var key = results[0];
-                  subSubAnnotationIds[key] = results[1]["_id"];
+                  subSubAnnotationIds[key] = results[1]['_id'].toString();
+                  console.log(results);
 
                   resolve(results);
                 }
@@ -722,7 +724,8 @@ internals.applyRoutes = function (server, next) {
          }],
         getSubFeatureIds: ['getSubSubAnnotationIds', function (results, done) {
 
-          var subSubAnnotationIds = results.getSequences;
+          var subSubAnnotationIds = results.getSubSubAnnotationIds;
+          console.log(subSubAnnotationIds);
 
           var allPromises = [];
 
@@ -737,7 +740,7 @@ internals.applyRoutes = function (server, next) {
                   return reject(err);
                 } else {
                   var key = results[0];
-                  subFeatureIds[key] = results[1]["_id"];
+                  subFeatureIds[key] = results[1]['_id'];
                   console.log(results);
                   resolve(results);
                 }

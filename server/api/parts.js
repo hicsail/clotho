@@ -994,6 +994,7 @@ internals.applyRoutes = function (server, next) {
             moduleId = results.createModule._id.toString();
           }
 
+
           if (annotationId !== null && moduleId !== null) {
             Feature.create(
               request.payload.name,
@@ -1002,6 +1003,7 @@ internals.applyRoutes = function (server, next) {
               request.payload.displayId,
               request.payload.role,
               annotationId,
+              null, //superAnnotationId
               moduleId,
               done);
           }

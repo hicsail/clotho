@@ -103,14 +103,14 @@ class Annotation extends MongoModels {
     console.log("in find by super sequence id");
 
     const query = {'sequenceId': sequenceId};
-    this.find(query, (err, annotation) => {
+    this.find(query, (err, annotations) => {
 
       if (err) {
         return callback(err);
       }
-      console.log(annotation);
+      console.log(annotations);
 
-      return annotation;
+      this.getFeatures(0,annotations,callback);
     });
   }
 

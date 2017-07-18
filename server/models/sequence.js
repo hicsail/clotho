@@ -67,14 +67,15 @@ class Sequence extends MongoModels {
       if (err) {
         return callback(err);
       }
-      
+
       this.getAnnotations(0, sequences, (err, results) => {
-        
+
         if (err) {
           return callback(err);
         }
-        
+
         // Check for potential of being supersequence.
+        // Error here! Check it out
         return this.getSubAnnotations(0, results, callback);
       });
     });
@@ -94,7 +95,7 @@ class Sequence extends MongoModels {
     });
 
   }
-  
+
 
   // Find subannotations (in case of being sequence in a device.)
   static getSubAnnotations(index, sequences, callback) {
@@ -124,7 +125,6 @@ class Sequence extends MongoModels {
       return callback(null, sequences);
     }
 
-    console.log("getSubSubAnnotations");
     Annotation.findBySuperSequenceId(sequences[index].toString(), (err, subannotations) => {
 
       if (err) {

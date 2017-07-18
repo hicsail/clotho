@@ -23,7 +23,9 @@ class Feature extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      else {
+        callback(null, docs[0]);
+    }
     });
   }
 
@@ -55,7 +57,7 @@ class Feature extends MongoModels {
       callback(null, [i, feature]);
     });
   }
-  
+
 
 
   static findBySuperAnnotationId(superAnnotationId, callback) {
