@@ -41,6 +41,7 @@ lab.experiment('Feature Class Methods', () => {
       'displayId',
       TestFeatures[testCase].role,
       'annotationId',
+      'superAnnotationId',
       'moduleId',
       (err, result) => {
 
@@ -72,6 +73,7 @@ lab.experiment('Feature Class Methods', () => {
       'displayId',
       TestFeatures[testCase].role,
       'annotationId',
+      'superAnnotationId',
       'moduleId',
       (err, result) => {
 
