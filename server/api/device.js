@@ -558,7 +558,7 @@ internals.applyRoutes = function (server, next) {
                 } else {
                   var key = results[0];  //i is returned here, partId is saved under i
                   var resPart = results[1];
-                  var subSubPartId = resPart[0]["_id"];
+                  var subSubPartId = resPart[0]['_id'];
                   subSubPartIds[key] = subSubPartId;
                   resolve(results);
                 }
@@ -584,8 +584,8 @@ internals.applyRoutes = function (server, next) {
           var allPromises = [];
 
           //array for exact length created to
-          var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
-          var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,"0");
+          var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
+          var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
 
           for (var i = 0; i < subBioDesignIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
@@ -596,8 +596,8 @@ internals.applyRoutes = function (server, next) {
                   return reject(err);
                 } else {
                   var key = results[0];
-                  superSequenceArr[key] = results[1][0]["sequence"];;
-                  subSequenceIds[key] = results[1][0]["_id"];
+                  superSequenceArr[key] = results[1][0]['sequence'];
+                  subSequenceIds[key] = results[1][0]['_id'];
 
                   resolve(results);
                 }
@@ -622,7 +622,7 @@ internals.applyRoutes = function (server, next) {
           var superSequenceArr = sequences[1];
           var subBioDesignIds = request.payload.partIds;
 
-          var superSequence = superSequenceArr.join("");
+          var superSequence = superSequenceArr.join('');
 
           Sequence.create(
             request.payload.name,
@@ -645,7 +645,7 @@ internals.applyRoutes = function (server, next) {
           var allPromises = [];
           var position = 1; //sequences start at 1
 
-          var subAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,"0");
+          var subAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,'0');
 
           for (var i = 0; i < superSequenceArr.length; ++i) {
             var promise = new Promise((resolve, reject) => {
@@ -669,7 +669,7 @@ internals.applyRoutes = function (server, next) {
                   if (err) {
                     reject(err);
                   } else {
-                    var key = results[0]
+                    var key = results[0];
                     subAnnotationIds[key] = results[1]._id.toString();
                     resolve(results[1]);
                   }
@@ -687,16 +687,16 @@ internals.applyRoutes = function (server, next) {
         }],
         getSubSubAnnotationIds: ['getSequences', function (results, done) {
 
-        var sequences = results.getSequences;
-        var subSequenceIds = sequences[0];
-        var superSequenceArr = sequences[1];
-        var subAnnotationIds = results.createSubAnnotations; //middle annotations, not subSubAnnotations
+          var sequences = results.getSequences;
+          var subSequenceIds = sequences[0];
+          var superSequenceArr = sequences[1];
+          var subAnnotationIds = results.createSubAnnotations; //middle annotations, not subSubAnnotations
 
-        var allPromises = [];
+          var allPromises = [];
 
-        var subSubAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,"0");
+          var subSubAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,'0');
 
-        var subSubAnnotations = Sequence.getSubAnnotations(0, subSequenceIds,
+          var subSubAnnotations = Sequence.getSubAnnotations(0, subSequenceIds,
           (err, results) => {
             if (err) {
               reject(err);
@@ -704,14 +704,14 @@ internals.applyRoutes = function (server, next) {
               console.log(results);
               return (results);
             }
-          })
-          console.log("HELLO");
+          });
+          console.log('HELLO');
 
           console.log(subSubAnnotations);
           done(null, subSubAnnotations);
-         }],
+        }],
         updateSubFeaturesAnnotationId: ['getSequences', 'createSubAnnotations', function (results, done) {
-          console.log("updateSubFeaturesAnnotationId");
+          console.log('updateSubFeaturesAnnotationId');
 
           // Update annotationIds in all subFeatures
 
@@ -742,7 +742,7 @@ internals.applyRoutes = function (server, next) {
 
           var allPromises = [];
 
-          var subSubAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,"0");
+          var subSubAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,'0');
 
 
           for (var i = 0; i < subAnnotationIds.length; ++i) {
@@ -792,7 +792,7 @@ internals.applyRoutes = function (server, next) {
 
         }],
         createAnnotation: ['createSequence', function (results, done) {
-          console.log("creating annotation")
+          console.log('creating annotation');
           // var seq = results.createSequence._id.toString();
           // Annotation.create(
           //   request.payload.name,
@@ -806,7 +806,7 @@ internals.applyRoutes = function (server, next) {
 
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
-          console.log("createFeature");
+          console.log('createFeature');
           // var annotationId = null, moduleId = null;
           // if (results.createAnnotation._id !== undefined) {
           //   annotationId = results.createAnnotation._id.toString();

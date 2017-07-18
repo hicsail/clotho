@@ -8,6 +8,7 @@
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L",
     "lint": "lab -dL",
+    "lint-fix": "lab -dL --lint-fix",
     "minify": "./scripts/minify.sh",
     "docs": "./scripts/generateDocs.sh",
     "setup": "npm run minify && npm run docs"

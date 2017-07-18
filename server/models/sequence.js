@@ -212,7 +212,7 @@ class Sequence extends MongoModels {
 
             return callback(null, annotationDoc._id);
 
-          })
+          });
         });
       }
     });
