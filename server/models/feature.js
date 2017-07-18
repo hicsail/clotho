@@ -42,6 +42,22 @@ class Feature extends MongoModels {
     });
   }
 
+  static findByAnnotationIdOnly(i, annotationId, callback) {
+
+    const query = {'annotationId': annotationId};
+
+    this.find(query, (err, feature) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, [i, feature]);
+    });
+  }
+  
+
+
   static findBySuperAnnotationId(superAnnotationId, callback) {
 
     const query = {'superAnnotationId': superAnnotationId};

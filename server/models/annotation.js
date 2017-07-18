@@ -81,6 +81,40 @@ class Annotation extends MongoModels {
     });
   }
 
+
+  static findBySequenceIdOnly(i, sequenceId, callback) {
+
+    const query = {'sequenceId': sequenceId};
+    this.findOne(query, (err, annotations) => { //several exist due to testing previous cases
+
+      if (err) {
+        return callback(err);
+      }
+      callback(null, [i, annotations]);
+
+    });
+
+  }
+
+
+  // Retrieve annotation and get feature underneath.
+  static findBySuperSequenceId(sequenceId, callback) {
+
+    console.log("in find by super sequence id");
+
+    const query = {'sequenceId': sequenceId};
+    this.find(query, (err, annotation) => {
+
+      if (err) {
+        return callback(err);
+      }
+      console.log(annotation);
+
+      return annotation;
+    });
+  }
+
+
   static getFeatures(index,annotations,callback) {
 
     if(index == annotations.length){

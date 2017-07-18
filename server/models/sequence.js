@@ -67,21 +67,34 @@ class Sequence extends MongoModels {
       if (err) {
         return callback(err);
       }
-
+      
       this.getAnnotations(0, sequences, (err, results) => {
-
+        
         if (err) {
           return callback(err);
         }
-
+        
         // Check for potential of being supersequence.
         return this.getSubAnnotations(0, results, callback);
-
       });
-
-
     });
   }
+
+
+  static findByPartIdOnly(i, partId, callback) {
+
+    const query = {partId: partId.toString()};
+    this.find(query, (err, sequences) => {
+
+      if (err) {
+        return callback(err);
+      }
+      callback(null, [i, sequences]);
+
+    });
+
+  }
+  
 
   // Find subannotations (in case of being sequence in a device.)
   static getSubAnnotations(index, sequences, callback) {
@@ -104,20 +117,27 @@ class Sequence extends MongoModels {
     });
   }
 
-  static findByPartIdOnly(i, partId, callback) {
+  // Find annotations given a list of sequence ids (for device interaction with subparts)
+  static getSubSubAnnotations(index, sequences, callback) {
 
-    const query = {partId: partId.toString()};
-    this.find(query, (err, sequences) => {
+    if (index == sequences.length) {
+      return callback(null, sequences);
+    }
+
+    console.log("getSubSubAnnotations");
+    Annotation.findBySuperSequenceId(sequences[index].toString(), (err, subannotations) => {
 
       if (err) {
-        return callback(err);
+        return callback(err, null);
       }
-      callback(null, [i, sequences]);
 
+      if (subannotations.length != 0) {
+        sequences[index].subannotations = subannotations;
+      }
+
+      return this.getSubSubAnnotations(index + 1, sequences, callback);
     });
-
   }
-
 
 
   static getAnnotations(index, sequences, callback) {
