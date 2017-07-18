@@ -1132,26 +1132,26 @@ internals.applyRoutes = function (server, next) {
           }
         }
       },
-        {
-          assign: 'checkBioDesign',
-          method: function (request, reply) {
+      {
+        assign: 'checkBioDesign',
+        method: function (request, reply) {
 
             // Check that biodesign exists - should not perform update if biodesign does not exist.
-            var bioDesignId = request.params.id;
+          var bioDesignId = request.params.id;
 
-            BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
+          BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
 
-              if (err) {
-                  return reply(err);
-                } else if (!results || results.length === 0) {
-                  return reply(Boom.notFound('Part does not exist.'));
-                } else {
-                  reply(true);
-                }
-              }
-            );
+            if (err) {
+              return reply(err);
+            } else if (!results || results.length === 0) {
+              return reply(Boom.notFound('Part does not exist.'));
+            } else {
+              reply(true);
+            }
           }
+            );
         }
+      }
       ],
       validate: {
         payload: {
