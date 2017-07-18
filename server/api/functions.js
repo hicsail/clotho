@@ -1,7 +1,9 @@
 'use strict';
 const Bionode = require('bionode-seq');
+const Boom = require('boom');
 const Joi = require('joi');
 const Request = require('request');
+const Rp = require('request-promise');
 
 const internals = {};
 
@@ -370,7 +372,7 @@ internals.applyRoutes = function (server, next) {
   });
 
   /**
-   * @api {get} /api/function/languages Get Languages
+   * @api {get} /api/function/language Get Languages
    * @apiName Get Languages
    * @apiDescription Get available languages to write custom function
    * @apiGroup Custom Functions
@@ -383,7 +385,7 @@ internals.applyRoutes = function (server, next) {
    */
   server.route({
     method: 'GET',
-    path: '/function/languages',
+    path: '/function/language',
     config: {
       auth: {
         strategy: 'simple'
@@ -391,7 +393,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Request('http://localhost:8000/languages', (error, response, body) => {
+      Request('http://localhost:8000/language', (error, response, body) => {
 
         reply(JSON.parse(body));
       });
@@ -399,7 +401,7 @@ internals.applyRoutes = function (server, next) {
   });
 
   /**
-   * @api {get} /api/function/versions Get Versions
+   * @api {get} /api/function/version Get Versions
    * @apiName Get Versions
    * @apiDescription Get available languages version
    * @apiGroup Custom Functions
@@ -412,7 +414,7 @@ internals.applyRoutes = function (server, next) {
    */
   server.route({
     method: 'GET',
-    path: '/function/versions',
+    path: '/function/version',
     config: {
       auth: {
         strategy: 'simple'
@@ -434,23 +436,57 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategy: 'simple'
       },
-      validate: {
-        payload: {
-          language: Joi.string().required(),
-          code: Joi.string().required(),
-          inputs: Joi.string().required(),
-          outputs: Joi.array().required()
+      pre: [{
+        assign: 'validInput',
+        method: function (request, reply) {
+
+          if(!request.payload) {
+            return reply(Boom.badRequest('Request must have body'));
+          }
+
+          Request.get('http://localhost:8000/language', (err, httpResponse, body) => {
+
+            var payload = {};
+            var data = request.payload.split('\n');
+            var firstLine = data[0].split(' ');
+            payload.language = firstLine[0];
+            payload.inputs = JSON.parse(firstLine.slice(1).join(' '));
+            payload.code = data.slice(1).join('\n');
+            var languages = JSON.parse(body);
+
+            const schema = {
+              language: Joi.string().allow(languages).required(),
+              inputs: Joi.array().required(),
+              code: Joi.string().required()
+            };
+
+            var validate = Joi.validate(payload,schema);
+
+            if(validate.err) {
+              return reply(Boom.badRequest(validate.err));
+            }
+
+            if(languages.indexOf(payload.language) == -1) {
+              return reply(Boom.badRequest('invalid language'));
+            }
+
+            reply(true);
+          });
         }
-      }
+      }]
     },
     handler: function (request, reply) {
 
-      Request.post({url:'http://localhost:8000/compile', formData: request.payload}, (err, httpResponse, body) => {
-
-        if (err) {
-          return console.error('upload failed:', err);
-        }
-        reply(body);
+      Rp({
+        method: 'POST',
+        uri: 'http://localhost:8000/compile',
+        body: request.payload,
+        headers: {'Content-Type':'text/plain'},
+        json: false
+      }).then(function (parsedBody) {
+        return reply(parsedBody);
+      }).catch(function (err) {
+        return reply(err);
       });
     }
   });

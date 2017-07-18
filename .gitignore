@@ -4,3 +4,4 @@ test/artifacts/*
 .idea
 server/web/public/documentation
 server/web/public/mini-js
+package-lock.json

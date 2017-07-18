@@ -51,6 +51,7 @@
     "nodemailer-markdown": "1.x.x",
     "object-assign": "4.x.x",
     "request": "^2.81.0",
+    "request-promise": "^4.2.1",
     "slug": "0.9.x",
     "uglify-js": "^2.4.11",
     "uuid": "3.x.x",
