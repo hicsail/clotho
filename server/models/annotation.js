@@ -23,10 +23,51 @@ class Annotation extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      else {
+        callback(null, docs[0]);
+      }
     });
   }
 
+  static createWithIndex(i, name, description, userId, sequenceId, start, end, isForwardStrand, callback) {
+
+    const document = {
+      name: name,
+      description: description,
+      userId: userId,
+      sequenceId: sequenceId,
+      start: start,
+      end: end,
+      isForwardStrand: isForwardStrand
+    };
+
+    this.insertOne(document, (err, docs) => {
+
+      if (err) {
+        return callback(err);
+      }
+      else {
+        callback(null, [i,docs[0]]);
+      }
+    });
+  }
+
+
+  static findBySuperSequenceId(superSequenceId, callback) {
+
+    const query = {superSequenceId: superSequenceId};
+    this.find(query, (err, annotations) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      this.getFeatures(0, annotations, callback);
+    });
+  }
+
+
+  // Retrieve annotation and get feature underneath.
   static findBySequenceId(sequenceId, callback) {
 
     const query = {'sequenceId': sequenceId};
@@ -39,6 +80,40 @@ class Annotation extends MongoModels {
       this.getFeatures(0,annotations,callback);
     });
   }
+
+
+  static findBySequenceIdOnly(i, sequenceId, callback) {
+
+    const query = {'sequenceId': sequenceId};
+    this.findOne(query, (err, annotations) => { //several exist due to testing previous cases
+
+      if (err) {
+        return callback(err);
+      }
+      callback(null, [i, annotations]);
+
+    });
+
+  }
+
+
+  // Retrieve annotation and get feature underneath.
+  static findBySuperSequenceId(sequenceId, callback) {
+
+    console.log("in find by super sequence id");
+
+    const query = {'sequenceId': sequenceId};
+    this.find(query, (err, annotations) => {
+
+      if (err) {
+        return callback(err);
+      }
+      console.log(annotations);
+
+      this.getFeatures(0,annotations,callback);
+    });
+  }
+
 
   static getFeatures(index,annotations,callback) {
 

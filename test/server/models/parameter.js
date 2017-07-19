@@ -97,7 +97,8 @@ lab.experiment('Parameter Class Methods', () => {
       ['bioDesignId'],
       [{
         value: 'value',
-        variable: 'variable'
+        variable: 'variable',
+        name: 'name'
       }],
       (err, result) => {
 

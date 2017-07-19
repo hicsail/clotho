@@ -41,7 +41,7 @@ class Parameter extends MongoModels {
       this.find(query, (err, results) => {
 
         if (err) {
-          callback(err);
+          return callback(err);
         }
 
         return callback(err, results);

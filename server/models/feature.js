@@ -2,39 +2,10 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Role = require('./role');
 
 class Feature extends MongoModels {
 
-  static create(name, description, userId, displayId, role, annotationId, moduleId, callback) {
-
-    // Check that role is valid.
-    if (role !== undefined && role !== null) {
-      role = role.toUpperCase();
-
-      Role.findOne({name: role}, (roleErr, results) => {
-
-        if (roleErr) {
-          callback(roleErr);
-        }
-
-        if (roleErr === null && results !== null) {
-
-          this.createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback);
-
-        } else {
-          callback(Error('Role invalid.'));
-        }
-      });
-
-    } else {
-
-      this.createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback);
-
-    }
-  }
-
-  static createDocument(name, description, userId, displayId, role, annotationId, moduleId, callback) {
+  static create(name, description, userId, displayId, role, annotationId, superAnnotationId, moduleId, callback) {
 
     const document = {
       name: name,
@@ -43,6 +14,7 @@ class Feature extends MongoModels {
       displayId: displayId,
       role: role,
       annotationId: annotationId,
+      superAnnotationId: superAnnotationId,
       moduleId: moduleId
     };
 
@@ -51,13 +23,46 @@ class Feature extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      else {
+        callback(null, docs[0]);
+    }
     });
   }
+
 
   static findByAnnotationId(annotationId, callback) {
 
     const query = {'annotationId': annotationId};
+
+    this.find(query, (err, annotations) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, annotations);
+    });
+  }
+
+  static findByAnnotationIdOnly(i, annotationId, callback) {
+
+    const query = {'annotationId': annotationId};
+
+    this.find(query, (err, feature) => {
+
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, [i, feature]);
+    });
+  }
+
+
+
+  static findBySuperAnnotationId(superAnnotationId, callback) {
+
+    const query = {'superAnnotationId': superAnnotationId};
 
     this.find(query, (err, annotations) => {
 
@@ -110,6 +115,7 @@ Feature.schema = Joi.object().keys({
   displayId: Joi.string().optional(),
   role: Joi.string().uppercase().required(),
   annotationId: Joi.string().required(),
+  superAnnotationId: Joi.string().required(),
   genBankId: Joi.string(),
   moduleId: Joi.string(),
   swissProtId: Joi.string(),

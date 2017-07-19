@@ -3,6 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
+const Part = require('./part');
 
 class Sequence extends MongoModels {
 
@@ -25,7 +26,9 @@ class Sequence extends MongoModels {
       if (err) {
         return callback(err);
       }
-      callback(null, docs[0]);
+      else {
+        callback(null, docs[0]);
+      }
     });
   }
 
@@ -39,6 +42,7 @@ class Sequence extends MongoModels {
       }
 
       this.getAnnotations(0, sequences, callback);
+
     });
   }
 
@@ -64,9 +68,77 @@ class Sequence extends MongoModels {
         return callback(err);
       }
 
-      this.getAnnotations(0, sequences, callback);
+      this.getAnnotations(0, sequences, (err, results) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        // Check for potential of being supersequence.
+        // Error here! Check it out
+        return this.getSubAnnotations(0, results, callback);
+      });
     });
   }
+
+
+  static findByPartIdOnly(i, partId, callback) {
+
+    const query = {partId: partId.toString()};
+    this.find(query, (err, sequences) => {
+
+      if (err) {
+        return callback(err);
+      }
+      callback(null, [i, sequences]);
+
+    });
+
+  }
+
+
+  // Find subannotations (in case of being sequence in a device.)
+  static getSubAnnotations(index, sequences, callback) {
+
+    if (index == sequences.length) {
+      return callback(null, sequences);
+    }
+
+    Annotation.findBySuperSequenceId(sequences[index]['_id'].toString(), (err, subannotations) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (subannotations.length != 0) {
+        sequences[index].subannotations = subannotations;
+      }
+
+      return this.getSubAnnotations(index + 1, sequences, callback);
+    });
+  }
+
+  // Find annotations given a list of sequence ids (for device interaction with subparts)
+  static getSubSubAnnotations(index, sequences, callback) {
+
+    if (index == sequences.length) {
+      return callback(null, sequences);
+    }
+
+    Annotation.findBySuperSequenceId(sequences[index].toString(), (err, subannotations) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (subannotations.length != 0) {
+        sequences[index].subannotations = subannotations;
+      }
+
+      return this.getSubSubAnnotations(index + 1, sequences, callback);
+    });
+  }
+
 
   static getAnnotations(index, sequences, callback) {
 
@@ -88,6 +160,84 @@ class Sequence extends MongoModels {
     });
   }
 
+
+  // Creates Sequence and Annotation if non-existent. Otherwise updates sequence.
+  static updateSequenceByBioDesign(bioDesignId, name, displayId, userId, sequence, callback) {
+
+    var partId;
+    this.findOne({'bioDesignId': bioDesignId}, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+
+      // No associated sequence, need to create a sequence.
+      if (results === null || results.length === 0) {
+
+        // Find parts that correspond to biodesign.
+
+        const Part = require('./part');
+
+        Part.find({'bioDesignId': bioDesignId}, (err, subpart) => {
+          if (err) {
+            return callback(err);
+          }
+
+          // May need to create a new subpart, along with sequence and annotation.
+          if (subpart.length === 0) {
+            Part.create(name, null, userId, displayId, bioDesignId,
+              (err, results) => {
+
+                if (err) {
+                  return callback(err);
+                } else {
+
+                  partId = results;
+
+                  // null parameters include description, featureId, and
+                  this.create(name, null, userId, displayId, null, partId, sequence, null, null, (err, sequenceId) => {
+
+                    if (err) return callback(err);
+
+                    // null parameters include description,
+                    Annotation.create(name, null, userId, sequenceId, 1, sequence.length, true, callback);
+
+                  });
+                }
+              });
+          } else {
+
+            // Subpart already exists. Just need to create sequence and associated annotation.
+            partId = subpart[0]._id.toString();
+
+            this.create(name, null, userId, displayId, null, partId, sequence, null, null, (err, sequenceId) => {
+
+              if (err) return callback(err);
+
+              Annotation.create(name, null, userId, sequenceId, 1, sequence.length, true, callback);
+
+            });
+
+          }
+        });
+
+      } else {
+        // Sequence exists, update annotation and sequence.
+        this.updateOne({'bioDesignId': bioDesignId}, {$set: {sequence: sequence}}, (err, count, sequenceDoc) => {
+
+          if (err) return callback(err);
+
+          Annotation.updateOne({'bioDesignId': bioDesignId}, {$set: {start: 1, end: sequence.length}}, (err, count, annotationDoc) => {
+
+            if (err) return callback(err);
+
+            return callback(null, annotationDoc._id);
+
+          });
+        });
+      }
+    });
+
+  }
 
   // Original Java.
   /*
@@ -126,6 +276,7 @@ Sequence.schema = Joi.object().keys({
   description: Joi.string().optional(),
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
+  featureId: Joi.string().optional(),
   partId: Joi.string().optional(),
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),

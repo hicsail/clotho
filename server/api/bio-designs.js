@@ -2,7 +2,6 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
-const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -83,7 +82,8 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
           subBioDesignIds: Joi.array().items(Joi.string()).optional(),
-          superBioDesignId: Joi.string().optional()
+          superBioDesignId: Joi.string().optional(),
+          type: Joi.string().uppercase().optional()
         }
       }
     },
@@ -98,6 +98,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.imageURL,
         request.payload.subBioDesignIds,
         request.payload.superBioDesignId,
+        request.payload.type,
         (err, bioDesign) => {
 
           if (err) {
@@ -140,7 +141,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      BioDesign.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, bio_design) => {
+      BioDesign.findByIdAndUpdate(id, update, (err, bio_design) => {
 
         if (err) {
           return reply(err);

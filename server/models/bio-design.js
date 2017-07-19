@@ -3,17 +3,16 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Sequence = require('./sequence');
-const Strain = require('./strain');
-const Medium = require('./medium');
 const Part = require('./part');
 const Parameter = require('./parameter');
 const Module = require('./module');
 const Underscore = require('underscore');
+const ObjectID = require('mongo-models').ObjectID;
 
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
 
     const document = {
       name: name,
@@ -22,7 +21,8 @@ class BioDesign extends MongoModels {
       displayId: displayId,
       imageURL: imageURL,
       subBioDesignIds: subBioDesignIds,
-      superBioDesignId: superBioDesignId
+      superBioDesignId: superBioDesignId,
+      type: type
     };
 
     this.insertOne(document, (err, docs) => {
@@ -33,6 +33,7 @@ class BioDesign extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
 
   // Helper function to clean up query
   static convertBD(bioDesignIds, extra) {
@@ -66,16 +67,29 @@ class BioDesign extends MongoModels {
 
 
 
+
   // Get complete device or part. If no subbiodesign exists, is treated as a part.
   // Accepts array of bioDesignIds or single string.
-  static getBioDesignIds(bioDesignIds, query, callback) {
+
+  // isDevice can be null to indicate that we need to query biodesign(s) to determine its type.
+  static getBioDesignIds(bioDesignIds, query, isDevice, callback) {
 
     if (query == null) {
       query = {};
     }
     var query2 = this.convertBD(bioDesignIds, query);
 
+
     this.find(query2, (err, bioDesigns) => {
+
+      // Accounts for non-top level calls - design type not known
+      if (isDevice === null) {
+        var isDeviceArr = [];
+        for (var i = 0; i < bioDesigns.length; ++i) {
+          isDeviceArr.push(bioDesigns[i].type === 'DEVICE');
+        }
+      }
+
 
       // dealing with error
       if (err) {
@@ -86,28 +100,40 @@ class BioDesign extends MongoModels {
       var allPromises = [];
       var subBioDesignPromises = [];
 
+
       for (var i = 0; i < bioDesigns.length; ++i) {
         // fetch aggregate of part, module, parameter (informally, components)
         // and combine with main biodesign object
         var promise = new Promise((resolve, reject) => {
 
-          this.getBioDesign(bioDesigns[i]._id.toString(), (errGet, components) => {
+          var isDeviceInput = isDevice;
+
+          if (isDevice === null) {
+            isDeviceInput = bioDesigns[i].type === 'DEVICE';
+          }
+
+          this.getBioDesign(bioDesigns[i]._id.toString(), isDeviceInput, (errGet, components) => {
+
 
             if (errGet) {
               reject(errGet);
             }
+
             resolve(components);
           });
         });
         allPromises.push(promise);
+      }
+
+      for (var i = 0; i < bioDesigns.length; ++i) {
 
         // Also get subdesigns.
-        if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+        if (isDevice && bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
           && bioDesigns[i].subBioDesignIds.length !== 0) {
 
           var subBioDesignPromise = new Promise((resolve, reject) => {
 
-            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, (errSub, components) => {
+            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
 
               if (errSub) {
                 reject(errSub);
@@ -123,20 +149,29 @@ class BioDesign extends MongoModels {
 
       Promise.all(allPromises).then((resolve, reject) => {
 
+        if (reject) {
+          return callback(reject);
+        }
+
         for (var i = 0; i < bioDesigns.length; ++i) {
           bioDesigns[i]['subparts'] = resolve[i]['subparts'];
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
+        }
 
-          if (subBioDesignPromises.length === 0) {
-            return callback(null, bioDesigns);
-          }
+        // If leaf node subdesign.
+        if (subBioDesignPromises.length === 0) {
+          return callback(null, bioDesigns);
         }
 
         Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
 
-          for (var i = 0; i < bioDesigns.length; ++i) {
-            bioDesigns[i]['subdesigns'] = subresolve[i];
+          if (subreject) {
+            return callback(subreject);
+          }
+
+          for (var j = 0; j < bioDesigns.length; ++j) {
+            bioDesigns[j]['subdesigns'] = subresolve[j];
           }
 
           return callback(null, bioDesigns);
@@ -150,9 +185,9 @@ class BioDesign extends MongoModels {
 
 
 // based on biodesignId, fetches all children
-  static getBioDesign(bioDesignId, callback) {
+  static getBioDesign(bioDesignId, isDevice, callback) {
 
-    Part.findByBioDesignId(bioDesignId, (err, subparts) => {
+    Part.findByBioDesignId(bioDesignId, isDevice, (err, subparts) => {
 
       if (err) {
         return callback(err);
@@ -186,9 +221,9 @@ class BioDesign extends MongoModels {
 
     var query = {};
     if (typeof bioDesignIds == 'string') {
-      query = {parentDesignId: bioDesignIds};
+      query = {superBioDesignId: bioDesignIds};
     } else if (bioDesignIds.length > 0) {
-      query = {parentDesignId: {$in: bioDesignIds}};
+      query = {superBioDesignId: {$in: bioDesignIds}};
     }
 
     // No array, just look for bioDesignIds.
@@ -275,7 +310,7 @@ class BioDesign extends MongoModels {
 
 
           } else if (resolve.length === 1) {
-            return callback(null, resolve[0].superBioDesignId);
+            return callback(null, resolve[0]);
           } else if (resolve.length > 1 && resolve.indexOf(null) !== -1) {
             return callback(null, []);
           }
@@ -368,12 +403,12 @@ BioDesign.schema = Joi.object().keys({
   userId: Joi.string().required(),
   displayId: Joi.string().optional(),
   moduleId: Joi.string(),
-  parentDesignId: Joi.string(),
+  mediaIds: Joi.array().items(Joi.string()),
+  strainIds: Joi.array().items(Joi.string()),
   subBioDesignIds: Joi.array().items(Joi.string()),
   superBioDesignId: Joi.string().optional(),
-  media: Joi.array().items(Medium.schema),
   polynucleotides: Joi.array().items(Sequence.schema),
-  strains: Joi.array().items(Strain.schema)
+  type: Joi.string().uppercase().optional()
 });
 
 BioDesign.indexes = [

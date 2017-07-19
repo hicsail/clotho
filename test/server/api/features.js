@@ -259,7 +259,8 @@ lab.experiment('Feature Plugin Create', () => {
       payload: {
         name: 'sequence1',
         annotationId: 'annotationId',
-        role: 'role'
+        role: 'role',
+        superAnnotationId: 'superAnnotationId'
       },
       credentials: AuthenticatedUser
     };
@@ -274,7 +275,7 @@ lab.experiment('Feature Plugin Create', () => {
       callback();
     };
 
-    stub.Feature.create = function (name, description, userId, displayId, role, annotationId, moduleId, callback) {
+    stub.Feature.create = function (name, description, userId, displayId, role, annotationId, superAnnotationId, moduleId, callback) {
 
       callback(Error('create failed'));
     };
@@ -294,7 +295,7 @@ lab.experiment('Feature Plugin Create', () => {
       callback();
     };
 
-    stub.Feature.create = function (name, description, userId, displayId, role, annotationId, moduleId, callback) {
+    stub.Feature.create = function (name, description, userId, displayId, role, annotationId, superAnnotationId, moduleId, callback) {
 
       callback(null, {});
     };
@@ -322,7 +323,8 @@ lab.experiment('Features Plugin Update', () => {
         description: 'Test description',
         role: 'Test role',
         annotationId: 'Test annotation id',
-        moduleId: 'Test module id'
+        moduleId: 'Test module id',
+        superAnnotationId: 'superAnnotationId'
       },
       credentials: AuthenticatedUser
     };

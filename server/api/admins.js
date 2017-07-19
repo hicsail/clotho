@@ -3,7 +3,6 @@ const Async = require('async');
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
-const ObjectID = require('mongo-models').ObjectID;
 
 
 const internals = {};
@@ -151,7 +150,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, admin) => {
+      Admin.findByIdAndUpdate(id, update, (err, admin) => {
 
         if (err) {
           return reply(err);
@@ -196,7 +195,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, admin) => {
+      Admin.findByIdAndUpdate(id, update, (err, admin) => {
 
         if (err) {
           return reply(err);
@@ -237,7 +236,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, admin) => {
+      Admin.findByIdAndUpdate(id, update, (err, admin) => {
 
         if (err) {
           return reply(err);
@@ -338,7 +337,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          Admin.findByIdAndUpdate(id, update, done);
         },
         user: function (done) {
 
@@ -352,7 +351,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }
       }, (err, results) => {
 
@@ -434,7 +433,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Admin.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          Admin.findByIdAndUpdate(id, update, done);
         },
         user: function (done) {
 
@@ -445,7 +444,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }
       }, (err, results) => {
 

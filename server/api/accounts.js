@@ -3,7 +3,7 @@ const Async = require('async');
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
-const ObjectID = require('mongo-models').ObjectID;
+
 
 const internals = {};
 
@@ -164,7 +164,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Account.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, account) => {
+      Account.findByIdAndUpdate(id, update, (err, account) => {
 
         if (err) {
           return reply(err);
@@ -210,7 +210,7 @@ internals.applyRoutes = function (server, next) {
         fields: Account.fieldsAdapter('user name timeCreated')
       };
 
-      Account.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, findOptions, (err, account) => {
+      Account.findByIdAndUpdate(id, update, findOptions, (err, account) => {
 
         if (err) {
           return reply(err);
@@ -305,7 +305,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Account.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          Account.findByIdAndUpdate(id, update, done);
         },
         user: function (done) {
 
@@ -319,7 +319,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }
       }, (err, results) => {
 
@@ -393,7 +393,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          Account.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          Account.findByIdAndUpdate(id, update, done);
         },
         user: function (done) {
 
@@ -404,7 +404,7 @@ internals.applyRoutes = function (server, next) {
             }
           };
 
-          User.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, done);
+          User.findByIdAndUpdate(id, update, done);
         }
       }, (err, results) => {
 

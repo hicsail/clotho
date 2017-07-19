@@ -39,13 +39,13 @@ lab.experiment('Part Class Methods', () => {
       'userid12test',
       'displayId',
       'bioDesignId',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Part);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Part);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -65,28 +65,29 @@ lab.experiment('Part Class Methods', () => {
       'userid12test',
       'displayId',
       'bioDesignId',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Part.insertOne = realInsertOne;
+        Part.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an instance when findByBioDesign succeeds', (done) => {
 
     Part.findByBioDesignId(
       'bioDesignId',
-    (err, result) => {
+      false,
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result[0]).to.be.an.instanceOf(Part);
+        Code.expect(err).to.not.exist();
+        Code.expect(result[0]).to.be.an.instanceOf(Part);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an instance when findByBioDesign succeeds', (done) => {
@@ -97,31 +98,32 @@ lab.experiment('Part Class Methods', () => {
       'userId',
       'displayId',
       'bioDesignId',
-    (err, part) => {
+      (err, part) => {
 
-      Sequence.create(
-        'name',
-        'description',
-        'userId',
-        'displayId',
-        'featureId',
-        part._id.toString(),
-        'sequenceAsInATGAGATA',
-        true,
-        false,
-      (err, sequence) => {
+        Sequence.create(
+          'name',
+          'description',
+          'userId',
+          'displayId',
+          'featureId',
+          part._id.toString(),
+          'sequenceAsInATGAGATA',
+          true,
+          false,
+          (err, sequence) => {
 
-        Part.findByBioDesignId(
-          'bioDesignId',
-        (err, result) => {
+            Part.findByBioDesignId(
+              'bioDesignId',
+              false,
+              (err, result) => {
 
-          Code.expect(err).to.not.exist();
-          Code.expect(result[0]).to.be.an.instanceOf(Part);
+                Code.expect(err).to.not.exist();
+                Code.expect(result[0]).to.be.an.instanceOf(Part);
 
-          done();
-        });
+                done();
+              });
+          });
       });
-    });
   });
 
   lab.test('it returns an error when findByBioDesign fails', (done) => {
@@ -137,15 +139,16 @@ lab.experiment('Part Class Methods', () => {
 
     Part.findByBioDesignId(
       'bioDesignId',
-    (err, result) => {
+      false,
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Part.findByBioDesignId = realfindByBioDesignId;
+        Part.findByBioDesignId = realfindByBioDesignId;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when findByBioDesign fails', (done) => {
@@ -161,15 +164,16 @@ lab.experiment('Part Class Methods', () => {
 
     Part.findByBioDesignId(
       'bioDesignId',
-    (err, result) => {
+      false,
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Part.find = realfind;
+        Part.find = realfind;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when findByBioDesign fails', (done) => {
@@ -185,15 +189,16 @@ lab.experiment('Part Class Methods', () => {
 
     Part.findByBioDesignId(
       'bioDesignId',
-    (err, result) => {
+      false,
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Sequence.findByPartId = realFindByPartId;
+        Sequence.findByPartId = realFindByPartId;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when getParts fails', (done) => {

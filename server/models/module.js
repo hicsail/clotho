@@ -3,38 +3,9 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Feature = require('./feature');
-const Role = require('./role');
 
 class Module extends MongoModels {
   static create(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
-
-    // Check role is valid before insertion
-    if (role !== undefined && role !== null) {
-      role = role.toUpperCase();
-
-      Role.findOne({name: role}, (roleErr, results) => {
-
-        if (roleErr) {
-          callback(roleErr);
-        }
-
-        if (roleErr === null && results !== null) {
-
-          this.createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback);
-        } else {
-
-          callback(Error('Role invalid.'));
-        }
-      });
-
-    } else {
-
-      this.createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback);
-    }
-
-  }
-
-  static createDocument(name, description, userId, displayId, bioDesignId, role, submoduleIds, callback) {
 
     const document = {
       name: name,
@@ -53,7 +24,9 @@ class Module extends MongoModels {
       }
       callback(null, docs[0]);
     });
+
   }
+
 
   static getModuleByBioDesignId(bioDesignId, query, callback) {
 
@@ -110,6 +83,54 @@ class Module extends MongoModels {
       }
 
       return this.getFeatures(index + 1, modules, callback);
+    });
+  }
+
+  // Update module and Feature with role.
+  static updateModule(bioDesignId, name, userId, displayId, role, annotationId, callback) {
+
+    this.findOne({bioDesignId: bioDesignId}, (err, modules) => {
+
+      if (err) return callback(err);
+
+      // No module found. Make new module.
+      if (modules === null && modules.length === 0) {
+
+        //Make new module.
+        this.create(name, null, userId, displayId, bioDesignId, role, null, (err, moduleId) => {
+
+          if (err) return callback(err);
+
+          // Make new feature, linking up with annotationId.
+
+          Feature.create(name, null, userId, displayId, role, annotationId, moduleId, callback);
+
+        });
+
+
+      } else {
+        // Module already exists.
+
+        this.updateOne({bioDesignId: bioDesignId}, {$set: {role: role}}, (err, count, moduleDoc) => {
+
+          if (err) return callback(err);
+
+          Feature.updateOne({bioDesignId: bioDesignId}, {
+            $set: {
+              role: role,
+              annotationId: annotationId
+            }
+          }, (err, count, featureDoc) => {
+
+            if (err) return callback(err);
+
+            return callback(null, featureDoc._id);
+          });
+        });
+
+
+      }
+
     });
   }
 

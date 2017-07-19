@@ -23,7 +23,6 @@ lab.before((done) => {
 
   stub = {
     Part: MakeMockModel(),
-    Device: MakeMockModel(),
     BioDesign: MakeMockModel(),
     Parameter: MakeMockModel(),
     Module: MakeMockModel(),
@@ -31,11 +30,11 @@ lab.before((done) => {
     Sequence: MakeMockModel(),
     Annotation: MakeMockModel(),
     Feature: MakeMockModel(),
+    Role: MakeMockModel()
   };
 
   const proxy = {};
   proxy[Path.join(process.cwd(), './server/models/part')] = stub.Part;
-  proxy[Path.join(process.cwd(), './server/models/device')] = stub.Device;
   proxy[Path.join(process.cwd(), './server/models/bio-design')] = stub.BioDesign;
 
   const ModelsPlugin = {
@@ -72,7 +71,7 @@ lab.after((done) => {
   done();
 });
 
-lab.experiment('Influences Plugin Update', () => {
+lab.experiment('Parts Plugin Update', () => {
 
   lab.beforeEach((done) => {
 
@@ -101,7 +100,38 @@ lab.experiment('Influences Plugin Update', () => {
   });
 
   //TODO: Put the tests for PUT here.
-    // In part api, there is no id in the path. Mistake??
+});
+
+
+// Update using ID.
+lab.experiment('Parts Plugin by Id Update', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'PUT',
+      url: '/part/update/5952967356dc2954e85b4095',
+      payload: {
+        sort: '_id',
+        limit: 20,
+        page: 1,
+        name: 'Test name',
+        displayId: 'Test display id',
+        role: 'Test role',
+        sequence: 'ACT',
+        parameters: [{
+          name: 'Test name',
+          units: 'Test units',
+          value: 10,
+          variable: 'Test variable'
+        }]
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
 });
 
 // GET Tests
@@ -120,7 +150,7 @@ lab.experiment('Part Plugin Read', () => {
 
   lab.test('it returns an error when get BioDesignsId fails', (done) => {
 
-    stub.BioDesign.getBioDesignIds = function (id, query, callback) {
+    stub.BioDesign.getBioDesignIds = function (id, query, isDevice, callback) {
 
       callback(Error('find id failed'));
     };
@@ -135,7 +165,7 @@ lab.experiment('Part Plugin Read', () => {
 
   lab.test('it returns a not found error when find by id misses', (done) => {
 
-    stub.BioDesign.getBioDesignIds = function(id, query, callback) {
+    stub.BioDesign.getBioDesignIds = function (id, query, isDevice, callback) {
 
       callback(null, []);
     };
@@ -143,7 +173,7 @@ lab.experiment('Part Plugin Read', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(404);
-      Code.expect(response.result.message).to.match(/document not found/i);
+      Code.expect(response.result.message).to.match(/Document not found./i);
 
 
       done();
@@ -152,9 +182,9 @@ lab.experiment('Part Plugin Read', () => {
 
   lab.test('it returns a document successfully', (done) => {
 
-    stub.BioDesign.getBioDesignIds = function (id, query, callback) {
+    stub.BioDesign.getBioDesignIds = function (id, query, isDevice, callback) {
 
-      callback(null, [{id: '5952967356dc2954e85b4095'}]);
+      callback(null, [{_id: '5952967356dc2954e85b4095'}]);
     };
 
     server.inject(request, (response) => {
@@ -167,81 +197,136 @@ lab.experiment('Part Plugin Read', () => {
   });
 });
 
-// lab.experiment('Part Plugin Create', () => {
-//
-//   lab.beforeEach((done) => {
-//
-//     request = {
-//       method: 'POST',
-//       url: '/part',
-//       payload: {
-//         name: 'ibs',
-//         displayId: 'test display id',
-//         role: 'GENE',
-//         parameters: [
-//           {
-//             'value': 25,
-//             'variable': 'y',
-//             'units': 'mg'
-//           }
-//         ],
-//         sequence: 'test sequence'
-//       },
-//       credentials: AuthenticatedUser
-//     };
-//
-//     done();
-//   });
-// });
+lab.experiment('Part Plugin Create', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/part',
+      payload: {
+        name: 'ibs',
+        displayId: 'test display id',
+        role: 'PROMOTER',
+        parameters: [
+          {
+            'name': 'paramName',
+            'value': 25,
+            'variable': 'y',
+            'units': 'mg'
+          }
+        ],
+        sequence: 'ATGATG'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('parameters is undefined', (done) => {
+
+    delete request.payload.parameters;
+
+    stub.Role.checkValidRole = function (role, callback) {
+      return callback(true);
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+
+  lab.test('parameters is not undefined', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+
+  lab.test('role is undefined', (done) => {
+
+    delete request.payload.role;
+
+    stub.Role.checkValidRole = function (role, callback) {
+      return true;
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+
+  lab.test('role is not undefined', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.a.string();
+
+      done();
+    });
+  });
+
+
+});
+
+lab.experiment('Part Plugin Create with multiple parameters', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/part',
+      payload: {
+        name: 'ibs',
+        displayId: 'test display id',
+        role: 'PROMOTER',
+        parameters: [
+          {
+            'name': 'paramName',
+            'value': 25,
+            'variable': 'y',
+            'units': 'mg'
+          },
+          {
+            'name': 'param2',
+            'value': 40,
+            'variable': 'x',
+            'units': 'mV'
+          }
+        ],
+        sequence: 'ATGATG'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+});
+
+
 //   //TODO: Tests go here
 //
-//   lab.test('parameters is undefined', (done) => {
-//
-//     delete request.payload.parameters;
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(200);
-//       Code.expect(response.result).to.be.a.string();
-//
-//       done();
-//     });
-//   });
-//
-//   lab.test('parameters is not undefined', (done) => {
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(200);
-//       Code.expect(response.result).to.be.a.string();
-//
-//       done();
-//     });
-//   });
-//
-//   lab.test('role is undefined', (done) => {
-//
-//     delete request.payload.role;
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(200);
-//       Code.expect(response.result).to.be.a.string();
-//
-//       done();
-//     });
-//   });
-//
-//   lab.test('role is not undefined', (done) => {
-//
-//     server.inject(request, (response) => {
-//
-//       Code.expect(response.statusCode).to.equal(200);
-//       Code.expect(response.result).to.be.a.string();
-//
-//       done();
-//     });
-//   });
+
+
 //
 //   lab.test('part is created successfully', (done) => {
 //

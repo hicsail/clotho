@@ -2,7 +2,6 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
-const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -136,7 +135,7 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Influence.findOneAndUpdate({_id: ObjectID(id), $isolated: 1}, update, (err, influence) => {
+      Influence.findByIdAndUpdate(id, update, (err, influence) => {
 
         if (err) {
           return reply(err);

@@ -29,19 +29,16 @@ class Assembly extends MongoModels {
 
     const query = {superSubPartId: partId};
 
-    console.log(query);
-
     this.find(query, (err, assemblies) => {
 
       if (err) {
         return callback(err);
       }
 
-      console.log(assemblies);
-
       this.getSubParts(0, assemblies, callback);
     });
   }
+
 
   // Get subparts that are under the assembly.
   static getSubParts(index, assemblies, callback) {
@@ -53,7 +50,7 @@ class Assembly extends MongoModels {
     Part.findByAssemblyId(assemblies[index]['_id'].toString(), (err, subBioDesignSubParts) => {
 
       if (err) {
-        return callback(err, null);
+        return callback(err);
       }
 
       if (subBioDesignSubParts.length != 0) {
