@@ -515,7 +515,7 @@ internals.applyRoutes = function (server, next) {
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
       const runRequest = {
         method: 'POST',
-        url: '/api/function/run',
+        url: '/function/run',
         payload: payload,
         headers: {
           'Content-Type': 'text/plain'
@@ -525,6 +525,9 @@ internals.applyRoutes = function (server, next) {
 
       server.inject(runRequest, (response) => {
 
+        if(response.statusCode != 200) {
+          return reply(response.result);
+        }
         var output = response.result.split('\n').slice(0,-1);
         if(output.toString() != request.payload.outputs.toString()) {
           return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));

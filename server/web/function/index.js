@@ -1,10 +1,9 @@
 'use strict';
 const internals = {};
-const Funtion = require('../../models/function');
 
 internals.applyRoutes = function (server, next) {
 
-  const Session = server.plugins['hapi-mongo-models'].Session;
+  const Function = server.plugins['hapi-mongo-models'].Function;
 
   server.route({
     method: 'GET',
@@ -21,7 +20,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Funtion.find({}, (err, response) => {
+      Function.find({}, (err, response) => {
 
         return reply.view('function',{
           functions: response,
@@ -54,7 +53,7 @@ internals.applyRoutes = function (server, next) {
 
       server.inject(languageRequest, (languages) => {
 
-        Funtion.findById(request.params.id, (err, response) => {
+        Function.findById(request.params.id, (err, response) => {
 
           return reply.view('functionView',{
             functions: response,
