@@ -6,13 +6,14 @@ const Feature = require('./feature');
 
 class Annotation extends MongoModels {
 
-  static create(name, description, userId, sequenceId, start, end, isForwardStrand, callback) {
+  static create(name, description, userId, sequenceId, superSequenceId, start, end, isForwardStrand, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId,
       sequenceId: sequenceId,
+      superSequenceId: superSequenceId, //used to indicate that annotations are connection from device sequence to part features
       start: start,
       end: end,
       isForwardStrand: isForwardStrand
@@ -29,13 +30,14 @@ class Annotation extends MongoModels {
     });
   }
 
-  static createWithIndex(i, name, description, userId, sequenceId, start, end, isForwardStrand, callback) {
+  static createWithIndex(i, name, description, userId, sequenceId, superSequenceId, start, end, isForwardStrand, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId,
       sequenceId: sequenceId,
+      superSequenceId: superSequenceId,
       start: start,
       end: end,
       isForwardStrand: isForwardStrand
@@ -52,19 +54,6 @@ class Annotation extends MongoModels {
     });
   }
 
-
-  static findBySuperSequenceId(superSequenceId, callback) {
-
-    const query = {superSequenceId: superSequenceId};
-    this.find(query, (err, annotations) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      this.getFeatures(0, annotations, callback);
-    });
-  }
 
 
   // Retrieve annotation and get feature underneath.
@@ -93,22 +82,18 @@ class Annotation extends MongoModels {
       callback(null, [i, annotations]);
 
     });
-
   }
 
-
+  
   // Retrieve annotation and get feature underneath.
   static findBySuperSequenceId(sequenceId, callback) {
 
-    console.log("in find by super sequence id");
-
-    const query = {'sequenceId': sequenceId};
+    const query = {'superSequenceId': sequenceId};
     this.find(query, (err, annotations) => {
 
       if (err) {
         return callback(err);
       }
-      console.log(annotations);
 
       this.getFeatures(0,annotations,callback);
     });

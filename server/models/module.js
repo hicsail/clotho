@@ -40,13 +40,11 @@ class Module extends MongoModels {
       query['bioDesignId'] = {$in: bioDesignId};
     }
 
-
     this.find(query, (err, results) => {
 
       if (err) {
         return callback(err);
       }
-
 
       callback(err, results);
     });
@@ -62,7 +60,7 @@ class Module extends MongoModels {
         return callback(err);
       }
 
-      this.getFeatures(0, modules, callback);
+      this.getFeatures(0, modules, callback); //should we return features twice if sequence-annotations-features also exists?
     });
   }
 

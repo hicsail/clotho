@@ -974,6 +974,7 @@ internals.applyRoutes = function (server, next) {
               null, // description,
               request.auth.credentials.user._id.toString(),
               seq, // sequenceId
+              null, //superSequenceId - never updated, null indicates it is directly part of a part or device
               1, // start
               request.payload.sequence.length, // end
               true, // isForwardString

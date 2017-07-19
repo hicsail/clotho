@@ -661,7 +661,8 @@ internals.applyRoutes = function (server, next) {
                 request.payload.name,
                 null, // description,
                 request.auth.credentials.user._id.toString(),
-                superSequenceId, // sequenceId
+                null, //sequenceId
+                superSequenceId, // superSequenceId
                 start, // start
                 end, // end
                 true, // isForwardString

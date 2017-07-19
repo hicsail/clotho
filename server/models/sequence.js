@@ -75,7 +75,6 @@ class Sequence extends MongoModels {
         }
 
         // Check for potential of being supersequence.
-        // Error here! Check it out
         return this.getSubAnnotations(0, results, callback);
       });
     });
