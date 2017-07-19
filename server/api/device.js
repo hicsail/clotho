@@ -788,7 +788,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-        return reply(results);
+        return reply(results.createBioDesign._id.toString());
       });
     }
   });
