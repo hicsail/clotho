@@ -157,6 +157,7 @@ internals.applyRoutes = function (server, next) {
               variable: Joi.string()
             })
           ).optional(),
+          BLASTsequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required(),
           userSpace: Joi.boolean().default(false)
         }
       }
