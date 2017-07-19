@@ -586,6 +586,7 @@ internals.applyRoutes = function (server, next) {
           //array for exact length created to
           var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
           var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
+          var subFeatureIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
 
           for (var i = 0; i < subBioDesignIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
@@ -598,6 +599,7 @@ internals.applyRoutes = function (server, next) {
                   var key = results[0];
                   superSequenceArr[key] = results[1][0]['sequence'];
                   subSequenceIds[key] = results[1][0]['_id'];
+                  subFeatureIds[key] = results[1][0]['featureId'];
 
                   resolve(results);
                 }
@@ -609,7 +611,7 @@ internals.applyRoutes = function (server, next) {
             if (reject) {
               reply(reject);
             }
-            done(null, [subSequenceIds, superSequenceArr]);
+            done(null, [subSequenceIds, superSequenceArr, subFeatureIds]);
           });
 
         }],
@@ -671,6 +673,8 @@ internals.applyRoutes = function (server, next) {
                     reject(err);
                   } else {
                     var key = results[0];
+                    //calling createDevice  multiple times will create multiple annotations per feature
+                    //saving id of specific annotation when created is important!
                     subAnnotationIds[key] = results[1]._id.toString();
                     resolve(results[1]);
                   }
@@ -686,158 +690,39 @@ internals.applyRoutes = function (server, next) {
             done(null, subAnnotationIds);
           });
         }],
-        getSubSubAnnotationIds: ['getSequences', function (results, done) {
-
-          var sequences = results.getSequences;
-          var subSequenceIds = sequences[0];
-
-          var allPromises = [];
-
-          var subSubAnnotationIds = Array.apply(null, Array(subSequenceIds.length)).map(String.prototype.valueOf,'0');
-
-          for (var i = 0; i < subSequenceIds.length; ++i) {
-            var promise = new Promise((resolve, reject) => {
-              console.log("hello");
-
-              //sends value i to function so that order is kept track of
-              Annotation.findBySequenceIdOnly(i, subSequenceIds[i], (err, results) => {
-                if (err) {
-                  return reject(err);
-                } else {
-                  var key = results[0];
-                  subSubAnnotationIds[key] = results[1]['_id'].toString();
-                  console.log(results);
-
-                  resolve(results);
-                }
-              });
-            });
-            allPromises.push(promise);
-          }
-          Promise.all(allPromises).then((resolve, reject) => {
-            if (reject) {
-              reply(reject);
-            }
-
-            done(null, subSubAnnotationIds);
-          });
-
-         }],
-        getSubFeatureIds: ['getSubSubAnnotationIds', function (results, done) {
-
-          var subSubAnnotationIds = results.getSubSubAnnotationIds;
-          console.log(subSubAnnotationIds);
-
-          var allPromises = [];
-
-          var subFeatureIds = Array.apply(null, Array(subSubAnnotationIds.length)).map(String.prototype.valueOf,"0");
-
-          for (var i = 0; i < subSubAnnotationIds.length; ++i) {
-            var promise = new Promise((resolve, reject) => {
-
-              //sends value i to function so that order is kept track of
-              Feature.findByAnnotationIdOnly(i, subSubAnnotationIds[i], (err, results) => {
-                if (err) {
-                  return reject(err);
-                } else {
-                  var key = results[0];
-                  subFeatureIds[key] = results[1]['_id'];
-                  console.log(results);
-                  resolve(results);
-                }
-              });
-            });
-            allPromises.push(promise);
-          }
-          Promise.all(allPromises).then((resolve, reject) => {
-            if (reject) {
-              reply(reject);
-            }
-            console.log(subFeatureIds);
-            done(null, subFeatureIds);
-          });
-
-        }],
-        updateSubFeaturesAnnotationId: ['getSequences', 'createSubAnnotations', function (results, done) {
+        updateSubFeaturesSuperAnnotationId: ['getSequences', 'createSubAnnotations', function (results, done) {
           console.log('updateSubFeaturesAnnotationId');
 
-          // Update annotationIds in all subFeatures
+          // Update superAnnotationIds in order in all subFeatures
 
-          //getFeaturesIds from subSequenceIds
+          //getFeaturesIds from getSequences
           //Use featureIds to update subFeatureAnnotationIds
+          var subFeatureIds = results.getSequences[2];
+          var subAnnotationIds = results.createSubAnnotations;
+          var allPromises = [];
 
+          for (var i = 0; i < subFeatureIds.length; ++i) {
 
-          // var superSequenceResults = results.createSequence;
-          // var sequenceId = results.createSequence._id.toString();
-          // var subSubPartIds = results.getSubSubPartIds;
-          //
-          // var subSequenceIds = superSequenceResults[0];
-          // var superSequenceArr = superSequenceResults[1];
-          // var superSequence = superSequenceResults[2];
-          //
-          // var allPromises = [];
-          //
-          // var sequenceId = results.createSequence._id.toString();
-          // var partIds = request.payload.partIds;
-          //
-          // var test = utilities.annotateMe(server, partIds);
-          // console.log(test);
-
-          // var sequences = results.getSequences;
-          // var subSequenceIds = sequences[0];
-          // var superSequenceArr = sequences[1];
-          // var subAnnotationIds = results.createSubAnnotations; //middle annotations, not subSubAnnotations
-          //
-          // var allPromises = [];
-          //
-          // var subSubAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,"0");
-          //
-          //
-          // for (var i = 0; i < subAnnotationIds.length; ++i) {
-          //   var promise = new Promise((resolve, reject) => {
-          //
-          //     // console.log(subSequenceIds[i])
-          //
-          //
-          //     Annotation.findOne({sequenceId: subSequenceIds[i]}, (err, results) => {
-          //       if (err) {
-          //         return reject(err);
-          //       } else {
-          //         // var key = results[0];
-          //         // superSequenceArr[key] = results[1][0]["sequence"];;
-          //         // subSequenceIds[key] = results[1][0]["_id"];
-          //         console.log(results._id.toString());
-          //
-          //         subSubAnnotationIds[i] = results._id.toString();
-          //
-          //         return (results);
-          //       }
-          //     });
-          //
-          //     //console.log(subFeatureIds)
-          //
-          //
-          //     Feature.findOneAndUpdate({
-          //       annotationId: subSubAnnotationIds[i],
-          //       $isolated: 1
-          //     }, {$set: {superAnnotationId: subAnnotationIds[i]}}, (err, results) => {
-          //       if (err) {
-          //         reject(err);
-          //       } else {
-          //         console.log(results);
-          //         resolve(results);
-          //       }
-          //     });
-          //   });
-          //   allPromises.push(promise);
-          // }
-          // Promise.all(allPromises).then((resolve, reject) => {
-          //   if (reject) {
-          //     reply(reject);
-          //   }
-          //   done(null, resolve);
-          // });
-
+            var promise = new Promise((resolve, reject) => {
+              Feature.findOneAndUpdate({
+                _id: ObjectID(subFeatureIds[i]),
+                $isolated: 1
+              }, {$set: {superAnnotationId: subAnnotationIds[i]}}, (err, results) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(results);
+                }
+              });
+            });
+            allPromises.push(promise);
+          }
+          Promise.all(allPromises).then((resolve, reject) => {
+            if (reject) {
+              reply(reject);
+            }
+            done(null, resolve);
+          });
         }],
         createAnnotation: ['createSequence', function (results, done) {
           console.log('creating annotation');
