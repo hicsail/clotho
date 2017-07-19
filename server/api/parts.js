@@ -1367,8 +1367,7 @@ internals.applyRoutes = function (server, next) {
 
 
     }
-  })
-  ;
+  });
 
 
   server.route({
@@ -1381,19 +1380,81 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
+      Async.auto({
+        BioDesign: function (callback) {
+
+          BioDesign.getBioDesign(request.params.id, false, (err, document) => {
+
+            if (err) {
+              return callback(err);
+            }
+
+            BioDesign.findById(request.params.id, (err, bioDesign) => {
+
+              if (err) {
+                return callback(err);
+              }
+
+              bioDesign.subparts = document.subparts;
+              bioDesign.parameters = document.parameters;
+              bioDesign.modules = document.modules;
+
+              BioDesign.delete(bioDesign, (err, result) => {});
+              callback(null, bioDesign);
+            });
+          });
+        },
+        Parameters: ['BioDesign', function (results,callback) {
+
+          for(var parameter of results.BioDesign.parameters) {
+            Parameter.delete(parameter, (err, results) => {});
+          }
+          callback(null, '');
+        }],
+        Modules: ['BioDesign', function (results,callback) {
+
+          for(var module of results.BioDesign.modules) {
+            Module.delete(module, (err, results) => {});
+          }
+          callback(null, '');
+        }],
+        Parts: ['BioDesign', function (results,callback) {
+
+          for(var part of results.BioDesign.subparts) {
+            for(var sequence of part.sequences) {
+              for(var annotation of sequence.annotations) {
+                for(var feature of annotation.features) {
+                  Feature.delete(feature, (err, callback) => {});
+                }
+                Annotation.delete(annotation, (err, callback) => {});
+              }
+              Sequence.delete(sequence,(err, callback) => {});
+            }
+            Part.delete(part,(err, callback) => {});
+          }
+          callback(null, '');
+        }]
+      }, (err, result) => {
 
         if (err) {
           return reply(err);
         }
 
+        reply({message: 'Success.'});
+      });
+    }
+      /*
+      BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
+
+
+
         if (!bioDesign) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply({message: 'Success.'});
+
       });
-    }
+      */
   });
 
   next();

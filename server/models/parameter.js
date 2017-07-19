@@ -142,10 +142,13 @@ class Parameter extends MongoModels {
 
         return callback(error,null);
       });
-
-
     }
+  }
 
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(),document,callback);
   }
 
 

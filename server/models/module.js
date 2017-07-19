@@ -127,11 +127,14 @@ class Module extends MongoModels {
             return callback(null, featureDoc._id);
           });
         });
-
-
       }
-
     });
+  }
+
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(),document,callback);
   }
 
 }

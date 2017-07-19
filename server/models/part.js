@@ -265,6 +265,11 @@ class Part extends MongoModels {
     });
   }
 
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(),document,callback);
+  }
 
 }
 

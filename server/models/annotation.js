@@ -135,6 +135,12 @@ class Annotation extends MongoModels {
     });
   }
 
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(),document,callback);
+  }
+
 // Original Java
 //   /**
 //    * Reverse the orientation of the annotation (reverse complement
