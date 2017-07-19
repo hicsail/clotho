@@ -740,32 +740,48 @@ internals.applyRoutes = function (server, next) {
 
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
-          console.log('createFeature');
 
-          console.log(results.createAnnotation);
+          var annotationId = null, moduleId = null;
+          if (results.createAnnotation._id !== undefined) {
+            annotationId = results.createAnnotation._id.toString();
+          }
 
-          // var annotationId = null, moduleId = null;
-          // if (results.createAnnotation._id !== undefined) {
-          //   annotationId = results.createAnnotation._id.toString();
-          // }
-          //
-          // if (results.createModule._id !== undefined) {
-          //   moduleId = results.createModule._id.toString();
-          // }
-          //
-          // if (annotationId !== null && moduleId !== null) {
-          //   Feature.create(
-          //     request.payload.name,
-          //     null, // description
-          //     request.auth.credentials.user._id.toString(),
-          //     request.payload.displayId,
-          //     request.payload.role,
-          //     annotationId,
-          //     moduleId,
-          //     done);
-          // } else {
-          //   done(null, []);
-          // }
+          if (results.createModule._id !== undefined) {
+            moduleId = results.createModule._id.toString();
+          }
+
+          Feature.create(
+            request.payload.name,
+            null, // description
+            request.auth.credentials.user._id.toString(),
+            request.payload.displayId,
+            request.payload.role,
+            annotationId,
+            null, //superAnnotationId
+            moduleId,
+            done);
+        }],
+        updateSequenceFeatureId: ['createFeature', 'createSequence', function (results, done) {
+
+          if (results.createFeature) {
+            var featureId = results.createFeature._id.toString();
+            var sequenceId = results.createSequence._id.toString();
+
+            Sequence.findOneAndUpdate({
+              _id: ObjectID(sequenceId),
+              $isolated: 1
+            }, {$set: {featureId: featureId}}, (err, results) => {
+
+              if (err) {
+                return reply(err);
+              } else {
+                done(null, results);
+              }
+            });
+          } else {
+            done(null, results);
+          }
+
         }]
       }, (err, results) => {
 
