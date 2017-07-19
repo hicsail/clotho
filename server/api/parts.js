@@ -612,7 +612,7 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String} id Part unique ID.
+   * @apiParam {String} id Part unique ID. (BioDesign ID)
    *
    * @apiSuccessExample {json} Success-Response:
    * [
@@ -1370,7 +1370,22 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {delete} /api/part/:id Delete Part by Id
+   * @apiName  Delete Part by Id
+   * @apiDescription Marks Part to be delete, removes it from being searched
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Part unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/part/{id}',
@@ -1459,8 +1474,7 @@ internals.applyRoutes = function (server, next) {
   });
 
   next();
-}
-;
+};
 
 
 exports.register = function (server, options, next) {
