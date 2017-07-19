@@ -255,7 +255,7 @@ const manifest = {
       }
     },
     {
-      plugin: './server/api/blasts',
+      plugin: './server/api/blast',
       options: {
         routes: {prefix: '/api'}
       }

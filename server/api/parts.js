@@ -366,11 +366,11 @@ internals.applyRoutes = function (server, next) {
             query['userId'] = request.auth.credentials.user._id.toString();
           }
 
-          // Should not return anything if all arguments are empty.
+          // Should return everything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
             && request.payload.sequence === undefined && request.payload.parameters === undefined
             && request.payload.role === undefined) {
-            return done(null, []);
+            return BioDesign.getBioDesignIds(bioDesignIds, {}, false, done);
           } else {
             // Get full biodesigns.
             return BioDesign.getBioDesignIds(bioDesignIds, query, false, done);
@@ -385,7 +385,7 @@ internals.applyRoutes = function (server, next) {
         }
 
         if (results.findBioDesigns.length === 0) {
-          return reply(Boom.notFound('Document not found.'));
+          return reply([]);
         }
 
         return reply(results.findBioDesigns);
