@@ -691,12 +691,10 @@ internals.applyRoutes = function (server, next) {
           });
         }],
         updateSubFeaturesSuperAnnotationId: ['getSequences', 'createSubAnnotations', function (results, done) {
-          console.log('updateSubFeaturesAnnotationId');
 
           // Update superAnnotationIds in order in all subFeatures
+          //get featuresIds from getSequences and use to update subFeatureAnnotationIds
 
-          //getFeaturesIds from getSequences
-          //Use featureIds to update subFeatureAnnotationIds
           var subFeatureIds = results.getSequences[2];
           var subAnnotationIds = results.createSubAnnotations;
           var allPromises = [];
@@ -725,21 +723,27 @@ internals.applyRoutes = function (server, next) {
           });
         }],
         createAnnotation: ['createSequence', function (results, done) {
-          console.log('creating annotation');
-          // var seq = results.createSequence._id.toString();
-          // Annotation.create(
-          //   request.payload.name,
-          //   null, // description,
-          //   request.auth.credentials.user._id.toString(),
-          //   seq, // sequenceId
-          //   1, // start
-          //   null, // add this later
-          //   true, // isForwardString
-          //   done);
+
+          var seq = results.createSequence._id.toString();
+          var sequenceLength = results.createSequence.sequence.length;
+
+          Annotation.create(
+            request.payload.name,
+            null, // description,
+            request.auth.credentials.user._id.toString(),
+            seq, // sequenceId
+            null, //superSequenceId - never updated, null indicates it is directly part of a part or device
+            1, // start
+            sequenceLength, // end
+            true, // isForwardString
+            done);
 
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
           console.log('createFeature');
+
+          console.log(results.createAnnotation);
+
           // var annotationId = null, moduleId = null;
           // if (results.createAnnotation._id !== undefined) {
           //   annotationId = results.createAnnotation._id.toString();
