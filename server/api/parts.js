@@ -843,7 +843,6 @@ internals.applyRoutes = function (server, next) {
 
     handler: function (request, reply) {
 
-      console.log(request.payload);
 
       Async.auto({
         createBioDesign: function (done) {

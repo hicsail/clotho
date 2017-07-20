@@ -49,11 +49,10 @@ class Annotation extends MongoModels {
         return callback(err);
       }
       else {
-        callback(null, [i,docs[0]]);
+        callback(null, [i, docs[0]]);
       }
     });
   }
-
 
 
   // Retrieve annotation and get feature underneath.
@@ -66,7 +65,7 @@ class Annotation extends MongoModels {
         return callback(err);
       }
 
-      this.getFeatures(0,annotations,callback);
+      this.getFeatures(0, annotations, callback);
     });
   }
 
@@ -84,7 +83,7 @@ class Annotation extends MongoModels {
     });
   }
 
-  
+
   // Retrieve annotation and get feature underneath.
   static findBySuperSequenceId(sequenceId, callback) {
 
@@ -95,35 +94,57 @@ class Annotation extends MongoModels {
         return callback(err);
       }
 
-      this.getFeatures(0,annotations,callback);
+      this.getSubFeatures(0, annotations, callback);
+    });
+  }
+
+  // Retrieve feature of a superannotationId.
+  static getSubFeatures(index, annotations, callback) {
+
+    if (index == annotations.length) {
+      return callback(null, annotations);
+    }
+
+    Feature.findBySuperAnnotationId(annotations[index]['_id'].toString(), (err, features) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (features.length != 0) {
+        annotations[index].subfeatures = features;
+      }
+
+      return this.getSubFeatures(index + 1, annotations, callback);
     });
   }
 
 
-  static getFeatures(index,annotations,callback) {
+  // Get top level feature.
+  static getFeatures(index, annotations, callback) {
 
-    if(index == annotations.length){
+    if (index == annotations.length) {
       return callback(null, annotations);
     }
 
-    Feature.findByAnnotationId(annotations[index]['_id'].toString(), (err,features) => {
+    Feature.findByAnnotationId(annotations[index]['_id'].toString(), (err, features) => {
 
-      if(err) {
-        return callback(err,null);
+      if (err) {
+        return callback(err, null);
       }
 
-      if(features.length != 0) {
+      if (features.length != 0) {
         annotations[index].features = features;
       }
 
-      return this.getFeatures(index+1, annotations,callback);
+      return this.getFeatures(index + 1, annotations, callback);
     });
   }
 
   static delete(document, callback) {
 
     document.toDelete = true;
-    this.findByIdAndUpdate(document._id.toString(),document,callback);
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
 // Original Java

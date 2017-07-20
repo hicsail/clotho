@@ -7,7 +7,6 @@ const Part = require('./part');
 const Parameter = require('./parameter');
 const Module = require('./module');
 const Underscore = require('underscore');
-const ObjectID = require('mongo-models').ObjectID;
 
 
 class BioDesign extends MongoModels {
@@ -81,14 +80,6 @@ class BioDesign extends MongoModels {
 
 
     this.find(query2, (err, bioDesigns) => {
-
-      // Accounts for non-top level calls - design type not known
-      if (isDevice === null) {
-        var isDeviceArr = [];
-        for (var i = 0; i < bioDesigns.length; ++i) {
-          isDeviceArr.push(bioDesigns[i].type === 'DEVICE');
-        }
-      }
 
 
       // dealing with error
@@ -226,6 +217,7 @@ class BioDesign extends MongoModels {
       query = {superBioDesignId: {$in: bioDesignIds}};
     }
 
+
     // No array, just look for bioDesignIds.
     if (subDesigns === null || subDesigns.length === 0) {
       this.find(query, (err, results) => {
@@ -268,6 +260,7 @@ class BioDesign extends MongoModels {
           }
 
           this.find(query, (errGet, results) => {
+
 
             if (errGet) {
               return reject(errGet);

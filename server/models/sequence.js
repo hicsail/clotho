@@ -3,7 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
-const Part = require('./part');
+
 
 class Sequence extends MongoModels {
 
@@ -103,6 +103,7 @@ class Sequence extends MongoModels {
       return callback(null, sequences);
     }
 
+
     Annotation.findBySuperSequenceId(sequences[index]['_id'].toString(), (err, subannotations) => {
 
       if (err) {
@@ -124,6 +125,7 @@ class Sequence extends MongoModels {
       return callback(null, sequences);
     }
 
+
     Annotation.findBySuperSequenceId(sequences[index].toString(), (err, subannotations) => {
 
       if (err) {
@@ -132,6 +134,7 @@ class Sequence extends MongoModels {
 
       if (subannotations.length != 0) {
         sequences[index].subannotations = subannotations;
+
       }
 
       return this.getSubSubAnnotations(index + 1, sequences, callback);
@@ -165,6 +168,7 @@ class Sequence extends MongoModels {
 
     var partId;
     this.findOne({'bioDesignId': bioDesignId}, (err, results) => {
+
       if (err) {
         return callback(err);
       }
@@ -177,6 +181,7 @@ class Sequence extends MongoModels {
         const Part = require('./part');
 
         Part.find({'bioDesignId': bioDesignId}, (err, subpart) => {
+
           if (err) {
             return callback(err);
           }

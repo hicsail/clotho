@@ -25,7 +25,7 @@ class Feature extends MongoModels {
       }
       else {
         callback(null, docs[0]);
-    }
+      }
     });
   }
 
@@ -59,7 +59,6 @@ class Feature extends MongoModels {
   }
 
 
-
   static findBySuperAnnotationId(superAnnotationId, callback) {
 
     const query = {'superAnnotationId': superAnnotationId};
@@ -91,7 +90,7 @@ class Feature extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
-    this.findByIdAndUpdate(document._id.toString(),document,callback);
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
 }

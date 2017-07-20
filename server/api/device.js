@@ -85,6 +85,7 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         findSequences: function (done) {
 
+          // Retrieves sequence document(s) using Sequence string.
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
@@ -92,6 +93,7 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findSubParts: ['findSequences', function (results, done) {
+
 
           // get Sequence ids from array
           var seqArr = results.findSequences;
@@ -112,6 +114,7 @@ internals.applyRoutes = function (server, next) {
 
         }],
         findParameters: ['findSubParts', function (results, done) {
+
 
           // using part documents from last step, get biodesigns
           var resultsArray = results.findSubParts;
@@ -228,6 +231,7 @@ internals.applyRoutes = function (server, next) {
             }
           }
 
+
           // No result, no need to search further
           if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
             if (bioDesignIds.length === 0) {
@@ -252,7 +256,7 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           } else {
             // Get full biodesigns.
-            return BioDesign.getBioDesignIds(bioDesignIds, query, done);
+            return BioDesign.getBioDesignIds(bioDesignIds, query, true, done);
           }
 
 
@@ -267,7 +271,8 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        return reply(results);
+        //return reply(results);
+        return reply(results.findBioDesigns);
       });
     }
   });
@@ -380,7 +385,6 @@ internals.applyRoutes = function (server, next) {
           role: Joi.string().uppercase().optional(),
           partIds: Joi.array().items(Joi.string().required()).required(),
           createSeqFromParts: Joi.boolean().required(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -402,6 +406,7 @@ internals.applyRoutes = function (server, next) {
       //noinspection JSDuplicatedDeclaration
       Async.auto({
         createBioDesign: function (done) {
+
           var subBioDesignIds = request.payload.partIds;
 
           BioDesign.create(
@@ -427,10 +432,12 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
+
                 BioDesign.findOneAndUpdate({
                   _id: ObjectID(subBioDesignIds[i]),
                   $isolated: 1
                 }, {$set: {superBioDesignId: superBioDesignId}}, (err, results) => {
+
                   if (err) {
                     reject(err);
                   } else {
@@ -441,6 +448,7 @@ internals.applyRoutes = function (server, next) {
               allPromises.push(promise);
             }
             Promise.all(allPromises).then((resolve, reject) => {
+
               if (reject) {
                 reply(reject);
               }
@@ -452,6 +460,7 @@ internals.applyRoutes = function (server, next) {
 
         }],
         createParameters: ['createBioDesign', function (results, done) {
+
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
 
             var bioDesignId = results.createBioDesign._id.toString();
@@ -518,6 +527,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSubpart: ['createBioDesign', function (results, done) {
+
           var bioDesignId = results.createBioDesign._id.toString();
 
           Part.create(
@@ -558,10 +568,12 @@ internals.applyRoutes = function (server, next) {
 
             for (var i = 0; i < subBioDesignIds.length; ++i) {
               var promise = new Promise((resolve, reject) => {
+
                 Part.updateMany({
                   bioDesignId: subBioDesignIds[i],
                   $isolated: 1
                 }, {$set: {assemblyId: assemblyId}}, (err, results) => {
+
                   if (err) {
                     reject(err);
                   } else {
@@ -573,6 +585,7 @@ internals.applyRoutes = function (server, next) {
             }
 
             Promise.all(allPromises).then((resolve, reject) => {
+
               if (reject) {
                 reply(reject);
               }
@@ -595,6 +608,7 @@ internals.applyRoutes = function (server, next) {
 
               //sends value i to function so that order is kept track of
               Part.findByBioDesignIdOnly(i, subBioDesignIds[i], (err, results) => {
+
                 if (err) {
                   reject(err);
                 } else {
@@ -609,6 +623,7 @@ internals.applyRoutes = function (server, next) {
             allPromises.push(promise);
           }
           Promise.all(allPromises).then((resolve, reject) => {
+
             if (reject) {
               reply(reject);
             }
@@ -635,6 +650,7 @@ internals.applyRoutes = function (server, next) {
 
               //sends value i to function so that order is kept track of
               Sequence.findByPartIdOnly(i, subSubPartIds[i], (err, results) => {
+
                 if (err) {
                   return reject(err);
                 } else {
@@ -650,6 +666,7 @@ internals.applyRoutes = function (server, next) {
             allPromises.push(promise);
           }
           Promise.all(allPromises).then((resolve, reject) => {
+
             if (reject) {
               reply(reject);
             }
@@ -711,6 +728,7 @@ internals.applyRoutes = function (server, next) {
                 end, // end
                 true, // isForwardString
                 (err, results) => {
+
                   if (err) {
                     reject(err);
                   } else {
@@ -726,6 +744,7 @@ internals.applyRoutes = function (server, next) {
           }
 
           Promise.all(allPromises).then((resolve, reject) => {
+
             if (reject) {
               reply(reject);
             }
@@ -744,10 +763,12 @@ internals.applyRoutes = function (server, next) {
           for (var i = 0; i < subFeatureIds.length; ++i) {
 
             var promise = new Promise((resolve, reject) => {
+
               Feature.findOneAndUpdate({
                 _id: ObjectID(subFeatureIds[i]),
                 $isolated: 1
               }, {$set: {superAnnotationId: subAnnotationIds[i]}}, (err, results) => {
+
                 if (err) {
                   reject(err);
                 } else {
@@ -758,6 +779,7 @@ internals.applyRoutes = function (server, next) {
             allPromises.push(promise);
           }
           Promise.all(allPromises).then((resolve, reject) => {
+
             if (reject) {
               reply(reject);
             }
