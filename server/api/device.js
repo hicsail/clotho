@@ -298,10 +298,52 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  //Original Java
-  //public static ObjectId createDevice(Persistor persistor, String name,
-  // List<String> partIDs, String author, boolean createSeqFromParts) {
-// name, displayId, role, partIds, createSeqFromParts, sequence, parameters
+
+  /**
+   * @api {post} /api/device Create Device
+   * @apiName Create Device
+   * @apiDescription Create device based on arguments and part ids
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [userId]  id of user.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String} [createSeqFromParts]  boolean to differentiate device from part - may not be necessary
+   * @apiParam (Object) [partIds]  list of partIds
+   *
+   * @apiParamExample {json} Request-Example:
+   *
+   {
+       "name": "B001",
+       "parameters": [
+           {"value": 20,
+           "variable": "cm"
+           }
+       ],
+       "role": "MODULE",
+       "displayId": "sample",
+       "createSeqFromParts": "true",
+       "partIds": ["596fa7165fe2743c2a5c4f76","596fa73a5fe2743c2a5c4f7d","596fa74b5fe2743c2a5c4f84"]
+   }
+   *
+   * List of partIds was compiled from creating parts and collecting their bioDesignIds.
+   * Replace with bioDesignIds from locally created parts
+   *
+   * @apiSuccessExample {string} Success-Response:
+   * 596fb1a516da153d08ed51b0
+   *
+   * @apiErrorExample {json} Error-Response 1 - Invalid role:
+   * {
+   *  "statusCode": 400,
+   *  "error": "Bad Request",
+   *  "message": "Role invalid."
+   *  }
+   */
+
 
   server.route({
     method: 'POST',
