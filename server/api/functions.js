@@ -358,7 +358,7 @@ internals.applyRoutes = function (server, next) {
     path: '/transcribe',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session']
       },
       validate: {
         payload: {
@@ -435,7 +435,7 @@ internals.applyRoutes = function (server, next) {
     path: '/function/run',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session']
       },
       pre: [{
         assign: 'validInput',
@@ -496,7 +496,7 @@ internals.applyRoutes = function (server, next) {
     path: '/function',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session']
       },
       validate: {
         payload: {
