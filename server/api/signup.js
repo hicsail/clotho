@@ -138,6 +138,35 @@ internals.applyRoutes = function (server, next) {
             reply(true);
           });
         }
+      }, {
+        assign: 'passwordCheck',
+        method: function (request, reply) {
+
+          const password = request.payload.password;
+          var containsNum = false;
+          var containsUpperCase = false;
+
+          for (var i = 0; i < password.length; i++) {
+            if (isNaN(password.charAt(i)) === false) {
+              containsNum = true;
+            }
+            if (upper(password.charAt(i))) {
+              containsUpperCase = true;
+            }
+          }
+
+          if(password.length < 8) { // Check if password is longer than 8 characters
+            return reply(Boom.conflict('Password must me longer than 8 characters.'));
+          }
+          if (containsUpperCase === false) {
+            return reply(Boom.conflict('Password must contain at least one upper case letter.'));
+          }
+          if (containsNum === false) {
+            return reply(Boom.conflict('Password must contain at least one number'));
+          }
+
+          function upper(s) {return s === s.toUpperCase();}
+        }
       }]
     },
     handler: function (request, reply) {
