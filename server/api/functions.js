@@ -431,6 +431,23 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
+    method: 'GET',
+    path: '/function/template/{language*}',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+    },
+    handler: function (request, reply) {
+
+      Request(`http://localhost:8000/public/templates/${request.params.language}.txt`, (error, response, body) => {
+
+        reply(body);
+      });
+    }
+  });
+
+  server.route({
     method: 'POST',
     path: '/function/run',
     config: {

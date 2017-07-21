@@ -32,6 +32,43 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
+    path: '/function/create',
+    config: {
+      auth: {
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: '/login',
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const languageRequest = {
+        method: 'GET',
+        url: '/api/function/language',
+        credentials: request.auth.credentials
+      };
+
+      const templateRequest = {
+        method: 'GET',
+        url: '/api/function/template/{language*}',
+        credentials: request.auth.credentials
+      };
+
+      server.inject(languageRequest, (result) => {
+
+        return reply.view('functionCreate',{
+          languages: JSON.parse(result.payload),
+          user: request.auth.credentials.user
+        });
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
     path: '/function/view/{id}',
     config: {
       auth: {
