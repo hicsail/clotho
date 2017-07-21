@@ -113,6 +113,7 @@ lab.experiment('Sequence Class Methods', () => {
         TestAnnotations[testCase].description,
         'userId',
         sequence._id.toString(),
+        'superSequenceId',
         TestAnnotations[testCase].start,
         TestAnnotations[testCase].end,
         TestAnnotations[testCase].isForwardStrand,

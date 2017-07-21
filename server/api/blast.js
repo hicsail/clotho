@@ -176,7 +176,7 @@ internals.applyRoutes = function (server, next) {
             url: '/api/blast/fasta',
             payload: request.payload,
             credentials: request.auth.credentials
-          }
+          };
 
           server.inject(fastaRequest, (response) => {
 

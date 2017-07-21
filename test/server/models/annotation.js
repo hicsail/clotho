@@ -40,6 +40,7 @@ lab.experiment('Annotation Class Methods', () => {
       TestAnnotations[testCase].description,
       'userid12test',
       'sequenceId',
+      'superSequenceId',
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
       TestAnnotations[testCase].isForwardStrand,
@@ -51,7 +52,8 @@ lab.experiment('Annotation Class Methods', () => {
           'userid12test',
           'displayId',
           'BARCODE', //role
-          result._id.toString(),
+          result._id.toString(), // annotationId,
+          'superAnnotationId',
           'moduleId',
           (err, feature) => {
 
@@ -81,6 +83,7 @@ lab.experiment('Annotation Class Methods', () => {
       TestAnnotations[testCase].description,
       'userid12test',
       'sequenceId',
+      'superSequenceId',
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
       TestAnnotations[testCase].isForwardStrand,
@@ -115,6 +118,7 @@ lab.experiment('Annotation Class Methods', () => {
       TestAnnotations[testCase].description,
       'userid12test',
       'sequenceId2',
+      'superSequenceId',
       TestAnnotations[testCase].start,
       TestAnnotations[testCase].end,
       TestAnnotations[testCase].isForwardStrand,
