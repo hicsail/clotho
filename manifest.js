@@ -80,7 +80,8 @@ const manifest = {
             Sample: './server/models/sample',
             Sequence: './server/models/sequence',
             Session: './server/models/session',
-            User: './server/models/user'
+            User: './server/models/user',
+            Version: './server/models/version'
           },
           autoIndex: Config.get('/hapiMongoModels/autoIndex')
         }
