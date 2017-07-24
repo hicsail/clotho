@@ -5,22 +5,16 @@ const MongoModels = require('mongo-models');
 
 class Role extends MongoModels {
   static create(name, userId, type, callback) {
-
-    if (typeof name === 'string') {
-      name = name.toUpperCase();
-    }
-
     // Check if role already exists.
-    this.findOne({name: name}, (err, results) => {
+    this.findOne({name: name.toUpperCase()}, (err, results) => {
 
       if (err) {
-
         return callback(err);
       }
 
       if (results === null) {
         const document = {
-          name: name,
+          name: name.toUpperCase(),
           userId: userId,
           type: type
         };
@@ -28,14 +22,12 @@ class Role extends MongoModels {
         this.insertOne(document, (err, docs) => {
 
           if (err) {
-
             return callback(err);
           }
 
           callback(null, docs[0]);
         });
       } else {
-
         callback(Error('Role already exists.'));
       }
 
@@ -57,7 +49,7 @@ class Role extends MongoModels {
         return callback(err);
       }
 
-      return callback(null, err === null && results !== null);
+      return callback(null,results !== null);
 
     });
 

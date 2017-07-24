@@ -4,7 +4,6 @@ const Boom = require('boom');
 const Joi = require('joi');
 const Async = require('async');
 const ObjectID = require('mongo-models').ObjectID;
-const utilities = require('./utilities');
 
 const internals = {};
 
@@ -50,9 +49,6 @@ internals.applyRoutes = function (server, next) {
       }],
       validate: {
         payload: {
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1),
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
@@ -74,13 +70,6 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
-
-      const query = {};
-      const fields = request.query.fields;
-      const sort = request.query.sort;
-      const limit = request.query.limit;
-      const page = request.query.page;
-
 
       Async.auto({
         findSequences: function (done) {
@@ -635,7 +624,6 @@ internals.applyRoutes = function (server, next) {
         getSequences: ['createSubpart', 'getSubSubPartIds', function (results, done) {
 
           //get all subSequences!
-          var partId = results.createSubpart._id.toString();
           var subSubPartIds = results.getSubSubPartIds;
           var subBioDesignIds = request.payload.partIds;
           var allPromises = [];

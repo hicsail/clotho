@@ -229,6 +229,7 @@ lab.experiment('Part Plugin Create', () => {
     delete request.payload.parameters;
 
     stub.Role.checkValidRole = function (role, callback) {
+
       return callback(true);
     };
 
@@ -259,6 +260,7 @@ lab.experiment('Part Plugin Create', () => {
     delete request.payload.role;
 
     stub.Role.checkValidRole = function (role, callback) {
+
       return true;
     };
 

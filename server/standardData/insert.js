@@ -1,7 +1,7 @@
 const Path = require('path');
 const MongoDB = require('mongodb');
 const Config = require('../../config');
-const fs = require('fs');
+const Fs = require('fs');
 
 const insertData = {
 
@@ -16,7 +16,8 @@ const insertData = {
       }
 
       //loop though files
-      fs.readdir(__dirname, (err, items) => {
+      Fs.readdir(__dirname, (err, items) => {
+
         for (var file of items) {
           if (file != 'insert.js') {
             var data = require(Path.join(__dirname,file));

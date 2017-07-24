@@ -1,8 +1,8 @@
 'use strict';
 
-const AhoCorasick = require('node-aho-corasick');
-const createTrie = require('array-trie');
-const createAC = require('aho-corasick-automaton');
+//const AhoCorasick = require('node-aho-corasick');
+const CreateTrie = require('array-trie');
+const CreateAC = require('aho-corasick-automaton');
 // const utilities = {};
 
 
@@ -10,10 +10,10 @@ var annotateMe = function (server, partIds) {
 
   // const Part = server.plugins['hapi-mongo-models'].Part;
   // const Sequence = server.plugins['hapi-mongo-models'].Sequence;
-  console.log('hello');
+
   //arr or some other object
 
-  var trie = createTrie();
+  var trie = CreateTrie();
   trie.set([1,2,3], 1);
   trie.set([2,3,4], 2);
   trie.set([6,7,8], 3);
@@ -21,13 +21,13 @@ var annotateMe = function (server, partIds) {
   trie.set([2,3], 5);
 
 
-  var automata = createAC(trie);
+  var automata = CreateAC(trie);
 
   //var ac = new AhoCorasick();
   //var partIds = ['1234','34567','7890'];
   //for each partId:
 
-  console.log(automata.push(1));
+  //console.log(automata.push(1));
 
   var data = [1,2,3,4,5,6,7,8,9];
   for(var state=automata, i=0; i<data.length; ) {
@@ -37,9 +37,9 @@ var annotateMe = function (server, partIds) {
 
     //Print out all matches at position i
     if(state.value !== undefined) {
-      console.log('matches at position', i, ':');
+      //console.log('matches at position', i, ':');
       for(var cur = state; cur.value !== undefined; cur = cur.next) {
-        console.log(cur.value);
+        //console.log(cur.value);
       }
     }
   }
@@ -85,6 +85,5 @@ var annotateMe = function (server, partIds) {
 
 
 };
-
 
 module.exports.annotateMe = annotateMe;
