@@ -65,21 +65,7 @@ class Annotation extends MongoModels {
         return callback(err);
       }
 
-      this.getFeatures(0, annotations, callback);
-    });
-  }
-
-
-  static findBySequenceIdOnly(i, sequenceId, callback) {
-
-    const query = {'sequenceId': sequenceId};
-    this.findOne(query, (err, annotations) => { //several exist due to testing previous cases
-
-      if (err) {
-        return callback(err);
-      }
-      callback(null, [i, annotations]);
-
+      return this.getFeatures(0, annotations, callback);
     });
   }
 

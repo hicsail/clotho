@@ -135,7 +135,7 @@ class Part extends MongoModels {
       if (err) {
         return callback(err);
       }
-
+      console.log(partsWithSeq[index]);
       // Then get assembly if needed.
       if (isDevice && partsWithSeq[index] !== undefined) {
 

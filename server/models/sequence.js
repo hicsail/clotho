@@ -68,15 +68,17 @@ class Sequence extends MongoModels {
         return callback(err);
       }
 
-      this.getAnnotations(0, sequences, (err, results) => {
-
-        if (err) {
-          return callback(err);
-        }
-
-        // Check for potential of being supersequence.
-        return this.getSubAnnotations(0, results, callback);
-      });
+      return this.getAnnotations(0, results, callback);
+      
+      // this.getAnnotations(0, sequences, (err, results) => {
+      //
+      //   if (err) {
+      //     return callback(err);
+      //   }
+      //
+      //   //Get subAnnotations only! No further
+      //   return this.getSubAnnotations(0, results, callback);
+      // });
     });
   }
 

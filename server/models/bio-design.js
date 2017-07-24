@@ -72,17 +72,16 @@ class BioDesign extends MongoModels {
 
   // isDevice can be null to indicate that we need to query biodesign(s) to determine its type.
   static getBioDesignIds(bioDesignIds, query, isDevice, callback) {
+    console.log("beginning of function");
+    console.log(bioDesignIds);
 
     if (query == null) {
       query = {};
     }
-    var query2 = this.convertBD(bioDesignIds, query);
+    var query2 = this.convertBD(bioDesignIds, query); //clean up query
 
 
     this.find(query2, (err, bioDesigns) => {
-
-
-      // dealing with error
       if (err) {
         return callback(err);
       }
@@ -92,9 +91,13 @@ class BioDesign extends MongoModels {
       var subBioDesignPromises = [];
 
 
+      //for a list of entered bioDesign Ids
       for (var i = 0; i < bioDesigns.length; ++i) {
         // fetch aggregate of part, module, parameter (informally, components)
         // and combine with main biodesign object
+
+        console.log("in normal bioDesigns");
+
         var promise = new Promise((resolve, reject) => {
 
           var isDeviceInput = isDevice;
@@ -109,7 +112,8 @@ class BioDesign extends MongoModels {
             if (errGet) {
               reject(errGet);
             }
-
+            console.log("Result from getBioDesign Call");
+            console.log(components);
             resolve(components);
           });
         });
@@ -122,6 +126,8 @@ class BioDesign extends MongoModels {
         if (isDevice && bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
           && bioDesigns[i].subBioDesignIds.length !== 0) {
 
+          // console.log("in subBioDesignIds");
+          // console.log(bioDesigns[i])
           var subBioDesignPromise = new Promise((resolve, reject) => {
 
             this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
@@ -135,7 +141,6 @@ class BioDesign extends MongoModels {
 
           subBioDesignPromises.push(subBioDesignPromise);
         }
-
       }
 
       Promise.all(allPromises).then((resolve, reject) => {
@@ -166,12 +171,10 @@ class BioDesign extends MongoModels {
           }
 
           return callback(null, bioDesigns);
-
         });
       });
 
     });
-
   }
 
 
