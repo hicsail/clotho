@@ -50,8 +50,7 @@ $('#register').on('submit', function (e) {
     $.post('../../api/signup', values, function () {
       window.location.replace('/');
     }).fail(function (data) {
-      var message = formatResponseMessage(data.responseJSON.message);
-      failureAlert(message)
+      failureAlert(data.responseJSON.message)
     });
   }
 });

@@ -143,29 +143,29 @@ internals.applyRoutes = function (server, next) {
         method: function (request, reply) {
 
           const password = request.payload.password;
-          var containsNum = false;
-          var containsUpperCase = false;
+          const requirement = Config.get('/passwordRequirements');
 
-          for (var i = 0; i < password.length; i++) {
-            if (isNaN(password.charAt(i)) === false) {
-              containsNum = true;
-            }
-            if (upper(password.charAt(i))) {
-              containsUpperCase = true;
-            }
+          if(!(password.length >= requirement.min)) {
+            return reply(Boom.badRequest(`Password must be a minimum of ${requirement.min} characters`));
           }
 
-          if(password.length < 8) { // Check if password is longer than 8 characters
-            return reply(Boom.conflict('Password must me longer than 8 characters.'));
-          }
-          if (containsUpperCase === false) {
-            return reply(Boom.conflict('Password must contain at least one upper case letter.'));
-          }
-          if (containsNum === false) {
-            return reply(Boom.conflict('Password must contain at least one number'));
+          if(!(password.length <= requirement.max)) {
+            return reply(Boom.badRequest(`Password can not exceed a maximum of ${requirement.max} characters`));
           }
 
-          function upper(s) {return s === s.toUpperCase();}
+          if(!((password.match(/[a-z]/g) || []).length >= requirement.lowercase)) {
+            return reply(Boom.badRequest(`Password must have a minimum of ${requirement.lowercase} lowercase characters`));
+          }
+
+          if(!((password.match(/[A-Z]/g) || []).length >= requirement.uppercase)) {
+            return reply(Boom.badRequest(`Password must have a minimum of ${requirement.uppercase} uppercase characters`));
+          }
+
+          if(!((password.match(/[0-9]/g) || []).length >= requirement.numeric)) {
+            return reply(Boom.badRequest(`Password must have a minimum of ${requirement.numeric} numeric characters`));
+          }
+
+          reply(true);
         }
       }]
     },
