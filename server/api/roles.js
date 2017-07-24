@@ -159,7 +159,7 @@ internals.applyRoutes = function (server, next) {
       };
 
 
-      Role.findOneAndUpdate({_id: id}, update, (err, role) => {
+      Role.findByIdAndUpdate(id, update, (err, role) => {
 
         if (err) {
           return reply(err);
