@@ -2,9 +2,10 @@
 
 const Async = require('async');
 //const { exec } = require('child_process');
-//const Fs = require('fs');
+const Fs = require('fs');
 const Joi = require('joi');
 const UUID = require('uuid/v4');
+const blast = require('blastjs');
 
 const internals = {};
 
@@ -163,31 +164,87 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+      var data = {};
 
       Async.auto({
-        ID: function (callback) {
+        ID: function (callback) { // Dont really need this because I can just call the UUID in mkdir
 
           //get unique ID for directory path
           callback(null,UUID());
         },
         fastaFile: function (callback) {
 
+          var payload1 = {name: request.payload.name,
+          displayId: request.payload.displayId,
+          role: request.payload.role,
+          sequence: request.payload.sequence,
+          parameters: request.payload.parameters,
+          userSpace: request.payload.userSpace
+          }
+
           var fastaRequest = {
             method: 'POST',
             url: '/api/blast/fasta',
-            payload: request.payload,
+            payload: payload1,
             credentials: request.auth.credentials
           }
 
           server.inject(fastaRequest, (response) => {
 
-            if(response.statusCode != 200) {
+            if(response.statusCode != 200) {  // Error
               return callback(response.result);
             }
 
+            data.fastaFile = response.result;
             callback(null, response.result);
           });
-        }
+        },
+        mkdir: function (callback) {
+
+          //const randomNum = Math.floor(Math.random()*1000)+1; // Random number generator to create random temp directory name
+          const directory = '../blast/temp' + UUID();
+          exec('mkdir', ['-p', directory], (error, stdout, stderr) => {
+
+            if (error) {
+              callback(error);
+            } else {
+              data.directory = directory; // Add directory path into the data object
+              callback(null, 'directory');
+            }
+          });
+        },
+        writeFile: ['mkdir', 'fastaFile', function (callback) {
+
+          data.fileLocation = data.directory + '/filename.fasta'
+
+          Fs.writeFile(data.fileLocation, data.fastaFile, (err) => {
+            if (err) throw err;
+          });
+        }],
+        blast: ['mkdir', 'fastaFile', 'writeFile', function (callback) {
+
+          // Do blast
+
+          // Make DB
+          var type = 'nucl';
+          var fileIn = data.fileLocation;
+          var outPath = '../blast';
+          var name = 'blastOut'
+          blast.makeDB(type, fileIn, outPath, name, function (err) {
+            if (err) throw err;
+            console.log('database created at', outPath);
+          });
+
+          // BlastX
+          var dbPath = './blastout';
+          var query = '> Sequence.name-Sequence.id-Sequence.description\n' + request.payload.BLASTsequence;
+
+          blast.blastX(dbPath, query, function (err, output) {
+            if (err) throw err;
+            return reply(output);
+          });
+
+        }]
       }, (err, results) => {
 
         if(err) {

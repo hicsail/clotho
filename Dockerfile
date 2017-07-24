@@ -10,6 +10,10 @@ RUN apt-get update
 #Needed to connect to MongoDB
 RUN apt-get install -y netcat
 
+#Install Blast
+RUN sudo apt-get install ncbi-blast+
+
+
 COPY . /usr/src/clotho
 
 RUN npm install
