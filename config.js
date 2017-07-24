@@ -21,6 +21,13 @@ const config = {
       $default: 9000
     }
   },
+  passwordRequirements: {
+    min: 8,
+    max: 32,
+    uppercase: 1,
+    lowercase: 1,
+    numeric: 1
+  },
   authAttempts: {
     forIp: 50,
     forIpAndUser: 7

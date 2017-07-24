@@ -2,6 +2,7 @@
 const AuthAttempt = require('../models/auth-attempt');
 const AuthPlugin = require('../auth');
 const Boom = require('boom');
+const Config = require('../../config');
 const Joi = require('joi');
 
 
@@ -212,6 +213,35 @@ internals.applyRoutes = function (server, next) {
 
               reply(true);
             });
+          }
+        }, {
+          assign: 'passwordCheck',
+          method: function (request, reply) {
+
+            const password = request.payload.password;
+            const requirement = Config.get('/passwordRequirements');
+
+            if(!(password.length >= requirement.min)) {
+              return reply(Boom.badRequest(`Password must be a minimum of ${requirement.min} characters`));
+            }
+
+            if(!(password.length <= requirement.max)) {
+              return reply(Boom.badRequest(`Password can not exceed a maximum of ${requirement.max} characters`));
+            }
+
+            if(!((password.match(/[a-z]/g) || []).length >= requirement.lowercase)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.lowercase} lowercase characters`));
+            }
+
+            if(!((password.match(/[A-Z]/g) || []).length >= requirement.uppercase)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.uppercase} uppercase characters`));
+            }
+
+            if(!((password.match(/[0-9]/g) || []).length >= requirement.numeric)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.numeric} numeric characters`));
+            }
+
+            reply(true);
           }
         }
       ]
@@ -482,6 +512,36 @@ internals.applyRoutes = function (server, next) {
       pre: [
         AuthPlugin.preware.ensureAdminGroup('root'),
         {
+          assign: 'passwordCheck',
+          method: function (request, reply) {
+
+            const password = request.payload.password;
+            const requirement = Config.get('/passwordRequirements');
+
+            if(!(password.length >= requirement.min)) {
+              return reply(Boom.badRequest(`Password must be a minimum of ${requirement.min} characters`));
+            }
+
+            if(!(password.length <= requirement.max)) {
+              return reply(Boom.badRequest(`Password can not exceed a maximum of ${requirement.max} characters`));
+            }
+
+            if(!((password.match(/[a-z]/g) || []).length >= requirement.lowercase)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.lowercase} lowercase characters`));
+            }
+
+            if(!((password.match(/[A-Z]/g) || []).length >= requirement.uppercase)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.uppercase} uppercase characters`));
+            }
+
+            if(!((password.match(/[0-9]/g) || []).length >= requirement.numeric)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.numeric} numeric characters`));
+            }
+
+            reply(true);
+          }
+        },
+        {
           assign: 'password',
           method: function (request, reply) {
 
@@ -579,7 +639,38 @@ internals.applyRoutes = function (server, next) {
         }
       },
       pre: [
-        AuthPlugin.preware.ensureNotRoot, {
+        AuthPlugin.preware.ensureNotRoot,
+        {
+          assign: 'passwordCheck',
+          method: function (request, reply) {
+
+            const password = request.payload.password;
+            const requirement = Config.get('/passwordRequirements');
+
+            if(!(password.length >= requirement.min)) {
+              return reply(Boom.badRequest(`Password must be a minimum of ${requirement.min} characters`));
+            }
+
+            if(!(password.length <= requirement.max)) {
+              return reply(Boom.badRequest(`Password can not exceed a maximum of ${requirement.max} characters`));
+            }
+
+            if(!((password.match(/[a-z]/g) || []).length >= requirement.lowercase)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.lowercase} lowercase characters`));
+            }
+
+            if(!((password.match(/[A-Z]/g) || []).length >= requirement.uppercase)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.uppercase} uppercase characters`));
+            }
+
+            if(!((password.match(/[0-9]/g) || []).length >= requirement.numeric)) {
+              return reply(Boom.badRequest(`Password must have a minimum of ${requirement.numeric} numeric characters`));
+            }
+
+            reply(true);
+          }
+        },
+        {
           assign: 'password',
           method: function (request, reply) {
 
