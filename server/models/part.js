@@ -45,6 +45,7 @@ class Part extends MongoModels {
   }
 
 
+
   static findByBioDesignId(bioDesignId, isDevice, callback) {
 
     console.log("In Part.findByBioDesignId");
@@ -98,7 +99,7 @@ class Part extends MongoModels {
           return callback(err);
         }
 
-        this.getChildren(0, parts, isDevice, callback);
+        return this.getChild(0, parts, isDevice, callback);
       });
     }
   }
@@ -122,6 +123,18 @@ class Part extends MongoModels {
     }
   }
 
+  // Get sequence and assemblies under the subpart.
+  static getChild(index, parts, isDevice, callback) {
+
+    console.log("In Part.getChild");
+    console.log(parts);
+
+
+    // Get Sequence
+    return this.getSequence(index, parts, callback)
+
+
+  }
 
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, isDevice, callback) {

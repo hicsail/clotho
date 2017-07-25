@@ -276,8 +276,10 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.getBioDesignIds(request.params.id, null, (err, bioDesign) => {
+      BioDesign.getBioDesignIds(request.params.id, null, null, (err, bioDesign) => {
 
+        console.log("got bioDesign in Device");
+        console.log(bioDesign);
         if (err) {
           return reply(err);
         }
@@ -286,7 +288,8 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(bioDesign);
+
+        return reply(bioDesign);
 
       });
     }

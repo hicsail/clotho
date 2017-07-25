@@ -155,12 +155,15 @@ class BioDesign extends MongoModels {
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
         }
+        console.log("Trying to return");
 
         // If leaf node subdesign.
-        if (subBioDesignPromises.length === 0) {
-          return callback(null, bioDesigns);
-        }
+        // if (subBioDesignPromises.length === 0) {
+        //   return callback(null, bioDesigns);
+        // }
+        console.log(bioDesigns);
 
+        return callback(null, bioDesigns);
         // Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
         //
         //   if (subreject) {
