@@ -1,7 +1,7 @@
 'use strict';
 
 const Async = require('async');
-//const { exec } = require('child_process');
+const { exec } = require('child_process');
 const Fs = require('fs');
 const Joi = require('joi');
 const UUID = require('uuid/v4');
@@ -172,7 +172,7 @@ internals.applyRoutes = function (server, next) {
           //get unique ID for directory path
           callback(null,UUID());
         },
-        fastaFile: function (callback) {
+        fastaFile: function (callback) {  // Done
 
           var payload1 = {name: request.payload.name,
           displayId: request.payload.displayId,
@@ -199,21 +199,21 @@ internals.applyRoutes = function (server, next) {
             callback(null, response.result);
           });
         },
-        mkdir: function (callback) {
+        mkdir: function (callback) {  // Done
 
-          //const randomNum = Math.floor(Math.random()*1000)+1; // Random number generator to create random temp directory name
-          const directory = '../blast/temp' + UUID();
-          exec('mkdir', ['-p', directory], (error, stdout, stderr) => {
+          const directory = './server/blast/temp' + UUID();
+          exec(`mkdir -p ${directory}`, (error, stdout, stderr) => {
 
             if (error) {
-              callback(error);
+              throw error;
             } else {
               data.directory = directory; // Add directory path into the data object
               callback(null, 'directory');
             }
           });
+
         },
-        writeFile: ['mkdir', 'fastaFile', function (callback) {
+        writeFile: ['mkdir', 'fastaFile', function (callback) { // Done
 
           data.fileLocation = data.directory + '/filename.fasta'
 
@@ -237,13 +237,25 @@ internals.applyRoutes = function (server, next) {
 
           // BlastX
           var dbPath = './blastout';
-          var query = '> Sequence.name-Sequence.id-Sequence.description\n' + request.payload.BLASTsequence;
+          var query = request.payload.BLASTsequence;
 
           blast.blastX(dbPath, query, function (err, output) {
             if (err) throw err;
+            console.log('Replying with blast output...\n')
             return reply(output);
           });
 
+        }],
+        rmDir: ['blast', function (callback) {  // Done
+
+          exec(`rm -rf ${data.directory}`, (error, stdout, stderr) => {
+
+            if (error) {
+              throw error;
+            } else {
+                callback(null, 'directory');
+            }
+          });
         }]
       }, (err, results) => {
 
