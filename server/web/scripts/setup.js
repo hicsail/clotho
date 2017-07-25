@@ -1,0 +1,156 @@
+$('#register').on('submit', function (e) {
+  e.preventDefault();
+
+  var password = $('#password');
+  var email = $('#email');
+  var retypePw = $('#retypePw');
+  var valid = false;
+
+  var fields = [email, password, retypePw];
+  for (var i = 0; i < fields.length; i++) {  // Loop through the fields and remove the red outline if there is one
+    fields[i].removeClass('is-danger');
+  }
+
+  // Loop through fields to see if they are filled.
+  for (var i = 0; i < fields.length; i++) {
+    if (fields[i][0].value === '') {
+      var id = fields[i][0].id;
+      if (id === 'retypePw') {
+        failureAlert('Please confirm your password.');
+      } else {
+        failureAlert('Please fill out your ' + id);
+      }
+      fields[i].addClass('is-danger');
+      break;
+    }
+    if (i === 2) {   // If they are all filled out, check to see if passwords match
+      if (fields[1][0].value != fields[2][0].value) {
+        failureAlert('Your passwords do not match');
+        fields[1].addClass('is-danger');
+        fields[2].addClass('is-danger');
+        break;
+      }
+      valid = true; // If passwords match, send the data over to the sever.
+    }
+  }
+
+  if (valid === true) {
+    var values = {};    // Stores the values of the input fields
+    $.each($('#register').serializeArray(), function (i, field) {   // Loops through the input fields
+      values[field.name] = field.value;
+    });
+    delete values.retypePw; //delete the confirmed password
+    // If user does not already exist, send to home page
+    // If any error, show it in an alert
+    $.post('/setup', values, function () {
+      window.location.replace('/setup');
+    }).fail(function (data) {
+      var message = formatResponseMessage(data.responseJSON.message);
+      failureAlert(message)
+    });
+  }
+});
+
+var emailFocus = false;
+var usernameFocus = false;
+$('#email').focus(function (e) {
+  e.preventDefault();
+  emailFocus = true;
+});
+$('#username').focus(function (e) {
+  e.preventDefault();
+  usernameFocus = true;
+});
+
+// Email verification
+$('#email').blur(function (e) {
+  if (emailFocus === true) {
+    //e.preventDefault();
+    emailFocus = false;
+    $.post('/api/available', {email: $('#email')[0].value}, function (data) {
+      var message = data.email.message;
+      var success = 'This email is available';
+
+      if (message === success) {
+        $('#email').removeClass('is-danger').addClass('is-success');
+        $('#emailRightIcon').removeClass('fa-warning').addClass('fa-check');
+        $('#emailCheck').css('display', '');
+        $('#emailStatus').text(success);
+      }
+      else {
+        $('#email').removeClass('is-success').addClass('is-danger');
+        $('#emailRightIcon').removeClass('fa-check').addClass('fa-warning');
+        $('#emailCheck').css('display', '');
+        $('#emailStatus').text(message);
+      }
+    }).fail(function (data) { // It will fail if the input is not in email form
+      $('#email').removeClass('is-success').addClass('is-danger');
+      $('#emailRightIcon').removeClass('fa-check').addClass('fa-warning');
+      $('#emailCheck').css('display', '');
+      $('#emailStatus').text(data.responseJSON.message);
+    });
+  }
+});
+
+// Username verifiation
+$('#username').blur(function () {
+  if (usernameFocus === true) {
+    //e.preventDefault();
+    usernameFocus = false;
+    $.post('/api/available', {username: $('#username')[0].value}, function (data) {
+      var message = data.username.message;
+      var success = 'This username is available';
+
+      if (message === success) {
+        $('#username').removeClass('is-danger').addClass('is-success');
+        $('#usernameRightIcon').removeClass('fa-warning').addClass('fa-check');
+        $('#usernameCheck').css('display', '');
+        $('#usernameStatus').text(success);
+      } else {
+        $('#username').removeClass('is-success').addClass('is-danger');
+        $('#usernameRightIcon').removeClass('fa-check').addClass('fa-warning');
+        $('#usernameCheck').css('display', '');
+        $('#usernameStatus').text(message);
+      }
+    }).fail(function (data) {   // It will fail if the input is not in email form
+      var message = formatResponseMessage(data.responseJSON.message);
+      $('#username').removeClass('is-success').addClass('is-danger');
+      $('#usernameRightIcon').removeClass('fa-check').addClass('fa-warning');
+      $('#usernameCheck').css('display', '');
+      $('#usernameStatus').text(message);
+    });
+  }
+});
+
+// Password verification
+$('#retypePw').keyup(function (e) {
+  e.preventDefault();
+  var pw = $('#password')[0].value;
+  var pw2 = $('#retypePw')[0].value;
+  if (pw === '') {
+    $('#password').removeClass('is-success').addClass('is-danger');
+    $('#retypePwStatus').text('Please type in a password');
+  } else if (pw === pw2) {
+    $('#password').removeClass('is-danger').addClass('is-success');
+    $('#retypePw').removeClass('is-danger').addClass('is-success');
+    $('#passwordRightIcon').removeClass('fa-warning').addClass('fa-check');
+    $('#retypePwRightIcon').removeClass('fa-warning').addClass('fa-check');
+    $('#passwordCheck').css('display', '');
+    $('#retypePwCheck').css('display', '');
+    $('#retypePwStatus').text('Passwords match!');
+  } else {
+    $('#password').removeClass('is-success').addClass('is-danger');
+    $('#retypePw').removeClass('is-success').addClass('is-danger');
+    $('#passwordRightIcon').removeClass('fa-check').addClass('fa-warning');
+    $('#retypePwRightIcon').removeClass('fa-check').addClass('fa-warning');
+    $('#passwordCheck').css('display', '');
+    $('#retypePwCheck').css('display', '');
+    $('#retypePwStatus').text('Passwords do not match');
+  }
+});
+
+
+function formatResponseMessage(message) {
+  message = message.substring(message.lastIndexOf('[') + 1, message.lastIndexOf(']'));
+  return message.replace(/\"/g, "");
+}

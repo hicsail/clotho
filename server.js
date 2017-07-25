@@ -1,6 +1,6 @@
 'use strict';
 const Composer = require('./index');
-const MongoClient = require('mongodb').MongoClient;
+const User = require('./server/models/user');
 
 
 Composer((err, server) => {
@@ -13,19 +13,15 @@ Composer((err, server) => {
 
     console.warn('Started the plot device on port ' + server.info.port);
 
-    // Instructions to setup root user if there is none.
-    var url = 'mongodb://localhost:27017/clotho';
+    User.findOne({username:'root'}, (err, user) => {
 
-    MongoClient.connect(url, function (err, db) { // Connect to the db
-      if (err) throw err;
+      if(err) {
+        console.error(err);
+      }
 
-      var collection = db.collection('users');  // Define the users collection
-      collection.findOne({username: 'root'}, {}, function (err, doc) {  // Query users colection for root user
-        if (doc === null) {  // If root user exists
-          // Let them change settings
-          console.log('Please go to the setup page to create a root user.');
-        }
-      });
+      if(user === null) {
+        console.warn('Please go to /setup to finish installation');
+      }
     });
   });
 });

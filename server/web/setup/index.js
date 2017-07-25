@@ -1,10 +1,12 @@
 'use strict';
-const internals = {};
-// const users = require('../../models/user');
-const MongoClient = require('mongodb').MongoClient;
-const Joi = require('joi');
-const ObjectId = require('mongo-models').ObjectId;
 const Async = require('async');
+const Joi = require('joi');
+
+const Admin = require('../../models/admin');
+const AdminGroup = require('../../models/admin-group');
+const User = require('../../models/user');
+
+const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
@@ -24,31 +26,20 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
-      var url = 'mongodb://localhost:27017/clotho';
 
-      MongoClient.connect(url, function (err, db) { // Connect to the db
-        if (err) throw err;
+      User.findOne({username: 'root'}, (err, rootUser) => {
 
-        var collection = db.collection('users');  // Define the users collection
-        collection.findOne({username: 'root'}, {}, function (err, doc) {  // Query users colection for root user
-          if (doc) {  // If root user exists
-            // Let them change settings
-            return reply.view('setup', {title: 'Setup Complete!'});
-          }
-          // If root user does not exist
-          // Create root user
-          return reply.view('setup', {title: 'Please create a root user account.'});
+        if(err) {
+          return reply(err);
+        }
 
-          db.close();
+        return reply.view('setup', {
+          root: rootUser,
+          user: request.auth.credentials ? request.auth.credentials.user : null
         });
       });
     }
-
   });
-
-  const Account = server.plugins['hapi-mongo-models'].Account;
-  const Session = server.plugins['hapi-mongo-models'].Session;
-  const User = server.plugins['hapi-mongo-models'].User;
 
   server.route({
     method: 'POST',
@@ -71,65 +62,102 @@ internals.applyRoutes = function (server, next) {
       },
     },
     handler: function (request, reply) {
+
       Async.auto({
-        user: function (done) {
-          const email = request.payload.email;
-          const password = request.payload.password;
+        adminGroup: function (done) {
 
-          User.create('root', password, email, 'root', done);
+          AdminGroup.create('Root', done);
         },
-        account: ['user', function (results, done) {
+        admin: function (done) {
 
-          Account.create('root', done);
+          const document = {
+            _id: Admin.ObjectId('111111111111111111111111'),
+            name: {
+              first: 'Root',
+              middle: '',
+              last: 'Admin'
+            },
+            timeCreated: new Date()
+          };
+
+          Admin.insertOne(document, (err, docs) => {
+
+            done(err, docs && docs[0]);
+          });
+        },
+        user: function (done) {
+
+          Async.auto({
+            passwordHash: User.generatePasswordHash.bind(this, request.payload.password)
+          }, (err, passResults) => {
+
+            if (err) {
+              return done(err);
+            }
+
+            const document = {
+              _id: Admin.ObjectId('000000000000000000000000'),
+              isActive: true,
+              username: 'root',
+              password: passResults.passwordHash.hash,
+              email: request.payload.email.toLowerCase(),
+              timeCreated: new Date()
+            };
+
+            User.insertOne(document, (err, docs) => {
+
+              done(err, docs && docs[0]);
+            });
+          });
+        },
+        adminMembership: ['admin', function (dbResults, done) {
+
+          const id = dbResults.admin._id.toString();
+          const update = {
+            $set: {
+              groups: {
+                root: 'Root'
+              }
+            }
+          };
+
+          Admin.findByIdAndUpdate(id, update, done);
         }],
-        linkUser: ['account', function (results, done) {
+        linkUser: ['admin', 'user', function (dbResults, done) {
 
-          // const id = results.account._id.toString();
+          const id = dbResults.user._id.toString();
+          const update = {
+            $set: {
+              'roles.admin': {
+                id: dbResults.admin._id.toString(),
+                name: 'Root Admin'
+              }
+            }
+          };
+
+          User.findByIdAndUpdate(id, update, done);
+        }],
+        linkAdmin: ['admin', 'user', function (dbResults, done) {
+
+          const id = dbResults.admin._id.toString();
           const update = {
             $set: {
               user: {
-                id: results.user._id.toString(),
-                name: results.user.username
+                id: dbResults.user._id.toString(),
+                name: 'root'
               }
             }
           };
 
-          // Account.findByIdAndUpdate(id, update, done);
-          Account.findOneAndUpdate({name:'root'}, update, done);
-        }],
-        linkAccount: ['account', function (results, done) {
-
-          // const id = results.user._id.toString();
-          const update = {
-            $set: {
-              roles: {
-                account: {
-                  id: results.account._id.toString(),
-                  name: results.account.name.first + ' ' + results.account.name.last
-                }
-              }
-            }
-          };
-
-          // User.findByIdAndUpdate(id, update, done);
-          User.findOneAndUpdate({name: 'account'}, update, done);
-        }],
-        update: ['linkUser', 'linkAccount', function (results, done) {
-
-          // const id = results.user.id.toString();
-          const update = {
-            $set: {
-              user: {
-                _id: ObjectId('000000000000000000000000')
-              }
-            }
-          };
-
-          // User.findByIdAndUpdate(id, update, done);
-          User.findOneAndUpdate({name: 'root'}, update, done);
+          Admin.findByIdAndUpdate(id, update, done);
         }]
+      }, (err, dbResults) => {
+
+        if (err) {
+          return reply(err);
+        }
+        return reply.redirect('/setup');
       });
-      return reply.redirect('/');
     }
   });
 
