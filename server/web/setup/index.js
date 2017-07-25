@@ -82,7 +82,10 @@ internals.applyRoutes = function (server, next) {
 
           Admin.insertOne(document, (err, docs) => {
 
-            done(err, docs && docs[0]);
+            if(err) {
+              return done(err, null);
+            }
+            done(err, docs[0]);
           });
         },
         user: function (done) {
@@ -106,7 +109,7 @@ internals.applyRoutes = function (server, next) {
 
             User.insertOne(document, (err, docs) => {
 
-              done(err, docs && docs[0]);
+              done(err, docs[0]);
             });
           });
         },
