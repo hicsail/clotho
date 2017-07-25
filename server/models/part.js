@@ -47,6 +47,8 @@ class Part extends MongoModels {
 
   static findByBioDesignId(bioDesignId, isDevice, callback) {
 
+    console.log("In Part.findByBioDesignId");
+
     if (bioDesignId == null) {
       bioDesignId = {};
     }
@@ -124,6 +126,10 @@ class Part extends MongoModels {
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, isDevice, callback) {
 
+    console.log("In Part.getChildren");
+    console.log(parts);
+
+
     if (parts !== undefined && index === parts.length) {
       return callback(null, parts);
     }
@@ -135,7 +141,11 @@ class Part extends MongoModels {
       if (err) {
         return callback(err);
       }
+
+      console.log("After getSequence");
+      console.log(index);
       console.log(partsWithSeq[index]);
+
       // Then get assembly if needed.
       if (isDevice && partsWithSeq[index] !== undefined) {
 
@@ -145,8 +155,9 @@ class Part extends MongoModels {
             return callback(err);
           }
 
-          this.getChildren(index + 1, partsWithAssembly, isDevice, callback);
-
+          // this.getChildren(index + 1, partsWithAssembly, isDevice, callback);
+          console.log("partsWithAssembly");
+          console.log(partsWithAssembly);
         });
       } else {
 
@@ -159,32 +170,11 @@ class Part extends MongoModels {
   }
 
 
-  //
-  //   for (var i = 0; i < bioDesignId.length; ++i) {
-  //     query[i] = {bioDesignId: bioDesignId[i]};
-  //
-  //     this.find(query[i], (err, part) => {
-  //
-  //       if (err) {
-  //         return callback(err);
-  //       }
-  //       console.log('This is mini parts');
-  //       console.log(part[0]);
-  //       parts.push(part[0]);
-  //       console.log('This is full parts');
-  //       console.log(parts);
-  //
-  //     })
-  //     // query = {bioDesignId: {$in: bioDesignId}};
-  //   }
-  //   console.log('Out of for loop');
-  //   console.log(parts);
-  //   this.getSequence(0, parts, callback);
-  // }
-
-
   //most likely one sequence only, may have to review this function
   static getSequence(index, parts, callback) {
+
+    console.log("In Part.getSequence");
+
 
     if (index == parts.length) {
       return callback(null, parts);
@@ -273,44 +263,6 @@ class Part extends MongoModels {
 
 }
 
-// Original Java
-//
-// /**
-//  * Change the Format of the Part
-//  * @param format new Format for the Part
-//  */
-// public void setFormat(Format format) {
-//   if (format.checkPart(this)) {
-//     this.format = format;
-//   }
-// }
-//
-// public List<FeatureRole> getRoles() {
-//   List<FeatureRole> roles = new LinkedList<FeatureRole>();
-//   for (Annotation annotation : sequence.getAnnotations()) {
-//     Feature feature = annotation.getFeature();
-//     if (feature != null) {
-//       roles.add(feature.getRole());
-//     }
-//   }
-//   return roles;
-// }
-//
-// public Assembly createAssembly() {
-//   if (assemblies == null) {
-//     assemblies = new ArrayList<Assembly>();
-//   }
-//   Assembly assembly = new Assembly();
-//   assemblies.add(assembly);
-//   return assembly;
-// }
-//
-// public void addAssembly(Assembly assembly) {
-//   if (assemblies == null) {
-//     assemblies = new ArrayList<Assembly>();
-//   }
-//   assemblies.add(assembly);
-// }
 
 
 Part.collection = 'parts';

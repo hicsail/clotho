@@ -61,6 +61,9 @@ class Sequence extends MongoModels {
 
   static findByPartId(partId, callback) {
 
+    console.log("In Sequence.findByPartId");
+
+
     const query = {partId: partId};
     this.find(query, (err, sequences) => {
 
@@ -68,8 +71,8 @@ class Sequence extends MongoModels {
         return callback(err);
       }
 
-      return this.getAnnotations(0, results, callback);
-      
+      return this.getAnnotations(0, sequences, callback);
+
       // this.getAnnotations(0, sequences, (err, results) => {
       //
       //   if (err) {
@@ -95,6 +98,55 @@ class Sequence extends MongoModels {
 
     });
 
+  }
+
+  static getAnnotation(index, sequences, callback) {
+
+    console.log("In Sequence.getAnnotation");
+
+
+    if (index == sequences.length) {
+      return callback(null, sequences);
+    }
+
+    Annotation.findBySequenceId(sequences[index]['_id'].toString(), (err, annotations) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      console.log(annotations);
+
+      if (annotations.length != 0) {
+        sequences[index].annotations = annotations;
+      }
+
+      return this.getAnnotations(index + 1, sequences, callback);
+    });
+  }
+
+
+  static getAnnotations(index, sequences, callback) {
+
+    console.log("In Sequence.getAnnotations");
+
+
+    if (index == sequences.length) {
+      return callback(null, sequences);
+    }
+
+    Annotation.findBySequenceId(sequences[index]['_id'].toString(), (err, annotations) => {
+
+      if (err) {
+        return callback(err, null);
+      }
+
+      if (annotations.length != 0) {
+        sequences[index].annotations = annotations;
+      }
+
+      return this.getAnnotations(index + 1, sequences, callback);
+    });
   }
 
 
@@ -140,27 +192,6 @@ class Sequence extends MongoModels {
       }
 
       return this.getSubSubAnnotations(index + 1, sequences, callback);
-    });
-  }
-
-
-  static getAnnotations(index, sequences, callback) {
-
-    if (index == sequences.length) {
-      return callback(null, sequences);
-    }
-
-    Annotation.findBySequenceId(sequences[index]['_id'].toString(), (err, annotations) => {
-
-      if (err) {
-        return callback(err, null);
-      }
-
-      if (annotations.length != 0) {
-        sequences[index].annotations = annotations;
-      }
-
-      return this.getAnnotations(index + 1, sequences, callback);
     });
   }
 

@@ -119,35 +119,36 @@ class BioDesign extends MongoModels {
         });
         allPromises.push(promise);
       }
-
-      for (var i = 0; i < bioDesigns.length; ++i) {
-
-        // Also get subdesigns.
-        if (isDevice && bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
-          && bioDesigns[i].subBioDesignIds.length !== 0) {
-
-          // console.log("in subBioDesignIds");
-          // console.log(bioDesigns[i])
-          var subBioDesignPromise = new Promise((resolve, reject) => {
-
-            this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
-
-              if (errSub) {
-                reject(errSub);
-              }
-              resolve(components);
-            });
-          });
-
-          subBioDesignPromises.push(subBioDesignPromise);
-        }
-      }
+      //
+      // for (var i = 0; i < bioDesigns.length; ++i) {
+      //
+      //   // Also get subdesigns.
+      //   if (isDevice && bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+      //     && bioDesigns[i].subBioDesignIds.length !== 0) {
+      //
+      //     // console.log("in subBioDesignIds");
+      //     // console.log(bioDesigns[i])
+      //     var subBioDesignPromise = new Promise((resolve, reject) => {
+      //
+      //       this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
+      //
+      //         if (errSub) {
+      //           reject(errSub);
+      //         }
+      //         resolve(components);
+      //       });
+      //     });
+      //
+      //     subBioDesignPromises.push(subBioDesignPromise);
+      //   }
+      // }
 
       Promise.all(allPromises).then((resolve, reject) => {
 
         if (reject) {
           return callback(reject);
         }
+        console.log("End of promise");
 
         for (var i = 0; i < bioDesigns.length; ++i) {
           bioDesigns[i]['subparts'] = resolve[i]['subparts'];
@@ -160,18 +161,18 @@ class BioDesign extends MongoModels {
           return callback(null, bioDesigns);
         }
 
-        Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
-
-          if (subreject) {
-            return callback(subreject);
-          }
-
-          for (var j = 0; j < bioDesigns.length; ++j) {
-            bioDesigns[j]['subdesigns'] = subresolve[j];
-          }
-
-          return callback(null, bioDesigns);
-        });
+        // Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
+        //
+        //   if (subreject) {
+        //     return callback(subreject);
+        //   }
+        //
+        //   for (var j = 0; j < bioDesigns.length; ++j) {
+        //     bioDesigns[j]['subdesigns'] = subresolve[j];
+        //   }
+        //
+        //   return callback(null, bioDesigns);
+        // });
       });
 
     });
@@ -181,6 +182,7 @@ class BioDesign extends MongoModels {
 // based on biodesignId, fetches all children
   static getBioDesign(bioDesignId, isDevice, callback) {
 
+    console.log("In getBioDesign");
     Part.findByBioDesignId(bioDesignId, isDevice, (err, subparts) => {
 
       if (err) {
