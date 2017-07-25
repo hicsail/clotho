@@ -60,7 +60,6 @@ class BioDesign extends MongoModels {
       query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
     }
 
-
     return query;
   }
 
@@ -88,7 +87,6 @@ class BioDesign extends MongoModels {
 
       // otherwise buildup biodesign objects
       var allPromises = [];
-      var subBioDesignPromises = [];
 
 
       //for a list of entered bioDesign Ids
@@ -119,68 +117,94 @@ class BioDesign extends MongoModels {
         });
         allPromises.push(promise);
       }
-      //
-      // for (var i = 0; i < bioDesigns.length; ++i) {
-      //
-      //   // Also get subdesigns.
-      //   if (isDevice && bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
-      //     && bioDesigns[i].subBioDesignIds.length !== 0) {
-      //
-      //     // console.log("in subBioDesignIds");
-      //     // console.log(bioDesigns[i])
-      //     var subBioDesignPromise = new Promise((resolve, reject) => {
-      //
-      //       this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
-      //
-      //         if (errSub) {
-      //           reject(errSub);
-      //         }
-      //         resolve(components);
-      //       });
-      //     });
-      //
-      //     subBioDesignPromises.push(subBioDesignPromise);
-      //   }
-      // }
 
       Promise.all(allPromises).then((resolve, reject) => {
 
         if (reject) {
           return callback(reject);
         }
-        console.log("End of promise");
+
+        var subBioDesignsExist = 'False';
 
         for (var i = 0; i < bioDesigns.length; ++i) {
           bioDesigns[i]['subparts'] = resolve[i]['subparts'];
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
-        }
-        console.log("Trying to return");
 
-        // If leaf node subdesign.
-        // if (subBioDesignPromises.length === 0) {
+          if (bioDesigns[i].subBioDesignIds.length !== 0) { //check if any subBioDesign exists
+            subBioDesignsExist = 'True';
+          }
+        }
+        //
+        // console.log(subBioDesignsExist);
+        // if (subBioDesignsExist === 'False') { // if no subBioDesign exists, do not wait for subBioDesignPromises
         //   return callback(null, bioDesigns);
         // }
-        console.log(bioDesigns);
 
-        return callback(null, bioDesigns);
-        // Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
-        //
-        //   if (subreject) {
-        //     return callback(subreject);
-        //   }
-        //
-        //   for (var j = 0; j < bioDesigns.length; ++j) {
-        //     bioDesigns[j]['subdesigns'] = subresolve[j];
-        //   }
-        //
-        //   return callback(null, bioDesigns);
-        // });
+        //else
+        //starting with 1 bioDesign first
+        console.log("After check for subBioDesigns");
+
+        this.getSubBioDesign(bioDesigns, bioDesignIds, (err, results) => {
+          if (err) {
+
+            return callback(err);
+          }
+          console.log(results);
+          return callback(null, results)
+        });
+
       });
 
     });
   }
 
+
+  static getSubBioDesign(bioDesigns, bioDesignIds, callback) {
+    console.log("in getSubBioDesign");
+
+    var subBioDesignPromises = [];
+
+    for (var i = 0; i < bioDesigns.length; ++i) {
+
+      // Check if subBioDesigns exist
+      //removed isDevice, check later
+      if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
+        && bioDesigns[i].subBioDesignIds.length !== 0) {
+
+        console.log("in subBioDesignIds");
+        var subBioDesignPromise = new Promise((resolve, reject) => {
+
+          this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
+
+            if (errSub) {
+              reject(errSub);
+            }
+            resolve(components);
+          });
+        });
+
+        subBioDesignPromises.push(subBioDesignPromise);
+      }
+    }
+
+    Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
+      console.log('subreject');
+
+      console.log(subreject);
+
+      if (subreject) {
+        return callback(subreject);
+      }
+
+      for (var j = 0; j < bioDesigns.length; ++j) {
+        bioDesigns[j]['subdesigns'] = subresolve[j];
+      }
+
+      return callback(null, bioDesigns);
+    });
+
+  }
 
 // based on biodesignId, fetches all children
   static getBioDesign(bioDesignId, isDevice, callback) {
@@ -239,11 +263,9 @@ class BioDesign extends MongoModels {
     } else {
 
       var subDesignLabels = ['name', 'displayId', 'description', '_id'];
-
       var allPromises = [];
 
       // Loop through subDesign objects passed in.
-
       for (let subDesignObj of subDesigns) {
 
         // Perform find for given subDesign object.
@@ -268,7 +290,6 @@ class BioDesign extends MongoModels {
           }
 
           this.find(query, (errGet, results) => {
-
 
             if (errGet) {
               return reject(errGet);
@@ -330,71 +351,6 @@ class BioDesign extends MongoModels {
 }
 
 
-//const SharableObjBase = require('org.clothocad.core.datums.SharableObjBase');
-//const Reference = require('org.clothocad.core.persistence.annotations.Reference');
-//const ReferenceCollection = require('org.clothocad.core.persistence.annotations.ReferenceCollection');
-
-//TO DO: need to import js equivalent of hashset and set in java
-
-// class BioDesign extends MongoModels {   // might also need to extend SharableObjBase
-//
-//     module;
-//     parameters;
-//     parts;
-//     polynucleotides;
-//     strains;
-//     media;
-//     subDesigns;
-//     parentDesigns;
-//
-
-// createParameter(value, variable) {
-//     parameter = new Parameter(value, variable); // Parameter class will be created
-//     addParameter(parameter);
-//     return parameter;
-// }
-//
-// addParameter(parameter) {
-//     if (this.parameters === null) {
-//         parameter = new HashSet<Parameter>();
-//     }
-//     this.parameters.add(parameter);
-// }
-//
-// addPart(part) {
-//     if (this.parts === null) {
-//         parts = new HashSet<Part>();
-//     }
-//     this.parts.add(part);
-// }
-//
-// addPolynucleotide(polynucleotide) {
-//     if (this.polynucleotides === null) {
-//         polynucleotide = new HashSet<Polynucleotide>();
-//     }
-//     this.polynucleotides.add(polynucleotide);
-// }
-//
-// addStrain(strain) {
-//     if (this.strains === null) {
-//         strain = new HashSet<Strain>();
-//     }
-//     this.strains.add(strain);
-// }
-//
-// addMedium(medium) {
-//     if (this.media === null) {
-//         medium = new HashSet<Medium>();
-//     }
-//     this.media.add(medium);
-// }
-//
-// addSubDesign(subDesign) {
-//     if (this.subDesigns === null) {
-//         subDesign = new HashSet<BioDesign>();
-//     }
-//     this.subDesigns.add(subDesign);
-// }
 
 
 BioDesign.collection = 'biodesigns';
