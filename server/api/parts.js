@@ -18,6 +18,7 @@ internals.applyRoutes = function (server, next) {
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
   const Role = server.plugins['hapi-mongo-models'].Role;
+  const Version = server.plugins['hapi-mongo-models'].Version;
 
   /**
    * @api {put} /api/part Get Part
@@ -857,6 +858,8 @@ internals.applyRoutes = function (server, next) {
             null, //superBioDesignId
             'PART',
             done);
+
+
         },
         createParameters: ['createBioDesign', function (results, done) {
 
@@ -931,6 +934,7 @@ internals.applyRoutes = function (server, next) {
         }],
         createSubpart: ['createBioDesign', function (results, done) {
 
+
           var bioDesignId = results.createBioDesign._id.toString();
 
           Part.create(
@@ -965,7 +969,7 @@ internals.applyRoutes = function (server, next) {
         }],
         createAnnotation: ['createSequence', function (results, done) {
 
-          if (request.payload.sequence !== undefined) {
+          if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
 
             var seq = results.createSequence._id.toString();
             Annotation.create(
@@ -1134,26 +1138,47 @@ internals.applyRoutes = function (server, next) {
           }
         }
       },
-      {
-        assign: 'checkBioDesign',
-        method: function (request, reply) {
+        {
+          assign: 'checkBioDesign',
+          method: function (request, reply) {
 
             // Check that biodesign exists - should not perform update if biodesign does not exist.
-          var bioDesignId = request.params.id;
+            var bioDesignId = request.params.id;
 
-          BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
+            BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
 
-            if (err) {
-              return reply(err);
-            } else if (!results || results.length === 0) {
-              return reply(Boom.notFound('Part does not exist.'));
-            } else {
-              reply(true);
-            }
-          }
+                if (err) {
+                  return reply(err);
+                } else if (results === null || results.length === 0) {
+                  return reply(Boom.notFound('Part does not exist.'));
+                } else {
+                  reply(true);
+                }
+              }
             );
+          }
+        },
+        {
+          assign: 'checkVersion',
+          method: function (request, reply) {
+
+            var bioDesignId = request.params.id;
+
+            Version.findOne({objectId: bioDesignId, replacementVersionId: {$ne:null}}, (err, results) => {
+
+              if (err) {
+                return err;
+              } else if (results === null || results.length === 0) {
+                reply(true);
+              } else {
+                // Prior version exists.
+                // Update this to either automatically find newest version
+                // of design, or to at least specify id of new object.
+                return reply(Boom.badRequest('Newer version of Part exists.'));
+              }
+            })
+          }
         }
-      }
       ],
       validate: {
         payload: {
@@ -1180,189 +1205,118 @@ internals.applyRoutes = function (server, next) {
 
 
       Async.auto({
-        removeReference: function (done) {
+        getOldPart: function (done) {
 
-          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
-            var update = {$set: {bioDesignId: null}};
+          BioDesign.getBioDesignIds(request.params.id, null, "PART", done);
+        },
+        createNewPart: ['getOldPart', function (results, done) {
 
-            // Remove reference of bioDesign on old parameters.
-            Parameter.updateMany({bioDesignId: request.params.id}, update, (err, parameter) => {
 
-              if (err) {
-                return reply(err);
+          // Build up appropriate payload for part creation.
+          const args = ['name', 'displayId', 'role', 'sequence', 'parameters'];
+          var newPayload = {};
+          var oldPart = results.getOldPart[0];
+
+
+          for (var i = 0; i < args.length; ++i) {
+
+            // If argument in payload was null, retrieve value from old Part.
+
+            if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
+              if (args[i] === 'sequence') {
+                newPayload.sequence = oldPart['subparts'][0]['sequences'][0]['sequence'];
+              } else if (args[i] === 'role') {
+                newPayload.role = oldPart['modules'][0]['role'];
+              } else if (args[i] === 'parameters') {
+                // Loop through old parameters value
+                var oldParameters = oldPart['parameters'];
+                var newParameters = null;
+                if (oldParameters != null && oldParameters.length !== 0) {
+                  newParameters = [];
+                }
+
+                for (var j = 0; j < oldParameters.length; j++) {
+                  var p = {};
+                  p['name'] = oldParameters[j]['name'];
+                  p['units'] = oldParameters[j]['units'];
+                  p['value'] = oldParameters[j]['value'];
+                  p['variable'] = oldParameters[j]['variable'];
+                  newParameters.push(p);
+                }
+                newPayload.parameters = newParameters;
+              } else if (args[i] === 'name' || args[i] === 'displayId') {
+                newPayload[args[i]] = oldPart[args[i]];
               }
+            } else {
 
-              // No parameter originally associated with bioDesign.
-              if (!parameter) {
-                done(null, 0);
-              } else {
-                done(null, parameter);
-              }
-            });
-
-          } else {
-            done(null, 0);
+              // Otherwise include payload value.
+              newPayload[args[i]] = request.payload[args[i]];
+            }
           }
 
-        },
-        createParameters: ['removeReference', function (results, done) {
+          // Create a new Part object.
 
-          // Then create new parameters if needed.
+          var newRequest = {
+            url: '/api/part',
+            method: 'POST',
+            payload: newPayload,
+            credentials: request.auth.credentials
+          };
 
-          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
-            var param = request.payload.parameters;
-            var parameterLabels = ['name', 'value', 'variable', 'units'];
 
-            for (let p of param) {
-              for (let label of parameterLabels) {
-                if (p[label] === undefined) {
-                  p[label] = null;
-                }
-              }
+          server.inject(newRequest, (response) => {
+
+            if (response.statusCode !== 200) {
+              return reply(response.result);
             }
 
+            console.log(response.result);
 
-            var allPromises = [];
-            for (var i = 0; i < param.length; ++i) {
-              var promise = new Promise((resolve, reject) => {
+            done(null, response.result);
 
-                Parameter.create(
-                  param[i]['name'],
-                  request.auth.credentials.user._id.toString(),
-                  request.params.id,
-                  param[i]['value'],
-                  param[i]['variable'],
-                  param[i]['units'],
-                  (err, results) => {
+          });
 
-                    if (err) {
-                      reject(err);
-                    } else {
-                      resolve(results);
-                    }
-                  }
-                );
+        }],
+        versionUpdate: ['createNewPart', function (results, done) {
+
+          const userId = request.auth.credentials.user._id.toString();
+          const oldId = request.params.id;
+          const partId = results.createNewPart;  // id of new Part.
+
+
+
+          Version.create(userId, partId, 1, (err, results) => {
+            if (err) {
+              return err;
+            } else {
+              // Need to connect new Part to old Part.
+
+              // Create a version object for the old object. TODO - have incrementing version numbers.
+              Version.create(userId, oldId, 0, (err, results) => {
+
+                if (err) {
+                  return err;
+                } else {
+
+                  Version.updateOne({objectId: oldId}, {$set: { replacementVersionId: partId}}, done);
+                }
 
               });
 
-              allPromises.push(promise);
+
             }
 
-            Promise.all(allPromises).then((resolve, reject) => {
-
-              if (reject) {
-                done(reject, []);
-              } else {
-                done(null, resolve);
-              }
-            });
-
-          } else {
-            done(null, []);
-          }
-
-        }],
-        updateSequence: ['createParameters', function (results, done) {
-
-          var bioDesignId = request.params.id;
-          var name = request.payload.name;
-          var displayId = request.payload.displayId;
-          var sequence = request.payload.sequence;
-          var userId = request.auth.credentials.user._id.toString();
-
-          if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
-            // Find existing sequence. Override if needed.
-
-            Sequence.updateSequenceByBioDesign(bioDesignId, name, displayId, userId, sequence, done);
-
-          } else {
-            // Need to deal with case where annotationId exists but not updating sequence.
-
-            Annotation.findOne({bioDesignId: bioDesignId}, (err, results) => {
-
-              if (err) return reply(err);
-
-              if (results._id) done(null, results._id);
-              else done(null, null);
-
-            });
-          }
-        }],
-        updateModule: ['updateSequence', function (results, done) {
-
-          var bioDesignId = request.params.id;
-          var name = request.payload.name;
-          var displayId = request.payload.displayId;
-          var role = request.payload.role;
-          var userId = request.auth.credentials.user._id.toString();
-
-          var annotationId = results.updateSequence;
-
-          if (request.payload.role !== undefined && request.payload.role !== null) {
-
-            Module.updateModule(bioDesignId, name, userId, displayId, role, annotationId, done);
-
-          } else {
-
-            // Get a featureId.
-
-            Feature.findOne({bioDesignId: bioDesignId}, (err, results) => {
-
-              if (err) return reply(err);
-
-              if (results._id) done(null, results._id);
-              else done(null, null);
-
-            });
-
-
-          }
-
-        }],
-        linkSequenceToFeature: ['updateModule', function (results, done) {
-
-          var featureId = results.updateModule;
-          var bioDesignId = request.params.id;
-
-          Sequence.findOneAndUpdate({
-            bioDesignId: bioDesignId
-          }, {$set: {featureId: featureId}}, (err, seq) => {
-
-            if (err) {
-              return reply(err);
-            } else {
-              done(null, seq);
-            }
           });
+
+        }],
+        markForDelete: ['versionUpdate', function (results, done) {
+
+          BioDesign.findByIdAndUpdate(request.params.id, {toDelete: true}, done);
 
         }]
       }, (err, result) => {
 
-        if (err) {
-          return reply(err);
-        }
-        // Then update biodesign.
 
-        var newPayload = {
-          name: request.payload.name,
-          displayId: request.payload.displayId
-        };
-
-        var newRequest = {
-          url: '/api/bio-design/' + request.params.id,
-          method: 'PUT',
-          payload: newPayload,
-          credentials: request.auth.credentials
-        };
-        server.inject(newRequest, (response) => {
-
-          if (response.statusCode !== 200) {
-            return reply(response.result);
-          }
-
-          return reply(response.result);
-
-        });
       });
 
 
@@ -1414,38 +1368,45 @@ internals.applyRoutes = function (server, next) {
               bioDesign.parameters = document.parameters;
               bioDesign.modules = document.modules;
 
-              BioDesign.delete(bioDesign, (err, result) => {});
+              BioDesign.delete(bioDesign, (err, result) => {
+              });
               callback(null, bioDesign);
             });
           });
         },
-        Parameters: ['BioDesign', function (results,callback) {
+        Parameters: ['BioDesign', function (results, callback) {
 
-          for(var parameter of results.BioDesign.parameters) {
-            Parameter.delete(parameter, (err, results) => {});
+          for (var parameter of results.BioDesign.parameters) {
+            Parameter.delete(parameter, (err, results) => {
+            });
           }
           callback(null, '');
         }],
-        Modules: ['BioDesign', function (results,callback) {
+        Modules: ['BioDesign', function (results, callback) {
 
-          for(var module of results.BioDesign.modules) {
-            Module.delete(module, (err, results) => {});
+          for (var module of results.BioDesign.modules) {
+            Module.delete(module, (err, results) => {
+            });
           }
           callback(null, '');
         }],
-        Parts: ['BioDesign', function (results,callback) {
+        Parts: ['BioDesign', function (results, callback) {
 
-          for(var part of results.BioDesign.subparts) {
-            for(var sequence of part.sequences) {
-              for(var annotation of sequence.annotations) {
-                for(var feature of annotation.features) {
-                  Feature.delete(feature, (err, callback) => {});
+          for (var part of results.BioDesign.subparts) {
+            for (var sequence of part.sequences) {
+              for (var annotation of sequence.annotations) {
+                for (var feature of annotation.features) {
+                  Feature.delete(feature, (err, callback) => {
+                  });
                 }
-                Annotation.delete(annotation, (err, callback) => {});
+                Annotation.delete(annotation, (err, callback) => {
+                });
               }
-              Sequence.delete(sequence,(err, callback) => {});
+              Sequence.delete(sequence, (err, callback) => {
+              });
             }
-            Part.delete(part,(err, callback) => {});
+            Part.delete(part, (err, callback) => {
+            });
           }
           callback(null, '');
         }]
@@ -1458,18 +1419,18 @@ internals.applyRoutes = function (server, next) {
         reply({message: 'Success.'});
       });
     }
-      /*
-      BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
+    /*
+    BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
 
 
 
-        if (!bioDesign) {
-          return reply(Boom.notFound('Document not found.'));
-        }
+      if (!bioDesign) {
+        return reply(Boom.notFound('Document not found.'));
+      }
 
 
-      });
-      */
+    });
+    */
   });
 
   next();
