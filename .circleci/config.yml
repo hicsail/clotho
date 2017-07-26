@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/clotho
     docker:
-      - image: frascog17/node7-rsync
+      - image: frascog17/node8-rsync
       - image: mongo:3.4.5
     steps:
       - checkout
