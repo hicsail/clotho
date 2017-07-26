@@ -36,6 +36,9 @@ Version.schema = Joi.object().keys({
   replacementVersionId: Joi.string()
 });
 
-Version.indexes = [];
+Version.indexes = [
+  {key: {objectId: 1}},
+  {key: {userId: 1}}
+];
 
 module.exports = Version;
