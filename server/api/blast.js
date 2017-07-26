@@ -200,25 +200,29 @@ internals.applyRoutes = function (server, next) {
           });
         },
         mkdir: function (callback) {  // Done
-
-          const directory = './server/blast/temp' + UUID();
+          const folder = 'temp' + UUID();
+          const directory = './server/blast/' + folder;
           exec(`mkdir -p ${directory}`, (error, stdout, stderr) => {
 
             if (error) {
               throw error;
             } else {
+              data.folder = folder; // Add folder name into the data object
               data.directory = directory; // Add directory path into the data object
               callback(null, 'directory');
             }
           });
 
         },
-        writeFile: ['mkdir', 'fastaFile', function (callback) { // Done
+        writeFile: ['mkdir', 'fastaFile', function (results, callback) { // Need to put appropriate file name
 
-          data.fileLocation = data.directory + '/filename.fasta'
+          var fileName = 'filename.fasta';
+          data.fileLocation = data.directory + '/' + fileName;
+          data.fileName = fileName;
 
           Fs.writeFile(data.fileLocation, data.fastaFile, (err) => {
             if (err) throw err;
+            callback(null, 'writeFile');
           });
         }],
         blast: ['mkdir', 'fastaFile', 'writeFile', function (callback) {
@@ -227,21 +231,25 @@ internals.applyRoutes = function (server, next) {
 
           // Make DB
           var type = 'nucl';
-          var fileIn = data.fileLocation;
-          var outPath = '../blast';
-          var name = 'blastOut'
+          console.log('\ndata.directory = ' + data.directory + '\n');
+          console.log('\ndata = ' + data.toString() + '\n');
+
+          var fileIn = './server/blast/' + data.folder + "/" + data.fileName;
+          var outPath = './server/blast/' + data.folder + '/';
+          var name = 'blastOut';
+
+          console.log('\n\n');
           blast.makeDB(type, fileIn, outPath, name, function (err) {
             if (err) throw err;
-            console.log('database created at', outPath);
           });
 
           // BlastX
-          var dbPath = './blastout';
-          var query = request.payload.BLASTsequence;
+          var dbPath = outPath + name;
+          var query = '> Query Sequence\n' + request.payload.BLASTsequence;
 
+          console.log('\n');
           blast.blastX(dbPath, query, function (err, output) {
             if (err) throw err;
-            console.log('Replying with blast output...\n')
             return reply(output);
           });
 
