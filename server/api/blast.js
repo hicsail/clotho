@@ -204,64 +204,83 @@ internals.applyRoutes = function (server, next) {
           const directory = './server/blast/' + folder;
           exec(`mkdir -p ${directory}`, (error, stdout, stderr) => {
 
-            if (error) {
-              throw error;
-            } else {
-              data.folder = folder; // Add folder name into the data object
-              data.directory = directory; // Add directory path into the data object
-              callback(null, 'directory');
-            }
+            if (error) throw error;
+            data.folder = folder; // Add folder name into the data object
+            data.directory = directory; // Add directory path into the data object
+            callback(null, 'directory');
           });
 
         },
         writeFile: ['mkdir', 'fastaFile', function (results, callback) { // Need to put appropriate file name
 
           var fileName = 'filename.fasta';
-          data.fileLocation = data.directory + '/' + fileName;
-          data.fileName = fileName;
+          data.fileLocation = data.directory + '/' + fileName;  // ./server/blast/temp + UUID()
+          data.fileName = fileName; // filename.fasta
 
           Fs.writeFile(data.fileLocation, data.fastaFile, (err) => {
             if (err) throw err;
             callback(null, 'writeFile');
           });
         }],
-        blast: ['mkdir', 'fastaFile', 'writeFile', function (callback) {
+        blastMakeDB: ['mkdir', 'fastaFile', 'writeFile', function (results, callback) {
 
-          // Do blast
+          var type = 'nucl';
+          var fileIn = './server/blast/' + data.folder + "/" + data.fileName; // ./server/blast/tempUUID()/filename.fasta
+          var outPath = './server/blast/' + data.folder + '/';  // ./server/blast/tempUUID()/
+          data.outPath = outPath;
+          console.log('\n\n');
 
           // Make DB
-          var type = 'nucl';
-          console.log('\ndata.directory = ' + data.directory + '\n');
-          console.log('\ndata = ' + data.toString() + '\n');
-
-          var fileIn = './server/blast/' + data.folder + "/" + data.fileName;
-          var outPath = './server/blast/' + data.folder + '/';
-          var name = 'blastOut';
-
-          console.log('\n\n');
-          blast.makeDB(type, fileIn, outPath, name, function (err) {
+          blast.makeDB(type, fileIn, outPath, null, function (err) {
             if (err) throw err;
+            console.log('Database created at ' + outPath);
+            callback(null, 'makeDB');
           });
-
-          // BlastX
-          var dbPath = outPath + name;
-          var query = '> Query Sequence\n' + request.payload.BLASTsequence;
-
-          console.log('\n');
-          blast.blastX(dbPath, query, function (err, output) {
-            if (err) throw err;
-            return reply(output);
-          });
-
         }],
-        rmDir: ['blast', function (callback) {  // Done
+        blastN: ['blastMakeDB', function (results, callback) {
+
+          var dbPath = data.outPath + 'filename';  // ./server/blast/tempUUID()/filename.nhr
+          var query = '> Query Sequence\n' + request.payload.BLASTsequence;
+          console.log('\n\n');
+
+          // blastN
+          blast.blastN(dbPath, query, function (err, output) {
+            if (err) throw err;
+            reply(parse(output));
+            callback(null, 'blastN');
+          });
+
+          function parse(s) {
+            var obj = {};
+
+            var hit = s.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit[0];
+            var hit_defArray = hit.Hit_def[0].split('--');
+            obj[hit_defArray[1]] = {};
+            obj[hit_defArray[1]].name = hit_defArray[0];
+            obj[hit_defArray[1]].hits = [];
+
+            var temp = hit.Hit_hsps[0].Hsp;
+            for (var i = 0; i < temp.length; i++) {
+              obj[hit_defArray[1]].hits.push({number: parseInt(temp[i].Hsp_num[0]),
+                score: parseFloat(temp[i]['Hsp_bit-score'][0]),
+                from: parseInt(temp[i]['Hsp_query-from'][0]),
+                to: parseInt(temp[i]['Hsp_query-to'][0]),
+                gaps: parseInt(temp[i].Hsp_gaps[0]),
+                sequence: temp[i].Hsp_hseq[0],
+                midline: temp[i].Hsp_midline[0]
+              });
+            }
+            return obj;
+          }
+        }],
+        rmDir: ['blastMakeDB', 'blastN', function (results, callback) {  // Done
 
           exec(`rm -rf ${data.directory}`, (error, stdout, stderr) => {
-
             if (error) {
               throw error;
             } else {
-                callback(null, 'directory');
+              console.log('Directory Deleted: ' + data.directory);
+              callback(null, 'directory');
             }
           });
         }]
@@ -270,10 +289,7 @@ internals.applyRoutes = function (server, next) {
         if(err) {
           return reply(err);
         }
-
-        reply(results);
       });
-
     }
   });
   next();
