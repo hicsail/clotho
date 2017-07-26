@@ -57,7 +57,6 @@ class Part extends MongoModels {
     var query = [];
     var partIds = [];
 
-
     // When passing in multiple biodesigns.
     if (typeof bioDesignId !== 'string') {
 
@@ -82,7 +81,6 @@ class Part extends MongoModels {
           });
           allPromises.push(promise);
         }
-
         Promise.all(allPromises).then((resolve, reject) => {
 
           this.getChildren(0, partIds, isDevice, callback);
@@ -98,7 +96,6 @@ class Part extends MongoModels {
         if (err) {
           return callback(err);
         }
-
         return this.getChild(0, parts, isDevice, callback);
       });
     }
@@ -127,26 +124,19 @@ class Part extends MongoModels {
   static getChild(index, parts, isDevice, callback) {
 
     console.log("In Part.getChild");
-    console.log(parts);
-
-
     // Get Sequence
     return this.getSequence(index, parts, callback)
-
-
   }
 
+  
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, isDevice, callback) {
 
     console.log("In Part.getChildren");
-    console.log(parts);
-
 
     if (parts !== undefined && index === parts.length) {
       return callback(null, parts);
     }
-
 
     // Get Sequence
     this.getSequence(index, parts, (err, partsWithSeq) => {
@@ -154,10 +144,6 @@ class Part extends MongoModels {
       if (err) {
         return callback(err);
       }
-
-      console.log("After getSequence");
-      console.log(index);
-      console.log(partsWithSeq[index]);
 
       // Then get assembly if needed.
       if (isDevice && partsWithSeq[index] !== undefined) {
@@ -167,10 +153,8 @@ class Part extends MongoModels {
           if (err) {
             return callback(err);
           }
-
           // this.getChildren(index + 1, partsWithAssembly, isDevice, callback);
-          console.log("partsWithAssembly");
-          console.log(partsWithAssembly);
+
         });
       } else {
 
@@ -182,12 +166,10 @@ class Part extends MongoModels {
 
   }
 
-
   //most likely one sequence only, may have to review this function
   static getSequence(index, parts, callback) {
 
     console.log("In Part.getSequence");
-
 
     if (index == parts.length) {
       return callback(null, parts);

@@ -106,12 +106,10 @@ class BioDesign extends MongoModels {
 
           this.getBioDesign(bioDesigns[i]._id.toString(), isDeviceInput, (errGet, components) => {
 
-
             if (errGet) {
               reject(errGet);
             }
-            console.log("Result from getBioDesign Call");
-            console.log(components);
+
             resolve(components);
           });
         });
@@ -131,20 +129,19 @@ class BioDesign extends MongoModels {
           bioDesigns[i]['modules'] = resolve[i]['modules'];
           bioDesigns[i]['parameters'] = resolve[i]['parameters'];
 
-          if (bioDesigns[i].subBioDesignIds.length !== 0) { //check if any subBioDesign exists
+          if (bioDesigns[i].subBioDesignIds !== null && bioDesigns[i].subBioDesignIds.length !== 0) {
+            //check if any subBioDesign exists
             subBioDesignsExist = 'True';
           }
         }
         //
-        // console.log(subBioDesignsExist);
-        // if (subBioDesignsExist === 'False') { // if no subBioDesign exists, do not wait for subBioDesignPromises
-        //   return callback(null, bioDesigns);
-        // }
+        console.log(subBioDesignsExist);
+        if (subBioDesignsExist === 'False') { // if no subBioDesign exists, do not wait for subBioDesignPromises
+          return callback(null, bioDesigns);
+        }
 
         //else
         //starting with 1 bioDesign first
-        console.log("After check for subBioDesigns");
-
         this.getSubBioDesign(bioDesigns, bioDesignIds, (err, results) => {
           if (err) {
 
@@ -180,6 +177,7 @@ class BioDesign extends MongoModels {
             if (errSub) {
               reject(errSub);
             }
+            console.log(components);
             resolve(components);
           });
         });
@@ -189,7 +187,8 @@ class BioDesign extends MongoModels {
     }
 
     Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
-      console.log('subreject');
+      console.log("After promises");
+      console.log(subresolve);
 
       console.log(subreject);
 

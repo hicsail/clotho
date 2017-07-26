@@ -68,7 +68,6 @@ class Annotation extends MongoModels {
         return callback(err);
       }
 
-      console.log(annotations);
       return this.getFeatures(0, annotations, callback);
     });
   }
@@ -115,7 +114,6 @@ class Annotation extends MongoModels {
 
     console.log("In Annotation.getFeatures");
 
-
     if (index == annotations.length) {
       return callback(null, annotations);
     }
@@ -125,9 +123,7 @@ class Annotation extends MongoModels {
       if (err) {
         return callback(err, null);
       }
-
-      console.log(features);
-
+      
       if (features.length != 0) {
         annotations[index].features = features;
       }
