@@ -1276,18 +1276,22 @@ internals.applyRoutes = function (server, next) {
 
           var seq = results.createSequence._id.toString();
           var sequenceLength = results.createSequence.sequence.length;
+          if (sequenceLength !== undefined && request.payload.sequence !== null && sequenceLength !== 0) {
 
-          Annotation.create(
-            request.payload.name,
-            null, // description,
-            request.auth.credentials.user._id.toString(),
-            seq, // sequenceId
-            null, //superSequenceId - never updated, null indicates it is directly part of a part or device
-            1, // start
-            sequenceLength, // end
-            true, // isForwardString
-            done);
-
+            Annotation.create(
+              request.payload.name,
+              null, // description,
+              request.auth.credentials.user._id.toString(),
+              seq, // sequenceId
+              null, //superSequenceId - never updated, null indicates it is directly part of a part or device
+              1, // start
+              sequenceLength, // end
+              true, // isForwardString
+              done);
+          }
+          else {
+            return done(null, []);
+          }
         }],
         createFeature: ['createModule', 'createAnnotation', function (results, done) {
 
