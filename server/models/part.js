@@ -47,7 +47,7 @@ class Part extends MongoModels {
 
 
   static findByBioDesignId(bioDesignId, isDevice, callback) {
-    
+
     if (bioDesignId == null) {
       bioDesignId = {};
     }

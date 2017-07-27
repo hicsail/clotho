@@ -1074,11 +1074,21 @@ internals.applyRoutes = function (server, next) {
 
                 if (err) {
                   reject(err);
+
+
+
                 } else {
+
                   var key = results[0];  //i is returned here, partId is saved under i
                   var resPart = results[1];
-                  var subSubPartId = resPart[0]['_id'];
-                  subSubPartIds[key] = subSubPartId;
+
+                  // if (resPart.length !== 0) {
+                    var subSubPartId = resPart[0]['_id'];
+                    subSubPartIds[key] = subSubPartId;
+                  // }
+                  // else {
+                  //   done(null, key)
+                  // }
                   resolve(results);
                 }
               });
