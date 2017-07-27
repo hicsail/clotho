@@ -47,9 +47,7 @@ class Part extends MongoModels {
 
 
   static findByBioDesignId(bioDesignId, isDevice, callback) {
-
-    console.log("In Part.findByBioDesignId");
-
+    
     if (bioDesignId == null) {
       bioDesignId = {};
     }
@@ -123,10 +121,7 @@ class Part extends MongoModels {
   // Get sequence and assemblies under the subpart.
   static getChild(index, parts, isDevice, callback) {
 
-    console.log("In Part.getChild");
-
     //get Assembly
-
     this.getAssembly(index, parts, (err, partWithSeq) => {
 
       if (err) {
@@ -145,8 +140,6 @@ class Part extends MongoModels {
 
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, isDevice, callback) {
-
-    console.log("In Part.getChildren");
 
     if (parts !== undefined && index === parts.length) {
       return callback(null, parts);
@@ -180,8 +173,6 @@ class Part extends MongoModels {
 
   //most likely one sequence only, may have to review this function
   static getSequence(index, parts, callback) {
-
-    console.log("In Part.getSequence");
 
     if (index == parts.length) {
       return callback(null, parts);

@@ -71,8 +71,6 @@ class BioDesign extends MongoModels {
 
   // isDevice can be null to indicate that we need to query biodesign(s) to determine its type.
   static getBioDesignIds(bioDesignIds, query, isDevice, callback) {
-    console.log("beginning of function");
-    console.log(bioDesignIds);
 
     if (query == null) {
       query = {};
@@ -93,8 +91,6 @@ class BioDesign extends MongoModels {
       for (var i = 0; i < bioDesigns.length; ++i) {
         // fetch aggregate of part, module, parameter (informally, components)
         // and combine with main biodesign object
-
-        console.log("in normal bioDesigns");
 
         var promise = new Promise((resolve, reject) => {
 
@@ -134,8 +130,7 @@ class BioDesign extends MongoModels {
             subBioDesignsExist = 'True';
           }
         }
-        //
-        console.log(subBioDesignsExist);
+
         if (subBioDesignsExist === 'False') { // if no subBioDesign exists, do not wait for subBioDesignPromises
           return callback(null, bioDesigns);
         }
@@ -147,7 +142,6 @@ class BioDesign extends MongoModels {
 
             return callback(err);
           }
-          console.log(results);
           return callback(null, results)
         });
 
@@ -158,7 +152,6 @@ class BioDesign extends MongoModels {
 
 
   static getSubBioDesign(bioDesigns, bioDesignIds, callback) {
-    console.log("in getSubBioDesign");
 
     var subBioDesignPromises = [];
 
@@ -169,7 +162,6 @@ class BioDesign extends MongoModels {
       if (bioDesigns[i].subBioDesignIds !== undefined && bioDesigns[i].subBioDesignIds !== null
         && bioDesigns[i].subBioDesignIds.length !== 0) {
 
-        console.log("in subBioDesignIds");
         var subBioDesignPromise = new Promise((resolve, reject) => {
 
           this.getBioDesignIds(bioDesigns[i].subBioDesignIds, null, null, (errSub, components) => {
@@ -177,7 +169,6 @@ class BioDesign extends MongoModels {
             if (errSub) {
               reject(errSub);
             }
-            console.log(components);
             resolve(components);
           });
         });
@@ -187,10 +178,6 @@ class BioDesign extends MongoModels {
     }
 
     Promise.all(subBioDesignPromises).then((subresolve, subreject) => {
-      console.log("After promises");
-      console.log(subresolve);
-
-      console.log(subreject);
 
       if (subreject) {
         return callback(subreject);
@@ -208,14 +195,12 @@ class BioDesign extends MongoModels {
 // based on biodesignId, fetches all children
   static getBioDesign(bioDesignId, isDevice, callback) {
 
-    console.log("In getBioDesign");
     Part.findByBioDesignId(bioDesignId, isDevice, (err, subparts) => {
 
       if (err) {
         return callback(err);
       }
-
-
+      
       Module.findByBioDesignId(bioDesignId, (err, modules) => {
 
         if (err) {

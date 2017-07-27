@@ -61,9 +61,6 @@ class Sequence extends MongoModels {
 
   static findByPartId(partId, callback) {
 
-    console.log("In Sequence.findByPartId");
-
-
     const query = {partId: partId};
     this.find(query, (err, sequences) => {
 
@@ -71,17 +68,8 @@ class Sequence extends MongoModels {
         return callback(err);
       }
 
-      return this.getAnnotations(0, sequences, callback);
+      return this.getChild(0, sequences, callback);
 
-      // this.getAnnotations(0, sequences, (err, results) => {
-      //
-      //   if (err) {
-      //     return callback(err);
-      //   }
-      //
-      //   //Get subAnnotations only! No further
-      //   return this.getSubAnnotations(0, results, callback);
-      // });
     });
   }
 
@@ -100,36 +88,28 @@ class Sequence extends MongoModels {
 
   }
 
-  static getAnnotation(index, sequences, callback) {
+//get subAnnotations if they exist, then direct to getAnnotations
+  static getChild(index, sequences, callback) {
 
-    console.log("In Sequence.getAnnotation");
-
-
-    if (index == sequences.length) {
-      return callback(null, sequences);
-    }
-
-    Annotation.findBySequenceId(sequences[index]['_id'].toString(), (err, annotations) => {
+    this.getSubAnnotations(index, sequences, (err, seqWithSubAnnotations) => {
 
       if (err) {
-        return callback(err, null);
+        return callback(err);
       }
 
-      console.log(annotations);
-
-      if (annotations.length != 0) {
-        sequences[index].annotations = annotations;
+      if (seqWithSubAnnotations !== undefined) { //if there is subannotations
+        return this.getAnnotations(index, seqWithSubAnnotations, callback);
       }
 
-      return this.getAnnotations(index + 1, sequences, callback);
-    });
+      else { //if there is no assembly
+        return this.getAnnotations(index, sequences, callback);
+      }
+    })
   }
 
 
-  static getAnnotations(index, sequences, callback) {
 
-    console.log("In Sequence.getAnnotations");
-
+static getAnnotations(index, sequences, callback) {
 
     if (index == sequences.length) {
       return callback(null, sequences);
@@ -157,12 +137,12 @@ class Sequence extends MongoModels {
       return callback(null, sequences);
     }
 
-
     Annotation.findBySuperSequenceId(sequences[index]['_id'].toString(), (err, subannotations) => {
 
       if (err) {
         return callback(err, null);
       }
+
 
       if (subannotations.length != 0) {
         sequences[index].subannotations = subannotations;
@@ -178,7 +158,6 @@ class Sequence extends MongoModels {
     if (index == sequences.length) {
       return callback(null, sequences);
     }
-
 
     Annotation.findBySuperSequenceId(sequences[index].toString(), (err, subannotations) => {
 

@@ -32,9 +32,6 @@ class Feature extends MongoModels {
 
   static findByAnnotationId(annotationId, callback) {
 
-    console.log("In Feature.findByAnnotationId");
-
-
     const query = {'annotationId': annotationId};
 
     this.find(query, (err, annotations) => {
@@ -47,6 +44,7 @@ class Feature extends MongoModels {
     });
   }
 
+  
   static findByAnnotationIdOnly(i, annotationId, callback) {
 
     const query = {'annotationId': annotationId};

@@ -266,6 +266,480 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
+  /**
+   * @api {post} /api/device Get Device
+   * @apiName Get Device
+   * @apiDescription Get device based on bioDesignId
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [userId]  id of user.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String} [createSeqFromParts]  boolean to differentiate device from part - may not be necessary
+   * @apiParam (Object) [partIds]  list of partIds
+   *
+   * @apiParamExample {json} Request-Example:
+   * http://localhost:9000/api/device/59764361b06d2654210a7895
+   *
+   * @apiSuccessExample {string} Success-Response:
+   *
+   [{
+       "_id": "59764361b06d2654210a7895",
+       "name": "B001",
+       "description": null,
+       "userId": "593f0d81b59d9120de14d897",
+       "displayId": "sample",
+       "imageURL": null,
+       "subBioDesignIds": [
+           "596fa7165fe2743c2a5c4f76",
+           "596fa73a5fe2743c2a5c4f7d",
+           "5963d15239f53707ea81993a"
+       ],
+       "superBioDesignId": null,
+       "type": "DEVICE",
+       "subparts": [
+           {
+               "_id": "59764361b06d2654210a7898",
+               "name": "B001",
+               "description": null,
+               "userId": "593f0d81b59d9120de14d897",
+               "displayId": "sample",
+               "bioDesignId": "59764361b06d2654210a7895",
+               "assemblies": [
+                   {
+                       "_id": "59764361b06d2654210a7899",
+                       "subBioDesignIds": [
+                           "596fa7165fe2743c2a5c4f76",
+                           "596fa73a5fe2743c2a5c4f7d",
+                           "5963d15239f53707ea81993a"
+                       ],
+                       "userId": "593f0d81b59d9120de14d897",
+                       "superSubPartId": "59764361b06d2654210a7898"
+                   }
+               ],
+               "sequences": [
+                   {
+                       "_id": "59764361b06d2654210a789a",
+                       "name": "B001",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "featureId": "59764361b06d2654210a789f",
+                       "partId": "59764361b06d2654210a7898",
+                       "sequence": "DDDDDDDDDDDDDGGGGGGGGGGCCCCCCCC",
+                       "isLinear": null,
+                       "isSingleStranded": null,
+                       "subannotations": [
+                           {
+                               "_id": "59764361b06d2654210a789b",
+                               "name": "B001",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "sequenceId": null,
+                               "superSequenceId": "59764361b06d2654210a789a",
+                               "start": 1,
+                               "end": 13,
+                               "isForwardStrand": true
+                           },
+                           {
+                               "_id": "59764361b06d2654210a789c",
+                               "name": "B001",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "sequenceId": null,
+                               "superSequenceId": "59764361b06d2654210a789a",
+                               "start": 14,
+                               "end": 23,
+                               "isForwardStrand": true
+                           },
+                           {
+                               "_id": "59764361b06d2654210a789d",
+                               "name": "B001",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "sequenceId": null,
+                               "superSequenceId": "59764361b06d2654210a789a",
+                               "start": 24,
+                               "end": 31,
+                               "isForwardStrand": true
+                           }
+                       ],
+                       "annotations": [
+                           {
+                               "_id": "59764361b06d2654210a789e",
+                               "name": "B001",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "sequenceId": "59764361b06d2654210a789a",
+                               "superSequenceId": null,
+                               "start": 1,
+                               "end": 31,
+                               "isForwardStrand": true,
+                               "features": [
+                                   {
+                                       "_id": "59764361b06d2654210a789f",
+                                       "name": "B001",
+                                       "description": null,
+                                       "userId": "593f0d81b59d9120de14d897",
+                                       "displayId": "sample",
+                                       "role": "MODULE",
+                                       "annotationId": "59764361b06d2654210a789e",
+                                       "superAnnotationId": null,
+                                       "moduleId": "59764361b06d2654210a7897"
+                                   }
+                               ]
+                           }
+                       ]
+                   }
+               ]
+           }
+       ],
+       "modules": [
+           {
+               "_id": "59764361b06d2654210a7897",
+               "name": "B001",
+               "description": null,
+               "userId": "593f0d81b59d9120de14d897",
+               "displayId": "sample",
+               "bioDesignId": "59764361b06d2654210a7895",
+               "role": "MODULE",
+               "submoduleIds": null,
+               "features": [
+                   {
+                       "_id": "59764361b06d2654210a789f",
+                       "name": "B001",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "role": "MODULE",
+                       "annotationId": "59764361b06d2654210a789e",
+                       "superAnnotationId": null,
+                       "moduleId": "59764361b06d2654210a7897"
+                   }
+               ]
+           }
+       ],
+       "parameters": [
+           {
+               "_id": "59764361b06d2654210a7896",
+               "name": null,
+               "userId": "593f0d81b59d9120de14d897",
+               "bioDesignId": "59764361b06d2654210a7895",
+               "value": 20,
+               "variable": "cm",
+               "units": null
+           }
+       ],
+       "subdesigns": [
+           {
+               "_id": "5963d15239f53707ea81993a",
+               "name": "TEST3",
+               "description": null,
+               "userId": "593f0d81b59d9120de14d897",
+               "displayId": "sample",
+               "imageURL": null,
+               "subBioDesignIds": null,
+               "superBioDesignId": "59776aea15d1c358a3f2940b",
+               "subparts": [
+                   {
+                       "_id": "5963d15239f53707ea81993d",
+                       "name": "TEST3",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "bioDesignId": "5963d15239f53707ea81993a",
+                       "assemblyId": "59776aea15d1c358a3f2940f",
+                       "sequences": [
+                           {
+                               "_id": "5963d15239f53707ea81993e",
+                               "name": "TEST3",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "displayId": "sample",
+                               "featureId": "5963d15239f53707ea819940",
+                               "partId": "5963d15239f53707ea81993d",
+                               "sequence": "CCCCCCCC",
+                               "isLinear": null,
+                               "isSingleStranded": null,
+                               "annotations": [
+                                   {
+                                       "_id": "5963d15239f53707ea81993f",
+                                       "name": "TEST3",
+                                       "description": null,
+                                       "userId": "593f0d81b59d9120de14d897",
+                                       "sequenceId": "5963d15239f53707ea81993e",
+                                       "start": 1,
+                                       "end": 8,
+                                       "isForwardStrand": true,
+                                       "features": [
+                                           {
+                                               "_id": "5963d15239f53707ea819940",
+                                               "name": "TEST3",
+                                               "description": null,
+                                               "userId": "593f0d81b59d9120de14d897",
+                                               "displayId": "sample",
+                                               "role": "PROMOTER",
+                                               "annotationId": "5963d15239f53707ea81993f",
+                                               "moduleId": "5963d15239f53707ea81993c",
+                                               "superAnnotationId": "59776aea15d1c358a3f29413"
+                                           }
+                                       ]
+                                   }
+                               ]
+                           }
+                       ]
+                   }
+               ],
+               "modules": [
+                   {
+                       "_id": "5963d15239f53707ea81993c",
+                       "name": "TEST3",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "bioDesignId": "5963d15239f53707ea81993a",
+                       "role": "PROMOTER",
+                       "submoduleIds": null,
+                       "features": [
+                           {
+                               "_id": "5963d15239f53707ea819940",
+                               "name": "TEST3",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "displayId": "sample",
+                               "role": "PROMOTER",
+                               "annotationId": "5963d15239f53707ea81993f",
+                               "moduleId": "5963d15239f53707ea81993c",
+                               "superAnnotationId": "59776aea15d1c358a3f29413"
+                           }
+                       ]
+                   }
+               ],
+               "parameters": [
+                   {
+                       "_id": "5963d15239f53707ea81993b",
+                       "name": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "bioDesignId": "5963d15239f53707ea81993a",
+                       "value": 20,
+                       "variable": "cm",
+                       "units": null
+                   }
+               ]
+           },
+           {
+               "_id": "596fa7165fe2743c2a5c4f76",
+               "name": "secondTEST1",
+               "description": null,
+               "userId": "593f0d81b59d9120de14d897",
+               "displayId": "sample",
+               "imageURL": null,
+               "subBioDesignIds": null,
+               "superBioDesignId": "59776aea15d1c358a3f2940b",
+               "type": "PART",
+               "subparts": [
+                   {
+                       "_id": "596fa7165fe2743c2a5c4f79",
+                       "name": "secondTEST1",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "bioDesignId": "596fa7165fe2743c2a5c4f76",
+                       "assemblyId": "59776aea15d1c358a3f2940f",
+                       "sequences": [
+                           {
+                               "_id": "596fa7165fe2743c2a5c4f7a",
+                               "name": "secondTEST1",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "displayId": "sample",
+                               "featureId": "596fa7165fe2743c2a5c4f7c",
+                               "partId": "596fa7165fe2743c2a5c4f79",
+                               "sequence": "DDDDDDDDDDDDD",
+                               "isLinear": null,
+                               "isSingleStranded": null,
+                               "annotations": [
+                                   {
+                                       "_id": "596fa7165fe2743c2a5c4f7b",
+                                       "name": "secondTEST1",
+                                       "description": null,
+                                       "userId": "593f0d81b59d9120de14d897",
+                                       "sequenceId": "596fa7165fe2743c2a5c4f7a",
+                                       "superSequenceId": null,
+                                       "start": 1,
+                                       "end": 13,
+                                       "isForwardStrand": true,
+                                       "features": [
+                                           {
+                                               "_id": "596fa7165fe2743c2a5c4f7c",
+                                               "name": "secondTEST1",
+                                               "description": null,
+                                               "userId": "593f0d81b59d9120de14d897",
+                                               "displayId": "sample",
+                                               "role": "PROMOTER",
+                                               "annotationId": "596fa7165fe2743c2a5c4f7b",
+                                               "superAnnotationId": "59776aea15d1c358a3f29411",
+                                               "moduleId": "596fa7165fe2743c2a5c4f78"
+                                           }
+                                       ]
+                                   }
+                               ]
+                           }
+                       ]
+                   }
+               ],
+               "modules": [
+                   {
+                       "_id": "596fa7165fe2743c2a5c4f78",
+                       "name": "secondTEST1",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "bioDesignId": "596fa7165fe2743c2a5c4f76",
+                       "role": "PROMOTER",
+                       "submoduleIds": null,
+                       "features": [
+                           {
+                               "_id": "596fa7165fe2743c2a5c4f7c",
+                               "name": "secondTEST1",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "displayId": "sample",
+                               "role": "PROMOTER",
+                               "annotationId": "596fa7165fe2743c2a5c4f7b",
+                               "superAnnotationId": "59776aea15d1c358a3f29411",
+                               "moduleId": "596fa7165fe2743c2a5c4f78"
+                           }
+                       ]
+                   }
+               ],
+               "parameters": [
+                   {
+                       "_id": "596fa7165fe2743c2a5c4f77",
+                       "name": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "bioDesignId": "596fa7165fe2743c2a5c4f76",
+                       "value": 300,
+                       "variable": "cm",
+                       "units": null
+                   }
+               ]
+           },
+           {
+               "_id": "596fa73a5fe2743c2a5c4f7d",
+               "name": "secondTEST2",
+               "description": null,
+               "userId": "593f0d81b59d9120de14d897",
+               "displayId": "sample",
+               "imageURL": null,
+               "subBioDesignIds": null,
+               "superBioDesignId": "59776aea15d1c358a3f2940b",
+               "type": "PART",
+               "subparts": [
+                   {
+                       "_id": "596fa73a5fe2743c2a5c4f80",
+                       "name": "secondTEST2",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "bioDesignId": "596fa73a5fe2743c2a5c4f7d",
+                       "assemblyId": "59776aea15d1c358a3f2940f",
+                       "sequences": [
+                           {
+                               "_id": "596fa73a5fe2743c2a5c4f81",
+                               "name": "secondTEST2",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "displayId": "sample",
+                               "featureId": "596fa73a5fe2743c2a5c4f83",
+                               "partId": "596fa73a5fe2743c2a5c4f80",
+                               "sequence": "GGGGGGGGGG",
+                               "isLinear": null,
+                               "isSingleStranded": null,
+                               "annotations": [
+                                   {
+                                       "_id": "596fa73a5fe2743c2a5c4f82",
+                                       "name": "secondTEST2",
+                                       "description": null,
+                                       "userId": "593f0d81b59d9120de14d897",
+                                       "sequenceId": "596fa73a5fe2743c2a5c4f81",
+                                       "superSequenceId": null,
+                                       "start": 1,
+                                       "end": 10,
+                                       "isForwardStrand": true,
+                                       "features": [
+                                           {
+                                               "_id": "596fa73a5fe2743c2a5c4f83",
+                                               "name": "secondTEST2",
+                                               "description": null,
+                                               "userId": "593f0d81b59d9120de14d897",
+                                               "displayId": "sample",
+                                               "role": "PROMOTER",
+                                               "annotationId": "596fa73a5fe2743c2a5c4f82",
+                                               "superAnnotationId": "59776aea15d1c358a3f29412",
+                                               "moduleId": "596fa73a5fe2743c2a5c4f7f"
+                                           }
+                                       ]
+                                   }
+                               ]
+                           }
+                       ]
+                   }
+               ],
+               "modules": [
+                   {
+                       "_id": "596fa73a5fe2743c2a5c4f7f",
+                       "name": "secondTEST2",
+                       "description": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "displayId": "sample",
+                       "bioDesignId": "596fa73a5fe2743c2a5c4f7d",
+                       "role": "PROMOTER",
+                       "submoduleIds": null,
+                       "features": [
+                           {
+                               "_id": "596fa73a5fe2743c2a5c4f83",
+                               "name": "secondTEST2",
+                               "description": null,
+                               "userId": "593f0d81b59d9120de14d897",
+                               "displayId": "sample",
+                               "role": "PROMOTER",
+                               "annotationId": "596fa73a5fe2743c2a5c4f82",
+                               "superAnnotationId": "59776aea15d1c358a3f29412",
+                               "moduleId": "596fa73a5fe2743c2a5c4f7f"
+                           }
+                       ]
+                   }
+               ],
+               "parameters": [
+                   {
+                       "_id": "596fa73a5fe2743c2a5c4f7e",
+                       "name": null,
+                       "userId": "593f0d81b59d9120de14d897",
+                       "bioDesignId": "596fa73a5fe2743c2a5c4f7d",
+                       "value": 0.03,
+                       "variable": "cm",
+                       "units": null
+                   }
+               ]
+           }
+       ]
+   }
+   ]
+   *
+   * @apiErrorExample
+   *
+   * TBD
+   */
+
+
+
+
   server.route({
     method: 'GET',
     path: '/device/{id}',
@@ -278,8 +752,6 @@ internals.applyRoutes = function (server, next) {
 
       BioDesign.getBioDesignIds(request.params.id, null, null, (err, bioDesign) => {
 
-        console.log("got bioDesign in Device");
-        console.log(bioDesign);
         if (err) {
           return reply(err);
         }
@@ -287,7 +759,6 @@ internals.applyRoutes = function (server, next) {
         if (!bioDesign || bioDesign.length === 0) {
           return reply(Boom.notFound('Document not found.'));
         }
-
 
         return reply(bioDesign);
 

@@ -58,9 +58,6 @@ class Annotation extends MongoModels {
   // Retrieve annotation and get feature underneath.
   static findBySequenceId(sequenceId, callback) {
 
-    console.log("In Annotation.findBySequenceId");
-
-
     const query = {'sequenceId': sequenceId};
     this.find(query, (err, annotations) => {
 
@@ -112,8 +109,6 @@ class Annotation extends MongoModels {
   // Get top level feature.
   static getFeatures(index, annotations, callback) {
 
-    console.log("In Annotation.getFeatures");
-
     if (index == annotations.length) {
       return callback(null, annotations);
     }
@@ -123,7 +118,7 @@ class Annotation extends MongoModels {
       if (err) {
         return callback(err, null);
       }
-      
+
       if (features.length != 0) {
         annotations[index].features = features;
       }
@@ -132,6 +127,7 @@ class Annotation extends MongoModels {
     });
   }
 
+  
   static delete(document, callback) {
 
     document.toDelete = true;
