@@ -201,8 +201,9 @@ class Part extends MongoModels {
 
     const Assembly = require('./assembly');
 
-    Assembly.findByPartId(parts[index]['_id'].toString(), (err, assemblies) => {
-
+    Assembly.findByPartIdOnly(parts[index]['_id'].toString(), (err, assemblies) => {
+      //use the function 'findByPartId' to get full subBioDesigns under assembly as well,
+      // full subBioDesigns already called under subBioDesigns
 
       if (err) {
         return callback(err, null);

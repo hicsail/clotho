@@ -40,6 +40,13 @@ class Assembly extends MongoModels {
   }
 
 
+  static findByPartIdOnly(partId, callback) {
+
+    const query = {superSubPartId: partId};
+
+    return this.find(query, callback) 
+  }
+  
   // Get subparts that are under the assembly.
   static getSubParts(index, assemblies, callback) {
 

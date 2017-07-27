@@ -64,8 +64,6 @@ class BioDesign extends MongoModels {
   }
 
 
-
-
   // Get complete device or part. If no subbiodesign exists, is treated as a part.
   // Accepts array of bioDesignIds or single string.
 
@@ -200,7 +198,7 @@ class BioDesign extends MongoModels {
       if (err) {
         return callback(err);
       }
-      
+
       Module.findByBioDesignId(bioDesignId, (err, modules) => {
 
         if (err) {

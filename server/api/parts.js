@@ -934,7 +934,6 @@ internals.applyRoutes = function (server, next) {
         }],
         createSubpart: ['createBioDesign', function (results, done) {
 
-
           var bioDesignId = results.createBioDesign._id.toString();
 
           Part.create(
@@ -1017,7 +1016,7 @@ internals.applyRoutes = function (server, next) {
         }],
         updateSequenceFeatureId: ['createFeature', 'createSequence', function (results, done) {
 
-          if (results.createFeature) {
+          if (results.createFeature && request.payload.sequence !== undefined && request.payload.sequence !== null) {
             var featureId = results.createFeature._id.toString();
             var sequenceId = results.createSequence._id.toString();
 
