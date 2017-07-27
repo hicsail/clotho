@@ -12,6 +12,50 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
+  /**
+   * @api {post} /api/blast/fasta Get Fasta File
+   * @apiName Get Fasta File
+   * @apiDescription Returns a fasta file
+   * @apiGroup Blast
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   *
+   * @apiParamExample {json} Request-Example:
+   * {}
+   *
+   * @apiParamExample {json} Request-Example:
+   * {
+   *  "name": "BBa_0123",
+   *  "displayId": "TetR repressible enhancer",
+   *  "role": "PROMOTER",
+   *  "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
+   *  "parameters": [
+   *    {
+   *     "name": "enhancer unbinding rate",
+   *     "value": 0.03,
+   *     "variable": "K7",
+   *     "units": "min-1"
+   *    }
+   *  ]
+   * }
+   *
+   * @apiSuccessExample {text} Success-Response:
+   * > BBa_R0040--59789d0cf1f5205f40059170--
+   * tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac
+   *
+   * > BBa_R0040--59789d0cf1f5205f40059170--
+   * tccctatcagtgatagagattgacatccctatcagtgatagagatactgagcac
+   *
+   * Example:
+   * > Name -- Bio-Design ID -- Description
+   **/
   server.route({
     method: 'POST',
     path: '/blast/fasta',
@@ -93,6 +137,125 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+/**
+ * @api {post} /api/blast Blast
+ * @apiName Blast
+ * @apiDescription Returns Blast N results
+ * @apiGroup Blast
+ * @apiVersion 4.0.0
+ * @apiPermission user
+ *
+ * @apiParam {String=ATUCGRYKMSWBDHVN} BLASTsequence  sequence query.
+ * @apiParam {String} [name]  name of part.
+ * @apiParam {String} [displayId]  displayId of part.
+ * @apiParam {String} [role]  role of the feature
+ * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+ * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+ * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
+ * }
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
+ *  "name": "BBa_0123",
+ *  "displayId": "TetR repressible enhancer",
+ *  "role": "PROMOTER",
+ *  "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
+ *  "parameters": [
+ *    {
+ *      "name": "enhancer unbinding rate",
+ *      "value": 0.03,
+ *      "variable": "K7",
+ *      "units": "min-1"
+ *    }
+ *  ]
+ *}
+ * @apiSuccessExample {json} Success-Response:
+ *{
+    "59789dbc5bafe95ffd4dd51b": {
+        "name": " B001",
+        "description": "",
+        "hits": [
+            {
+                "number": 1,
+                "score": 87.9128,
+                "from": 1,
+                "to": 54,
+                "gaps": 2,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGATAGAGATACTGAGCAC",
+                "midline": "|||||||||||||||||||  |||||||||||||||||||||||||||||||||"
+            },
+            {
+                "number": 2,
+                "score": 87.9128,
+                "from": 55,
+                "to": 108,
+                "gaps": 2,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGATAGAGATACTGAGCAC",
+                "midline": "|||||||||||||||||||  |||||||||||||||||||||||||||||||||"
+            },
+            {
+                "number": 3,
+                "score": 87.9128,
+                "from": 109,
+                "to": 162,
+                "gaps": 2,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGATAGAGATACTGAGCAC",
+                "midline": "|||||||||||||||||||  |||||||||||||||||||||||||||||||||"
+            }
+        ]
+    },
+    "59789d25f1f5205f40059180": {
+        "name": " BBa_R0040",
+        "description": "",
+        "hits": [
+            {
+                "number": 1,
+                "score": 87.9128,
+                "from": 1,
+                "to": 54,
+                "gaps": 2,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGATAGAGATACTGAGCAC",
+                "midline": "|||||||||||||||||||  |||||||||||||||||||||||||||||||||"
+            }
+        ]
+    },
+    "59789d1cf1f5205f40059178": {
+        "name": " BBa_R0040",
+        "description": "",
+        "hits": [
+            {
+                "number": 1,
+                "score": 87.9128,
+                "from": 1,
+                "to": 54,
+                "gaps": 2,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGATAGAGATACTGAGCAC",
+                "midline": "|||||||||||||||||||  |||||||||||||||||||||||||||||||||"
+            }
+        ]
+    },
+    "59789d0cf1f5205f40059170": {
+        "name": " BBa_R0040",
+        "description": "",
+        "hits": [
+            {
+                "number": 1,
+                "score": 87.9128,
+                "from": 1,
+                "to": 54,
+                "gaps": 2,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGATAGAGATACTGAGCAC",
+                "midline": "|||||||||||||||||||  |||||||||||||||||||||||||||||||||"
+            }
+        ]
+    }
+}
+ **/
   server.route({
     method: 'POST',
     path: '/blast',
