@@ -1125,7 +1125,17 @@ internals.applyRoutes = function (server, next) {
 
                 if (err) {
                   return reject(err);
-                } else {
+                }
+                else if (results[1].length == 0){
+                  var key = results[0];
+                  superSequenceArr[key] = null; //null string
+                  subSequenceIds[key] = null;
+                  subFeatureIds[key] = null;
+
+                  resolve(results);
+                }
+
+                else {
                   var key = results[0];
                   superSequenceArr[key] = results[1][0]['sequence'];
                   subSequenceIds[key] = results[1][0]['_id'];
@@ -1164,7 +1174,7 @@ internals.applyRoutes = function (server, next) {
             request.payload.displayId,
             null, // featureId null
             partId,
-            superSequence, //create null sequence and update later
+            superSequence, //combination of sequences
             null,//isLinear
             null,//isSingleStranded
             done);
@@ -1181,37 +1191,41 @@ internals.applyRoutes = function (server, next) {
           var subAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,'0');
 
           for (var i = 0; i < superSequenceArr.length; ++i) {
-            var promise = new Promise((resolve, reject) => {
 
-              var subSequence =  superSequenceArr[i];
-              var subSequenceLength = subSequence.length;
-              var start = position;
-              var end = position + subSequenceLength - 1;
-              position = end + 1; //setup for next annotation
+            if (superSequenceArr[i] !== null) {
 
-              Annotation.createWithIndex(
-                i,
-                request.payload.name,
-                null, // description,
-                request.auth.credentials.user._id.toString(),
-                null, //sequenceId
-                superSequenceId, // superSequenceId
-                start, // start
-                end, // end
-                true, // isForwardString
-                (err, results) => {
+              var promise = new Promise((resolve, reject) => {
 
-                  if (err) {
-                    reject(err);
-                  } else {
-                    var key = results[0];
-                    //calling createDevice  multiple times will create multiple annotations per feature
-                    //saving id of specific annotation when created is important!
-                    subAnnotationIds[key] = results[1]._id.toString();
-                    resolve(results[1]);
-                  }
-                });
-            });
+                var subSequence = superSequenceArr[i];
+                var subSequenceLength = subSequence.length;
+                var start = position;
+                var end = position + subSequenceLength - 1;
+                position = end + 1; //setup for next annotation
+
+                Annotation.createWithIndex(
+                  i,
+                  request.payload.name,
+                  null, // description,
+                  request.auth.credentials.user._id.toString(),
+                  null, //sequenceId
+                  superSequenceId, // superSequenceId
+                  start, // start
+                  end, // end
+                  true, // isForwardString
+                  (err, results) => {
+
+                    if (err) {
+                      reject(err);
+                    } else {
+                      var key = results[0];
+                      //calling createDevice  multiple times will create multiple annotations per feature
+                      //saving id of specific annotation when created is important!
+                      subAnnotationIds[key] = results[1]._id.toString();
+                      resolve(results[1]);
+                    }
+                  });
+              });
+            }
             allPromises.push(promise);
           }
 
@@ -1324,8 +1338,8 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-        return reply(results);
-        // return reply(results.createBioDesign._id.toString());
+        // return reply(results);
+        return reply(results.createBioDesign._id.toString());
       });
     }
   });
