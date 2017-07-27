@@ -77,6 +77,7 @@ class BioDesign extends MongoModels {
 
 
     this.find(query2, (err, bioDesigns) => {
+
       if (err) {
         return callback(err);
       }
@@ -136,8 +137,8 @@ class BioDesign extends MongoModels {
         //else
         //starting with 1 bioDesign first
         this.getSubBioDesign(bioDesigns, bioDesignIds, (err, results) => {
-          if (err) {
 
+          if (err) {
             return callback(err);
           }
           return callback(null, results);
@@ -181,8 +182,8 @@ class BioDesign extends MongoModels {
         return callback(subreject);
       }
 
-      for (var j = 0; j < bioDesigns.length; ++j) {
-        bioDesigns[j]['subdesigns'] = subresolve[j];
+      for (var i = 0; i < bioDesigns.length; ++i) {
+        bioDesigns[i]['subdesigns'] = subresolve[i];
       }
 
       return callback(null, bioDesigns);
@@ -295,17 +296,17 @@ class BioDesign extends MongoModels {
           if (resolve.length > 1 && resolve.indexOf(null) === -1) {
             var foundBioDesignIds = [];
             // Loop through subDesign queries to get list of parent biodesignids.
-            for (var q = 0; q < resolve.length; ++q) {
+            for (var i = 0; i < resolve.length; ++i) {
               foundBioDesignIds.push([]);
-              for (var p = 0; p < resolve[q].length; ++p) {
-                foundBioDesignIds[q].push(resolve[q][p].superBioDesignId);
+              for (var j = 0; j < resolve[i].length; ++j) {
+                foundBioDesignIds[i].push(resolve[i][j].superBioDesignId);
               }
             }
             // Find the intersection of all BioDesignIds.
             var bioDesignIntersection = foundBioDesignIds[0];
-            for (var p = 1; p < foundBioDesignIds.length; ++p) {
+            for (var foundBioDesign of foundBioDesignIds) {
               if (bioDesignIntersection.length === 0) break;
-              bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesignIds[p]);
+              bioDesignIntersection = Underscore.intersection(bioDesignIntersection, foundBioDesign);
             }
 
             if (bioDesignIntersection.length === 0) return callback(null, []);

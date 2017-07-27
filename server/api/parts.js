@@ -1234,12 +1234,12 @@ internals.applyRoutes = function (server, next) {
                   newParameters = [];
                 }
 
-                for (var j = 0; j < oldParameters.length; j++) {
+                for (var oldParameter of oldParameters) {
                   var p = {};
-                  p['name'] = oldParameters[j]['name'];
-                  p['units'] = oldParameters[j]['units'];
-                  p['value'] = oldParameters[j]['value'];
-                  p['variable'] = oldParameters[j]['variable'];
+                  p['name'] = oldParameter['name'];
+                  p['units'] = oldParameter['units'];
+                  p['value'] = oldParameter['value'];
+                  p['variable'] = oldParameter['variable'];
                   newParameters.push(p);
                 }
                 newPayload.parameters = newParameters;
@@ -1269,8 +1269,6 @@ internals.applyRoutes = function (server, next) {
               return reply(response.result);
             }
 
-            console.log(response.result);
-
             done(null, response.result);
 
           });
@@ -1284,6 +1282,7 @@ internals.applyRoutes = function (server, next) {
 
 
           Version.create(userId, partId, 1, (err, results) => {
+
             if (err) {
               return err;
             } else {
