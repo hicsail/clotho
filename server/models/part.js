@@ -124,11 +124,25 @@ class Part extends MongoModels {
   static getChild(index, parts, isDevice, callback) {
 
     console.log("In Part.getChild");
-    // Get Sequence
-    return this.getSequence(index, parts, callback)
+
+    //get Assembly
+
+    this.getAssembly(index, parts, (err, partWithSeq) => {
+
+      if (err) {
+        return callback(err);
+      }
+      if (partWithSeq !== undefined) { //if there is an assembly
+        // Get Sequence
+        return this.getSequence(index, partWithSeq, callback)
+      }
+      else { //if there is no assembly
+        return this.getSequence(index, parts, callback)
+      }
+    })
   }
 
-  
+
   // Get sequence and assemblies under the subpart.
   static getChildren(index, parts, isDevice, callback) {
 
@@ -161,9 +175,7 @@ class Part extends MongoModels {
         // Get assembly/sequence for next subpart.
         this.getChildren(index + 1, partsWithSeq, isDevice, callback);
       }
-
     });
-
   }
 
   //most likely one sequence only, may have to review this function
