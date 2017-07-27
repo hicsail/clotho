@@ -43,7 +43,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, HapiAuthCookie,ModelsPlugin, AuthPlugin, AnnotationPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, AnnotationPlugin];
   server = new Hapi.Server();
   server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {

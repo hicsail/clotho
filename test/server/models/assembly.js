@@ -36,13 +36,13 @@ lab.experiment('Assembly Class Methods', () => {
       ['subBioDesignIds'],
       'userid12test',
       'subPartIds',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Assembly);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Assembly);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -60,14 +60,14 @@ lab.experiment('Assembly Class Methods', () => {
       ['subBioDesignIds'],
       'userid12test',
       'subPartIds',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Assembly.insertOne = realInsertOne;
+        Assembly.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

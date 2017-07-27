@@ -137,29 +137,29 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-/**
- * @api {post} /api/blast Blast
- * @apiName Blast
- * @apiDescription Returns Blast N results
- * @apiGroup Blast
- * @apiVersion 4.0.0
- * @apiPermission user
- *
- * @apiParam {String=ATUCGRYKMSWBDHVN} BLASTsequence  sequence query.
- * @apiParam {String} [name]  name of part.
- * @apiParam {String} [displayId]  displayId of part.
- * @apiParam {String} [role]  role of the feature
- * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
- * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
- * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
- *
- * @apiParamExample {json} Request-Example:
- * {
+  /**
+   * @api {post} /api/blast Blast
+   * @apiName Blast
+   * @apiDescription Returns Blast N results
+   * @apiGroup Blast
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String=ATUCGRYKMSWBDHVN} BLASTsequence  sequence query.
+   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   *
+   * @apiParamExample {json} Request-Example:
+   * {
  *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
  * }
- *
- * @apiParamExample {json} Request-Example:
- * {
+   *
+   * @apiParamExample {json} Request-Example:
+   * {
  *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
  *  "name": "BBa_0123",
  *  "displayId": "TetR repressible enhancer",
@@ -174,8 +174,8 @@ internals.applyRoutes = function (server, next) {
  *    }
  *  ]
  *}
- * @apiSuccessExample {json} Success-Response:
- *{
+   * @apiSuccessExample {json} Success-Response:
+   *{
     "59789dbc5bafe95ffd4dd51b": {
         "name": " B001",
         "description": "",
@@ -255,7 +255,7 @@ internals.applyRoutes = function (server, next) {
         ]
     }
 }
- **/
+   **/
   server.route({
     method: 'POST',
     path: '/blast',
@@ -373,7 +373,8 @@ internals.applyRoutes = function (server, next) {
 
 function removeDir(dir) {
 
-  exec(`rm -rf '${dir}'`, (error, stdout, stderr) => {});
+  exec(`rm -rf '${dir}'`, (error, stdout, stderr) => {
+  });
 }
 
 function parse(blastInput) {

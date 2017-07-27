@@ -354,7 +354,7 @@ lab.experiment('Assembly Plugin Create', () => {
       callback();
     };
 
-    stub.Assembly.create = function (npart, subBioDesignIds, userId,callback) {
+    stub.Assembly.create = function (npart, subBioDesignIds, userId, callback) {
 
       callback(null, {});
     };
@@ -390,7 +390,7 @@ lab.experiment('Assembly Plugin Update', () => {
 
     stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
 
-      callback(null,{_id:'assemblyId'});
+      callback(null, {_id: 'assemblyId'});
     };
 
     server.inject(request, (response) => {
@@ -406,7 +406,7 @@ lab.experiment('Assembly Plugin Update', () => {
 
     stub.Assembly.findByIdAndUpdate = function (id, update, callback) {
 
-      callback(null,null);
+      callback(null, null);
     };
 
     server.inject(request, (response) => {

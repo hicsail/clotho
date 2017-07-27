@@ -49,7 +49,7 @@ class Role extends MongoModels {
         return callback(err);
       }
 
-      return callback(null,results !== null);
+      return callback(null, results !== null);
 
     });
 

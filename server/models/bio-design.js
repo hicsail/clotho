@@ -140,7 +140,7 @@ class BioDesign extends MongoModels {
 
             return callback(err);
           }
-          return callback(null, results)
+          return callback(null, results);
         });
 
       });
@@ -327,12 +327,10 @@ class BioDesign extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
-    this.findByIdAndUpdate(document._id.toString(),document,callback);
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
 }
-
-
 
 
 BioDesign.collection = 'biodesigns';

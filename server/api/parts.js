@@ -1137,47 +1137,47 @@ internals.applyRoutes = function (server, next) {
           }
         }
       },
-        {
-          assign: 'checkBioDesign',
-          method: function (request, reply) {
+      {
+        assign: 'checkBioDesign',
+        method: function (request, reply) {
 
             // Check that biodesign exists - should not perform update if biodesign does not exist.
-            var bioDesignId = request.params.id;
+          var bioDesignId = request.params.id;
 
-            BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
+          BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
 
-                if (err) {
-                  return reply(err);
-                } else if (results === null || results.length === 0) {
-                  return reply(Boom.notFound('Part does not exist.'));
-                } else {
-                  reply(true);
-                }
-              }
-            );
+            if (err) {
+              return reply(err);
+            } else if (results === null || results.length === 0) {
+              return reply(Boom.notFound('Part does not exist.'));
+            } else {
+              reply(true);
+            }
           }
-        },
-        {
-          assign: 'checkVersion',
-          method: function (request, reply) {
+            );
+        }
+      },
+      {
+        assign: 'checkVersion',
+        method: function (request, reply) {
 
-            var bioDesignId = request.params.id;
+          var bioDesignId = request.params.id;
 
-            Version.findOne({objectId: bioDesignId, replacementVersionId: {$ne:null}}, (err, results) => {
+          Version.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
 
-              if (err) {
-                return err;
-              } else if (results === null || results.length === 0) {
-                reply(true);
-              } else {
+            if (err) {
+              return err;
+            } else if (results === null || results.length === 0) {
+              reply(true);
+            } else {
                 // Prior version exists.
                 // Update this to either automatically find newest version
                 // of design, or to at least specify id of new object.
-                return reply(Boom.badRequest('Newer version of Part exists.'));
-              }
-            })
-          }
+              return reply(Boom.badRequest('Newer version of Part exists.'));
+            }
+          });
         }
+      }
       ],
       validate: {
         payload: {
@@ -1206,7 +1206,7 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         getOldPart: function (done) {
 
-          BioDesign.getBioDesignIds(request.params.id, null, "PART", done);
+          BioDesign.getBioDesignIds(request.params.id, null, 'PART', done);
         },
         createNewPart: ['getOldPart', function (results, done) {
 
@@ -1283,7 +1283,6 @@ internals.applyRoutes = function (server, next) {
           const partId = results.createNewPart;  // id of new Part.
 
 
-
           Version.create(userId, partId, 1, (err, results) => {
             if (err) {
               return err;
@@ -1297,7 +1296,7 @@ internals.applyRoutes = function (server, next) {
                   return err;
                 } else {
 
-                  Version.updateOne({objectId: oldId}, {$set: { replacementVersionId: partId}}, done);
+                  Version.updateOne({objectId: oldId}, {$set: {replacementVersionId: partId}}, done);
                 }
 
               });
@@ -1419,17 +1418,17 @@ internals.applyRoutes = function (server, next) {
       });
     }
     /*
-    BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
+     BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
 
 
 
-      if (!bioDesign) {
-        return reply(Boom.notFound('Document not found.'));
-      }
+     if (!bioDesign) {
+     return reply(Boom.notFound('Document not found.'));
+     }
 
 
-    });
-    */
+     });
+     */
   });
 
   next();

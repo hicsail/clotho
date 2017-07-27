@@ -39,13 +39,13 @@ lab.experiment('SampleData Class Methods', () => {
       'sampleId',
       'responseVariables',
       'instrument',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(SampleData);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(SampleData);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -66,14 +66,14 @@ lab.experiment('SampleData Class Methods', () => {
       'sampleId',
       'responseVariables',
       'instrument',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      SampleData.insertOne = realInsertOne;
+        SampleData.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

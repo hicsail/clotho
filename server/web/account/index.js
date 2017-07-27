@@ -18,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('account',{user: request.auth.credentials.user});
+      return reply.view('account', {user: request.auth.credentials.user});
     }
   });
 

@@ -45,7 +45,6 @@ class Part extends MongoModels {
   }
 
 
-
   static findByBioDesignId(bioDesignId, isDevice, callback) {
 
     if (bioDesignId == null) {
@@ -129,12 +128,12 @@ class Part extends MongoModels {
       }
       if (partWithSeq !== undefined) { //if there is an assembly
         // Get Sequence
-        return this.getSequence(index, partWithSeq, callback)
+        return this.getSequence(index, partWithSeq, callback);
       }
       else { //if there is no assembly
-        return this.getSequence(index, parts, callback)
+        return this.getSequence(index, parts, callback);
       }
-    })
+    });
   }
 
 
@@ -257,11 +256,10 @@ class Part extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
-    this.findByIdAndUpdate(document._id.toString(),document,callback);
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
 }
-
 
 
 Part.collection = 'parts';

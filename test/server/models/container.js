@@ -36,13 +36,13 @@ lab.experiment('Container Class Methods', () => {
       'container',
       'container description',
       'userid12test',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Container);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Container);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -60,14 +60,14 @@ lab.experiment('Container Class Methods', () => {
       'Container',
       'Container Description',
       'userid12test',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Container.insertOne = realInsertOne;
+        Container.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

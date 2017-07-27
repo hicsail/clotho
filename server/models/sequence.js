@@ -21,7 +21,7 @@ class Sequence extends MongoModels {
       isSingleStranded: isSingleStranded
     };
 
-    this.insertOne(document,  (err, docs) => {
+    this.insertOne(document, (err, docs) => {
 
       if (err) {
         return callback(err);
@@ -104,12 +104,11 @@ class Sequence extends MongoModels {
       else { //if there is no assembly
         return this.getAnnotations(index, sequences, callback);
       }
-    })
+    });
   }
 
 
-
-static getAnnotations(index, sequences, callback) {
+  static getAnnotations(index, sequences, callback) {
 
     if (index == sequences.length) {
       return callback(null, sequences);
@@ -242,7 +241,12 @@ static getAnnotations(index, sequences, callback) {
 
           if (err) return callback(err);
 
-          Annotation.updateOne({'bioDesignId': bioDesignId}, {$set: {start: 1, end: sequence.length}}, (err, count, annotationDoc) => {
+          Annotation.updateOne({'bioDesignId': bioDesignId}, {
+            $set: {
+              start: 1,
+              end: sequence.length
+            }
+          }, (err, count, annotationDoc) => {
 
             if (err) return callback(err);
 
@@ -257,7 +261,7 @@ static getAnnotations(index, sequences, callback) {
   static delete(document, callback) {
 
     document.toDelete = true;
-    this.findByIdAndUpdate(document._id.toString(),document,callback);
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
   // Original Java.

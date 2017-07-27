@@ -426,8 +426,7 @@ lab.experiment('Available Plugin', () => {
     request = {
       method: 'POST',
       url: '/available',
-      payload: {
-      }
+      payload: {}
     };
 
     done();

@@ -39,13 +39,13 @@ lab.experiment('Infulence Class Methods', () => {
       'type',
       'infulencedFeature',
       'infulencingFeature',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Infulence);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Infulence);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -66,14 +66,14 @@ lab.experiment('Infulence Class Methods', () => {
       'type',
       'infulencedFeature',
       'infulencingFeature',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Infulence.insertOne = realInsertOne;
+        Infulence.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

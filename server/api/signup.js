@@ -332,7 +332,7 @@ internals.applyRoutes = function (server, next) {
           const username = request.payload.username;
           const email = request.payload.email;
 
-          if(!username && !email) {
+          if (!username && !email) {
             return reply(Boom.badRequest('invaild submission, submit username and/or email'));
           }
           reply(true);
@@ -366,8 +366,8 @@ internals.applyRoutes = function (server, next) {
 
         var available = {};
 
-        if(username) {
-          if(results.username) {
+        if (username) {
+          if (results.username) {
             available.username = {
               status: 'taken',
               message: 'This username is not available'
@@ -379,8 +379,8 @@ internals.applyRoutes = function (server, next) {
             };
           }
         }
-        if(email) {
-          if(results.email) {
+        if (email) {
+          if (results.email) {
             available.email = {
               status: 'taken',
               message: 'This email is already registered'
@@ -403,7 +403,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth','mailer', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'mailer', 'hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

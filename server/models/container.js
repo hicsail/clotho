@@ -44,23 +44,23 @@ module.exports = Container;
 
 /*
 
-public void addCoordinate(Integer coordinate) {
-  if (coordinates == null) {
-    coordinates = new ArrayList<Integer>();
-  }
-  coordinates.add(coordinate);
-}
+ public void addCoordinate(Integer coordinate) {
+ if (coordinates == null) {
+ coordinates = new ArrayList<Integer>();
+ }
+ coordinates.add(coordinate);
+ }
 
-public Parameter createParameter(double value, Variable variable) {
-  Parameter parameter = new Parameter(value, variable);
-  addParameter(parameter);
-  return parameter;
-}
+ public Parameter createParameter(double value, Variable variable) {
+ Parameter parameter = new Parameter(value, variable);
+ addParameter(parameter);
+ return parameter;
+ }
 
-public void addParameter(Parameter parameter) {
-  if (parameters == null) {
-    parameters = new HashSet<Parameter>();
-  }
-  parameters.add(parameter);
-}
-*/
+ public void addParameter(Parameter parameter) {
+ if (parameters == null) {
+ parameters = new HashSet<Parameter>();
+ }
+ parameters.add(parameter);
+ }
+ */

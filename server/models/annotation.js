@@ -127,7 +127,7 @@ class Annotation extends MongoModels {
     });
   }
 
-  
+
   static delete(document, callback) {
 
     document.toDelete = true;

@@ -20,10 +20,10 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       var user = null;
-      if(request.auth.isAuthenticated) {
+      if (request.auth.isAuthenticated) {
         user = request.auth.credentials.user;
       }
-      return reply.view('docs',{user: user});
+      return reply.view('docs', {user: user});
     }
   });
 

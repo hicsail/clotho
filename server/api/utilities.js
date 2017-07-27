@@ -14,11 +14,11 @@ var annotateMe = function (server, partIds) {
   //arr or some other object
 
   var trie = CreateTrie();
-  trie.set([1,2,3], 1);
-  trie.set([2,3,4], 2);
-  trie.set([6,7,8], 3);
-  trie.set([1,2], 4);
-  trie.set([2,3], 5);
+  trie.set([1, 2, 3], 1);
+  trie.set([2, 3, 4], 2);
+  trie.set([6, 7, 8], 3);
+  trie.set([1, 2], 4);
+  trie.set([2, 3], 5);
 
 
   var automata = CreateAC(trie);
@@ -29,16 +29,16 @@ var annotateMe = function (server, partIds) {
 
   //console.log(automata.push(1));
 
-  var data = [1,2,3,4,5,6,7,8,9];
-  for(var state=automata, i=0; i<data.length; ) {
+  var data = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  for (var state = automata, i = 0; i < data.length;) {
 
     //Process next symbol
-    state=state.push(data[i++]);
+    state = state.push(data[i++]);
 
     //Print out all matches at position i
-    if(state.value !== undefined) {
+    if (state.value !== undefined) {
       //console.log('matches at position', i, ':');
-      for(var cur = state; cur.value !== undefined; cur = cur.next) {
+      for (var cur = state; cur.value !== undefined; cur = cur.next) {
         //console.log(cur.value);
       }
     }
@@ -67,21 +67,20 @@ var annotateMe = function (server, partIds) {
   // console.log('after build');
   //for each result from a mapping of the aC algorithm:
 
-      //each result returns the part
-      //get the corresponding sequence --> cSeq
+  //each result returns the part
+  //get the corresponding sequence --> cSeq
 
-      //for each annotation in part.sequence.annotation:
-          //check if annotation.feature.sequence == cSeq
-          //if yes, make a constant == that feature
+  //for each annotation in part.sequence.annotation:
+  //check if annotation.feature.sequence == cSeq
+  //if yes, make a constant == that feature
 
 
-      //if feature != null:
-          //create a new annotation (subAnnotation --> linked to deviceSequence)
-          //with the start/end lengths from the aC algorithm
-          //update superAnnotationId in feature
+  //if feature != null:
+  //create a new annotation (subAnnotation --> linked to deviceSequence)
+  //with the start/end lengths from the aC algorithm
+  //update superAnnotationId in feature
 
   // return (ac.search('1234567890'));
-
 
 
 };

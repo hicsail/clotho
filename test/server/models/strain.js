@@ -36,13 +36,13 @@ lab.experiment('Strain Class Methods', () => {
       'strain',
       'strain description',
       'userid12test',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Strain);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Strain);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -60,14 +60,14 @@ lab.experiment('Strain Class Methods', () => {
       'Strain',
       'Strain Description',
       'userid12test',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Strain.insertOne = realInsertOne;
+        Strain.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

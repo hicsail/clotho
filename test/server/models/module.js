@@ -68,28 +68,28 @@ lab.experiment('Module Class Methods', () => {
       'bioDesignId',
       'TRANSCRIPTION',
       'submodule',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Module.insertOne = realInsertOne;
+        Module.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an instance when findByBioDesignId succeeds', (done) => {
 
     Module.findByBioDesignId(
-    'bioDesignId',
-    (err, result) => {
+      'bioDesignId',
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result[0]).to.be.an.instanceOf(Module);
+        Code.expect(err).to.not.exist();
+        Code.expect(result[0]).to.be.an.instanceOf(Module);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when findByBioDesignId fails', (done) => {
@@ -104,15 +104,15 @@ lab.experiment('Module Class Methods', () => {
     };
 
     Module.findByBioDesignId(
-    'bioDesignId',
-    (err, result) => {
+      'bioDesignId',
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Module.find = realFunction;
+        Module.find = realFunction;
 
-      done();
-    });
+        done();
+      });
   });
 });

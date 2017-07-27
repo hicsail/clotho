@@ -36,13 +36,13 @@ lab.experiment('Medium Class Methods', () => {
       'medium',
       'medium description',
       'userid12test',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Medium);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Medium);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -60,14 +60,14 @@ lab.experiment('Medium Class Methods', () => {
       'Medium',
       'Medium Description',
       'userid12test',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Medium.insertOne = realInsertOne;
+        Medium.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 });

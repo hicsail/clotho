@@ -138,17 +138,17 @@ class Parameter extends MongoModels {
         }
         return callback(reject);
       })
-      .catch((error) => {
+        .catch((error) => {
 
-        return callback(error,null);
-      });
+          return callback(error, null);
+        });
     }
   }
 
   static delete(document, callback) {
 
     document.toDelete = true;
-    this.findByIdAndUpdate(document._id.toString(),document,callback);
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
 

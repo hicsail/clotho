@@ -36,13 +36,13 @@ lab.experiment('Role Class Methods', () => {
       'testRole',
       'userId',
       'type',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Role);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(Role);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -60,15 +60,15 @@ lab.experiment('Role Class Methods', () => {
       'newName',
       'userId',
       'type',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Role.insertOne = realInsertOne;
+        Role.insertOne = realInsertOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -77,13 +77,13 @@ lab.experiment('Role Class Methods', () => {
       'testRole',
       'userId',
       'type',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an error when create fails', (done) => {
@@ -101,28 +101,28 @@ lab.experiment('Role Class Methods', () => {
       'name',
       'userId',
       'type',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+        Code.expect(err).to.be.an.object();
+        Code.expect(result).to.not.exist();
 
-      Role.findOne = realFineOne;
+        Role.findOne = realFineOne;
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an true checkValidRole succeeds', (done) => {
 
     Role.checkValidRole(
       'testRole',
-    (err, result) => {
+      (err, result) => {
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.equal(true);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.equal(true);
 
-      done();
-    });
+        done();
+      });
   });
 
   lab.test('it returns an true checkValidRole succeeds', (done) => {

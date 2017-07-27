@@ -1076,15 +1076,14 @@ internals.applyRoutes = function (server, next) {
                   reject(err);
 
 
-
                 } else {
 
                   var key = results[0];  //i is returned here, partId is saved under i
                   var resPart = results[1];
 
                   // if (resPart.length !== 0) {
-                    var subSubPartId = resPart[0]['_id'];
-                    subSubPartIds[key] = subSubPartId;
+                  var subSubPartId = resPart[0]['_id'];
+                  subSubPartIds[key] = subSubPartId;
                   // }
                   // else {
                   //   done(null, key)
@@ -1113,9 +1112,9 @@ internals.applyRoutes = function (server, next) {
           var allPromises = [];
 
           //array for exact length created to
-          var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
-          var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
-          var subFeatureIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf,'0');
+          var subSequenceIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf, '0');
+          var superSequenceArr = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf, '0');
+          var subFeatureIds = Array.apply(null, Array(subBioDesignIds.length)).map(String.prototype.valueOf, '0');
 
           for (var i = 0; i < subBioDesignIds.length; ++i) {
             var promise = new Promise((resolve, reject) => {
@@ -1126,7 +1125,7 @@ internals.applyRoutes = function (server, next) {
                 if (err) {
                   return reject(err);
                 }
-                else if (results[1].length == 0){
+                else if (results[1].length == 0) {
                   var key = results[0];
                   superSequenceArr[key] = null; //null string
                   subSequenceIds[key] = null;
@@ -1188,7 +1187,7 @@ internals.applyRoutes = function (server, next) {
           var allPromises = [];
           var position = 1; //sequences start at 1
 
-          var subAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf,'0');
+          var subAnnotationIds = Array.apply(null, Array(superSequenceArr.length)).map(String.prototype.valueOf, '0');
 
           for (var i = 0; i < superSequenceArr.length; ++i) {
 

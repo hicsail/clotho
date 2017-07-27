@@ -8,9 +8,9 @@ const insertData = {
   data: function () {
 
     var url = Config.get('/hapiMongoModels/mongodb/uri');
-    MongoDB.connect(url, function(err, db) {
+    MongoDB.connect(url, function (err, db) {
 
-      if(err) {
+      if (err) {
         console.warn('Unable to connect to mongodb');
         return;
       }
@@ -20,10 +20,11 @@ const insertData = {
 
         for (var file of items) {
           if (file != 'insert.js') {
-            var data = require(Path.join(__dirname,file));
-            var collection = require(Path.join(__dirname,'../models/',file.split('.')[0]));
-            for(var document of data) {
-              collection.insertOne(document, (err, result) => {});
+            var data = require(Path.join(__dirname, file));
+            var collection = require(Path.join(__dirname, '../models/', file.split('.')[0]));
+            for (var document of data) {
+              collection.insertOne(document, (err, result) => {
+              });
             }
           }
         }
@@ -41,5 +42,5 @@ module.exports = insertData;
 /*
 
 
-}*/
+ }*/
 

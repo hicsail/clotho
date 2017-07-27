@@ -22,7 +22,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       if (request.auth.isAuthenticated) {
-        if(request.query.returnUrl) {
+        if (request.query.returnUrl) {
           return reply.redirect(request.query.returnUrl);
         } else {
           return reply.redirect('/');
@@ -49,7 +49,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const credentials = request.auth.credentials || { session: {} };
+      const credentials = request.auth.credentials || {session: {}};
       const session = credentials.session || {};
 
       Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
@@ -81,7 +81,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      if(request.auth.isAuthenticated) {
+      if (request.auth.isAuthenticated) {
         return reply.redirect('/');
       } else {
         return reply.view('forgotPassword');
@@ -105,7 +105,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      if(request.auth.isAuthenticated) {
+      if (request.auth.isAuthenticated) {
         return reply.redirect('/');
       } else {
         return reply.view('resetPassword');
