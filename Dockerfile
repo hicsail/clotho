@@ -11,7 +11,8 @@ RUN apt-get update
 RUN apt-get install -y netcat
 
 #Install Blast
-RUN sudo apt-get install ncbi-blast+
+
+RUN apt-get install -y ncbi-blast+
 
 
 COPY . /usr/src/clotho
