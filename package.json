@@ -32,6 +32,7 @@
     "bcrypt": "1.x.x",
     "bionode": "^4.0.1",
     "bionode-seq": "^0.1.1",
+    "blastjs": "^1.5.3",
     "boom": "4.x.x",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",
