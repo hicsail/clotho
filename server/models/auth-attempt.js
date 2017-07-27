@@ -62,11 +62,11 @@ class AuthAttempt extends MongoModels {
     Async.auto({
       deleteUsername: function (done) {
 
-        AuthAttempt.deleteMany({username:username}, done);
+        AuthAttempt.deleteMany({username: username}, done);
       },
       deleteIP: function (done) {
 
-        AuthAttempt.deleteMany({ip:ip}, done);
+        AuthAttempt.deleteMany({ip: ip}, done);
       }
     }, callback);
   }

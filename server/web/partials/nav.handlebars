@@ -1,27 +1,27 @@
 <nav class="nav has-shadow" style="background-color: white;">
-  <div class="container">
-    <div class="nav-left">
-      <a class="nav-item" href="/">
-        <img src="/public/images/logo.png" alt="Clotho logo">
-      </a>
-      <a class="nav-item is-tab is-hidden-mobile" href="/">Home</a>
-      <a class="nav-item is-tab is-hidden-mobile" href="/api/docs">API Docs</a>
-    </div>
-    <span class="nav-toggle" style="background-color: white;">
+    <div class="container">
+        <div class="nav-left">
+            <a class="nav-item" href="/">
+                <img src="/public/images/logo.png" alt="Clotho logo">
+            </a>
+            <a class="nav-item is-tab is-hidden-mobile" href="/">Home</a>
+            <a class="nav-item is-tab is-hidden-mobile" href="/api/docs">API Docs</a>
+        </div>
+        <span class="nav-toggle" style="background-color: white;">
       <span></span>
       <span></span>
       <span></span>
     </span>
-    <div class="nav-right nav-menu" style="background-color: white;">
-      <a style="background-color: white;" class="nav-item is-tab is-hidden-tablet" href="/">Home</a>
-      <a style="background-color: white;" class="nav-item is-tab is-hidden-tablet" href="/api/docs">API Docs</a>
-      {{#if user}}
-      <a style="background-color: white;" class="nav-item is-tab" href="/account">Hello {{user.name}}</a>
-      <a style="background-color: white;" class="nav-item is-tab" href="/logout">Logout</a>
-      {{else}}
-      <a style="background-color: white;" class="nav-item is-tab" href="/login">Login</a>
-      <a style="background-color: white;" class="nav-item is-tab" href="/register">Register</a>
-      {{/if}}
+        <div class="nav-right nav-menu" style="background-color: white;">
+            <a style="background-color: white;" class="nav-item is-tab is-hidden-tablet" href="/">Home</a>
+            <a style="background-color: white;" class="nav-item is-tab is-hidden-tablet" href="/api/docs">API Docs</a>
+            {{#if user}}
+                <a style="background-color: white;" class="nav-item is-tab" href="/account">Hello {{user.name}}</a>
+                <a style="background-color: white;" class="nav-item is-tab" href="/logout">Logout</a>
+            {{else}}
+                <a style="background-color: white;" class="nav-item is-tab" href="/login">Login</a>
+                <a style="background-color: white;" class="nav-item is-tab" href="/register">Register</a>
+            {{/if}}
+        </div>
     </div>
-  </div>
 </nav>

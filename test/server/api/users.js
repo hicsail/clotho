@@ -896,7 +896,7 @@ lab.experiment('Users Plugin Set Password', () => {
 
     stub.User.findByIdAndUpdate = function (id, update, callback) {
 
-      callback(null,null);
+      callback(null, null);
     };
 
     server.inject(request, (response) => {

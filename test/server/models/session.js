@@ -110,7 +110,7 @@ lab.experiment('Session Class Methods', () => {
     Async.auto({
       session: function (cb) {
 
-        Session.create('1D','App1', (err, result) => {
+        Session.create('1D', 'App1', (err, result) => {
 
           Code.expect(err).to.not.exist();
           Code.expect(result).to.be.an.instanceOf(Session);

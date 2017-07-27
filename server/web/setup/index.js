@@ -29,7 +29,7 @@ internals.applyRoutes = function (server, next) {
 
       User.findOne({username: 'root'}, (err, rootUser) => {
 
-        if(err) {
+        if (err) {
           return reply(err);
         }
 
@@ -82,7 +82,7 @@ internals.applyRoutes = function (server, next) {
 
           Admin.insertOne(document, (err, docs) => {
 
-            if(err) {
+            if (err) {
               return done(err, null);
             }
             done(err, docs[0]);
