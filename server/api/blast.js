@@ -28,7 +28,7 @@ internals.applyRoutes = function (server, next) {
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
-              units: Joi.string(), // These should be updated.
+              units: Joi.string(),
               value: Joi.number(),
               variable: Joi.string()
             })
@@ -109,7 +109,7 @@ internals.applyRoutes = function (server, next) {
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
-              units: Joi.string(), // These should be updated.
+              units: Joi.string(),
               value: Joi.number(),
               variable: Joi.string()
             })
@@ -126,7 +126,7 @@ internals.applyRoutes = function (server, next) {
 
           callback(null, UUID());
         },
-        fastaFile: function (callback) {  // Done
+        fastaFile: function (callback) {
 
           var fastaRequest = {
             method: 'POST',
@@ -150,20 +150,20 @@ internals.applyRoutes = function (server, next) {
             callback(null, response.result);
           });
         },
-        mkdir: [ 'ID', function (results,callback) {  // Done
+        mkdir: ['ID', function (results, callback) {
 
-          const directory = Path.join(__dirname,`../blast/${results.ID}`);
+          const directory = Path.join(__dirname, `../blast/${results.ID}`);
           exec(`mkdir -p '${directory}'`, (error, stdout, stderr) => {
 
             if (error) {
-             callback(error);
+              callback(error);
             }
 
             callback(null, directory);
           });
 
         }],
-        writeFile: ['mkdir', 'fastaFile', function (results, callback) { // Need to put appropriate file name
+        writeFile: ['mkdir', 'fastaFile', function (results, callback) {
 
           const filePath = `${results.mkdir}/sequences.fasta`;
           Fs.writeFile(filePath, results.fastaFile, (err) => {
@@ -177,7 +177,7 @@ internals.applyRoutes = function (server, next) {
         blastMakeDB: ['writeFile', function (results, callback) {
 
           var type = 'nucl';
-          var fileIn =  `./server/blast/${results.ID}/sequences.fasta`;
+          var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
           var outPath = `./server/blast/${results.ID}/`;
 
           // Make DB
@@ -188,14 +188,15 @@ internals.applyRoutes = function (server, next) {
         }],
         blastN: ['blastMakeDB', function (results, callback) {
 
-          var dbPath = results.blastMakeDB +'/sequences';
+          var dbPath = results.blastMakeDB + '/sequences';
           var query = '> Query Sequence\n' + request.payload.BLASTsequence;
 
           // blastN
           Blast.blastN(dbPath, query, callback);
         }],
       }, (err, results) => {
-        removeDir(results.mkdir)
+
+        removeDir(results.mkdir);
         if (err) {
           return reply(err);
         }
@@ -208,6 +209,7 @@ internals.applyRoutes = function (server, next) {
 };
 
 function removeDir(dir) {
+
   exec(`rm -rf '${dir}'`, (error, stdout, stderr) => {});
 }
 
@@ -215,11 +217,11 @@ function parse(blastInput) {
 
   var blastOutput = {};
   var hits = blastInput.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
-  if(hits != undefined){
-    for(var hit of hits) {
-      if(hit != '\n') {
+  if (hits != undefined) {
+    for (var hit of hits) {
+      if (hit != '\n') {
         var hitInfo = hit.Hit_def[0].split('--');
-        if(!blastOutput[hitInfo[1]]) {
+        if (!blastOutput[hitInfo[1]]) {
           blastOutput[hitInfo[1]] = {};
           blastOutput[hitInfo[1]].name = hitInfo[0];
           blastOutput[hitInfo[1]].description = hitInfo[2];
