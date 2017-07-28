@@ -67,6 +67,12 @@ class Assembly extends MongoModels {
       return this.getSubParts(index + 1, assemblies, callback);
     });
   }
+
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
 }
 
 

@@ -1358,14 +1358,86 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Device.findByIdAndDelete(request.params.id, (err, device) => {
+      Async.auto({
+        BioDesign: function (callback) {
+
+          BioDesign.getBioDesign(request.params.id, false, (err, bioDesign) => {
+
+            if (err) {
+              return callback(err);
+            }
+
+            BioDesign.findById(request.params.id, (err, document) => {
+
+              if (err) {
+                return callback(err);
+              }
+              var dataModel = {};
+              dataModel.subparts = bioDesign.subparts;
+              dataModel.parameters = bioDesign.parameters;
+              dataModel.modules = bioDesign.modules;
+
+              BioDesign.delete(document, (err, result) => {
+              });
+              callback(null, dataModel);
+            });
+          });
+        },
+        Parameters: ['BioDesign', function (results, callback) {
+
+          for (var parameter of results.BioDesign.parameters) {
+            Parameter.delete(parameter, (err, results) => {
+            });
+          }
+          callback(null, '');
+        }],
+        Modules: ['BioDesign', function (results, callback) {
+
+          for (var module of results.BioDesign.modules) {
+            for(var feature of module.features) {
+              Feature.delete(feature, (err, results) => {});
+            }
+            delete module.features;
+            Module.delete(module, (err, results) => {});
+          }
+          callback(null, '');
+        }],
+        Parts: ['BioDesign', function (results, callback) {
+
+          for (var part of results.BioDesign.subparts) {
+            for (var sequence of part.sequences) {
+              for (var annotation of sequence.annotations) {
+                for (var feature of annotation.features) {
+                  Feature.delete(feature, (err, callback) => {
+                  });
+                }
+                delete annotation.features;
+                Annotation.delete(annotation, (err, callback) => {
+                });
+              }
+              for(var annotation of sequence.subannotations) {
+                Annotation.delete(annotation, (err, callback) => {
+                });
+              }
+              delete sequence.subannotations;
+              delete sequence.annotations;
+              Sequence.delete(sequence, (err, callback) => {
+              });
+            }
+            for(var assembly of part.assemblies) {
+              Assembly.delete(assembly, (err, callback) => {});
+            }
+            delete part.assemblies;
+            delete part.sequences;
+            Part.delete(part, (err, callback) => {
+            });
+          }
+          callback(null, '');
+        }]
+      }, (err, result) => {
 
         if (err) {
           return reply(err);
-        }
-
-        if (!device) {
-          return reply(Boom.notFound('Document not found.'));
         }
 
         reply({message: 'Success.'});

@@ -1349,25 +1349,26 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         BioDesign: function (callback) {
 
-          BioDesign.getBioDesign(request.params.id, false, (err, document) => {
+          BioDesign.getBioDesign(request.params.id, false, (err, bioDesign) => {
 
             if (err) {
               return callback(err);
             }
 
-            BioDesign.findById(request.params.id, (err, bioDesign) => {
+            BioDesign.findById(request.params.id, (err, document) => {
 
               if (err) {
                 return callback(err);
               }
 
-              bioDesign.subparts = document.subparts;
-              bioDesign.parameters = document.parameters;
-              bioDesign.modules = document.modules;
+              var dataModel = {};
+              dataModel.subparts = bioDesign.subparts;
+              dataModel.parameters = bioDesign.parameters;
+              dataModel.modules = bioDesign.modules;
 
-              BioDesign.delete(bioDesign, (err, result) => {
+              BioDesign.delete(document, (err, result) => {
               });
-              callback(null, bioDesign);
+              callback(null, dataModel);
             });
           });
         },
@@ -1382,8 +1383,11 @@ internals.applyRoutes = function (server, next) {
         Modules: ['BioDesign', function (results, callback) {
 
           for (var module of results.BioDesign.modules) {
-            Module.delete(module, (err, results) => {
-            });
+            for(var feature of module.features) {
+              Feature.delete(feature, (err, results) => {});
+            }
+            delete module.features;
+            Module.delete(module, (err, results) => {});
           }
           callback(null, '');
         }],
@@ -1396,12 +1400,15 @@ internals.applyRoutes = function (server, next) {
                   Feature.delete(feature, (err, callback) => {
                   });
                 }
+                delete annotation.features;
                 Annotation.delete(annotation, (err, callback) => {
                 });
               }
+              delete sequence.annotations;
               Sequence.delete(sequence, (err, callback) => {
               });
             }
+            delete part.sequences;
             Part.delete(part, (err, callback) => {
             });
           }
@@ -1416,18 +1423,6 @@ internals.applyRoutes = function (server, next) {
         reply({message: 'Success.'});
       });
     }
-    /*
-     BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
-
-
-
-     if (!bioDesign) {
-     return reply(Boom.notFound('Document not found.'));
-     }
-
-
-     });
-     */
   });
 
   next();
