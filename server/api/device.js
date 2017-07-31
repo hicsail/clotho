@@ -94,7 +94,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
-          //sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
           partIds: Joi.array().items(Joi.string().required()).optional(),
           createSeqFromParts: Joi.boolean().required(),
           parts: Joi.array().items(Joi.object().keys({
@@ -134,10 +134,10 @@ internals.applyRoutes = function (server, next) {
 
 
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
-              //add if statements for parameters that may not exist (see role)
-              // if (args[i] === 'sequence') {
-              //   newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
-            //  }
+              // add if statements for parameters that may not exist (see role)
+              if (args[i] === 'sequence') {
+                newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
+             }
             if (args[i] === 'role') {
                 if (oldDevice['modules'] !== undefined && oldDevice['modules'] !== null && oldDevice['modules'].length !== 0) {
                   newPayload.role = oldDevice['modules'][0]['role'];
@@ -1362,7 +1362,7 @@ internals.applyRoutes = function (server, next) {
             } else {
               sequenceId = results.createSequence._id.toString();
             }
-            
+
             Sequence.findOneAndUpdate({
               _id: ObjectID(sequenceId),
               $isolated: 1
