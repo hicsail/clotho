@@ -102,6 +102,7 @@ internals.applyRoutes = function (server, next) {
               _id: Admin.ObjectId('000000000000000000000000'),
               isActive: true,
               username: 'root',
+              name: 'Root',
               password: passResults.passwordHash.hash,
               email: request.payload.email.toLowerCase(),
               timeCreated: new Date()

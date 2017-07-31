@@ -25,3 +25,6 @@
         </div>
     </div>
 </nav>
+{{#if user.roles.admin}}
+    {{>admin}}
+{{/if}}

@@ -1,0 +1,145 @@
+{{> nav}}
+<div class="hero-body">
+    <div class="container">
+        {{> alert}}
+        <div class="columns">
+            <div class="column is-6">
+                <div class="box">
+                    <div class="title has-text-right">Users</div>
+                    {{#each users.data}}
+                        <hr>
+                        <div class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    {{this.username}}
+                                </div>
+                                <div class="level-item">
+                                    {{this.name}}
+                                </div>
+                                <div class="level-item">
+                                    {{this.email}}
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                {{#if this.roles.admin}}
+                                    <span class="tag is-primary">Admin</span>
+                                {{else}}
+                                    <div class="level-item">
+                                        <a class="button is-light">Promote</a>
+                                    </div>
+                                {{/if}}
+
+
+                            </div>
+                        </div>
+                    {{/each}}
+
+                    {{#is admins.pages.total '>' 1}}
+                        <nav class="pagination">
+                            {{#if admins.pages.hasPrev}}
+                                <a class="pagination-previous">Previous</a>
+                            {{/if}}
+                            {{#if admins.pages.hasNext}}
+                                <a class="pagination-next">Next page</a>
+                            {{/if}}
+                            <ul class="pagination-list">
+                                {{#if admins.pages.hasPrev}}
+                                    {{#is admins.pages.current '>=' 3}}
+                                        <li>
+                                            <a class="pagination-link">1</a>
+                                        </li>
+                                        <li>
+                                            <span class="pagination-ellipsis">&hellip;</span>
+                                        </li>
+                                    {{/is}}
+                                    <li>
+                                        <a class="pagination-link">{{admins.pages.prev}}</a>
+                                    </li>
+                                {{/if}}
+                                <li>
+                                    <a class="pagination-link is-current">{{admins.pages.current}}</a>
+                                </li>
+                                {{#if admins.pages.hasNext}}
+                                    <li>
+                                        <a class="pagination-link">{{admins.pages.next}}</a>
+                                    </li>
+                                    {{#is admins.pages.next '!=' admins.pages.total}}
+                                        <li>
+                                            <span class="pagination-ellipsis">&hellip;</span>
+                                        </li>
+                                        <li>
+                                            <a class="pagination-link">{{admins.pages.total}}</a>
+                                        </li>
+                                    {{/is}}
+                                {{/if}}
+                            </ul>
+                        </nav>
+                    {{/is}}
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="box">
+                    <div class="title has-text-right">Admins</div>
+                    {{#each admins.data}}
+                        <hr>
+                        <div class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    {{this.user.name}}
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <a class="button is-danger">Remove</a>
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+
+                    {{#is admins.pages.total '>' 1}}
+                        <nav class="pagination">
+                            {{#if admins.pages.hasPrev}}
+                                <a class="pagination-previous">Previous</a>
+                            {{/if}}
+                            {{#if admins.pages.hasNext}}
+                                <a class="pagination-next">Next page</a>
+                            {{/if}}
+                            <ul class="pagination-list">
+                                {{#if admins.pages.hasPrev}}
+                                    {{#is admins.pages.current '>=' 3}}
+                                        <li>
+                                            <a class="pagination-link">1</a>
+                                        </li>
+                                        <li>
+                                            <span class="pagination-ellipsis">&hellip;</span>
+                                        </li>
+                                    {{/is}}
+                                    <li>
+                                        <a class="pagination-link">{{admins.pages.prev}}</a>
+                                    </li>
+                                {{/if}}
+                                <li>
+                                    <a class="pagination-link is-current">{{admins.pages.current}}</a>
+                                </li>
+                                {{#if admins.pages.hasNext}}
+                                    <li>
+                                        <a class="pagination-link">{{admins.pages.next}}</a>
+                                    </li>
+                                    {{#is admins.pages.next '!=' admins.pages.total}}
+                                        <li>
+                                            <span class="pagination-ellipsis">&hellip;</span>
+                                        </li>
+                                        <li>
+                                            <a class="pagination-link">{{admins.pages.total}}</a>
+                                        </li>
+                                    {{/is}}
+                                {{/if}}
+                            </ul>
+                        </nav>
+                    {{/is}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../public/mini-js/admin.min.js"></script>

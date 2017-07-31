@@ -49,7 +49,7 @@ const manifest = {
           layout: 'layout',
           layoutPath: './server/web/layouts',
           partialsPath: './server/web/partials',
-          //helpersPath: './server/web/helpers',
+          helpersPath: './server/web/helpers',
         }
       }
     },
@@ -174,6 +174,9 @@ const manifest = {
     },
     {
       plugin: './server/web/account/index'
+    },
+    {
+      plugin: './server/web/admin/index'
     }
   ]
 };
