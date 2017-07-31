@@ -176,7 +176,7 @@ class Part extends MongoModels {
     if (index == parts.length) {
       return callback(null, parts);
     }
-
+    
     Sequence.findByPartId(parts[index]['_id'].toString(), (err, sequences) => {
 
       if (err) {
