@@ -175,8 +175,6 @@ internals.applyRoutes = function (server, next) {
               newPayload[args[i]] = request.payload[args[i]];
             }
           }
-          console.log("REACHED HERE");
-          console.log(newPayload.sequence)
 
           // Create a new Device object.
           var newRequest = {
@@ -186,14 +184,13 @@ internals.applyRoutes = function (server, next) {
             credentials: request.auth.credentials
           };
 
-
           server.inject(newRequest, (response) => {
 
             if (response.statusCode !== 200) {
               return reply(response.result);
             }
 
-            done(null, response.result);
+            done(null, response.result); //returns new bioDesignId
 
           });
 
@@ -232,204 +229,15 @@ internals.applyRoutes = function (server, next) {
 
         }]
       }, (err, result) => {
+
+        if (err) {
+          return err;
+        }
+        return reply(result['createNewPart']) //returns new bioDesginId
       });
     }
   });
 
-  //     Async.auto({
-  //       findSequences: function (done) {
-  //
-  //         // Retrieves sequence document(s) using Sequence string.
-  //         if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
-  //           Sequence.getSequenceBySequenceString(request.payload.sequence, done);
-  //         } else {
-  //           return done(null, []);
-  //         }
-  //       },
-  //       findSubParts: ['findSequences', function (results, done) {
-  //
-  //
-  //         // get Sequence ids from array
-  //         var seqArr = results.findSequences;
-  //         var partIds = [];
-  //         for (var i = 0; i < seqArr.length; ++i) {
-  //           if (seqArr[i]['partId'] !== undefined && seqArr[i]['partId'] !== null) {
-  //             partIds.push((seqArr[i]['partId']).toString());
-  //           }
-  //         }
-  //
-  //         if (request.payload.sequence !== undefined && request.payload.sequence !== null && partIds.length > 0) {
-  //           // then query all sequences' part ids
-  //           Part.getParts(partIds, done);
-  //
-  //         } else {
-  //           return done(null, []);
-  //         }
-  //
-  //       }],
-  //       findParameters: ['findSubParts', function (results, done) {
-  //
-  //
-  //         // using part documents from last step, get biodesigns
-  //         var resultsArray = results.findSubParts;
-  //         var bioDesignIds = [];
-  //
-  //
-  //         if (resultsArray !== null) {
-  //           for (var i = 0; i < resultsArray.length; ++i) {
-  //             if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
-  //               bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
-  //             } else if (typeof resultsArray[i] == 'string') {
-  //               // Prior steps found multiple bd ids, but sequence/part was undefined.
-  //               bioDesignIds.push(resultsArray[i]);
-  //             }
-  //           }
-  //         }
-  //
-  //         // only zero/one result, no need to search further
-  //         if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
-  //           if (bioDesignIds.length === 0) {
-  //             return done(null, []);
-  //             //return reply({'debug': results});
-  //           }
-  //
-  //         }
-  //
-  //
-  //         // otherwise keep going with parameters search
-  //         if (request.payload.parameters !== null && request.payload.parameters !== undefined) {
-  //           Parameter.getParameterByBioDesignId(bioDesignIds, request.payload.parameters, done);
-  //         } else {
-  //           done(null, bioDesignIds);
-  //         }
-  //
-  //       }],
-  //       findModules: ['findParameters', function (results, done) {
-  //
-  //         // collect bioDesign Ids
-  //         var resultsArray = results.findParameters;
-  //         var bioDesignIds = [];
-  //         if (resultsArray != null) {
-  //           for (var i = 0; i < resultsArray.length; ++i) {
-  //             if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
-  //               bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
-  //             } else if (typeof resultsArray[i] == 'string') {
-  //               // Prior steps found multiple bd ids, but parameter was undefined.
-  //               bioDesignIds.push(resultsArray[i]);
-  //             }
-  //           }
-  //         }
-  //
-  //         // only zero/one result, no need to search further
-  //         if ((request.payload.sequence !== undefined && request.payload.sequence !== null) || (request.payload.parameters != undefined && request.payload.parameters !== null)) {
-  //           if (bioDesignIds.length === 0) {
-  //             return done(null, []);
-  //             //return reply({'debug': results});
-  //           }
-  //
-  //         }
-  //
-  //
-  //         // otherwise perform module search
-  //         if (request.payload.role !== undefined && request.payload.role !== null) {
-  //           Module.getModuleByBioDesignId(bioDesignIds, {role: request.payload.role}, done);
-  //         } else {
-  //           done(null, bioDesignIds);
-  //         }
-  //
-  //       }],
-  //       findParts: ['findModules', function (results, done) {
-  //
-  //         var resultsArray = results.findModules;
-  //         var bioDesignIds = [];
-  //
-  //
-  //         if (resultsArray !== null) {
-  //           for (var i = 0; i < resultsArray.length; ++i) {
-  //             if (resultsArray[i]['bioDesignId'] !== undefined && resultsArray[i]['bioDesignId'] !== null) {
-  //               bioDesignIds.push(resultsArray[i]['bioDesignId'].toString());
-  //             } else if (typeof resultsArray[i] == 'string') {
-  //               // Prior steps found multiple bd ids, but sequence/part was undefined.
-  //               bioDesignIds.push(resultsArray[i]);
-  //             }
-  //           }
-  //         }
-  //
-  //         // Equivalent of finding subdesigns
-  //         // Match by subdesigns id, name, displayId, etc.
-  //         // Return list of parent biodesigns.
-  //         // To do - add parts !== undefined to other sections of async call.
-  //         if (request.payload.parts !== undefined && request.payload.parts !== null) {
-  //           BioDesign.getSubDesignByBioDesignId(bioDesignIds, request.payload.parts, done);
-  //         } else {
-  //           done(null, bioDesignIds);
-  //         }
-  //
-  //       }],
-  //       findBioDesigns: ['findParts', function (results, done) {
-  //
-  //
-  //         // collect biodesign Ids
-  //         var resultsArray = results.findParts;
-  //         var bioDesignIds = [];
-  //         if (resultsArray != null && resultsArray.length > 0) {
-  //           for (let result of resultsArray) {
-  //             if (result['bioDesignId'] !== undefined && result['bioDesignId'] !== null) {
-  //               bioDesignIds.push(result['bioDesignId'].toString());
-  //             } else if (result['superBioDesignId'] !== undefined && result['superBioDesignId'] !== null) {
-  //               bioDesignIds.push(result['superBioDesignId']);
-  //             } else if (typeof result == 'string') {
-  //               // Prior steps found multiple bd ids, but parameter was undefined.
-  //               bioDesignIds.push(result);
-  //             }
-  //           }
-  //         }
-  //
-  //
-  //         // No result, no need to search further
-  //         if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
-  //           if (bioDesignIds.length === 0) {
-  //             return done(null, []);
-  //             //return reply({'debug': results});
-  //           }
-  //         }
-  //
-  //         var query = {};
-  //         if (request.payload.name !== undefined) {
-  //           query['name'] = request.payload.name;
-  //         }
-  //
-  //         if (request.payload.displayId !== undefined) {
-  //           query['displayId'] = request.payload.displayId;
-  //         }
-  //
-  //         // Should not return anything if all arguments are empty.
-  //         if (request.payload.name === undefined && request.payload.displayId === undefined
-  //           && request.payload.sequence === undefined && request.payload.parameters === undefined
-  //           && request.payload.role === undefined && request.payload.parts) {
-  //           return done(null, []);
-  //         } else {
-  //           // Get full biodesigns.
-  //           return BioDesign.getBioDesignIds(bioDesignIds, query, true, done);
-  //         }
-  //
-  //
-  //       }]
-  //     }, (err, results) => {
-  //
-  //       if (err) {
-  //         return reply(err);
-  //       }
-  //
-  //       if (results.findBioDesigns.length === 0) {
-  //         return reply(Boom.notFound('Document not found.'));
-  //       }
-  //
-  //       //return reply(results);
-  //       return reply(results.findBioDesigns);
-  //     });
-  //   }
-  // });
 
 
   /**
