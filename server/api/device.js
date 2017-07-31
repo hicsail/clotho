@@ -19,10 +19,11 @@ internals.applyRoutes = function (server, next) {
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
   const Annotation = server.plugins['hapi-mongo-models'].Annotation;
   const Role = server.plugins['hapi-mongo-models'].Role;
+  const Version = server.plugins['hapi-mongo-models'].Version;
 
   server.route({
     method: 'PUT',
-    path: '/device',
+    path: '/device/update/{id}',
     config: {
       auth: {
         strategy: 'simple'
@@ -45,14 +46,57 @@ internals.applyRoutes = function (server, next) {
           } else {
             reply(true);
           }
-        }//check bioDesign and checkVersion ?
-      }],
+        }
+      },
+      {
+        assign: 'checkBioDesign',
+        method: function (request, reply) {
+
+          // Check that biodesign exists - should not perform update if biodesign does not exist.
+          var bioDesignId = request.params.id;
+
+          BioDesign.find({_id: ObjectID(bioDesignId), type: 'DEVICE'}, (err, results) => {
+
+              if (err) {
+                return reply(err);
+              } else if (results === null || results.length === 0) {
+                return reply(Boom.notFound('Device does not exist.'));
+              } else {
+                reply(true);
+              }
+            });
+        }
+      },
+      {
+        assign: 'checkVersion',
+        method: function (request, reply) {
+
+          var bioDesignId = request.params.id;
+
+          Version.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
+
+            if (err) {
+              return err;
+            } else if (results === null || results.length === 0) {
+              reply(true);
+            } else {
+              // Prior version exists.
+              // Update this to either automatically find newest version
+              // of design, or to at least specify id of new object.
+              return reply(Boom.badRequest('Newer version of Part exists.'));
+            }
+          });
+        }
+      }
+      ],
       validate: {
         payload: {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          //sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          partIds: Joi.array().items(Joi.string().required()).optional(),
+          createSeqFromParts: Joi.boolean().required(),
           parts: Joi.array().items(Joi.object().keys({
             name: Joi.string(),
             description: Joi.string(),
@@ -80,39 +124,50 @@ internals.applyRoutes = function (server, next) {
 
 
           // Build up appropriate payload for part creation.
-          const args = ['name', 'displayId', 'role', 'sequence', 'parameters'];
+          const args = ['name', 'partIds', 'createSeqFromParts', 'displayId', 'role', 'sequence', 'parameters'];
           var newPayload = {};
           var oldDevice = results.getOldDevice[0];
-
 
           for (var i = 0; i < args.length; ++i) {
 
             // If argument in payload was null, retrieve value from old Part.
 
+
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
-              if (args[i] === 'sequence') {
-                newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
-              } else if (args[i] === 'role') {
-                newPayload.role = oldDevice['modules'][0]['role'];
+              //add if statements for parameters that may not exist (see role)
+              // if (args[i] === 'sequence') {
+              //   newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
+            //  }
+            if (args[i] === 'role') {
+                if (oldDevice['modules'] !== undefined && oldDevice['modules'] !== null && oldDevice['modules'].length !== 0) {
+                  newPayload.role = oldDevice['modules'][0]['role'];
+                }
               } else if (args[i] === 'parameters') {
                 // Loop through old parameters value
-                var oldParameters = oldDevice['parameters'];
-                var newParameters = null;
-                if (oldParameters != null && oldParameters.length !== 0) {
-                  newParameters = [];
-                }
+                if (oldDevice['parameters'].length !== 0 && oldDevice['parameters'] !== null && oldDevice['parameters'] !== undefined) {
 
-                for (var oldParameter of oldParameters) {
-                  var p = {};
-                  p['name'] = oldParameter['name'];
-                  p['units'] = oldParameter['units'];
-                  p['value'] = oldParameter['value'];
-                  p['variable'] = oldParameter['variable'];
-                  newParameters.push(p);
+                  var oldParameters = oldDevice['parameters'];
+                  var newParameters = null;
+                  if (oldParameters != null && oldParameters.length !== 0) {
+                    newParameters = [];
+                  }
+
+                  for (var oldParameter of oldParameters) {
+                    var p = {};
+                    p['name'] = oldParameter['name'];
+                    p['units'] = oldParameter['units'];
+                    p['value'] = oldParameter['value'];
+                    p['variable'] = oldParameter['variable'];
+                    newParameters.push(p);
+                  }
+                  newPayload.parameters = newParameters;
                 }
-                newPayload.parameters = newParameters;
+              } else if (args[i] === 'partIds') {
+                newPayload[args[i]] = oldDevice['subBioDesignIds'];
               } else if (args[i] === 'name' || args[i] === 'displayId') {
-                newPayload[args[i]] = oldDevice[args[i]];
+                if (oldDevice[args[i]] !== null && oldDevice[args[i]] !== undefined) {
+                  newPayload[args[i]] = oldDevice[args[i]];
+                }
               }
             } else {
 
@@ -120,9 +175,10 @@ internals.applyRoutes = function (server, next) {
               newPayload[args[i]] = request.payload[args[i]];
             }
           }
+          console.log("REACHED HERE");
+          console.log(newPayload.sequence)
 
-          // Create a new Part object.
-
+          // Create a new Device object.
           var newRequest = {
             url: '/api/device',
             method: 'POST',
@@ -166,14 +222,9 @@ internals.applyRoutes = function (server, next) {
 
                   Version.updateOne({objectId: oldId}, {$set: {replacementVersionId: partId}}, done);
                 }
-
               });
-
-
             }
-
           });
-
         }],
         markForDelete: ['versionUpdate', function (results, done) {
 
@@ -181,11 +232,7 @@ internals.applyRoutes = function (server, next) {
 
         }]
       }, (err, result) => {
-
-
       });
-
-
     }
   });
 
