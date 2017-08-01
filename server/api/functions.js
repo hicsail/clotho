@@ -532,7 +532,7 @@ internals.applyRoutes = function (server, next) {
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
       const runRequest = {
         method: 'POST',
-        url: '/function/run',
+        url: '/api/function/run',
         payload: payload,
         headers: {
           'Content-Type': 'text/plain'
@@ -540,8 +540,8 @@ internals.applyRoutes = function (server, next) {
         credentials: request.auth.credentials
       };
 
+      console.log(payload);
       server.inject(runRequest, (response) => {
-        console.log('Inside of server.inject')
 
         if(response.statusCode != 200) {
           return reply(response.result);
