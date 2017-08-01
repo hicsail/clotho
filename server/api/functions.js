@@ -527,7 +527,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
-
+      console.log('reached Handler in /api/function');
       var input = `["${request.payload.inputs.join(',')}"]`;
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
       const runRequest = {
@@ -541,6 +541,7 @@ internals.applyRoutes = function (server, next) {
       };
 
       server.inject(runRequest, (response) => {
+        console.log('Inside of server.inject')
 
         if(response.statusCode != 200) {
           return reply(response.result);

@@ -210,23 +210,26 @@ HelloWorld</textarea>
       failureAlert('Please add a Function Name');
       return;
     }
+
     var data = {
         name: $('#name').val(),
         language: $('#language').val(),
-        inputs: $('#inputs').val().split('\n'),
-        outputs: $('#outputs').val().split('\n'),
-        code: editor.getValue().split('\n')
+        inputs: JSON.stringify($('#inputs').val().split('\n')),
+        outputs: JSON.stringify($('#outputs').val().split('\n')),
+        code: JSON.stringify(editor.getValue().split('\n'))
     };
-    console.log(data);
+
+    console.log('reached Ajax')
     $.ajax({
-      type: 'POST',
-      url: '/api/function',
-      data: data,
-      headers: {'Content-Type':'json'},
-      success: (response) => {
-        console.log(response);
-      },
-      dataType: 'JSON'
+        type: 'POST',
+//        headers: {'content-type': 'application/json'},
+        url: '/api/function',
+        data: data,
+        dataType: 'json',
+        success: (response) => {
+          console.log('Ajax Succeeded');
+          console.log(response);
+        }
     });
 
 
