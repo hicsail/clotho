@@ -102,6 +102,41 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/function/edit/{id}',
+    config: {
+      auth: {
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: '/login',
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const languageRequest = {
+        method: 'GET',
+        url: '/api/function/language',
+        credentials: request.auth.credentials
+      };
+
+      server.inject(languageRequest, (languages) => {
+
+        Function.findById(request.params.id, (err, response) => {
+
+          return reply.view('functionView',{
+            functions: response,
+            languages: languages.result,
+            user: request.auth.credentials.user
+          });
+        });
+      });
+    }
+  });
+
   next();
 };
 

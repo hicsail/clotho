@@ -34,6 +34,8 @@ class Function extends MongoModels {
 
     this.findOne(query, callback);
   }
+
+
 }
 
 

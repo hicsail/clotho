@@ -527,7 +527,6 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
-      console.log('reached Handler in /api/function');
       var input = `["${request.payload.inputs.join(',')}"]`;
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
       const runRequest = {
@@ -540,7 +539,6 @@ internals.applyRoutes = function (server, next) {
         credentials: request.auth.credentials
       };
 
-      console.log(payload);
       server.inject(runRequest, (response) => {
 
         if(response.statusCode != 200) {
@@ -568,6 +566,69 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
+  server.route({
+    method: 'PUT',
+    path: '/function',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          language: Joi.string().required(),
+          code: Joi.array().required(),
+          inputs: Joi.array().required(),
+          outputs: Joi.array().required(),
+          _id: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+      var input = `["${request.payload.inputs.join(',')}"]`;
+      var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
+
+      const runRequest = {
+        method: 'POST',
+        url: '/api/function/run',
+        payload: payload,
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        credentials: request.auth.credentials
+      };
+
+      server.inject(runRequest, (response) => {
+
+        if(response.statusCode != 200) {
+          return reply(response.result);
+        }
+        var output = response.result.split('\n').slice(0,-1);
+        if(output.toString() != request.payload.outputs.toString()) {
+          return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
+        }
+
+        console.log(request.payload);
+        const update = {name: request.payload.name,
+          language: request.payload.language,
+          inputs: request.payload.inputs,
+          outputs: request.payload.outputs,
+          code: request.payload.code
+        }
+        const id = request.payload._id
+        Function.findByIdAndUpdate(id, update, (err, result) => {
+
+          if (err) return reply(err);
+          console.log('done')
+          reply(result);
+        })
+
+
+      });
+    }
+  });
 
   next();
 };

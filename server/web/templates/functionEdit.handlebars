@@ -7,7 +7,7 @@
     <div class="container">
       <div class="container" style="padding: 10px">
         <label class="label is-medium">Function Name</label>
-        <input id="name" class="input is-medium" type="text" placeholder="name">
+        <input id="name" class="input is-medium" type="text" value={{functions.name}}>
       </div>
       <div class="box">
         <div class="columns">
@@ -15,7 +15,7 @@
             <label class="label">Language</label><br>
             <div class="select">
               <select id="language">
-                <option value="" disabled selected>Language</option>
+                <option value="" disabled selected>Languages</option>
                 {{#each languages}}
                   <option>{{this}}</option>
                 {{/each}}
@@ -24,13 +24,13 @@
           </div>
           <div class="column is-5">
             <label class="label">Inputs</label><br>
-            <textarea id="inputs" class="textarea" placeholder="Write test inputs line by line">HelloWorld
-HelloWorld</textarea>
+            <textarea id="inputs" class="textarea" placeholder="Write test inputs line by line">{{#each functions.inputs}}{{this}}
+{{/each}}</textarea>
           </div>
           <div class="column is-5">
             <label class="label">Outputs</label><br>
-            <textarea id="outputs" class="textarea" placeholder="Write each expected output line by line">HelloWorld
-HelloWorld</textarea>
+            <textarea id="outputs" class="textarea" placeholder="Write each expected output line by line">{{#each functions.outputs}}{{this}}
+{{/each}}</textarea>
           </div>
         </div>
         <div class="columns">
@@ -40,7 +40,8 @@ HelloWorld</textarea>
         </div>
         <div class="columns">
           <div class="column box is-paddingless is-12" style="height: 300px">
-            <div id="editor"></div>
+            <div id="editor">{{#each functions.code}}{{this}}
+{{/each}}</div>
           </div>
         </div>
         <div class="columns">
@@ -62,7 +63,7 @@ HelloWorld</textarea>
       </div>
       <div class="columns">
         <div class="column is-1 is-offset-11">
-          <div id="create" class="button is-primary">Create</div>
+          <div id="create" class="button is-primary">Update</div>
         </div>
       </div>
     </div>
@@ -82,6 +83,16 @@ HelloWorld</textarea>
 <script src="/public/ace/mode-java.js"></script>
 <script src="/public/ace/mode-python.js"></script>
 <script>
+  $('#language').val('{{functions.language}}');
+
+  var tag = $('#tag');
+  if ({{functions.working}}) {
+    tag.removeClass('is-danger');
+    tag.removeClass('is-light');
+    tag.addClass('is-success');
+    tag.html('Test Passed')
+  }
+
   var editor = ace.edit("editor");
   editor.setTheme("ace/theme/monokai");
   editor.setOptions({
@@ -122,73 +133,74 @@ HelloWorld</textarea>
 <script>
   $('#run').click(() => {
     if(!$('#language').val()) {
-      $('#console').val('Please select a language');
-      failureAlert('Please select a language');
-      return;
-    }
-    if(!$('#inputs').val()) {
-      $('#console').val('Please provide at lease one input');
-      failureAlert('Please provide at lease one input');
-      return;
-    }
-    if(!editor.getValue()) {
-      $('#console').val('Function can not be blank');
-      failureAlert('Function can not be blank');
-      return;
-    }
-    var button = $('#run');
-    var tag = $('#tag');
-    $('#console').val('');
-    button.addClass('is-loading');
-    tag.removeClass('is-danger');
-    tag.removeClass('is-success');
-    tag.addClass('is-light');
-    tag.html('Running')
-    var language = $('#language').val();
-    var code = editor.getValue();
-    var inputs = JSON.stringify($('#inputs').val().split('\n'));
-    var data = `${language} ${inputs}\n${code}`;
-    var done = false;
-    $.ajax({
-      type: 'POST',
-      url: '/api/function/run',
-      dataType: 'text',
-      data: data,
-      headers: {'Content-Type':'text/plain'},
-      success: function (response) {
-        done = true;
-        tag.removeClass('is-light');
-        $('#console').val(response);
-        var outputs = $('#outputs').val().split('\n');
-        var functionOutputs = response.split('\n').slice(0,-1);
-        if(JSON.stringify(functionOutputs) == JSON.stringify(outputs)) {
-          tag.addClass('is-success');
-          tag.html('Test Passed');
-        } else {
-          tag.addClass('is-danger');
-          tag.html('Test Failed');
-        }
-        button.removeClass('is-loading');
-      },
-      error: function (XMLHttpRequest, textStatus, errorThrown) {
-        done = true;
+    $('#console').val('Please select a language');
+    failureAlert('Please select a language');
+    return;
+  }
+  if(!$('#inputs').val()) {
+    $('#console').val('Please provide at lease one input');
+    failureAlert('Please provide at lease one input');
+    return;
+  }
+  if(!editor.getValue()) {
+    $('#console').val('Function can not be blank');
+    failureAlert('Function can not be blank');
+    return;
+  }
+  var button = $('#run');
+  var tag = $('#tag');
+  $('#console').val('');
+  button.addClass('is-loading');
+  tag.removeClass('is-danger');
+  tag.removeClass('is-success');
+  tag.addClass('is-light');
+  tag.html('Running')
+  var language = $('#language').val();
+  var code = editor.getValue();
+  var inputs = JSON.stringify($('#inputs').val().split('\n'));
+  var data = `${language} ${inputs}\n${code}`;
+  var done = false;
+  $.ajax({
+    type: 'POST',
+    url: '/api/function/run',
+    dataType: 'text',
+    data: data,
+    headers: {'Content-Type':'text/plain'},
+    success: function (response) {
+      done = true;
+      tag.removeClass('is-light');
+      $('#console').val(response);
+      var outputs = $('#outputs').val().split('\n');
+      var functionOutputs = response.split('\n').slice(0,-1);
+      if(JSON.stringify(functionOutputs) == JSON.stringify(outputs)) {
+        tag.addClass('is-success');
+        tag.html('Test Passed');
+      } else {
         tag.addClass('is-danger');
         tag.html('Test Failed');
-        $('#console').val(textStatus);
-        button.removeClass('is-loading');
       }
-    });
-    setTimeout(function () {
-      if(!done){
-        tag.addClass('is-danger');
-        tag.html('Test Failed');
-        button.removeClass('is-loading');
-        $('#console').val('Process timed out');
-      }
-    },8000);
+      button.removeClass('is-loading');
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      done = true;
+      tag.addClass('is-danger');
+      tag.html('Test Failed');
+      $('#console').val(textStatus);
+      button.removeClass('is-loading');
+    }
+  });
+  setTimeout(function () {
+    if(!done){
+      tag.addClass('is-danger');
+      tag.html('Test Failed');
+      button.removeClass('is-loading');
+      $('#console').val('Process timed out');
+    }
+  },8000);
   });
 </script>
 <script>
+
   $('#create').click(() => {
     if(!$('#language').val()) {
       $('#console').val('Please select a language');
@@ -211,25 +223,31 @@ HelloWorld</textarea>
       return;
     }
 
+    var language;
+    if ($('#language').val()) {
+      language = $('#language').val();
+    } else {
+      language = {{functions.language}}
+    }
     var data = {
-        name: $('#name').val(),
-        language: $('#language').val(),
-        inputs: JSON.stringify($('#inputs').val().split('\n')),
-        outputs: JSON.stringify($('#outputs').val().split('\n')),
-        code: JSON.stringify(editor.getValue().split('\n'))
+      name: $('#name').val(),
+      language: $('#language').val(),
+      inputs: JSON.stringify($('#inputs').val().split('\n')),
+      outputs: JSON.stringify($('#outputs').val().split('\n')),
+      code: JSON.stringify(editor.getValue().split('\n')),
+      _id: '{{functions._id}}'
     };
-
+    console.log(data);
     $.ajax({
-        type: 'POST',
-//        headers: {'content-type': 'application/json'},
-        url: '/api/function',
-        data: data,
-        dataType: 'json',
-        success: (response) => {
-          window.location.pathname = '/function';
-        }
+      type: 'PUT',
+  //        headers: {'content-type': 'application/json'},
+      url: '/api/function',
+      data: data,
+      dataType: 'json',
+      success: (response) => {
+        console.log('it succeeded');
+      }
     });
-
 
   });
 </script>
