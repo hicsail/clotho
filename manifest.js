@@ -62,6 +62,7 @@ const manifest = {
             Account: './server/models/account',
             AdminGroup: './server/models/admin-group',
             Admin: './server/models/admin',
+            Application: './server/models/application',
             AuthAttempt: './server/models/auth-attempt',
             Session: './server/models/session',
             User: './server/models/user'
@@ -161,6 +162,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/applications',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/web/index'
     },
     {
@@ -186,6 +193,9 @@ const manifest = {
     },
     {
       plugin: './server/web/delete/index'
+    },
+    {
+      plugin: './server/web/application/index'
     }
   ]
 };

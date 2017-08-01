@@ -1,7 +1,4 @@
 'use strict';
-const Async = require('async');
-const Boom = require('boom');
-const Joi = require('joi');
 const AuthPlugin = require('../auth');
 const Manifest = require('../../manifest');
 const Path = require('path');
@@ -25,7 +22,8 @@ internals.applyRoutes = function (server, next) {
       ]
     },
     handler: function (request, reply) {
-      var plugins = Manifest.get('/registrations')
+
+      var plugins = Manifest.get('/registrations');
       for(var plugin of plugins) {
         if(plugin.plugin.register == 'hapi-mongo-models') {
           var models = plugin.plugin.options.models;
@@ -36,7 +34,7 @@ internals.applyRoutes = function (server, next) {
           break;
         }
       }
-      reply({message: 'success'})
+      reply({message: 'success'});
     }
   });
 
@@ -53,18 +51,19 @@ internals.applyRoutes = function (server, next) {
       ]
     },
     handler: function (request, reply) {
-      var plugins = Manifest.get('/registrations')
+
+      var plugins = Manifest.get('/registrations');
       for(var plugin of plugins) {
         if(plugin.plugin.register == 'hapi-mongo-models') {
           var models = plugin.plugin.options.models;
           for(var name in models) {
             var model = require(Path.join(__dirname,'../../',models[name]));
-            model.updateMany({toDelete: true}, {$unset: {toDelete: ""}}, (err,result) => {});
+            model.updateMany({toDelete: true}, {$unset: {toDelete: ''}}, (err,result) => {});
           }
           break;
         }
       }
-      reply({message: 'success'})
+      reply({message: 'success'});
     }
   });
 

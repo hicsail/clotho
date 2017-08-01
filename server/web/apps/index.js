@@ -1,37 +1,27 @@
 'use strict';
 const Async = require('async');
-const User = require('../../models/user');
+const Application = require('../../models/application');
 
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
+  //noinspection JSAnnotator
   server.route({
     method: 'GET',
-    path: '/admin',
-    config: {
-      auth: {
-        strategy: 'session',
-        scope: 'admin'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: '/login',
-        }
-      }
-    },
+    path: '/apps',
     handler: function (request, reply) {
 
       Async.auto({
-        users: function (callback) {
+        apps: function (callback) {
 
-          User.find({}, callback);
+          Application.pagedFind({},null,'name',20,1,callback);
         }
       }, (err, result) => {
 
-        reply.view('admin', {
+        reply.view('apps', {
           user: request.auth.credentials.user,
-          users: result.users
+          apps: result.apps
         });
       });
     }

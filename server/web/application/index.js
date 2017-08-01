@@ -1,6 +1,6 @@
 'use strict';
 const Async = require('async');
-const User = require('../../models/user');
+const Application = require('../../models/application');
 
 const internals = {};
 
@@ -8,7 +8,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/admin',
+    path: '/application',
     config: {
       auth: {
         strategy: 'session',
@@ -23,15 +23,15 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        users: function (callback) {
+        apps: function (callback) {
 
-          User.find({}, callback);
+          Application.pagedFind({},null,'name',20,1,callback);
         }
       }, (err, result) => {
 
-        reply.view('admin', {
+        reply.view('application', {
           user: request.auth.credentials.user,
-          users: result.users
+          apps: result.apps
         });
       });
     }
@@ -49,7 +49,7 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'admin/index',
+  name: 'application/index',
   dependencies: 'visionary'
 };
 
