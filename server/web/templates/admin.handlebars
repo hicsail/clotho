@@ -6,140 +6,106 @@
             <div class="column is-6">
                 <div class="box">
                     <div class="title has-text-right">Users</div>
-                    {{#each users.data}}
-                        <hr>
-                        <div class="level">
-                            <div class="level-left">
-                                <div class="level-item">
-                                    {{this.username}}
-                                </div>
-                                <div class="level-item">
-                                    {{this.name}}
-                                </div>
-                                <div class="level-item">
-                                    {{this.email}}
-                                </div>
-                            </div>
-                            <div class="level-right">
-                                {{#if this.roles.admin}}
-                                    <span class="tag is-primary">Admin</span>
-                                {{else}}
+                    {{#each users}}
+                        {{#if this.roles.admin}}
+                        {{else}}
+                            <hr>
+                            <div class="level">
+                                <div class="level-left">
                                     <div class="level-item">
-                                        <a class="button is-light">Promote</a>
+                                        {{this.username}}
                                     </div>
-                                {{/if}}
-
-
+                                    <div class="level-item">
+                                        {{this.name}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.email}}
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <a class="button is-light" id="{{this.username}}" onclick="promote('{{this.username}}')">Promote</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        {{/if}}
                     {{/each}}
-
-                    {{#is admins.pages.total '>' 1}}
-                        <nav class="pagination">
-                            {{#if admins.pages.hasPrev}}
-                                <a class="pagination-previous">Previous</a>
-                            {{/if}}
-                            {{#if admins.pages.hasNext}}
-                                <a class="pagination-next">Next page</a>
-                            {{/if}}
-                            <ul class="pagination-list">
-                                {{#if admins.pages.hasPrev}}
-                                    {{#is admins.pages.current '>=' 3}}
-                                        <li>
-                                            <a class="pagination-link">1</a>
-                                        </li>
-                                        <li>
-                                            <span class="pagination-ellipsis">&hellip;</span>
-                                        </li>
-                                    {{/is}}
-                                    <li>
-                                        <a class="pagination-link">{{admins.pages.prev}}</a>
-                                    </li>
-                                {{/if}}
-                                <li>
-                                    <a class="pagination-link is-current">{{admins.pages.current}}</a>
-                                </li>
-                                {{#if admins.pages.hasNext}}
-                                    <li>
-                                        <a class="pagination-link">{{admins.pages.next}}</a>
-                                    </li>
-                                    {{#is admins.pages.next '!=' admins.pages.total}}
-                                        <li>
-                                            <span class="pagination-ellipsis">&hellip;</span>
-                                        </li>
-                                        <li>
-                                            <a class="pagination-link">{{admins.pages.total}}</a>
-                                        </li>
-                                    {{/is}}
-                                {{/if}}
-                            </ul>
-                        </nav>
-                    {{/is}}
                 </div>
             </div>
             <div class="column is-6">
                 <div class="box">
                     <div class="title has-text-right">Admins</div>
-                    {{#each admins.data}}
-                        <hr>
-                        <div class="level">
-                            <div class="level-left">
-                                <div class="level-item">
-                                    {{this.user.name}}
+                    {{#each users}}
+                        {{#if this.roles.admin}}
+                            <hr>
+                            <div class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        {{this.username}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.name}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.email}}
+                                    </div>
                                 </div>
+                                {{#is this.username '!=' 'root'}}
+                                    <div class="level-right">
+                                        <div class="level-item">
+                                            <a class="button is-danger" id="{{this.username}}" onclick="demote('{{this.username}}')">Demote</a>
+                                        </div>
+                                    </div>
+                                {{/is}}
                             </div>
-                            <div class="level-right">
-                                <div class="level-item">
-                                    <a class="button is-danger">Remove</a>
-                                </div>
-                            </div>
-                        </div>
+                        {{/if}}
                     {{/each}}
-
-                    {{#is admins.pages.total '>' 1}}
-                        <nav class="pagination">
-                            {{#if admins.pages.hasPrev}}
-                                <a class="pagination-previous">Previous</a>
-                            {{/if}}
-                            {{#if admins.pages.hasNext}}
-                                <a class="pagination-next">Next page</a>
-                            {{/if}}
-                            <ul class="pagination-list">
-                                {{#if admins.pages.hasPrev}}
-                                    {{#is admins.pages.current '>=' 3}}
-                                        <li>
-                                            <a class="pagination-link">1</a>
-                                        </li>
-                                        <li>
-                                            <span class="pagination-ellipsis">&hellip;</span>
-                                        </li>
-                                    {{/is}}
-                                    <li>
-                                        <a class="pagination-link">{{admins.pages.prev}}</a>
-                                    </li>
-                                {{/if}}
-                                <li>
-                                    <a class="pagination-link is-current">{{admins.pages.current}}</a>
-                                </li>
-                                {{#if admins.pages.hasNext}}
-                                    <li>
-                                        <a class="pagination-link">{{admins.pages.next}}</a>
-                                    </li>
-                                    {{#is admins.pages.next '!=' admins.pages.total}}
-                                        <li>
-                                            <span class="pagination-ellipsis">&hellip;</span>
-                                        </li>
-                                        <li>
-                                            <a class="pagination-link">{{admins.pages.total}}</a>
-                                        </li>
-                                    {{/is}}
-                                {{/if}}
-                            </ul>
-                        </nav>
-                    {{/is}}
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function promote(username) {
+
+        var button = $(`#${username}`);
+        button.addClass('is-loading');
+        payload = {
+            username: username,
+        };
+
+        $.post('../api/admins/promote', payload, (result)=> {
+            button.removeClass('is-loading');
+            if(result.user.name == username){
+                button.removeClass('is-light');
+                button.addClass('is-success');
+                button.text('Success');
+            } else {
+                button.text('FAILED');
+            }
+            button.attr("disabled","disabled");
+        });
+    }
+
+    function demote(username) {
+
+        var button = $(`#${username}`);
+        button.addClass('is-loading');
+        payload = {
+            username: username,
+        };
+
+        $.post('../api/admins/demote', payload, (result)=> {
+            button.removeClass('is-loading');
+            if(result.message){
+                button.removeClass('is-danger');
+                button.addClass('is-success');
+                button.text('Success');
+            } else {
+                button.text('FAILED');
+            }
+            button.attr("disabled","disabled");
+        });
+    }
+</script>
 <script type="text/javascript" src="../public/mini-js/admin.min.js"></script>

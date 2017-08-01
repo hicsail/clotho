@@ -1,5 +1,7 @@
 'use strict';
 const Async = require('async');
+const User = require('../../models/user');
+
 const internals = {};
 
 internals.applyRoutes = function (server, next) {
@@ -22,38 +24,15 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        admins: function (callback) {
-
-          const injectRequest = {
-            method: 'GET',
-            url: '/api/admins',
-            credentials: request.auth.credentials
-          };
-
-          server.inject(injectRequest, (res) => {
-
-            callback(null,res);
-          });
-        },
         users: function (callback) {
 
-          const injectRequest = {
-            method: 'GET',
-            url: '/api/users',
-            credentials: request.auth.credentials
-          };
-
-          server.inject(injectRequest, (res) => {
-
-            callback(null,res);
-          });
+          User.find({}, callback);
         }
       }, (err, result) => {
-
+        
         reply.view('admin', {
           user: request.auth.credentials.user,
-          admins: result.admins.result,
-          users: result.users.result
+          users: result.users
         });
       });
     }
