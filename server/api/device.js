@@ -136,9 +136,11 @@ internals.applyRoutes = function (server, next) {
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
               // add if statements for parameters that may not exist (see role)
               if (args[i] === 'sequence') {
-                newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
+                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null) {
+                  newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
+                }
              }
-            if (args[i] === 'role') {
+              else if (args[i] === 'role') {
                 if (oldDevice['modules'] !== undefined && oldDevice['modules'] !== null && oldDevice['modules'].length !== 0) {
                   newPayload.role = oldDevice['modules'][0]['role'];
                 }
@@ -151,13 +153,16 @@ internals.applyRoutes = function (server, next) {
                   if (oldParameters != null && oldParameters.length !== 0) {
                     newParameters = [];
                   }
-
+                  var parameterKeys = ['name', 'units', 'value', 'variable'];
                   for (var oldParameter of oldParameters) {
                     var p = {};
-                    p['name'] = oldParameter['name'];
-                    p['units'] = oldParameter['units'];
-                    p['value'] = oldParameter['value'];
-                    p['variable'] = oldParameter['variable'];
+
+                    for (var paraKey of parameterKeys)
+                    {
+                      if (oldParameter[paraKey] !== undefined && oldParameter[paraKey] !== null) {
+                        p[paraKey] = oldParameter[paraKey];
+                      }
+                    }
                     newParameters.push(p);
                   }
                   newPayload.parameters = newParameters;

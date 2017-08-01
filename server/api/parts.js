@@ -1216,33 +1216,44 @@ internals.applyRoutes = function (server, next) {
           var newPayload = {};
           var oldPart = results.getOldPart[0];
 
-
           for (var i = 0; i < args.length; ++i) {
 
             // If argument in payload was null, retrieve value from old Part.
 
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
+
               if (args[i] === 'sequence') {
-                newPayload.sequence = oldPart['subparts'][0]['sequences'][0]['sequence'];
+                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null){
+                  newPayload.sequence = oldPart['subparts'][0]['sequences'][0]['sequence'];
+                }
               } else if (args[i] === 'role') {
-                newPayload.role = oldPart['modules'][0]['role'];
+                if (oldPart['modules'] !== undefined && oldPart['modules'] !== null && oldPart['modules'].length !== 0) {
+                  newPayload.role = oldPart['modules'][0]['role'];
+                }
               } else if (args[i] === 'parameters') {
                 // Loop through old parameters value
-                var oldParameters = oldPart['parameters'];
-                var newParameters = null;
-                if (oldParameters != null && oldParameters.length !== 0) {
-                  newParameters = [];
-                }
+                if (oldPart['parameters'].length !== 0 && oldPart['parameters'] !== null && oldPart['parameters'] !== undefined) {
 
-                for (var oldParameter of oldParameters) {
-                  var p = {};
-                  p['name'] = oldParameter['name'];
-                  p['units'] = oldParameter['units'];
-                  p['value'] = oldParameter['value'];
-                  p['variable'] = oldParameter['variable'];
-                  newParameters.push(p);
+
+                  var oldParameters = oldPart['parameters'];
+                  var newParameters = null;
+                  if (oldParameters != null && oldParameters.length !== 0) {
+                    newParameters = [];
+                  }
+                  var parameterKeys = ['name', 'units', 'value', 'variable'];
+                  for (var oldParameter of oldParameters) {
+                    var p = {};
+
+                    for (var paraKey of parameterKeys)
+                    {
+                      if (oldParameter[paraKey] !== undefined && oldParameter[paraKey] !== null) {
+                        p[paraKey] = oldParameter[paraKey];
+                      }
+                    }
+                    newParameters.push(p);
+                  }
+                  newPayload.parameters = newParameters;
                 }
-                newPayload.parameters = newParameters;
               } else if (args[i] === 'name' || args[i] === 'displayId') {
                 newPayload[args[i]] = oldPart[args[i]];
               }
@@ -1254,7 +1265,8 @@ internals.applyRoutes = function (server, next) {
           }
 
           // Create a new Part object.
-
+          console.log("REACHED HERE");
+          console.log(newPayload)
           var newRequest = {
             url: '/api/part',
             method: 'POST',
@@ -1313,9 +1325,11 @@ internals.applyRoutes = function (server, next) {
         }]
       }, (err, result) => {
 
-
+        if (err) {
+          return err;
+        }
+        return reply(result['createNewPart']) //returns new bioDesginId
       });
-
 
     }
   });
