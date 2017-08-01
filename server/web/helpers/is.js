@@ -3,7 +3,7 @@ var _ = require('lodash');
 var isHelper = function (left, operator, right, context) {
 
   if (_.isEmpty(context)) {
-    return context.inverse(this);
+    return false;
   }
   var output = false;
   switch (operator) {
