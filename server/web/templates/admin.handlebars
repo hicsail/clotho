@@ -2,6 +2,7 @@
 <div class="hero-body">
     <div class="container">
         {{> alert}}
+        <h1 class="content">This page is for promoting and demoting admin users.</h1>
         <div class="columns">
             <div class="column is-6">
                 <div class="box">
@@ -65,47 +66,4 @@
         </div>
     </div>
 </div>
-<script>
-    function promote(username) {
-
-        var button = $(`#${username}`);
-        button.addClass('is-loading');
-        payload = {
-            username: username,
-        };
-
-        $.post('../api/admins/promote', payload, (result)=> {
-            button.removeClass('is-loading');
-            if(result.user.name == username){
-                button.removeClass('is-light');
-                button.addClass('is-success');
-                button.text('Success');
-            } else {
-                button.text('FAILED');
-            }
-            button.attr("disabled","disabled");
-        });
-    }
-
-    function demote(username) {
-
-        var button = $(`#${username}`);
-        button.addClass('is-loading');
-        payload = {
-            username: username,
-        };
-
-        $.post('../api/admins/demote', payload, (result)=> {
-            button.removeClass('is-loading');
-            if(result.message){
-                button.removeClass('is-danger');
-                button.addClass('is-success');
-                button.text('Success');
-            } else {
-                button.text('FAILED');
-            }
-            button.attr("disabled","disabled");
-        });
-    }
-</script>
 <script type="text/javascript" src="../public/mini-js/admin.min.js"></script>

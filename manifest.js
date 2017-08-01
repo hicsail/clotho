@@ -155,6 +155,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/delete',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/web/index'
     },
     {
@@ -177,6 +183,9 @@ const manifest = {
     },
     {
       plugin: './server/web/admin/index'
+    },
+    {
+      plugin: './server/web/delete/index'
     }
   ]
 };
