@@ -14,7 +14,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/applications',
+    path: '/application',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -54,7 +54,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/applications/{id}',
+    path: '/application/{id}',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -84,7 +84,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'POST',
-    path: '/applications',
+    path: '/application',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -124,7 +124,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'PUT',
-    path: '/applications/{id}',
+    path: '/application/{id}',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -174,7 +174,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'DELETE',
-    path: '/applications/{id}',
+    path: '/application/{id}',
     config: {
       auth: {
         strategies: ['simple', 'session'],

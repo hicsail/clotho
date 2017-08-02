@@ -29,6 +29,7 @@ internals.applyRoutes = function (server, next) {
         }
       }, (err, result) => {
 
+        result.apps.data = chunkify(result.apps.data,Math.ceil(result.apps.data.length/3));
         reply.view('application', {
           user: request.auth.credentials.user,
           apps: result.apps
@@ -46,6 +47,21 @@ exports.register = function (server, options, next) {
 
   next();
 };
+
+function chunkify(a, n) {
+
+  var len = a.length,
+    out = [],
+    i = 0,
+    size;
+
+  while (i < len) {
+    size = Math.ceil((len - i) / n--);
+    out.push(a.slice(i, i += size));
+  }
+
+  return out;
+}
 
 
 exports.register.attributes = {
