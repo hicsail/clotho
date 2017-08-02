@@ -62,9 +62,26 @@ const manifest = {
             Account: './server/models/account',
             AdminGroup: './server/models/admin-group',
             Admin: './server/models/admin',
+            Annotation: './server/models/annotation',
+            Assembly: './server/models/assembly',
             AuthAttempt: './server/models/auth-attempt',
+            BioDesign: './server/models/bio-design',
+            Container: './server/models/container',
+            ExperimentDesign: './server/models/experiment-design',
+            Experiment: './server/models/experiment',
+            Feature: './server/models/feature',
+            Influence: './server/models/influence',
+            Medium: './server/models/medium',
+            Module: './server/models/module',
+            Parameter: './server/models/parameter',
+            Part: './server/models/part',
+            Role: './server/models/role',
+            SampleData: './server/models/sample-data',
+            Sample: './server/models/sample',
+            Sequence: './server/models/sequence',
             Session: './server/models/session',
-            User: './server/models/user'
+            User: './server/models/user',
+            Version: './server/models/version'
           },
           autoIndex: Config.get('/hapiMongoModels/autoIndex')
         }
@@ -95,7 +112,25 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/annotations',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/assemblies',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/auth-attempts',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/bio-designs',
       options: {
         routes: {prefix: '/api'}
       }
@@ -107,7 +142,25 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/device',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/features',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/index',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/influences',
       options: {
         routes: {prefix: '/api'}
       }
@@ -125,6 +178,42 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/media',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/modules',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/parameters',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/parts',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/roles',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/sequences',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/sessions',
       options: {
         routes: {prefix: '/api'}
@@ -132,6 +221,12 @@ const manifest = {
     },
     {
       plugin: './server/api/signup',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/subparts',
       options: {
         routes: {prefix: '/api'}
       }
@@ -150,6 +245,12 @@ const manifest = {
     },
     {
       plugin: './server/api/functions',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/blast',
       options: {
         routes: {prefix: '/api'}
       }

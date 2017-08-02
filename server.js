@@ -1,13 +1,14 @@
 'use strict';
 const Composer = require('./index');
+const Insert = require('./server/standardData/insert');
 const User = require('./server/models/user');
-
-
 Composer((err, server) => {
 
   if (err) {
     throw err;
   }
+
+  Insert.data();
 
   server.start(() => {
 
