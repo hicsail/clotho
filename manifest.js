@@ -226,12 +226,6 @@ const manifest = {
       }
     },
     {
-      plugin: './server/api/strains',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
       plugin: './server/api/subparts',
       options: {
         routes: {prefix: '/api'}
