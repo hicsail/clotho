@@ -127,7 +127,7 @@ internals.applyRoutes = function (server, next) {
 
         Function.findById(request.params.id, (err, response) => {
 
-          return reply.view('functionView',{
+          return reply.view('functionEdit',{
             functions: response,
             languages: languages.result,
             user: request.auth.credentials.user

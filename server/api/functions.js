@@ -587,6 +587,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       var input = `["${request.payload.inputs.join(',')}"]`;
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
 
@@ -611,17 +612,19 @@ internals.applyRoutes = function (server, next) {
         }
 
         console.log(request.payload);
-        const update = {name: request.payload.name,
-          language: request.payload.language,
-          inputs: request.payload.inputs,
-          outputs: request.payload.outputs,
-          code: request.payload.code
+        const update = {name: request.payload.name
+          , language: request.payload.language
+          , inputs: request.payload.inputs
+          , outputs: request.payload.outputs
+          , code: request.payload.code
+          , working: true
         }
         const id = request.payload._id
         Function.findByIdAndUpdate(id, update, (err, result) => {
 
           if (err) return reply(err);
-          console.log('done')
+          console.log('done');
+          console.log(result);
           reply(result);
         })
 

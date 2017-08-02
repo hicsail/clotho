@@ -62,7 +62,8 @@
         </div>
       </div>
       <div class="columns">
-        <div class="column is-1 is-offset-11">
+        <div class="column is-2 is-offset-10">
+          <div id="delete" class="button is-danger">Delete</div>
           <div id="create" class="button is-primary">Update</div>
         </div>
       </div>
@@ -245,7 +246,7 @@
       data: data,
       dataType: 'json',
       success: (response) => {
-        console.log('it succeeded');
+        window.location.pathname = '/function';
       }
     });
 
