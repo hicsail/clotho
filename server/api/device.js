@@ -73,22 +73,16 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
-
+          Version.findNewest(bioDesignId, 0, (err, results) => {
             if (err) {
               return err;
-            } else if (results === null || results.length === 0) {
-              reply(true);
             } else {
-              // Prior version exists.
-              // Update this to either automatically find newest version
-              // of design, or to at least specify id of new object.
-              return reply(Boom.badRequest('Newer version of Part exists.'));
+              // This automatically find newest version if it exists, if not returns original
+              reply (results);
             }
           });
         }
-      }
-      ],
+      }],
       validate: {
         payload: {
           name: Joi.string().optional(),
@@ -116,12 +110,15 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        getOldDevice: function (done) {
 
-          BioDesign.getBioDesignIds(request.params.id, null, 'DEVICE', done);
+        //get most updated ID
+        getOldDevice: function (done) {
+          var versionResults = request.pre.checkVersion;
+          var lastUpdatedId = versionResults[0]  //returns current id, if no newer version
+
+          BioDesign.getBioDesignIds(lastUpdatedId, null, 'DEVICE', done);
         },
         createNewPart: ['getOldDevice', function (results, done) {
-
 
           // Build up appropriate payload for part creation.
           const args = ['name', 'partIds', 'createSeqFromParts', 'displayId', 'role', 'sequence', 'parameters'];
@@ -203,36 +200,38 @@ internals.applyRoutes = function (server, next) {
         //update all connecting features too
         versionUpdate: ['createNewPart', function (results, done) {
 
+          var versionResults = request.pre.checkVersion;
+          var lastUpdatedId = versionResults[0];
+          var versionNumber = versionResults[1];
+
           const userId = request.auth.credentials.user._id.toString();
-          const oldId = request.params.id;
+          const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
+          //change this to just updating the version --> because biodesign is creating the version
+          if (lastUpdatedId !== null)
+          {
+            Version.updateMany({
+              objectId: ObjectID(oldId),
+              $isolated: 1
+            }, {$set: {replacementVersionId: partId, versionNumber: versionNumber + 1}}, (err, results) => {
 
-          Version.create(userId, partId, 1, (err, results) => {
-
-            if (err) {
-              return err;
-            } else {
-              // Need to connect new Part to old Part.
-
-              // Create a version object for the old object. TODO - have incrementing version numbers.
-              Version.create(userId, oldId, 0, (err, results) => {
-
-                if (err) {
-                  return err;
-                } else {
-
-                  Version.updateOne({objectId: oldId}, {$set: {replacementVersionId: partId}}, done);
-                }
-              });
-            }
-          });
-        }],
-        markForDelete: ['versionUpdate', function (results, done) {
-
-          BioDesign.findByIdAndUpdate(request.params.id, {toDelete: true}, done);
-
+              if (err) {
+                return reply(err);
+              } else {
+                console.log(results)
+                done(null, results);
+              }
+            });
+          } else {
+            done(null, results);
+          }
         }]
+        // markForDelete: ['versionUpdate', function (results, done) {
+        //
+        //   BioDesign.findByIdAndUpdate(request.params.id, {toDelete: true}, done);
+        //
+        // }]
       }, (err, result) => {
 
         if (err) {

@@ -1214,8 +1214,8 @@ internals.applyRoutes = function (server, next) {
 
 
       Async.auto({
-
-
+        
+        //get most updated ID
         getOldPart: function (done) {
           var versionResults = request.pre.checkVersion;
           var lastUpdatedId = versionResults[0]  //return current id, if no newer version
@@ -1306,9 +1306,7 @@ internals.applyRoutes = function (server, next) {
           const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
-
-          console.log(oldId)
-
+          
           //change this to just updating the version --> because biodesign is creating the version
           if (lastUpdatedId !== null)
           {
