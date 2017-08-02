@@ -22,6 +22,27 @@ class Version extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
+
+//finds newest version and returns it
+  static findNewest(bioDesignId, index, callback) {
+
+    this.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
+      if (err) {
+        return callback(err);
+
+      } else if (results === null || results.length === 0) {
+        console.log("Version: bioDesignId and index")
+        console.log(bioDesignId);
+        console.log(index);
+        callback(null, [bioDesignId, index]);
+
+      }else {
+        this.findNewest(results.replacementVersionId, results.versionNumber, callback)
+      }
+    })
+  }
+
 }
 
 

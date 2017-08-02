@@ -7,6 +7,7 @@ const Part = require('./part');
 const Parameter = require('./parameter');
 const Module = require('./module');
 const Underscore = require('underscore');
+const Version = require('./version');
 
 
 class BioDesign extends MongoModels {
@@ -29,6 +30,19 @@ class BioDesign extends MongoModels {
       if (err) {
         return callback(err);
       }
+      Version.create(
+        userId,
+        docs[0]['_id'],
+        0, //versionNumber; set to zero initially, if updating, will be updated later.
+        (err, results) => {
+
+          if (err) {
+            return (err);
+          }
+          //callback(null  , docs[0])
+
+        });
+      console.log(docs);
       callback(null, docs[0]);
     });
   }
@@ -347,6 +361,7 @@ BioDesign.schema = Joi.object().keys({
   strainIds: Joi.array().items(Joi.string()),
   subBioDesignIds: Joi.array().items(Joi.string()),
   superBioDesignId: Joi.string().optional(),
+  versionId: Joi.string().optional(),
   polynucleotides: Joi.array().items(Sequence.schema),
   type: Joi.string().uppercase().optional()
 });
