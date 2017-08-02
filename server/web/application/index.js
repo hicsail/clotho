@@ -25,11 +25,11 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         apps: function (callback) {
 
-          Application.pagedFind({},null,'name',20,1,callback);
+          Application.find({},callback);
         }
       }, (err, result) => {
 
-        result.apps.data = chunkify(result.apps.data,Math.ceil(result.apps.data.length/3));
+        result.apps = chunkify(result.apps,Math.ceil(result.apps.length/3));
         reply.view('application', {
           user: request.auth.credentials.user,
           apps: result.apps

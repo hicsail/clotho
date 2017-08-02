@@ -3,11 +3,11 @@
     <div class="container">
         <h1 class="content">This page adding, updating, or removing applications on the <a href="../apps">/apps</a> page
         </h1>
-        {{#each apps.data}}
+        {{#each apps}}
             <div class="columns">
                 {{#each this}}
                 <div class="column">
-                    <div class="card">
+                    <div class="card" style="height: 100%" id="{{this._id}}">
                         <div class="card-image">
                             <figure class="image">
                                 <img src="{{this.imageURL}}" alt="Image">
@@ -17,10 +17,12 @@
                             <h2 class="title">{{this.name}}</h2>
 
                             <div class="content">{{this.description}}</div>
+                            <br>
+                            <a href="{{this.website}}" target="_blank" class="webLink card-footer-item">Visit {{this.name}}</a>
                         </div>
                         <footer class="card-footer">
-                            <a href="{{this.website}}" target="_blank" class="card-footer-item">Visit {{this.name}}</a>
                             <a class="card-footer-item" onclick="editCard('{{this._id}}','{{this.name}}','{{this.description}}','{{this.imageURL}}','{{this.website}}')">Edit</a>
+                            <a class="card-footer-item" onclick="deleteCard('{{this._id}}')">Delete</a>
                         </footer>
                     </div>
                 </div>
@@ -79,14 +81,18 @@
                             Example Description Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                             Phasellus nec iaculis mauris.
                         </div>
+                        <br>
+                        <a href="http://github.com" target="_blank" id="exampleWebsite" class="webLink card-footer-item">Visit Application Name</a>
                     </div>
-                    <footer class="card-footer">
-                        <a href="http://github.com" target="_blank" id="exampleWebsite" class="card-footer-item">Visit
-                            Application Name</a>
-                    </footer>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<style>
+    .webLink {
+        bottom: 50px;
+        position: absolute;
+    }
+</style>
 <script type="text/javascript" src="../public/mini-js/application.min.js"></script>

@@ -1,0 +1,38 @@
+{{> nav}}
+<section class="hero">
+    <div class="hero-heading">
+        {{> alert}}
+    </div>
+    <div class="hero-body">
+        <div class="container">
+            {{#each apps}}
+                <div class="columns">
+                    {{#each this}}
+                        <div class="column">
+                            <div class="card" style="height: 100%">
+                                <div class="card-image">
+                                    <figure class="image">
+                                        <img src="{{this.imageURL}}" alt="Image">
+                                    </figure>
+                                </div>
+                                <div class="card-content">
+                                    <h2 class="title">{{this.name}}</h2>
+
+                                    <div class="content">{{this.description}}</div>
+                                    <br>
+                                    <a href="{{this.website}}" target="_blank" class=" webLink card-footer-item">Visit {{this.name}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+<style>
+    .webLink {
+        bottom: 0;
+        position: absolute;
+    }
+</style>

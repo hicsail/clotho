@@ -15,12 +15,17 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         apps: function (callback) {
 
-          Application.pagedFind({},null,'name',20,1,callback);
+          Application.find({},callback);
         }
       }, (err, result) => {
 
+        var user = null;
+        if (request.auth.isAuthenticated) {
+          user = request.auth.credentials.user;
+        }
+        result.apps = chunkify(result.apps,Math.ceil(result.apps.length/3));
         reply.view('apps', {
-          user: request.auth.credentials.user,
+          user: user,
           apps: result.apps
         });
       });
@@ -37,9 +42,24 @@ exports.register = function (server, options, next) {
   next();
 };
 
+function chunkify(a, n) {
+
+  var len = a.length,
+    out = [],
+    i = 0,
+    size;
+
+  while (i < len) {
+    size = Math.ceil((len - i) / n--);
+    out.push(a.slice(i, i += size));
+  }
+
+  return out;
+}
+
 
 exports.register.attributes = {
-  name: 'admin/index',
+  name: 'apps/index',
   dependencies: 'visionary'
 };
 

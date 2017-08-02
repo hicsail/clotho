@@ -196,6 +196,9 @@ const manifest = {
     },
     {
       plugin: './server/web/application/index'
+    },
+    {
+      plugin: './server/web/apps/index'
     }
   ]
 };

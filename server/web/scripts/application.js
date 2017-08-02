@@ -54,6 +54,20 @@ $("#createApp").submit(function (event) {
 
 });
 
+function deleteCard(id) {
+  $.ajax({
+    url: "../api/application/" + id,
+    method: 'DELETE',
+    success: function () {
+      successAlert('Application Deleted');
+      $('#' + id).hide();
+    },
+    error: function () {
+      failureAlert('Delete Failed');
+    }
+  });
+}
+
 $("#cancel").click(function () {
   $("#cancel").hide();
   $('#title').text('Add Application');
@@ -74,5 +88,4 @@ function editCard(id, name, description, imageURL, website) {
   $("#imageURL").val(imageURL).keyup();
   $("#website").val(website).keyup();
   $("#ID").val(id);
-  console.log(id, name, description, imageURL, website);
 }
