@@ -1214,7 +1214,7 @@ internals.applyRoutes = function (server, next) {
 
 
       Async.auto({
-        
+
         //get most updated ID
         getOldPart: function (done) {
           var versionResults = request.pre.checkVersion;
@@ -1303,23 +1303,39 @@ internals.applyRoutes = function (server, next) {
           var lastUpdatedId = versionResults[0];
           var versionNumber = versionResults[1];
 
+          console.log('versionNumber')
+
+          console.log(versionNumber)
           const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
-          
+
           //change this to just updating the version --> because biodesign is creating the version
           if (lastUpdatedId !== null)
           {
             Version.updateMany({
-              objectId: ObjectID(oldId),
+              objectId: ObjectID(partId), //update new version number
               $isolated: 1
-            }, {$set: {replacementVersionId: partId, versionNumber: versionNumber + 1}}, (err, results) => {
+            }, {$set: {versionNumber: versionNumber + 1}}, (err, results) => {
 
               if (err) {
                 return reply(err);
-              } else {
-                done(null, results);
               }
+
+
+              Version.updateMany({
+                objectId: ObjectID(oldId), //update old replacement id
+                $isolated: 1
+              }, {$set: {replacementVersionId: partId}}, (err, results) => {
+
+
+                if (err) {
+                  return reply(err);
+                }
+
+
+                done(null, results);
+              });
             });
           } else {
             done(null, results);
