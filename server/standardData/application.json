@@ -1,6 +1,5 @@
 [
   {
-    "_id":"5981de507f98458a71b1f684",
     "name": "Cello",
     "description": "The Cello software (cell logic) converts electronic design specifications of combinatorial logic to complete DNA sequences encoding in bacterial cells",
     "website": "http://www.cellocad.org:8080/",
