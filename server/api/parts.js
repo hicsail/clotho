@@ -1218,7 +1218,7 @@ internals.applyRoutes = function (server, next) {
         //get most updated ID
         getOldPart: function (done) {
           var versionResults = request.pre.checkVersion;
-          var lastUpdatedId = versionResults[0]  //return current id, if no newer version
+          var lastUpdatedId = versionResults[0];  //return current id, if no newer version
 
           BioDesign.getBioDesignIds(lastUpdatedId, null, 'PART', done);
         },
@@ -1335,7 +1335,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return err;
         }
-        return reply(result['createNewPart']) //returns new bioDesginId
+        return reply(result['createNewPart']); //returns new bioDesginId
       });
 
     }

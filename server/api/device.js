@@ -57,14 +57,14 @@ internals.applyRoutes = function (server, next) {
 
           BioDesign.find({_id: ObjectID(bioDesignId), type: 'DEVICE'}, (err, results) => {
 
-              if (err) {
-                return reply(err);
-              } else if (results === null || results.length === 0) {
-                return reply(Boom.notFound('Device does not exist.'));
-              } else {
-                reply(true);
-              }
-            });
+            if (err) {
+              return reply(err);
+            } else if (results === null || results.length === 0) {
+              return reply(Boom.notFound('Device does not exist.'));
+            } else {
+              reply(true);
+            }
+          });
         }
       },
       {
@@ -114,7 +114,7 @@ internals.applyRoutes = function (server, next) {
         //get most updated ID
         getOldDevice: function (done) {
           var versionResults = request.pre.checkVersion;
-          var lastUpdatedId = versionResults[0]  //returns current id, if no newer version
+          var lastUpdatedId = versionResults[0];  //returns current id, if no newer version
 
           BioDesign.getBioDesignIds(lastUpdatedId, null, 'DEVICE', done);
         },
@@ -136,7 +136,7 @@ internals.applyRoutes = function (server, next) {
                 if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null) {
                   newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
                 }
-             }
+              }
               else if (args[i] === 'role') {
                 if (oldDevice['modules'] !== undefined && oldDevice['modules'] !== null && oldDevice['modules'].length !== 0) {
                   newPayload.role = oldDevice['modules'][0]['role'];
@@ -219,7 +219,7 @@ internals.applyRoutes = function (server, next) {
               if (err) {
                 return reply(err);
               } else {
-                console.log(results)
+                console.log(results);
                 done(null, results);
               }
             });
@@ -237,7 +237,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return err;
         }
-        return reply(result['createNewPart']) //returns new bioDesginId
+        return reply(result['createNewPart']); //returns new bioDesginId
       });
     }
   });
