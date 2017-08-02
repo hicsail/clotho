@@ -1307,20 +1307,19 @@ internals.applyRoutes = function (server, next) {
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
+          console.log(oldId)
 
           //change this to just updating the version --> because biodesign is creating the version
           if (lastUpdatedId !== null)
           {
-            console.log("updating version")
             Version.updateMany({
-              objectId: oldId,
+              objectId: ObjectID(oldId),
               $isolated: 1
             }, {$set: {replacementVersionId: partId, versionNumber: versionNumber + 1}}, (err, results) => {
 
               if (err) {
                 return reply(err);
               } else {
-                console.log(results);
                 done(null, results);
               }
             });
