@@ -10,7 +10,23 @@ internals.applyRoutes = function (server, next) {
   server.route({
     method: 'GET',
     path: '/apps',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
     handler: function (request, reply) {
+
+      var user = null;
+      if (request.auth.isAuthenticated) {
+        user = request.auth.credentials.user;
+      }
 
       Async.auto({
         apps: function (callback) {
@@ -19,10 +35,6 @@ internals.applyRoutes = function (server, next) {
         }
       }, (err, result) => {
 
-        var user = null;
-        if (request.auth.isAuthenticated) {
-          user = request.auth.credentials.user;
-        }
         result.apps = chunkify(result.apps,Math.ceil(result.apps.length/3));
         reply.view('apps', {
           user: user,
