@@ -726,19 +726,36 @@ internals.applyRoutes = function (server, next) {
    */
 
 
-
-
   server.route({
     method: 'GET',
     path: '/device/{id}',
     config: {
       auth: {
         strategy: 'simple',
-      }
+      },
+      pre: [{
+        assign: 'checkVersion',
+        method: function (request, reply) {
+
+          var bioDesignId = request.params.id;
+
+          Version.findNewest(bioDesignId, (err, results) => {
+            if (err) {
+              return err;
+            } else {
+              // This automatically find newest version if it exists, if not returns original
+              reply (results);
+            }
+          });
+        }
+      }]
     },
     handler: function (request, reply) {
 
-      BioDesign.getBioDesignIds(request.params.id, null, null, (err, bioDesign) => {
+      var versionResults = request.pre.checkVersion;
+      var lastUpdatedId = versionResults[0]  //returns current id, if no newer version
+
+      BioDesign.getBioDesignIds(lastUpdatedId, null, null, (err, bioDesign) => {
 
         if (err) {
           return reply(err);
