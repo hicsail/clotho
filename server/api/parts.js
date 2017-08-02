@@ -1179,7 +1179,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, 0, (err, results) => {
+          Version.findNewest(bioDesignId, (err, results) => {
             if (err) {
               return err;
             } else {
@@ -1303,9 +1303,6 @@ internals.applyRoutes = function (server, next) {
           var lastUpdatedId = versionResults[0];
           var versionNumber = versionResults[1];
 
-          console.log('versionNumber')
-
-          console.log(versionNumber)
           const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.

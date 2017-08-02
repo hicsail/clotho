@@ -73,7 +73,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, 0, (err, results) => {
+          Version.findNewest(bioDesignId, (err, results) => {
             if (err) {
               return err;
             } else {
@@ -197,7 +197,6 @@ internals.applyRoutes = function (server, next) {
           });
 
         }],
-        //update all connecting features too
         versionUpdate: ['createNewPart', function (results, done) {
 
           var versionResults = request.pre.checkVersion;
@@ -208,25 +207,37 @@ internals.applyRoutes = function (server, next) {
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
-          //make sure the right version is being called and updated!
+          //change this to just updating the version --> because biodesign is creating the version
           if (lastUpdatedId !== null)
           {
             Version.updateMany({
-              objectId: ObjectID(oldId),
+              objectId: ObjectID(partId), //update new version number
               $isolated: 1
-            }, {$set: {replacementVersionId: partId, versionNumber: versionNumber + 1}}, (err, results) => {
+            }, {$set: {versionNumber: versionNumber + 1}}, (err, results) => {
 
               if (err) {
                 return reply(err);
-              } else {
-                console.log(results)
-                done(null, results);
               }
+
+
+              Version.updateMany({
+                objectId: ObjectID(oldId), //update old replacement id
+                $isolated: 1
+              }, {$set: {replacementVersionId: partId}}, (err, results) => {
+
+
+                if (err) {
+                  return reply(err);
+                }
+
+
+                done(null, results);
+              });
             });
           } else {
             done(null, results);
           }
-        }]
+        }],
         // markForDelete: ['versionUpdate', function (results, done) {
         //
         //   BioDesign.findByIdAndUpdate(request.params.id, {toDelete: true}, done);

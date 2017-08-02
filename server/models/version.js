@@ -2,6 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const ObjectID = require('mongo-models').ObjectID;
 
 class Version extends MongoModels {
 
@@ -25,29 +26,20 @@ class Version extends MongoModels {
 
 
 //finds newest version and returns it
-  static findNewest(bioDesignId, index, callback) {
+  static findNewest(bioDesignId, callback) {
 
-    this.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
+    this.find({objectId: ObjectID(bioDesignId)}, (err, results) => {
+
       if (err) {
         return callback(err);
 
-      } else if (results === null || results.length === 0) {
+      } else if (results[0]['replacementVersionId'] === null || results[0]['replacementVersionId'] === undefined || results.length === 0) {
 
-        this.findOne({objectId: bioDesignId}, (err, results) => {
-          if (err) {
-            return callback(err);
-          } else {
-            console.log(results)
-            callback(null, [bioDesignId, results])
-          }
-        });
-        // console.log("Version: bioDesignId and index")
-        // console.log(bioDesignId);
-        // console.log(index);
-        // callback(null, [bioDesignId, index]);
+        callback(null, [bioDesignId, results[0]['versionNumber']])
 
-      }else {
-        this.findNewest(results.replacementVersionId, results.versionNumber, callback)
+
+      } else {
+        this.findNewest(results[0]['replacementVersionId'], callback)
       }
     })
   }
