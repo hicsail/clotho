@@ -1,14 +1,12 @@
 $('#register').on('submit', function (e) {
   e.preventDefault();
 
-  var name = $('#name');
-  var username = $('#username');
   var password = $('#password');
   var email = $('#email');
   var retypePw = $('#retypePw');
   var valid = false;
 
-  var fields = [name, email, username, password, retypePw];
+  var fields = [email, password, retypePw];
   for (var i = 0; i < fields.length; i++) {  // Loop through the fields and remove the red outline if there is one
     fields[i].removeClass('is-danger');
   }
@@ -20,17 +18,16 @@ $('#register').on('submit', function (e) {
       if (id === 'retypePw') {
         failureAlert('Please confirm your password.');
       } else {
-
         failureAlert('Please fill out your ' + id);
       }
       fields[i].addClass('is-danger');
       break;
     }
-    if (i === 4) {   // If they are all filled out, check to see if passwords match
-      if (fields[3][0].value != fields[4][0].value) {
+    if (i === 2) {   // If they are all filled out, check to see if passwords match
+      if (fields[1][0].value != fields[2][0].value) {
         failureAlert('Your passwords do not match');
-        fields[3].addClass('is-danger');
-        fields[4].addClass('is-danger');
+        fields[1].addClass('is-danger');
+        fields[2].addClass('is-danger');
         break;
       }
       valid = true; // If passwords match, send the data over to the sever.
@@ -43,14 +40,13 @@ $('#register').on('submit', function (e) {
       values[field.name] = field.value;
     });
     delete values.retypePw; //delete the confirmed password
-
-    values.application = 'Clotho Web'; // add application name
     // If user does not already exist, send to home page
     // If any error, show it in an alert
-    $.post('../../api/signup', values, function () {
-      window.location.replace('/');
+    $.post('/setup', values, function () {
+      window.location.replace('/setup');
     }).fail(function (data) {
-      failureAlert(data.responseJSON.message)
+      var message = formatResponseMessage(data.responseJSON.message);
+      failureAlert(message)
     });
   }
 });
@@ -88,11 +84,10 @@ $('#email').blur(function (e) {
         $('#emailStatus').text(message);
       }
     }).fail(function (data) { // It will fail if the input is not in email form
-      var message = formatResponseMessage(data.responseJSON.message);
       $('#email').removeClass('is-success').addClass('is-danger');
       $('#emailRightIcon').removeClass('fa-check').addClass('fa-warning');
       $('#emailCheck').css('display', '');
-      $('#emailStatus').text(message);
+      $('#emailStatus').text(data.responseJSON.message);
     });
   }
 });

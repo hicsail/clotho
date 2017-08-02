@@ -277,6 +277,9 @@ const manifest = {
       plugin: './server/web/signup/index'
     },
     {
+      plugin: './server/web/setup/index'
+    },
+    {
       plugin: './server/web/account/index'
     }
   ]

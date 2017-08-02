@@ -3,8 +3,8 @@ jobs:
   build:
     working_directory: ~/clotho
     docker:
-      - image: lukyth/node-firebase-rsync
-      - image: mongo:3.4.4
+      - image: frascog17/node8-rsync
+      - image: mongo:3.4.5
     steps:
       - checkout
       - restore_cache:
@@ -22,10 +22,3 @@ jobs:
       - run:
           name: Add ssh key to know_hosts
           command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-      - deploy:
-          name: Deploy
-          command: |
-              if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                rm -rf node_modules && rsync -r ./* circleci@$SERVER_IP:/home/circleci/clotho/
-                ssh circleci@$SERVER_IP 'cd /home/circleci/clotho && docker-compose build && docker-compose up -d'
-              fi
