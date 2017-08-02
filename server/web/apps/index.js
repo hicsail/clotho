@@ -36,6 +36,9 @@ internals.applyRoutes = function (server, next) {
       }, (err, result) => {
 
         result.apps = chunkify(result.apps,Math.ceil(result.apps.length/3));
+        while(result.apps[result.apps.length-1].length == 1) {
+          result.apps[result.apps.length-1].push(null);
+        }
         reply.view('apps', {
           user: user,
           apps: result.apps

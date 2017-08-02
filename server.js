@@ -1,5 +1,6 @@
 'use strict';
 const Composer = require('./index');
+const Insert = require('./server/standardData/insert');
 const User = require('./server/models/user');
 
 
@@ -12,6 +13,8 @@ Composer((err, server) => {
   server.start(() => {
 
     console.warn('Started the plot device on port ' + server.info.port);
+
+    Insert.data();
 
     User.findOne({username:'root'}, (err, user) => {
 
