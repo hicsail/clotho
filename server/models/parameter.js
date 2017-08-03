@@ -168,6 +168,13 @@ Parameter.schema = Joi.object().keys({
   variable: Joi.string().required() // This was originally a Variable object/a ShareableObjBase.
 });
 
+Parameter.payload = Joi.object().keys({
+  name: Joi.string().required(),
+  units: Joi.string().required(),
+  value: Joi.number().required(),
+  variable: Joi.string().required()
+});
+
 Parameter.indexes = [
   {key: {_id: 1}}
 ];
