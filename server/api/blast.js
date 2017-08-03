@@ -7,6 +7,7 @@ const Joi = require('joi');
 const UUID = require('uuid/v4');
 const Blast = require('blastjs');
 const Path = require('path');
+const Boom = require('boom');
 
 const internals = {};
 
@@ -309,6 +310,9 @@ internals.applyRoutes = function (server, next) {
 
             if (response.statusCode != 200) {  // Error
               return callback(response.result);
+            }
+            if(!response.result) {
+              return callback(Boom.badData('No Sequences in Database/Query'));
             }
             callback(null, response.result);
           });
