@@ -275,6 +275,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/samples',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/web/index'
     },
     {
