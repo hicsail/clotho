@@ -89,6 +89,7 @@ internals.applyRoutes = function (server, next) {
         Parts: function (callback) {
 
           //get parts based upon payload
+          request.payload.role = request.payload.role.toUpperCase();
           var req = {
             method: 'PUT',
             url: '/api/part',
