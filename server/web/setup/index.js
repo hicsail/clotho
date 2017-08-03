@@ -1,7 +1,7 @@
 'use strict';
 const Async = require('async');
 const Joi = require('joi');
-
+const Insert = require('../../standardData/insert');
 const Admin = require('../../models/admin');
 const AdminGroup = require('../../models/admin-group');
 const User = require('../../models/user');
@@ -154,6 +154,11 @@ internals.applyRoutes = function (server, next) {
           };
 
           Admin.findByIdAndUpdate(id, update, done);
+        }],
+        insertData: ['linkAdmin', function (results, callback) {
+
+          Insert.data();
+          callback(null, null);
         }]
       }, (err, dbResults) => {
 
