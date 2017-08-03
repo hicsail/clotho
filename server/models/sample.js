@@ -2,15 +2,19 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Parameter = require('./parameter');
 
 class Sample extends MongoModels {
-  static create(name, description, userId, containerId, callback) {
+  static create(name, description, userId, containerId, bioDesignId, parameterIds, parentSampleIds, callback) {
 
     const document = {
       name: name,
       description: description,
       userId: userId,
-      containerId: containerId
+      containerId: containerId,
+      bioDesignId: bioDesignId,
+      parameterIds: parameterIds,
+      parentSampleIds: parentSampleIds
     };
 
     this.insertOne(document, (err, docs) => {
@@ -20,6 +24,12 @@ class Sample extends MongoModels {
       }
       callback(null, docs[0]);
     });
+  }
+
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 }
 
@@ -37,31 +47,17 @@ Sample.schema = Joi.object().keys({
   parentSampleIds: Joi.array().items(Joi.string())
 });
 
+Sample.payload = Joi.object().keys({
+  name: Joi.string().required(),
+  description: Joi.string().optional(),
+  bioDesignId: Joi.string().required(),
+  parameters: Joi.array().items(Parameter.payload).optional(),
+  containerId: Joi.string().optional(),
+  parentSampleIds: Joi.array().items(Joi.string())
+});
+
 Sample.indexes = [
   {key: {userId: 1}}
 ];
 
 module.exports = Sample;
-
-
-/*
- public Parameter createParameter(double value, Variable variable) {
- Parameter parameter = new Parameter(value, variable);
- addParameter(parameter);
- return parameter;
- }
-
- public void addParameter(Parameter parameter) {
- if (parameters == null) {
- parameters = new HashSet<Parameter>();
- }
- parameters.add(parameter);
- }
-
- public void addParentSample(Sample parentSample) {
- if (parentSamples == null) {
- parentSamples = new HashSet<Sample>();
- }
- parentSamples.add(parentSample);
- }
- */

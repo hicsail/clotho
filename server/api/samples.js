@@ -8,12 +8,12 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Container = server.plugins['hapi-mongo-models'].Container;
+  const Sample = server.plugins['hapi-mongo-models'].Sample;
   const Parameter = server.plugins['hapi-mongo-models'].Parameter;
 
   server.route({
     method: 'GET',
-    path: '/container',
+    path: '/sample',
     config: {
       auth: {
         strategy: 'simple'
@@ -34,7 +34,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Container.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Sample.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -47,7 +47,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/container/{id}',
+    path: '/sample/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -55,30 +55,30 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Container.findById(request.params.id, (err, container) => {
+      Sample.findById(request.params.id, (err, sample) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!container) {
+        if (!sample) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(container);
+        reply(sample);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/container',
+    path: '/sample',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
-        payload: Container.payload
+        payload: Sample.payload
       }
     },
 
@@ -114,15 +114,16 @@ internals.applyRoutes = function (server, next) {
             return callback();
           }
         },
-        container: ['parameters', function (results, callback) {
+        sample: ['parameters', function (results, callback) {
 
-          Container.create(
+          Sample.create(
             request.payload.name,
             request.payload.description,
             request.auth.credentials.user._id.toString(),
+            request.payload.containerId,
+            request.payload.bioDesignId,
             results.parameters,
-            request.payload.type,
-            request.payload.coordinates,
+            request.payload.parentSampleIds,
             callback);
         }]
       }, (err, results) => {
@@ -130,20 +131,20 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-        return reply(results.container);
+        return reply(results.sample);
       });
     }
   });
 
   server.route({
     method: 'PUT',
-    path: '/container/{id}',
+    path: '/sample/{id}',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
-        payload: Container.payload
+        payload: Sample.payload
       }
     },
     handler: function (request, reply) {
@@ -159,43 +160,43 @@ internals.applyRoutes = function (server, next) {
         }
       };
 
-      Container.findByIdAndUpdate(id, update, (err, container) => {
+      Sample.findByIdAndUpdate(id, update, (err, sample) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!container) {
-          return reply(Boom.notFound('Container not found.'));
+        if (!sample) {
+          return reply(Boom.notFound('Sample not found.'));
         }
 
-        reply(container);
+        reply(sample);
       });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/container/{id}',
+    path: '/sample/{id}',
     config: {
       auth: {
         strategy: 'simple',
       },
       pre: [{
-        assign: 'container',
+        assign: 'sample',
         method: function (request, reply) {
 
-          Container.findOne({_id: ObjectID(request.params.id)}, (err, container) => {
+          Sample.findOne({_id: ObjectID(request.params.id)}, (err, sample) => {
 
             if (err) {
               return reply(err);
             }
 
-            if (!container) {
-              return reply(Boom.notFound('Container not found.'));
+            if (!sample) {
+              return reply(Boom.notFound('Sample not found.'));
             }
 
-            reply(container);
+            reply(sample);
           });
         }
       }]
@@ -203,14 +204,14 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        container: function (callback) {
+        sample: function (callback) {
 
-          Container.findOne({_id: ObjectID(request.params.id)}, callback);
+          Sample.findOne({_id: ObjectID(request.params.id)}, callback);
         },
-        parameters: ['container', function (results, callback) {
+        parameters: ['sample', function (results, callback) {
 
-          if(results.container.parameterIds) {
-            var ids = results.container.parameterIds.map(function(id) { return ObjectID(id); });
+          if(results.sample.parameterIds) {
+            var ids = results.sample.parameterIds.map(function(id) { return ObjectID(id); });
             Parameter.find({_id: {$in: ids}}, callback);
           } else {
             callback(null, []);
@@ -229,9 +230,9 @@ internals.applyRoutes = function (server, next) {
             callback(null,null);
           });
         }],
-        deleteContainer: ['parameters', function (results, callback) {
+        deleteSample: ['parameters', function (results, callback) {
 
-          Container.delete(results.container, callback);
+          Sample.delete(results.sample, callback);
         }]
       }, (err, results) => {
         if(err) {
@@ -255,5 +256,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'container'
+  name: 'sample'
 };
