@@ -63,7 +63,7 @@
       </div>
       <div class="columns">
         <div class="column is-2 is-offset-10">
-          <div id="delete" class="button is-danger">Delete</div>
+          <div id="remove" class="button is-danger">Delete</div>
           <div id="create" class="button is-primary">Update</div>
         </div>
       </div>
@@ -202,7 +202,7 @@
 </script>
 <script>
 
-  $('#create').click(() => {
+  $('#create').click( () => {
     if(!$('#language').val()) {
       $('#console').val('Please select a language');
       failureAlert('Please select a language');
@@ -238,10 +238,8 @@
       code: JSON.stringify(editor.getValue().split('\n')),
       _id: '{{functions._id}}'
     };
-    console.log(data);
     $.ajax({
       type: 'PUT',
-  //        headers: {'content-type': 'application/json'},
       url: '/api/function',
       data: data,
       dataType: 'json',
@@ -250,5 +248,26 @@
       }
     });
 
+  });
+</script>
+<script>
+  $('#remove').click( () => {
+    // Show an alert box confirming if they are sure
+   if (confirm('Are you sure you want to delete this function?') == true) {
+
+     $.ajax({
+       type: 'DELETE',
+       url: '/api/function/delete',
+       data: {_id: '{{functions._id}}'},
+       dataType: 'json',
+       fail: () => {
+         console.log('it failed');
+       },
+       success: (response) => {
+         window.location.pathname = '/function';
+       }
+     })
+
+   }
   });
 </script>

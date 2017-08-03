@@ -627,15 +627,37 @@ internals.applyRoutes = function (server, next) {
           console.log(result);
           reply(result);
         })
-
-
       });
+    }
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/function/delete',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+      validate: {
+        payload: {_id: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+      const id = request.payload._id;
+
+      Function.findByIdAndDelete(id, (err, result) => {
+        if (err) {
+          return reply(err);
+        }
+
+        reply(result);
+      })
     }
   });
 
   next();
 };
-
 
 exports.register = function (server, options, next) {
 
