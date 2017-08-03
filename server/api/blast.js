@@ -23,7 +23,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [name]  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
-   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    *
@@ -68,14 +68,14 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
+          sequence: Joi.string().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
               units: Joi.string(),
               value: Joi.number(),
               variable: Joi.string()
-            })
+            }).optional()
           ).optional(),
           userSpace: Joi.boolean().default(false)
         }
@@ -149,7 +149,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [name]  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
-   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    *
@@ -268,7 +268,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(),
+          sequence: Joi.string().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -277,7 +277,7 @@ internals.applyRoutes = function (server, next) {
               variable: Joi.string()
             })
           ).optional(),
-          BLASTsequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required(),
+          BLASTsequence: Joi.string().required(),
           userSpace: Joi.boolean().default(false)
         }
       }
@@ -420,4 +420,3 @@ exports.register = function (server, options, next) {
 exports.register.attributes = {
   name: 'blast'
 };
-

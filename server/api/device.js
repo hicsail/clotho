@@ -88,7 +88,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           partIds: Joi.array().items(Joi.string().required()).optional(),
           createSeqFromParts: Joi.boolean().required(),
           parts: Joi.array().items(Joi.object().keys({
@@ -824,7 +824,7 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
           partIds: Joi.array().items(Joi.string().required()).required(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           createSeqFromParts: Joi.boolean().required(),
           parameters: Joi.array().items(
             Joi.object().keys({

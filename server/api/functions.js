@@ -27,6 +27,11 @@ internals.applyRoutes = function (server, next) {
    *    "sequence":"AUGACCCUGAAGGUGAAUGAA"
    *  }
    *
+   * @apiParamExample {json} Protein:
+   *  {
+   *    "sequence":"MAYKSGKRPTFFEVFKAHCSDS"
+   *  }
+   *
    *
    * @apiParamExample {json} Ambiguous DNA:
    *  {
@@ -48,6 +53,11 @@ internals.applyRoutes = function (server, next) {
    *    "type":"rna"
    *  }
    *
+   * @apiSuccessExample {json} Protein:
+   *  {
+   *    "type":"protein"
+   *  }
+   *
    * @apiSuccessExample {json} Ambiguous DNA:
    *  {
    *    "type":"ambiguousDna"
@@ -67,7 +77,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -108,7 +118,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -148,7 +158,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -189,7 +199,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -243,7 +253,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required(),
+          sequence: Joi.string().required(),
           exons: Joi.array().items(
             Joi.array().items(
               Joi.number().min(0)
@@ -301,7 +311,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required(),
+          sequence: Joi.string().required(),
           exons: Joi.array().items(
             Joi.array().items(
               Joi.number().min(0)
@@ -356,7 +366,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },

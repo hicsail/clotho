@@ -3,6 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
+const BioNode = require('bionode-seq');
 
 
 class Sequence extends MongoModels {
@@ -18,7 +19,8 @@ class Sequence extends MongoModels {
       partId: partId,
       sequence: sequence,
       isLinear: isLinear,
-      isSingleStranded: isSingleStranded
+      isSingleStranded: isSingleStranded,
+      type: BioNode.checkType(sequence)
     };
 
     this.insertOne(document, (err, docs) => {
@@ -306,7 +308,7 @@ Sequence.schema = Joi.object().keys({
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),
   isSingleStranded: Joi.boolean().optional(),
-  sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(), // Case-insensitive.
+  sequence: Joi.string(), // Case-insensitive.
   submissionDate: Joi.date() // also ignores parentPolynucleotideId
 });
 
