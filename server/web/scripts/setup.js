@@ -144,8 +144,10 @@ $('#retypePw').keyup(function (e) {
 
 
 function formatResponseMessage(message) {
-  message = message.substring(message.lastIndexOf('[') + 1, message.lastIndexOf(']'));
-  return message.replace(/\"/g, "");
+  if (message.lastIndexOf('[') != -1) {
+    message = message.substring(message.lastIndexOf('[') + 1, message.lastIndexOf(']')).replace(/\"/g, "");
+  }
+  return message;
 }
 
 // Password verification
