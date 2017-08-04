@@ -345,6 +345,12 @@ class BioDesign extends MongoModels {
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
+  static undelete(document, callback) {
+
+    delete document.toDelete;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
+
 }
 
 
