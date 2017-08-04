@@ -735,7 +735,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, (err, results) => {
+          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
             if (err) {
               return err;
             } else {
@@ -842,25 +842,6 @@ internals.applyRoutes = function (server, next) {
             reply(true);
           }
         }
-      // },
-      // {
-      //   assign: 'checkVersion',
-      //   method: function (request, reply) {
-      //
-      //     var bioDesignId = request.params.id;
-      //
-      //     Version.findNewest(bioDesignId, (err, results) => {
-      //       if (err) {
-      //         return err;
-      //       } else {
-      //         // Prior version exists.
-      //         // Update this to either automatically find newest version
-      //         // of design, or to at least specify id of new object.
-      //         console.log(results);
-      //         return reply(Boom.badRequest('Newer version of Part exists.'));
-      //       }
-      //     });
-      //   }
       }],
       validate: {
         payload: {
@@ -1198,7 +1179,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, (err, results) => {
+          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
             if (err) {
               return err;
             } else {

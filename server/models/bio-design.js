@@ -34,6 +34,7 @@ class BioDesign extends MongoModels {
         userId,
         docs[0]['_id'],
         0, //versionNumber; set to zero initially, if updating, will be updated later.
+        'bioDesign', //collectionName
         (err, results) => {
 
           if (err) {

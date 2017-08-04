@@ -73,7 +73,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, (err, results) => {
+          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
             if (err) {
               return err;
             } else {
@@ -739,7 +739,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, (err, results) => {
+          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
             if (err) {
               return err;
             } else {

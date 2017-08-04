@@ -6,12 +6,13 @@ const ObjectID = require('mongo-models').ObjectID;
 
 class Version extends MongoModels {
 
-  static create(userId, objectId, versionNumber, callback) {
+  static create(userId, objectId, versionNumber, collectionName, callback) {
 
     const document = {
       userId: userId,
       objectId: objectId,
       versionNumber: versionNumber,
+      collectionName: collectionName,
       time: new Date()
     };
 
@@ -26,10 +27,11 @@ class Version extends MongoModels {
 
 
 //finds newest version and returns it
-  static findNewest(bioDesignId, callback) {
+  static findNewest(bioDesignId, collectionName, callback) {
 
-    this.find({objectId: ObjectID(bioDesignId)}, (err, results) => {
+    this.find({objectId: ObjectID(bioDesignId), collectionName: collectionName}, (err, results) => {
 
+      console.log(results);
       if (err) {
         return callback(err);
 
@@ -54,6 +56,7 @@ Version.schema = Joi.object().keys({
   userId: Joi.string(),
   objectId: Joi.string(),
   versionNumber: Joi.number(),
+  collectionName: Joi.string(),
   time: Joi.date(),
   replacementVersionId: Joi.string()
 });
