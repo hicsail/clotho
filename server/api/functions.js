@@ -508,6 +508,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  var testCheck = false;
   server.route({
     method: 'POST',
     path: '/function',
@@ -546,23 +547,40 @@ internals.applyRoutes = function (server, next) {
         }
         var output = response.result.split('\n').slice(0,-1);
         if(output.toString() != request.payload.outputs.toString()) {
-          return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
-        }
+          if (testCheck) {
+            return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
+          } else {
+            Function.create(
+              request.payload.name,
+              request.payload.description,
+              request.auth.credentials.user._id.toString(),
+              request.payload.language,
+              request.payload.code,
+              request.payload.inputs,
+              request.payload.outputs,
+              false,
+              (err, result) => {
 
-        Function.create(
-          request.payload.name,
-          request.payload.description,
-          request.auth.credentials.user._id.toString(),
-          request.payload.language,
-          request.payload.code,
-          request.payload.inputs,
-          request.payload.outputs,
-          true,
-          (err, result) => {
+              reply(result);
+            });
+          }
+        } else {
+          Function.create(
+            request.payload.name,
+            request.payload.description,
+            request.auth.credentials.user._id.toString(),
+            request.payload.language,
+            request.payload.code,
+            request.payload.inputs,
+            request.payload.outputs,
+            true,
+            (err, result) => {
 
             reply(result);
           });
+        }
       });
+
     }
   });
 
@@ -578,7 +596,7 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-          language: Joi.string().required(),
+           language: Joi.string().required(),
           code: Joi.array().required(),
           inputs: Joi.array().required(),
           outputs: Joi.array().required(),
@@ -608,25 +626,44 @@ internals.applyRoutes = function (server, next) {
         }
         var output = response.result.split('\n').slice(0,-1);
         if(output.toString() != request.payload.outputs.toString()) {
-          return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
-        }
+          if (testCheck){
+            return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
+          } else {
 
-        console.log(request.payload);
-        const update = {name: request.payload.name
-          , language: request.payload.language
-          , inputs: request.payload.inputs
-          , outputs: request.payload.outputs
-          , code: request.payload.code
-          , working: true
-        }
-        const id = request.payload._id
-        Function.findByIdAndUpdate(id, update, (err, result) => {
+            const update = {name: request.payload.name,
+              language: request.payload.language,
+              inputs: request.payload.inputs,
+              outputs: request.payload.outputs,
+              code: request.payload.code,
+              working: false
+            };
 
-          if (err) return reply(err);
-          console.log('done');
-          console.log(result);
-          reply(result);
-        })
+            const id = request.payload._id;
+            Function.findByIdAndUpdate(id, update, (err, result) => {
+
+              if (err) return reply(err);
+              console.log('done');
+              console.log(result);
+              reply(result);
+            })
+          }
+        } else {
+          const update = {name: request.payload.name,
+            language: request.payload.language,
+            inputs: request.payload.inputs,
+            outputs: request.payload.outputs,
+            code: request.payload.code,
+            working: true
+          };
+          const id = request.payload._id;
+          Function.findByIdAndUpdate(id, update, (err, result) => {
+
+            if (err) return reply(err);
+            console.log('done');
+            console.log(result);
+            reply(result);
+          })
+        }
       });
     }
   });

@@ -32,6 +32,28 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
+    path: '/function/{name}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session']
+      }
+    },
+    handler: function (request, reply) {
+      var query = request.params.name.toLowerCase()
+
+      Function.find({name: { $regex: query}}, (err, result) => {
+
+        return reply.view('function', {
+          functions: result,
+          user: request.auth.credentials.user,
+          query: request.params.name
+        });
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
     path: '/function/create',
     config: {
       auth: {

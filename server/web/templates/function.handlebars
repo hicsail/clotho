@@ -12,14 +12,22 @@
   <div class="hero-body">
     <div class="container">
       <div class="columns">
-        <div class="is-offset-1 column is-9">
-          <input class="input" type="text" placeholder="Find a function">
-        </div>
-        <div class="column is-1">
-          <a class="button is-info">
-            Search
-          </a>
-        </div>
+        {{#if query}}
+          <div class="is-offset-1 column is-8">
+            <input id="searchInput" class="input" type="text" value="{{query}}">
+          </div>
+          <div class="column is-2">
+            <a id="search" class="button is-info">Search</a>
+            <a id="clear" class="button">Clear</a>
+          </div>
+        {{else}}
+          <div class="is-offset-1 column is-9">
+            <input id="searchInput" class="input" type="text" placeholder="Find a function">
+          </div>
+          <div class="column is-1">
+            <a id="search" class="button is-info">Search</a>
+          </div>
+        {{/if}}
       </div>
       <br>
       <div class="columns">
@@ -45,10 +53,10 @@
                     {{/if}}
                   </div>
                   <div class="level-item">
-                    <a class="button is-primary" href="function/view/{{this._id}}">View</a>
+                    <a id="view" class="button is-primary" href="/function/view/{{this._id}}">View</a>
                   </div>
                   <div class="level-item">
-                    <a class="button is-light" href="function/edit/{{this._id}}">Edit</a>
+                    <a id="edit" class="button is-light" href="/function/edit/{{this._id}}">Edit</a>
                   </div>
                 </div>
               </div>
@@ -59,3 +67,14 @@
     </div>
   </div>
 </section>
+<script>
+  $('#search').click( () => {
+    var searchQuery = $('#searchInput').val();
+    window.location.pathname = '/function/' + searchQuery;
+  });
+
+  $('#clear').click( () => {
+    window.location.pathname = '/function';
+  });
+
+</script>
