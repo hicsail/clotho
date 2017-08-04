@@ -347,10 +347,9 @@ internals.applyRoutes = function (server, next) {
 
 
           // No result, no need to search further
-          if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
+          if ((request.payload.sequence && results.findSequences.length == 0) || (request.payload.parameters && results.findParameters.length == 0)) {
             if (bioDesignIds.length === 0) {
               return done(null, []);
-
             }
           }
 
