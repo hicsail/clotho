@@ -13,7 +13,7 @@ class Module extends MongoModels {
       userId: userId,
       displayId: displayId,
       bioDesignId: bioDesignId,
-      role: role,
+      role: role.toUpperCase(),
       submoduleIds: submoduleIds
     };
 

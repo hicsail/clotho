@@ -12,7 +12,7 @@ class Feature extends MongoModels {
       description: description,
       userId: userId,
       displayId: displayId,
-      role: role,
+      role: role.toUpperCase(),
       annotationId: annotationId,
       superAnnotationId: superAnnotationId,
       moduleId: moduleId
