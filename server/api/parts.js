@@ -24,7 +24,7 @@ internals.applyRoutes = function (server, next) {
    * @api {put} /api/part Get Part
    * @apiName Get Part
    * @apiDescription Get part based on arguments.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -401,7 +401,7 @@ internals.applyRoutes = function (server, next) {
    * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts, _id,
    * name, description, userId, displayId, and superBioDesignId. Note that using the filters for
    * parameters, modules, and subparts will return bioDesign-specific attributes as well.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -608,7 +608,7 @@ internals.applyRoutes = function (server, next) {
    * @api {get} /api/part/:id Get Part By Id
    * @apiName Get Part By Id
    * @apiDescription Get complete Part by ID
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -752,7 +752,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/part Create Part
    * @apiName Create Part
    * @apiDescription Create part based on arguments
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1066,7 +1066,7 @@ internals.applyRoutes = function (server, next) {
    * @api {put} /api/part/update/:id Update Part by Id
    * @apiName  Update Part by Id
    * @apiDescription Include arguments in payload to update part.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1342,7 +1342,7 @@ internals.applyRoutes = function (server, next) {
    * @api {delete} /api/part/:id Delete Part by Id
    * @apiName  Delete Part by Id
    * @apiDescription Marks Part to be delete, removes it from being searched
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1445,6 +1445,23 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
+  /**
+   * @api {delete} /api/part/undelete/:id Un-Delete Part by Id
+   * @apiName  Un-Delete Part by Id
+   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @apiGroup Convenience Methods Part
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Part unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/part/undelete/{id}',

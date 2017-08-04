@@ -248,7 +248,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/device Get Device
    * @apiName Get Device
    * @apiDescription Get device based on bioDesignId
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -748,7 +748,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/device Create Device
    * @apiName Create Device
    * @apiDescription Create device based on arguments and part ids
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
