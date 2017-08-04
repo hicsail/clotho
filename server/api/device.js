@@ -21,6 +21,78 @@ internals.applyRoutes = function (server, next) {
   const Role = server.plugins['hapi-mongo-models'].Role;
   const Version = server.plugins['hapi-mongo-models'].Version;
 
+
+
+
+
+
+
+
+
+
+  /**
+   * @api {put} /api/device/update/:id Update Device by Id
+   * @apiName  Update Device by Id
+   * @apiDescription Include arguments in payload to update device.
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name  name of device.
+   * @apiParam {String} [displayId]  displayId of device.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   *
+   * @apiParamExample {json} Request-Example:
+   *
+   * ['name', 'partIds', 'createSeqFromParts', 'displayId', 'role', 'sequence', 'parameters'];
+   *
+   *
+   * {
+	"name": "BBa_E0040",
+	"displayId": "green fluorescent protein derived from jellyfish",
+	"partIds": ["596fa7165fe2743c2a5c4f76","596fa73a5fe2743c2a5c4f7d","597a0b98155a0466a37731ee"],
+	"createSeqFromParts": "true",
+	"role": "PROMOTER",
+	"parameters": [{
+		"name": "color",
+		"variable": "green",
+		"value": 1,
+		"units": "nM"
+	  }],
+	"sequence": "ATGCGTAAA"
+  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * 5984ea39dcf2bd8b22714905
+   *
+   * @apiErrorExample {json} Error-Response 1 - Invalid part id:
+   {
+    "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+    }
+   *
+   *@apiErrorExample {json} Error-Response 2 - Invalid role:
+   * {
+   *  "statusCode": 400,
+   *  "error": "Bad Request",
+   *  "message": "Role invalid."
+   *  }
+   *
+   *@apiErrorExample {json} Error-Response 3 - Invalid device id:
+   {
+    "statusCode": 404,
+    "error": "Not Found",
+    "message": "Device does not exist."
+   }
+   *
+   *
+   */
+
+
   server.route({
     method: 'PUT',
     path: '/device/update/{id}',

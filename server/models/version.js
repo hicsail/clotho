@@ -31,7 +31,6 @@ class Version extends MongoModels {
 
     this.find({objectId: ObjectID(bioDesignId), collectionName: collectionName}, (err, results) => {
 
-      console.log(results);
       if (err) {
         return callback(err);
 

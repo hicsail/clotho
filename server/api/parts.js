@@ -1095,17 +1095,7 @@ internals.applyRoutes = function (server, next) {
 }
    *
    * @apiSuccessExample {json} Success-Response:
-   *
-   * {
-    "_id": "5963a2f649bb762614bdaf63",
-    "name": "BBa_E0040",
-    "description": null,
-    "userId": "5939ba97b8e96112986d3be8",
-    "displayId": "green flourescent protein derived from jellyfish",
-    "imageURL": null,
-    "subBioDesignIds": null,
-    "superBioDesignId": null
-}
+   * 5984d2fc75bee68ac054faa9
    *
    * @apiErrorExample {json} Error-Response 1 - Invalid part id:
 
