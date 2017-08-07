@@ -52,10 +52,23 @@
         </div>
         <div class="columns">
           <div class="column is-1">
+            <label class="label">Inputs</label>
+          </div>
+          <div class="column is-11">
+            <textarea class="textarea" id="userInput" placeholder="Inputs"></textarea>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-1">
             <label class="label">Console</label>
           </div>
           <div class="column is-11">
             <textarea class="textarea" id="console" disabled placeholder="Function Output"></textarea>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-1 is-offset-11 has-text-right">
+            <div id="run" class="button is-primary">Run</div>
           </div>
         </div>
       </div>
@@ -76,6 +89,8 @@
 <script src="/public/ace/mode-java.js"></script>
 <script src="/public/ace/mode-python.js"></script>
 <script>
+  var editor = ace.edit("editor");
+  editor.setReadOnly(true);
   $('#language').val('{{functions.language}}');
 
   var tag = $('#tag');
@@ -125,6 +140,7 @@
 </script>
 <script>
   $('#run').click(() => {
+    $('#userInput').removeClass('is-danger');
     if(!$('#language').val()) {
     $('#console').val('Please select a language');
     failureAlert('Please select a language');
@@ -144,13 +160,13 @@
   var tag = $('#tag');
   $('#console').val('');
   button.addClass('is-loading');
-  tag.removeClass('is-danger');
-  tag.removeClass('is-success');
-  tag.addClass('is-light');
-  tag.html('Running')
+//  tag.removeClass('is-danger');
+//  tag.removeClass('is-success');
+//  tag.addClass('is-light');
+//  tag.html('Running');
   var language = $('#language').val();
   var code = editor.getValue();
-  var inputs = JSON.stringify($('#inputs').val().split('\n'));
+  var inputs = JSON.stringify($('#userInput').val().split('\n'));
   var data = `${language} ${inputs}\n${code}`;
   var done = false;
   $.ajax({
@@ -161,17 +177,24 @@
     headers: {'Content-Type':'text/plain'},
     success: function (response) {
       done = true;
-      tag.removeClass('is-light');
-      $('#console').val(response);
+//      tag.removeClass('is-light');
+      if (response.split(' ')[0] === 'Exception') {
+        $('#userInput').addClass('is-danger');
+        $('#console').val('Please enter a valid input');
+
+      } else {
+        $('#console').val(response);
+      }
+
       var outputs = $('#outputs').val().split('\n');
       var functionOutputs = response.split('\n').slice(0,-1);
-      if(JSON.stringify(functionOutputs) == JSON.stringify(outputs)) {
-        tag.addClass('is-success');
-        tag.html('Test Passed');
-      } else {
-        tag.addClass('is-danger');
-        tag.html('Test Failed');
-      }
+//      if(JSON.stringify(functionOutputs) == JSON.stringify(outputs)) {
+//        tag.addClass('is-success');
+//        tag.html('Test Passed');
+//      } else {
+//        tag.addClass('is-danger');
+//        tag.html('Test Failed');
+//      }
       button.removeClass('is-loading');
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -192,238 +215,3 @@
   },8000);
   });
 </script>
-<script>
-
-  $('#create').click( () => {
-    if(!$('#language').val()) {
-    $('#console').val('Please select a language');
-    failureAlert('Please select a language');
-    return;
-  }
-  if(!$('#inputs').val()) {
-    $('#console').val('Please provide at lease one input');
-    failureAlert('Please provide at lease one input');
-    return;
-  }
-  if(!editor.getValue()) {
-    $('#console').val('Function can not be blank');
-    failureAlert('Function can not be blank');
-    return;
-  }
-  if(!$('#name').val()) {
-    $('#console').val('Please add a Function Name');
-    failureAlert('Please add a Function Name');
-    return;
-  }
-
-  var language;
-  if ($('#language').val()) {
-    language = $('#language').val();
-  } else {
-    language = {{functions.language}}
-  }
-  var data = {
-    name: $('#name').val(),
-    language: $('#language').val(),
-    inputs: JSON.stringify($('#inputs').val().split('\n')),
-    outputs: JSON.stringify($('#outputs').val().split('\n')),
-    code: JSON.stringify(editor.getValue().split('\n')),
-    _id: '{{functions._id}}'
-  };
-  $.ajax({
-    type: 'PUT',
-    url: '/api/function',
-    data: data,
-    dataType: 'json',
-    success: (response) => {
-    window.location.pathname = '/function';
-  }
-  });
-
-  });
-</script>
-<script>
-  var editor = ace.edit("editor");
-  editor.setReadOnly(true);
-
-  $('#remove').click( () => {
-    // Show an alert box confirming if they are sure
-    if (confirm('Are you sure you want to delete this function?') == true) {
-
-    $.ajax({
-        type: 'DELETE',
-        url: '/api/function/delete',
-        data: {_id: '{{functions._id}}'},
-        dataType: 'json',
-        fail: () => {
-        console.log('it failed');
-  },
-    success: (response) => {
-      window.location.pathname = '/function';
-    }
-  })
-
-  }
-  });
-</script>
-
-
-
-
-
-
-<!-- {{> nav}}
-<section class="hero">
-  <div class="hero-heading">
-    {{> alert}}
-    <div class="container" style="padding: 10px">
-      <h1 class="title">
-        {{functions.name}}
-      </h1>
-      <a class="button is-light" href="/function/edit/{{functions._id}}">Edit</a>
-    </div>
-  </div>
-  <div class="hero-body">
-    <div class="container">
-      <div class="box">
-        <div class="columns">
-          <div class="column is-1">
-            <label class="label">Language</label>
-          </div>
-          <div class="column is-10">
-            <div class="select">
-              <select disabled id="language">
-                {{#each languages}}
-                  <option>{{this}}</option>
-                {{/each}}
-              </select>
-            </div>
-          </div>
-          <div class="column is-1">
-            {{#if functions.working}}
-              <span class="tag is-success">Tested</span>
-            {{else}}
-              <span class="tag is-danger">Tests Failed</span>
-            {{/if}}
-
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-1">
-            <label class="label">Inputs</label>
-          </div>
-          <div class="column is-5">
-            <textarea id="inputs" disabled class="textarea" placeholder="Write test inputs line by line">{{functions.inputs}}</textarea>
-          </div>
-          <div class="column is-1">
-            <label class="label">Outputs</label>
-          </div>
-          <div class="column is-5">
-            <textarea id="outputs" disabled class="textarea" placeholder="Write each expected output line by line">{{functions.outputs}}</textarea>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-1">
-            <label class="label">Function</label>
-          </div>
-          <div class="column is-11" style="height: 500px">
-            <div id="editor">{{#each functions.code}}{{this}}
-{{/each}}</div>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-2 is-offset-9">
-            <span id="tag" class="tag is-success">Tested</span>
-          </div>
-          <div class="column is-1">
-            <div id="run" class="button is-primary">Run</div>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-1">
-            <label class="label">Console</label>
-          </div>
-          <div class="column is-11">
-            <textarea class="textarea" id="console" disabled placeholder="Function Output"></textarea>
-          </div>
-      </div>
-    </div>
-  </div>
-</section>
-<style type="text/css" media="screen">
-  #editor {
-    position: relative;
-    height: 100%;
-    width: 100%;
-  }
-</style>
-<script src="/public/ace/ace.js"></script>
-<script src="/public/ace/ext-language_tools.js"></script>
-<script src="/public/ace/ext-spellcheck.js"></script>
-<script src="/public/ace/mode-javascript.js"></script>
-<script src="/public/ace/mode-java.js"></script>
-<script src="/public/ace/mode-python.js"></script>
-<script>
-  var editor = ace.edit("editor");
-  editor.setTheme("ace/theme/chrome");
-  editor.setOptions({
-    enableBasicAutocompletion: true,
-    enableSnippets: true,
-    enableLiveAutocompletion: true
-  });
-  switch ('{{functions.language}}') {
-    case 'node':
-      editor.getSession().setMode("ace/mode/javascript");
-      break;
-    case 'java':
-      editor.getSession().setMode("ace/mode/java");
-      break;
-    case 'python':
-      editor.getSession().setMode("ace/mode/python");
-      break;
-  }
-  editor.setShowPrintMargin(false);
-  editor.setReadOnly(true);
-</script>
-<script>
-  $('#run').click(() => {
-    var button = $('#run');
-    var tag = $('#tag');
-    $('#console').val('');
-    button.addClass('is-loading');
-    tag.removeClass('is-danger');
-    tag.removeClass('is-success');
-    tag.addClass('is-light');
-    tag.html('running...')
-    var language = $('#language').val();
-    var code = editor.getValue();
-    var inputs = JSON.stringify($('#inputs').val().split('\n'));
-    var data = `${language} ${inputs}\n${code}`;
-    $.ajax({
-      type: 'POST',
-      url: '/api/function/run',
-      dataType: 'text',
-      data: data,
-      headers: {'Content-Type':'text/plain'},
-      success: function (response) {
-        tag.removeClass('is-light');
-        $('#console').val(response);
-        var outputs = $('#outputs').val().split('\n');
-        var functionOutputs = response.split('\n').slice(0,-1);
-        if(JSON.stringify(functionOutputs) == JSON.stringify(outputs)) {
-          tag.addClass('is-success');
-          tag.html('Test Passed');
-        } else {
-          tag.addClass('is-danger');
-          tag.html('Test Failed');
-        }
-        button.removeClass('is-loading');
-      },
-      error: function (XMLHttpRequest, textStatus, errorThrown) {
-        $('#console').val(textStatus);
-        button.removeClass('is-loading');
-      }
-    });
-  });
-</script>
--->
