@@ -1450,38 +1450,43 @@ internals.applyRoutes = function (server, next) {
           callback(null, '');
         }],
         Parts: ['BioDesign', function (results, callback) {
-
-          for (var part of results.BioDesign.subparts) {
-            for (var sequence of part.sequences) {
-              for (var annotation of sequence.annotations) {
-                for (var feature of annotation.features) {
-                  Feature.delete(feature, (err, callback) => {
+          if(results.BioDesign.subparts) {
+            for (var part of results.BioDesign.subparts) {
+              if(part.sequences) {
+                for (var sequence of part.sequences) {
+                  for (var annotation of sequence.annotations) {
+                    for (var feature of annotation.features) {
+                      Feature.delete(feature, (err, callback) => {
+                      });
+                    }
+                    delete annotation.features;
+                    Annotation.delete(annotation, (err, callback) => {
+                    });
+                  }
+                  if(sequence.subannotations) {
+                    for(var annotation of sequence.subannotations) {
+                      Annotation.delete(annotation, (err, callback) => {
+                      });
+                    }
+                  }
+                  delete sequence.subannotations;
+                  delete sequence.annotations;
+                  Sequence.delete(sequence, (err, callback) => {
                   });
                 }
-                delete annotation.features;
-                Annotation.delete(annotation, (err, callback) => {
-                });
               }
-              if(sequence.subannotations) {
-                for(var annotation of sequence.subannotations) {
-                  Annotation.delete(annotation, (err, callback) => {
-                  });
+              if(part.assemblies) {
+                for(var assembly of part.assemblies) {
+                  Assembly.delete(assembly, (err, callback) => {});
                 }
               }
-              delete sequence.subannotations;
-              delete sequence.annotations;
-              Sequence.delete(sequence, (err, callback) => {
+              delete part.assemblies;
+              delete part.sequences;
+              Part.delete(part, (err, callback) => {
               });
             }
-            for(var assembly of part.assemblies) {
-              Assembly.delete(assembly, (err, callback) => {});
-            }
-            delete part.assemblies;
-            delete part.sequences;
-            Part.delete(part, (err, callback) => {
-            });
           }
-          callback(null, '');
+          callback(null, results.BioDesign.subparts);
         }]
       }, (err, result) => {
 
@@ -1512,7 +1517,11 @@ internals.applyRoutes = function (server, next) {
             toDelete: true
           }, (err, document) => {
 
-            BioDesign.undelete(document, callback);
+            if(document) {
+              BioDesign.undelete(document, callback);
+            } else {
+              callback(Boom.notFound('No BioDesign Found to undelete'));
+            }
           });
         },
         Parameters: ['BioDesign', function (results, callback) {
@@ -1558,9 +1567,23 @@ internals.applyRoutes = function (server, next) {
             });
           });
         }],
-        Assembly: ['BioDesign', function (results, callback) {
+        Assembly: ['Parts', function (results, callback) {
 
+          for(let part of results.Parts) {
+            Assembly.find({
+              superSubPartId: part._id.toString(),
+              toDelete: true
+            }, (err, assemblies) => {
 
+              for(let assembly of assemblies) {
+
+                Assembly.undelete(assembly, (err) => {
+
+                });
+              }
+              callback(null, assemblies);
+            });
+          }
         }],
         Parts: ['BioDesign', function (results, callback) {
 
@@ -1606,7 +1629,7 @@ internals.applyRoutes = function (server, next) {
                 }); //end each sequence
               });// sequence find
             }, (err) => {
-              callback(err);
+              callback(err, parts);
             });// end for part
           });//part find
         }]
