@@ -216,6 +216,58 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {put} /api/container/:id Update Container By Id
+   * @apiName Update Container By Id
+   * @apiDescription Update Container by ID
+   * @apiGroup Container
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Container unique ID.
+   * @apiParamExample {json} Example-Request:
+   * {
+   * "name": "myContainer",
+   * "description": "test container",
+   * "type": "BOX",
+   * "parameters":
+   [
+   {
+     "name": "test parameters",
+     "value": 7,
+     "units": "mm",
+     "variable": "length"
+   }
+   ],
+   "coordinates": [12,3,307,5]
+   }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "_id": "5988a74da16d369e56953cf3",
+    "name": "myContainer",
+    "description": "test container",
+    "userId": "598389688d5c4635fe2e4417",
+    "parameterIds": [
+        "5988a74da16d369e56953cf2"
+    ],
+    "type": "BOX",
+    "coordinates": [
+        12,
+        3,
+        307,
+        5
+    ],
+    "parameters": [
+        {
+            "name": "test parameters",
+            "value": 7,
+            "units": "mm",
+            "variable": "length"
+        }
+    ]
+}
+   */
   server.route({
     method: 'PUT',
     path: '/container/{id}',
