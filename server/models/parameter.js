@@ -27,7 +27,7 @@ class Parameter extends MongoModels {
   }
 
 
-  static getParameter(parameters, callback) {
+  static getByParameter(parameters, callback) {
 
     const query = parameters[0];
     this.find(query, (err, parameters) => {
@@ -41,15 +41,16 @@ class Parameter extends MongoModels {
   }
 
   static getBioDesignIdsbyParameter(parameters, callback) {
+    var bioDesignIds = [];
+
     if (parameters.length > 0) {
-      var bioDesignIds = [];
 
       for (var i = 0; i < parameters.length; ++i) {
         bioDesignIds.push(parameters[i]['bioDesignId'])
       }
-      callback(null, bioDesignIds)
-
     }
+    callback(null, bioDesignIds)
+
   }
 
 

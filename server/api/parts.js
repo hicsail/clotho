@@ -257,52 +257,38 @@ internals.applyRoutes = function (server, next) {
           console.log("findParameters");
 
           // using part documents from last step, get biodesigns
-          console.log(request.payload.parameters)
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
-            Parameter.getParameter(request.payload.parameters, done);
-          //returns all the parameter objects, we want a list of bioDesignIds instead!
+            Parameter.getByParameter(request.payload.parameters, done);
           }
           else {
             return done(null, []);
           }
         },
-        findModules: ['findParameters', function (results, done) {
+        findModules: function (done) {
           console.log("findModules");
 
-          // collect bioDesign Ids
-          var parameterArray = results.findParameters;
-          console.log(parameterArray)
-          var bioDesignIds = [];
-          if (parameterArray != null) {
-            for (var i = 0; i < parameterArray.length; ++i) {
-              if (parameterArray[i]['bioDesignId'] !== undefined && parameterArray[i]['bioDesignId'] !== null) {
-                bioDesignIds.push(parameterArray[i]['bioDesignId'].toString());
-              } else if (typeof parameterArray[i] == 'string') {
-                // Prior steps found multiple bd ids, but parameter was undefined.
-                bioDesignIds.push(parameterArray[i]);
-              }
-            }
-          }
-
-          // only zero/one result, no need to search further
-          if ((request.payload.sequence !== undefined && request.payload.sequence !== null) || (request.payload.parameters != undefined && request.payload.parameters !== null)) {
-            if (bioDesignIds.length === 0) {
-              return done(null, []);
-
-            }
-
-          }
-
-
-          // otherwise perform module search
+          // using part documents from last step, get biodesigns
           if (request.payload.role !== undefined && request.payload.role !== null) {
-            Module.getModuleByBioDesignId(bioDesignIds, {role: request.payload.role}, done);
-          } else {
-            done(null, bioDesignIds);
+            Module.getByModule(request.payload.role, done);
           }
+          else {
+            return done(null, []);
+          }
+        },
+        findNames: function (done) {
+          console.log("findNames");
 
-        }],
-        findBioDesigns: ['findModules', function (results, done) {
+          // using part documents from last step, get biodesigns
+          if (request.payload.name !== undefined && request.payload.name !== null) {
+            BioDesign.getByName(request.payload.name, done);
+          }
+          else {
+            return done(null, []);
+          }
+        },
+
+
+        findBioDesigns: ['findNames', function (results, done) {
 
 
           // collect biodesign Ids

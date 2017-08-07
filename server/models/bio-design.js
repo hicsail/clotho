@@ -49,7 +49,41 @@ class BioDesign extends MongoModels {
   }
 
 
-  // Helper function to clean up query
+  static getBioDesignIdsByQuery(query, callback) {
+
+    if (query == null) {
+      query = {};
+    }
+
+    this.find(query, (err, bioDesigns) => {
+
+      if (err) {
+        return callback(err);
+      }
+      this.getIds(bioDesigns, callback)
+    });
+  }
+
+
+  static getIds(bioDesigns, callback) {
+
+    var bioDesignIds = [];
+
+    if (bioDesigns.length > 0) {
+
+      for (var i = 0; i < bioDesigns.length; ++i) {
+        bioDesignIds.push(bioDesigns[i]['bioDesignId'])
+      }
+    }
+    callback(null, bioDesignIds)
+  }
+
+
+
+
+
+
+    // Helper function to clean up query
   static convertBD(bioDesignIds, extra) {
 
     var query = {};
