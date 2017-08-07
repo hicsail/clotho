@@ -69,6 +69,84 @@ lab.after((done) => {
   done();
 });
 
+lab.experiment('Signup Plugin Password Check', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/signup',
+      payload: {
+        name: 'Muddy Mudskipper',
+        username: 'muddy',
+        email: 'mrmud@mudmail.mud',
+        application: 'Web 1'
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when password is too short', (done) => {
+
+    request.payload.password = 'test';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password is too long', (done) => {
+
+    request.payload.password = 'KnAshbUDNBVaekNJquALBQVTMMutRszua';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain lowercase letter', (done) => {
+
+    request.payload.password = 'ABCDEFGHIJK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain uppercase letter', (done) => {
+
+    request.payload.password = 'abcdefghijk';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain a number', (done) => {
+
+    request.payload.password = 'abcdefghijK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+});
 
 lab.experiment('Signup Plugin', () => {
 
@@ -80,7 +158,7 @@ lab.experiment('Signup Plugin', () => {
       payload: {
         name: 'Muddy Mudskipper',
         username: 'muddy',
-        password: 'dirtandwater',
+        password: 'dirtandWater1',
         email: 'mrmud@mudmail.mud',
         application: 'Web 1'
       }
@@ -88,7 +166,6 @@ lab.experiment('Signup Plugin', () => {
 
     done();
   });
-
 
   lab.test('it returns an error when find one fails for username check', (done) => {
 
@@ -426,8 +503,7 @@ lab.experiment('Available Plugin', () => {
     request = {
       method: 'POST',
       url: '/available',
-      payload: {
-      }
+      payload: {}
     };
 
     done();

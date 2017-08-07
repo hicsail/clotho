@@ -239,7 +239,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple','session'],
+          strategies: ['simple', 'session'],
           scope: 'admin'
         }
       },
@@ -305,7 +305,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple','session'],
+          strategies: ['simple', 'session'],
           scope: ['account', 'admin']
         }
       },
@@ -371,7 +371,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple','session'],
+          strategies: ['simple', 'session'],
           scope: 'admin'
         },
         pre: [
@@ -443,7 +443,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple','session'],
+          strategies: ['simple', 'session'],
           scope: 'admin'
         },
         pre: [
@@ -512,7 +512,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple','session'],
+          strategies: ['simple', 'session'],
           scope: 'admin'
         },
         pre: [
@@ -581,7 +581,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple','session'],
+          strategies: ['simple', 'session'],
           scope: 'admin'
         },
         pre: [
@@ -619,12 +619,12 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (username, callback) {
 
-      callback(null, new User({ _id: '1D', username: 'ren' }));
+      callback(null, new User({_id: '1D', username: 'ren'}));
     };
 
     server.route({
@@ -698,7 +698,7 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ username: 'ren', key: 'baddog' }));
+      callback(null, new Session({username: 'ren', key: 'baddog'}));
     };
 
     stub.User.findByUsername = function (username, callback) {
@@ -775,12 +775,12 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (id, callback) {
 
-      callback(null, new User({ _id: '1D', username: 'ren' }));
+      callback(null, new User({_id: '1D', username: 'ren'}));
     };
 
     server.route({
@@ -821,7 +821,7 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (id, callback) {
@@ -887,7 +887,7 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (id, callback) {
@@ -956,7 +956,7 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (id, callback) {
@@ -1028,7 +1028,7 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (id, callback) {
@@ -1097,7 +1097,7 @@ lab.experiment('Auth Plugin Cookie', () => {
 
     stub.Session.findByCredentials = function (username, key, callback) {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
+      callback(null, new Session({_id: '2D', userId: '1D', key: 'baddog'}));
     };
 
     stub.User.findById = function (id, callback) {

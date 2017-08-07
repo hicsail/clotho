@@ -2,6 +2,9 @@ node_modules/*
 test/artifacts/*
 .env
 .idea
+/nbproject/private/
+nbproject
+/npm-debug.log
 server/web/public/documentation
 server/web/public/mini-js
 package-lock.json

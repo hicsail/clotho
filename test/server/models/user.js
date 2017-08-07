@@ -119,7 +119,7 @@ lab.experiment('User Class Methods', () => {
     Async.auto({
       user: function (cb) {
 
-        User.create('stimpy', 'thebigshot', 'stimpy@ren.show' ,'ren stimpy', cb);
+        User.create('stimpy', 'thebigshot', 'stimpy@ren.show', 'ren stimpy', cb);
       },
       username: ['user', function (results, cb) {
 

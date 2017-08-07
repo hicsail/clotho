@@ -60,7 +60,6 @@ internals.applyStrategy = function (server, next) {
   });
 
 
-
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
     cookie: 'Clotho',

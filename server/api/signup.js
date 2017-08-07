@@ -138,6 +138,35 @@ internals.applyRoutes = function (server, next) {
             reply(true);
           });
         }
+      }, {
+        assign: 'passwordCheck',
+        method: function (request, reply) {
+
+          const password = request.payload.password;
+          const requirement = Config.get('/passwordRequirements');
+
+          if (!(password.length >= requirement.min)) {
+            return reply(Boom.badRequest(`Password must be a minimum of ${requirement.min} characters`));
+          }
+
+          if (!(password.length <= requirement.max)) {
+            return reply(Boom.badRequest(`Password can not exceed a maximum of ${requirement.max} characters`));
+          }
+
+          if (!((password.match(/[a-z]/g) || []).length >= requirement.lowercase)) {
+            return reply(Boom.badRequest(`Password must have a minimum of ${requirement.lowercase} lowercase characters`));
+          }
+
+          if (!((password.match(/[A-Z]/g) || []).length >= requirement.uppercase)) {
+            return reply(Boom.badRequest(`Password must have a minimum of ${requirement.uppercase} uppercase characters`));
+          }
+
+          if (!((password.match(/[0-9]/g) || []).length >= requirement.numeric)) {
+            return reply(Boom.badRequest(`Password must have a minimum of ${requirement.numeric} numeric characters`));
+          }
+
+          reply(true);
+        }
       }]
     },
     handler: function (request, reply) {
@@ -332,7 +361,7 @@ internals.applyRoutes = function (server, next) {
           const username = request.payload.username;
           const email = request.payload.email;
 
-          if(!username && !email) {
+          if (!username && !email) {
             return reply(Boom.badRequest('invaild submission, submit username and/or email'));
           }
           reply(true);
@@ -366,8 +395,8 @@ internals.applyRoutes = function (server, next) {
 
         var available = {};
 
-        if(username) {
-          if(results.username) {
+        if (username) {
+          if (results.username) {
             available.username = {
               status: 'taken',
               message: 'This username is not available'
@@ -379,8 +408,8 @@ internals.applyRoutes = function (server, next) {
             };
           }
         }
-        if(email) {
-          if(results.email) {
+        if (email) {
+          if (results.email) {
             available.email = {
               status: 'taken',
               message: 'This email is already registered'
@@ -403,7 +432,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth','mailer', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'mailer', 'hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

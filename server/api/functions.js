@@ -31,6 +31,11 @@ internals.applyRoutes = function (server, next) {
    *    "sequence":"AUGACCCUGAAGGUGAAUGAA"
    *  }
    *
+   * @apiParamExample {json} Protein:
+   *  {
+   *    "sequence":"MAYKSGKRPTFFEVFKAHCSDS"
+   *  }
+   *
    *
    * @apiParamExample {json} Ambiguous DNA:
    *  {
@@ -52,6 +57,11 @@ internals.applyRoutes = function (server, next) {
    *    "type":"rna"
    *  }
    *
+   * @apiSuccessExample {json} Protein:
+   *  {
+   *    "type":"protein"
+   *  }
+   *
    * @apiSuccessExample {json} Ambiguous DNA:
    *  {
    *    "type":"ambiguousDna"
@@ -71,13 +81,13 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({type:Bionode.checkType(request.payload.sequence)});
+      return reply({type: Bionode.checkType(request.payload.sequence)});
     }
   });
 
@@ -112,13 +122,13 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({sequence:Bionode.reverse(request.payload.sequence)});
+      return reply({sequence: Bionode.reverse(request.payload.sequence)});
     }
   });
 
@@ -152,13 +162,13 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({sequence:Bionode.complement(request.payload.sequence)});
+      return reply({sequence: Bionode.complement(request.payload.sequence)});
     }
   });
 
@@ -193,13 +203,13 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({sequence:Bionode.reverseComplement(request.payload.sequence)});
+      return reply({sequence: Bionode.reverseComplement(request.payload.sequence)});
     }
   });
 
@@ -247,19 +257,18 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required(),
-          exons:
+          sequence: Joi.string().required(),
+          exons: Joi.array().items(
             Joi.array().items(
-              Joi.array().items(
-                Joi.number().min(0)
-              ).length(2).required()
-            ).required()
+              Joi.number().min(0)
+            ).length(2).required()
+          ).required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({sequence:Bionode.removeIntrons(request.payload.sequence,request.payload.exons)});
+      return reply({sequence: Bionode.removeIntrons(request.payload.sequence, request.payload.exons)});
     }
   });
 
@@ -306,19 +315,18 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required(),
-          exons:
+          sequence: Joi.string().required(),
+          exons: Joi.array().items(
             Joi.array().items(
-              Joi.array().items(
-                Joi.number().min(0)
-              ).length(2).required()
-            ).required()
+              Joi.number().min(0)
+            ).length(2).required()
+          ).required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({sequence:Bionode.removeIntrons(request.payload.sequence,Bionode.reverseExons(request.payload.exons, request.payload.sequence.length))});
+      return reply({sequence: Bionode.removeIntrons(request.payload.sequence, Bionode.reverseExons(request.payload.exons, request.payload.sequence.length))});
     }
   });
 
@@ -362,13 +370,13 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/,'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
     handler: function (request, reply) {
 
-      return reply({sequence:Bionode.transcribe(request.payload.sequence)});
+      return reply({sequence: Bionode.transcribe(request.payload.sequence)});
     }
   });
 

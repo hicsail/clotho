@@ -65,7 +65,7 @@ lab.beforeEach((done) => {
 
   const plugins = [Vision, VisionaryPlugin, ModelsPlugin, AccountPlugin, AuthPlugin, HapiAuthCookie, HapiAuthBasic];
   server = new Hapi.Server();
-  server.connection({ port: Config.get('/port/web') });
+  server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {
 
     if (err) {
@@ -89,7 +89,6 @@ lab.experiment('Account Page View', () => {
 
     done();
   });
-
 
 
   lab.test('account page renders properly', (done) => {
