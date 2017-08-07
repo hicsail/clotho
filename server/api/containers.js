@@ -45,6 +45,37 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {get} /api/container/:id Get Container By Id
+   * @apiName Get Container By Id
+   * @apiDescription Get Container by ID
+   * @apiGroup Container
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Container unique ID.
+   * @apiParamExample {json} Example-Request:
+   * 5988a74da16d369e56953cf3
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "_id": "5988a74da16d369e56953cf3",
+    "name": "myContainer",
+    "description": "test container",
+    "userId": "598389688d5c4635fe2e4417",
+    "parameterIds": [
+        "5988a74da16d369e56953cf2"
+    ],
+    "type": "FLASK",
+    "coordinates": [
+        12,
+        3,
+        307,
+        5
+    ]
+    }
+   */
+
   server.route({
     method: 'GET',
     path: '/container/{id}',
@@ -70,6 +101,56 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {post} /api/container Create Container
+   * @apiName Create Container
+   * @apiDescription Creates a new container
+   * @apiGroup Container
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name Container Name
+   * @apiParam {String} [description] Container description
+   * @apiParam {String=BEAKER,BOX,FLASK,INCUBATOR,PLATE,RACK,TUBE,WELL} [type] Container type
+   * @apiParam {Array} [coordinates] Container location, number array
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   *
+   * @apiParamExample {json} Example-Request:
+   * {
+	"name": "myContainer",
+	"description": "test container",
+	"type": "FLASK",
+	"parameters":
+    [
+      {
+        "name": "test parameters",
+        "value": 7,
+        "units": "mm",
+        "variable": "length"
+      }
+    ],
+    "coordinates": [12,3,307,5]
+  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "name": "myContainer",
+    "description": "test container",
+    "userId": "598389688d5c4635fe2e4417",
+    "parameterIds": [
+        "5988a74da16d369e56953cf2"
+    ],
+    "type": "FLASK",
+    "coordinates": [
+        12,
+        3,
+        307,
+        5
+    ],
+    "_id": "5988a74da16d369e56953cf3"
+}
+   *
+   */
   server.route({
     method: 'POST',
     path: '/container',
