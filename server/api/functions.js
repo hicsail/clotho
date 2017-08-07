@@ -516,7 +516,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  var testCheck = false;
+  var testCheck = true;
   server.route({
     method: 'POST',
     path: '/function',

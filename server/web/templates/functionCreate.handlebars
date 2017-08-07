@@ -225,8 +225,12 @@ HelloWorld</textarea>
         url: '/api/function',
         data: data,
         dataType: 'json',
-        success: (response) => {
+        success: (response, textStatus) => {
           window.location.pathname = '/function';
+        },
+        error: (jqXHR, textStatus) => {
+          failureAlert('Inputs don\'t produce outputs.');
+          window.scrollTo(0,0);
         }
     });
 
