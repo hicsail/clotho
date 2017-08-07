@@ -52,7 +52,7 @@ internals.applyRoutes = function (server, next) {
       const credentials = request.auth.credentials || {session: {}};
       const session = credentials.session || {};
 
-      if(!request.auth.isAuthenticated) {
+      if (!request.auth.isAuthenticated) {
         return reply(Boom.unauthorized('Missing authentication'));
       }
 

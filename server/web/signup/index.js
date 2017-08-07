@@ -19,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      if(request.auth.isAuthenticated) {
+      if (request.auth.isAuthenticated) {
         return reply.redirect('/');
       } else {
         return reply.view('register');

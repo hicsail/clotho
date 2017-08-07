@@ -23,7 +23,7 @@ internals.applyRoutes = function (server, next) {
     path: '/version',
     handler: function (request, reply) {
 
-      return reply({version:Package.version});
+      return reply({version: Package.version});
     }
   });
 
@@ -44,7 +44,7 @@ internals.applyRoutes = function (server, next) {
     path: '/repository',
     handler: function (request, reply) {
 
-      return reply({repository:Package.repository.url});
+      return reply({repository: Package.repository.url});
     }
   });
 

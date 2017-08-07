@@ -13,7 +13,7 @@ $().ready(function ($) {
 
     var element = ele;
 
-    if(window.location.pathname == $(element).attr('href')){
+    if (window.location.pathname == $(element).attr('href')) {
       $(element).addClass('is-active');
     }
   });

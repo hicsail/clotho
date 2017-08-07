@@ -179,7 +179,7 @@ lab.experiment('Function Plugin Reverse Complement', () => {
       url: '/removeIntrons',
       payload: {
         sequence: 'ATGACCCTGAAGGTGAATGACAG',
-        exons: [[1,8]]
+        exons: [[1, 8]]
       },
       credentials: AuthenticatedUser
     };
@@ -210,7 +210,7 @@ lab.experiment('Function Plugin Reverse Complement', () => {
       url: '/removeExons',
       payload: {
         sequence: 'ATGACCCTGAAGGTGAATGACAG',
-        exons: [[1,8]]
+        exons: [[1, 8]]
       },
       credentials: AuthenticatedUser
     };

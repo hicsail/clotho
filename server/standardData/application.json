@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Cello",
+    "description": "The Cello software (cell logic) converts electronic design specifications of combinatorial logic to complete DNA sequences encoding in bacterial cells",
+    "website": "http://www.cellocad.org:8080/",
+    "imageURL": "https://github.com/CIDARLAB/cello/blob/master/src/main/webapp/images/logo-cello-color.png?raw=true"
+  }
+]

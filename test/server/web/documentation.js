@@ -62,7 +62,7 @@ lab.before((done) => {
 
   const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, DocsPlugin];
   server = new Hapi.Server();
-  server.connection({ port: Config.get('/port/web') });
+  server.connection({port: Config.get('/port/web')});
   server.register(plugins, (err) => {
 
     if (err) {
