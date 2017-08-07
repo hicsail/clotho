@@ -248,7 +248,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/device Get Device
    * @apiName Get Device
    * @apiDescription Get device based on bioDesignId
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -748,7 +748,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/device Create Device
    * @apiName Create Device
    * @apiDescription Create device based on arguments and part ids
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1394,7 +1394,22 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {delete} /api/device/undelete/:id Un-Delete Device by Id
+   * @apiName  Un-Delete Device by Id
+   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @apiGroup Convenience Methods Device
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Device unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/device/{id}',
@@ -1450,36 +1465,188 @@ internals.applyRoutes = function (server, next) {
           callback(null, '');
         }],
         Parts: ['BioDesign', function (results, callback) {
-
-          for (var part of results.BioDesign.subparts) {
-            for (var sequence of part.sequences) {
-              for (var annotation of sequence.annotations) {
-                for (var feature of annotation.features) {
-                  Feature.delete(feature, (err, callback) => {
+          if(results.BioDesign.subparts) {
+            for (var part of results.BioDesign.subparts) {
+              if(part.sequences) {
+                for (var sequence of part.sequences) {
+                  for (var annotation of sequence.annotations) {
+                    for (var feature of annotation.features) {
+                      Feature.delete(feature, (err, callback) => {
+                      });
+                    }
+                    delete annotation.features;
+                    Annotation.delete(annotation, (err, callback) => {
+                    });
+                  }
+                  if(sequence.subannotations) {
+                    for(var annotation of sequence.subannotations) {
+                      Annotation.delete(annotation, (err, callback) => {
+                      });
+                    }
+                  }
+                  delete sequence.subannotations;
+                  delete sequence.annotations;
+                  Sequence.delete(sequence, (err, callback) => {
                   });
                 }
-                delete annotation.features;
-                Annotation.delete(annotation, (err, callback) => {
-                });
               }
-              for(var annotation of sequence.subannotations) {
-                Annotation.delete(annotation, (err, callback) => {
-                });
+              if(part.assemblies) {
+                for(var assembly of part.assemblies) {
+                  Assembly.delete(assembly, (err, callback) => {});
+                }
               }
-              delete sequence.subannotations;
-              delete sequence.annotations;
-              Sequence.delete(sequence, (err, callback) => {
+              delete part.assemblies;
+              delete part.sequences;
+              Part.delete(part, (err, callback) => {
               });
             }
-            for(var assembly of part.assemblies) {
-              Assembly.delete(assembly, (err, callback) => {});
+          }
+          callback(null, results.BioDesign.subparts);
+        }]
+      }, (err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply({message: 'Success.'});
+      });
+    }
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/device/undelete/{id}',
+    config: {
+      auth: {
+        strategy: 'simple',
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        BioDesign: function (callback) {
+
+          BioDesign.findOne({
+            _id: ObjectID(request.params.id),
+            toDelete: true
+          }, (err, document) => {
+
+            if(document) {
+              BioDesign.undelete(document, callback);
+            } else {
+              callback(Boom.notFound('No BioDesign Found to undelete'));
             }
-            delete part.assemblies;
-            delete part.sequences;
-            Part.delete(part, (err, callback) => {
+          });
+        },
+        Parameters: ['BioDesign', function (results, callback) {
+
+          Parameter.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, documents) => {
+
+            Async.each(documents, function (parameter, callback) {
+
+              Parameter.undelete(parameter, callback);
+            }, (err) => {
+
+              callback(err);
+            });
+          });
+        }],
+        Modules: ['BioDesign', function (results, callback) {
+
+          Module.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, modules) => {
+
+            Async.each(modules, function (module, callback) {
+
+              Feature.find({
+                moduleId: module._id.toString(),
+                toDelete: true
+              }, (err, features) => {
+
+                Async.each(features, function (feature, callback) {
+
+                  Feature.undelete(feature, callback);
+
+                }, (err) => {
+                  Module.undelete(module, callback);
+                });
+              });
+            }, (err) => {
+              callback(err, modules);
+            });
+          });
+        }],
+        Assembly: ['Parts', function (results, callback) {
+
+          for(let part of results.Parts) {
+            Assembly.find({
+              superSubPartId: part._id.toString(),
+              toDelete: true
+            }, (err, assemblies) => {
+
+              for(let assembly of assemblies) {
+
+                Assembly.undelete(assembly, (err) => {
+
+                });
+              }
+              callback(null, assemblies);
             });
           }
-          callback(null, '');
+        }],
+        Parts: ['BioDesign', function (results, callback) {
+
+          Part.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, parts) => {
+
+            Async.each(parts, function (part, callback) {
+
+              Sequence.find({
+                partId: part._id.toString(),
+                toDelete: true
+              }, (err, sequences) => {
+
+                Async.each(sequences, function (sequence, callback) {
+
+                  Annotation.find({
+                    sequenceId: sequence._id.toString(),
+                    toDelete: true
+                  }, (err, annotations) => {
+
+                    Async.each(annotations, function (annotation, callback) {
+
+                      Feature.find({
+                        annotationId: annotation._id.toString(),
+                        toDelete: true
+                      }, (err, features) => {
+
+                        Async.each(features, function (feature, callback) {
+
+                          Feature.undelete(feature, callback);
+                        }, (err) => {
+                          Annotation.undelete(annotation, callback);
+                        }); //end each feature
+                      });// feature find
+                    }, (err) => {
+                      Sequence.undelete(sequence, callback);
+                    }); //end each annotation
+                  });// annotation find
+                }, (err) => {
+                  Part.undelete(part, callback);
+                }); //end each sequence
+              });// sequence find
+            }, (err) => {
+              callback(err, parts);
+            });// end for part
+          });//part find
         }]
       }, (err, result) => {
 

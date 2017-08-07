@@ -24,7 +24,7 @@ internals.applyRoutes = function (server, next) {
    * @api {put} /api/part Get Part
    * @apiName Get Part
    * @apiDescription Get part based on arguments.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -401,7 +401,7 @@ internals.applyRoutes = function (server, next) {
    * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts, _id,
    * name, description, userId, displayId, and superBioDesignId. Note that using the filters for
    * parameters, modules, and subparts will return bioDesign-specific attributes as well.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -608,7 +608,7 @@ internals.applyRoutes = function (server, next) {
    * @api {get} /api/part/:id Get Part By Id
    * @apiName Get Part By Id
    * @apiDescription Get complete Part by ID
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -752,7 +752,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/part Create Part
    * @apiName Create Part
    * @apiDescription Create part based on arguments
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -822,25 +822,25 @@ internals.applyRoutes = function (server, next) {
             reply(true);
           }
         }
-      // },
-      // {
-      //   assign: 'checkVersion',
-      //   method: function (request, reply) {
-      //
-      //     var bioDesignId = request.params.id;
-      //
-      //     Version.findNewest(bioDesignId, (err, results) => {
-      //       if (err) {
-      //         return err;
-      //       } else {
-      //         // Prior version exists.
-      //         // Update this to either automatically find newest version
-      //         // of design, or to at least specify id of new object.
-      //         console.log(results);
-      //         return reply(Boom.badRequest('Newer version of Part exists.'));
-      //       }
-      //     });
-      //   }
+        // },
+        // {
+        //   assign: 'checkVersion',
+        //   method: function (request, reply) {
+        //
+        //     var bioDesignId = request.params.id;
+        //
+        //     Version.findNewest(bioDesignId, (err, results) => {
+        //       if (err) {
+        //         return err;
+        //       } else {
+        //         // Prior version exists.
+        //         // Update this to either automatically find newest version
+        //         // of design, or to at least specify id of new object.
+        //         console.log(results);
+        //         return reply(Boom.badRequest('Newer version of Part exists.'));
+        //       }
+        //     });
+        //   }
       }],
       validate: {
         payload: {
@@ -1066,7 +1066,7 @@ internals.applyRoutes = function (server, next) {
    * @api {put} /api/part/update/:id Update Part by Id
    * @apiName  Update Part by Id
    * @apiDescription Include arguments in payload to update part.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1152,42 +1152,42 @@ internals.applyRoutes = function (server, next) {
           }
         }
       },
-      {
-        assign: 'checkBioDesign',
-        method: function (request, reply) {
+        {
+          assign: 'checkBioDesign',
+          method: function (request, reply) {
 
             // Check that biodesign exists - should not perform update if biodesign does not exist.
-          var bioDesignId = request.params.id;
+            var bioDesignId = request.params.id;
 
-          BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
+            BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
 
-            if (err) {
-              return reply(err);
-            } else if (results === null || results.length === 0) {
-              return reply(Boom.notFound('Part does not exist.'));
-            } else {
-              reply(true);
-            }
-          }
+                if (err) {
+                  return reply(err);
+                } else if (results === null || results.length === 0) {
+                  return reply(Boom.notFound('Part does not exist.'));
+                } else {
+                  reply(true);
+                }
+              }
             );
-        }
-      },
-      {
-        assign: 'checkVersion',
-        method: function (request, reply) {
+          }
+        },
+        {
+          assign: 'checkVersion',
+          method: function (request, reply) {
 
-          var bioDesignId = request.params.id;
+            var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, 0, (err, results) => {
-            if (err) {
-              return err;
-            } else {
-              // This automatically find newest version if it exists, if not returns original
-              reply (results);
-            }
-          });
-        }
-      }],
+            Version.findNewest(bioDesignId, 0, (err, results) => {
+              if (err) {
+                return err;
+              } else {
+                // This automatically find newest version if it exists, if not returns original
+                reply(results);
+              }
+            });
+          }
+        }],
       validate: {
         payload: {
           sort: Joi.string().default('_id'),
@@ -1235,7 +1235,7 @@ internals.applyRoutes = function (server, next) {
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
 
               if (args[i] === 'sequence') {
-                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null){
+                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null) {
                   newPayload.sequence = oldPart['subparts'][0]['sequences'][0]['sequence'];
                 }
               } else if (args[i] === 'role') {
@@ -1256,8 +1256,7 @@ internals.applyRoutes = function (server, next) {
                   for (var oldParameter of oldParameters) {
                     var p = {};
 
-                    for (var paraKey of parameterKeys)
-                    {
+                    for (var paraKey of parameterKeys) {
                       if (oldParameter[paraKey] !== undefined && oldParameter[paraKey] !== null) {
                         p[paraKey] = oldParameter[paraKey];
                       }
@@ -1307,8 +1306,7 @@ internals.applyRoutes = function (server, next) {
           const partId = results.createNewPart;  // id of new Part.
 
           //change this to just updating the version --> because biodesign is creating the version
-          if (lastUpdatedId !== null)
-          {
+          if (lastUpdatedId !== null) {
             Version.updateMany({
               objectId: ObjectID(oldId),
               $isolated: 1
@@ -1344,7 +1342,7 @@ internals.applyRoutes = function (server, next) {
    * @api {delete} /api/part/:id Delete Part by Id
    * @apiName  Delete Part by Id
    * @apiDescription Marks Part to be delete, removes it from being searched
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1403,11 +1401,13 @@ internals.applyRoutes = function (server, next) {
         Modules: ['BioDesign', function (results, callback) {
 
           for (var module of results.BioDesign.modules) {
-            for(var feature of module.features) {
-              Feature.delete(feature, (err, results) => {});
+            for (var feature of module.features) {
+              Feature.delete(feature, (err, results) => {
+              });
             }
             delete module.features;
-            Module.delete(module, (err, results) => {});
+            Module.delete(module, (err, results) => {
+            });
           }
           callback(null, '');
         }],
@@ -1433,6 +1433,146 @@ internals.applyRoutes = function (server, next) {
             });
           }
           callback(null, '');
+        }]
+      }, (err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply({message: 'Success.'});
+      });
+    }
+  });
+
+
+  /**
+   * @api {delete} /api/part/undelete/:id Un-Delete Part by Id
+   * @apiName  Un-Delete Part by Id
+   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @apiGroup Convenience Methods Part
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Part unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
+  server.route({
+    method: 'DELETE',
+    path: '/part/undelete/{id}',
+    config: {
+      auth: {
+        strategy: 'simple',
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        BioDesign: function (callback) {
+
+          BioDesign.findOne({
+            _id: ObjectID(request.params.id),
+            toDelete: true
+          }, (err, document) => {
+
+            BioDesign.undelete(document, callback);
+          });
+        },
+        Parameters: ['BioDesign', function (results, callback) {
+
+          Parameter.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, documents) => {
+
+            Async.each(documents, function (parameter, callback) {
+
+              Parameter.undelete(parameter, callback);
+            }, (err) => {
+
+              callback(err);
+            });
+          });
+        }],
+        Modules: ['BioDesign', function (results, callback) {
+
+          Module.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, modules) => {
+
+            Async.each(modules, function (module, callback) {
+
+              Feature.find({
+                moduleId: module._id.toString(),
+                toDelete: true
+              }, (err, features) => {
+
+                Async.each(features, function (feature, callback) {
+
+                  Feature.undelete(feature, callback);
+
+                }, (err) => {
+                  Module.undelete(module, callback);
+                });
+              });
+            }, (err) => {
+              callback(err, modules);
+            });
+          });
+        }],
+        Parts: ['BioDesign', function (results, callback) {
+
+          Part.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, parts) => {
+
+            Async.each(parts, function (part, callback) {
+
+              Sequence.find({
+                partId: part._id.toString(),
+                toDelete: true
+              }, (err, sequences) => {
+
+                Async.each(sequences, function (sequence, callback) {
+
+                  Annotation.find({
+                    sequenceId: sequence._id.toString(),
+                    toDelete: true
+                  }, (err, annotations) => {
+
+                    Async.each(annotations, function (annotation, callback) {
+
+                      Feature.find({
+                        annotationId: annotation._id.toString(),
+                        toDelete: true
+                      }, (err, features) => {
+
+                        Async.each(features, function (feature, callback) {
+
+                          Feature.undelete(feature, callback);
+                        }, (err) => {
+                          Annotation.undelete(annotation, callback);
+                        }); //end each feature
+                      });// feature find
+                    }, (err) => {
+                      Sequence.undelete(sequence, callback);
+                    }); //end each annotation
+                  });// annotation find
+                }, (err) => {
+                  Part.undelete(part, callback);
+                }); //end each sequence
+              });// sequence find
+            }, (err) => {
+              callback(err);
+            });// end for part
+          });//part find
         }]
       }, (err, result) => {
 

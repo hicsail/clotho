@@ -176,7 +176,7 @@ class Part extends MongoModels {
     if (index == parts.length) {
       return callback(null, parts);
     }
-    
+
     Sequence.findByPartId(parts[index]['_id'].toString(), (err, sequences) => {
 
       if (err) {
@@ -256,6 +256,12 @@ class Part extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
+
+  static undelete(document, callback) {
+
+    delete document.toDelete;
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
