@@ -229,9 +229,9 @@ internals.applyRoutes = function (server, next) {
        const page = request.payload.page;
        */
 
-
       Async.auto({
         findSequences: function (done) {
+          console.log("findSequences");
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
@@ -239,65 +239,39 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           }
         },
-        findParts: ['findSequences', function (results, done) {
+        findParts: function (done) {
+          console.log("findParts");
 
-          // get Sequence ids from array
-          var seqArr = results.findSequences;
-          var partIds = [];
-          for (var i = 0; i < seqArr.length; ++i) {
-            if (seqArr[i]['partId'] !== undefined && seqArr[i]['partId'] !== null) {
-              partIds.push((seqArr[i]['partId']).toString());
+          if (request.payload.partIds !== undefined && request.payload.partIds !== null) {
+            var partIds = request.payload.partIds;
+
+            if (partIds.length > 0) {
+              Part.getParts(partIds, done);
             }
           }
-
-          if (request.payload.sequence !== undefined && request.payload.sequence !== null && partIds.length > 0) {
-            // then query all sequences' part ids
-            Part.getParts(partIds, done);
-
-          } else {
+          else {
             return done(null, []);
           }
-
-        }],
-        findParameters: ['findParts', function (results, done) {
+        },
+        findParameters: function (done) {
+          console.log("findParameters");
 
           // using part documents from last step, get biodesigns
-          var partArray = results.findParts;
-          var bioDesignIds = [];
-
-
-          if (partArray !== null) {
-            for (var i = 0; i < partArray.length; ++i) {
-              if (partArray[i]['bioDesignId'] !== undefined && partArray[i]['bioDesignId'] !== null) {
-                bioDesignIds.push(partArray[i]['bioDesignId'].toString());
-              } else if (typeof partArray[i] == 'string') {
-                // Prior steps found multiple bd ids, but sequence/part was undefined.
-                bioDesignIds.push(partArray[i]);
-              }
-            }
+          console.log(request.payload.parameters)
+          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
+            Parameter.getParameter(request.payload.parameters, done);
+          //returns all the parameter objects, we want a list of bioDesignIds instead!
           }
-
-
-          // only zero/one result, no need to search further
-          if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
-            if (bioDesignIds.length === 0) {
-              return done(null, []);
-            }
-
+          else {
+            return done(null, []);
           }
-
-
-          // otherwise keep going with parameters search
-          if (request.payload.parameters !== null && request.payload.parameters !== undefined) {
-            Parameter.getParameterByBioDesignId(bioDesignIds, request.payload.parameters, done);
-          } else {
-            done(null, bioDesignIds);
-          }
-
-        }],
+        },
         findModules: ['findParameters', function (results, done) {
+          console.log("findModules");
+
           // collect bioDesign Ids
           var parameterArray = results.findParameters;
+          console.log(parameterArray)
           var bioDesignIds = [];
           if (parameterArray != null) {
             for (var i = 0; i < parameterArray.length; ++i) {
