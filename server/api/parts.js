@@ -122,12 +122,6 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      /* const fields = request.payload.fields;
-       const sort = request.payload.sort;
-       const limit = request.payload.limit;
-       const page = request.payload.page;
-       */
-
       Async.auto({
         findPartIdsBySequences: function (done) {
           console.log("findSequences");
@@ -143,6 +137,7 @@ internals.applyRoutes = function (server, next) {
 
           var partIdsFromSequence = []
           var partIds = []
+          var partIdsTotal = []
 
           if (results.findPartIdsBySequences !== null && results.findPartIdsBySequences !== undefined) {
             partIdsFromSequence = results.findPartIdsBySequences;
@@ -153,14 +148,13 @@ internals.applyRoutes = function (server, next) {
           }
 
           if (partIdsFromSequence.length !== 0 && partIds.length !== 0) {
-            var partIdsTotal = partIds.filter(function (item) {
+              partIdsTotal = partIds.filter(function (item) {
               return partIdsFromSequence.indexOf(item) != -1;
             });
           } else {
-            var partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+              partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
               return partIdsFromSequence.indexOf(item) < 0;
             }));
-            console.log(partIdsTotal)
           }
 
           if (partIdsTotal.length > 0) {
@@ -439,34 +433,68 @@ internals.applyRoutes = function (server, next) {
 
         var resultArr = response.result;
         var filteredArr = [];
+        console.log(resultArr);
+        //get full part for each bioDesignId
+        BioDesign.getBioDesignIds(resultArr, null, false, (err, results) => {
 
-        const acceptedFilters = ['subparts', 'parameters', 'modules'];
-        const acceptedBioDesignFilters = ['_id', 'name', 'description', 'userId', 'displayId', 'superBioDesignId'];
-        const filter = request.params.filter;
-
-        // If filtered attribute is that of a general biodesign, only that attribute is returned. (e.g. _id)
-
-        if (acceptedBioDesignFilters.indexOf(filter) !== -1) {
-          for (let result of resultArr) {
-            if (result[filter] !== undefined && result[filter] !== null) {
-              filteredArr.push(result[filter].toString());
-            } else {
-              filteredArr.push('null');
-            }
+            if (err) {
+            return err;
           }
 
-          // Otherwise return general biodesign and attribute (e.g. parameters + general biodesign).
-        } else {
-          for (let result of resultArr) {
-            var filteredResult = {};
-            for (let key of Object.keys(result)) {
-              if (acceptedFilters.indexOf(key) === -1 || key === filter) {
-                filteredResult[key] = result[key];
-              }
+          // const bioDesignFilters= ['parameters', 'modules', 'subparts']; //assume 's' is there
+          // const otherFilters= ['sequences', 'annotations', 'features']
+          //
+          //
+          //
+          // const filter = request.params.filter;
+          // console.log(filter)
+          // var test = results[0]
+          // console.log(test['modules'][0]['features'])
+          // delete test['modules'][0]['features']
+          // console.log(test.modules)
+
+
+          for (let bigPart in results) {
+            var filteredObj = [null, null];
+
+            //get filter object
+
+            if (filter === 'parameters') {
+              filteredObj[1] = bigPart['parameters'][0]
             }
-            filteredArr.push(filteredResult);
+            else if (filter === 'modules') {
+              filteredObj[1] = bigPart['modules'][0];
+              delete filteredObj[1]['features']
+            }
+            else if (filter === 'subparts') {
+              filteredObj[1] = bigPart['subparts'][0];
+              delete filteredObj[1]['sequences']
+            }
+            else if (filter === 'sequences') {
+              filteredObj[1] = bigPart['subparts'][0]['sequences'][0];
+              delete filteredObj[1]['annotations']
+            }
+            else if (filter === 'annotations') {
+              filteredObj[1] = bigPart['subparts'][0]['sequences'][0]['annotations'][0];
+              delete filteredObj[1]['features']
+            }
+            else if (filter === 'annotations') {
+              filteredObj[1] = bigPart['modules'][0]['features'][0]
+            }
+
+            //get bioDesign object
+            filteredObj[0] = bigPart;
+            delete filteredObj[0]['parameters'];
+            delete filteredObj[0]['modules'];
+            delete filteredObj[0]['subparts'];
+
+            filteredArr.push(filteredObj);
           }
-        }
+          console.log(filteredArr);
+
+
+        });
+        
 
         if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
           return reply(filteredArr.join());
