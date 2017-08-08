@@ -21,9 +21,9 @@ internals.applyRoutes = function (server, next) {
   const Version = server.plugins['hapi-mongo-models'].Version;
 
   /**
-   * @api {put} /api/part Get Part
-   * @apiName Get Part
-   * @apiDescription Get part based on arguments.
+   * @api {put} /api/put
+   * @apiName Search for Part
+   * @apiDescription Get BioDesignId of Part based on arguments.
    * @apiGroup Convenience Methods
    * @apiVersion 4.0.0
    * @apiPermission user
@@ -37,131 +37,30 @@ internals.applyRoutes = function (server, next) {
    *
    * @apiParamExample {json} Request-Example:
    *  {
- "name": "BBa_0123",
- "displayId": "TetR repressible enhancer",
- "role": "PROMOTER",
- "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
- "parameters": [
-  {
-	"name": "enhancer unbinding rate",
-	"value": 0.03,
-	"variable": "K7",
-	"units": "min-1"
-  },
-  {
-	"name": "mRNA degradation rate",
-	"value": 0.02,
-	"variable": "dmrna",
-	"units": "min-1"
-   }
- ]
-}
+   "name": "BBa_0123",
+   "displayId": "TetR repressible enhancer",
+   "role": "PROMOTER",
+   "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
+   "parameters": [
+    {
+    "name": "enhancer unbinding rate",
+    "value": 0.03,
+    "variable": "K7",
+    "units": "min-1"
+    },
+    {
+    "name": "mRNA degradation rate",
+    "value": 0.02,
+    "variable": "dmrna",
+    "units": "min-1"
+     }
+   ]
+  }
    *
    * @apiSuccessExample {json} Success-Response:
-   * [
-   {
-       "_id": "596c0ddb2ef1192cc8a821af",
-       "name": "BBa_0123",
-       "description": null,
-       "userId": "5939ba97b8e96112986d3be8",
-       "displayId": "TetR repressible enhancer",
-       "imageURL": null,
-       "subBioDesignIds": null,
-       "superBioDesignId": null,
-       "type": "PART",
-       "subparts": [
-           {
-               "_id": "596c0ddb2ef1192cc8a821b3",
-               "name": "BBa_0123",
-               "description": null,
-               "userId": "5939ba97b8e96112986d3be8",
-               "displayId": "TetR repressible enhancer",
-               "bioDesignId": "596c0ddb2ef1192cc8a821af",
-               "sequences": [
-                   {
-                       "_id": "596c0ddb2ef1192cc8a821b4",
-                       "name": "BBa_0123",
-                       "description": null,
-                       "userId": "5939ba97b8e96112986d3be8",
-                       "displayId": "TetR repressible enhancer",
-                       "featureId": "596c0ddb2ef1192cc8a821b6",
-                       "partId": "596c0ddb2ef1192cc8a821b3",
-                       "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
-                       "isLinear": null,
-                       "isSingleStranded": null,
-                       "annotations": [
-                           {
-                               "_id": "596c0ddb2ef1192cc8a821b5",
-                               "name": "BBa_0123",
-                               "description": null,
-                               "userId": "5939ba97b8e96112986d3be8",
-                               "sequenceId": "596c0ddb2ef1192cc8a821b4",
-                               "start": 1,
-                               "end": 38,
-                               "isForwardStrand": true,
-                               "features": [
-                                   {
-                                       "_id": "596c0ddb2ef1192cc8a821b6",
-                                       "name": "BBa_0123",
-                                       "description": null,
-                                       "userId": "5939ba97b8e96112986d3be8",
-                                       "displayId": "TetR repressible enhancer",
-                                       "role": "PROMOTER",
-                                       "annotationId": "596c0ddb2ef1192cc8a821b5",
-                                       "moduleId": "596c0ddb2ef1192cc8a821b2"
-                                   }
-                               ]
-                           }
-                       ]
-                   }
-               ]
-           }
-       ],
-       "modules": [
-           {
-               "_id": "596c0ddb2ef1192cc8a821b2",
-               "name": "BBa_0123",
-               "description": null,
-               "userId": "5939ba97b8e96112986d3be8",
-               "displayId": "TetR repressible enhancer",
-               "bioDesignId": "596c0ddb2ef1192cc8a821af",
-               "role": "PROMOTER",
-               "submoduleIds": null,
-               "features": [
-                   {
-                       "_id": "596c0ddb2ef1192cc8a821b6",
-                       "name": "BBa_0123",
-                       "description": null,
-                       "userId": "5939ba97b8e96112986d3be8",
-                       "displayId": "TetR repressible enhancer",
-                       "role": "PROMOTER",
-                       "annotationId": "596c0ddb2ef1192cc8a821b5",
-                       "moduleId": "596c0ddb2ef1192cc8a821b2"
-                   }
-               ]
-           }
-       ],
-       "parameters": [
-           {
-               "_id": "596c0ddb2ef1192cc8a821b0",
-               "name": "enhancer unbinding rate",
-               "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "596c0ddb2ef1192cc8a821af",
-               "value": 0.03,
-               "variable": "K7",
-               "units": "min-1"
-           },
-           {
-               "_id": "596c0ddb2ef1192cc8a821b1",
-               "name": "mRNA degradation rate",
-               "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "596c0ddb2ef1192cc8a821af",
-               "value": 0.02,
-               "variable": "dmrna",
-               "units": "min-1"
-           }
-       ]
-   }
+   *
+   [
+   "5989f9e0083e509dff943dde"
    ]
    *
    * @apiErrorExample {json} Error-Response 1:
@@ -236,7 +135,7 @@ internals.applyRoutes = function (server, next) {
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
           } else {
-            return done(null, []);
+            return done(null, null);
           }
         },
         findParts: ['findPartIdsBySequences', function (results, done) {
@@ -253,18 +152,23 @@ internals.applyRoutes = function (server, next) {
             partIds = request.payload.partIds;
           }
 
-          var partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
-            return partIdsFromSequence.indexOf(item) < 0;
-          }));
+          if (partIdsFromSequence.length !== 0 && partIds.length !== 0) {
+            var partIdsTotal = partIds.filter(function (item) {
+              return partIdsFromSequence.indexOf(item) != -1;
+            });
+          } else {
+            var partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+              return partIdsFromSequence.indexOf(item) < 0;
+            }));
+            console.log(partIdsTotal)
+          }
 
           if (partIdsTotal.length > 0) {
               Part.getByParts(partIdsTotal, done);
-            }
-
-
-          else {
-            return done(null, []);
+          } else {
+            return done(null, null);
           }
+
         }],
         findParameters: function (done) {
           console.log("findParameters");
@@ -274,7 +178,7 @@ internals.applyRoutes = function (server, next) {
             Parameter.getByParameter(request.payload.parameters, done);
           }
           else {
-            return done(null, []);
+            return done(null, null); //null array returned for unsuccesful search, return null if no parameter seached for
           }
         },
         findModules: function (done) {
@@ -285,26 +189,34 @@ internals.applyRoutes = function (server, next) {
             Module.getByModule(request.payload.role, done);
           }
           else {
-            return done(null, []);
+            return done(null, null);
           }
         },
         findBioDesigns: ['findParts', 'findParameters', 'findModules', function (results, done) {
           console.log('findBioDesigns');
 
-          var bdParts = results.findParts;
-          var bdParameters = results.findParameters;
-          var bdModules = results.findModules;
+          var intersectBDs = [];
+          var setBDs = [];
+          //set of duplicate bioDesigns found so far
+          if (results.findParts !== null){
+            setBDs.push(results.findParts);
+          }
+          if (results.findParameters !== null){
+            setBDs.push(results.findParameters);
+          }
+          if (results.findModules !== null){
+            setBDs.push(results.findModules);
+          }
 
-
-          //set intersection of unique bioDesigns found so far
-          var partAndParameters = bdParts.concat(bdParameters.filter(function (item) {
-            return bdParts.indexOf(item) < 0;
-          }));
-
-          var intersectBDs = partAndParameters.concat(bdModules.filter(function (item) {
-            return partAndParameters.indexOf(item) < 0;
-          }));
-
+          for (var i = 0; i < setBDs.length; ++i) {
+            if (i !== setBDs.length - 1) {                      //if there exists i+1,
+              setBDs[i+1] = setBDs[i].filter(function (item) {  // i+1 equals to the intersect of i and i+1
+                return setBDs[i+1].indexOf(item) != -1;;
+              });
+            } else {
+              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
+            }
+          }
 
           //query for all information found within bioDesignId Object, using above bioDesigns if availaible
           var query = {};
@@ -320,7 +232,6 @@ internals.applyRoutes = function (server, next) {
             query['userId'] = request.auth.credentials.user._id.toString();
           }
 
-
           // Should return everything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
             && request.payload.sequence === undefined && request.payload.parameters === undefined
@@ -334,7 +245,7 @@ internals.applyRoutes = function (server, next) {
           else if (request.payload.sequence === undefined && request.payload.parameters === undefined
             && request.payload.role === undefined) {
 
-            return BioDesign.getBioDesignIdsByQuery(null, query, done);
+            return BioDesign.getBioDesignIdsByQuery([], query, done);
           }
 
           else {

@@ -53,10 +53,6 @@ class Parameter extends MongoModels {
 
   }
 
-
-
-
-
     // Can pass in biodesignids, parameters, or both.
   static getParameterByBioDesignId(bioDesignIds, parameters, callback) {
 

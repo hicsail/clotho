@@ -43,7 +43,6 @@ class BioDesign extends MongoModels {
           //callback(null  , docs[0])
 
         });
-      console.log(docs);
       callback(null, docs[0]);
     });
   }
@@ -56,9 +55,8 @@ class BioDesign extends MongoModels {
     }
 
     var query2 = this.convertBD(bioDesignIds, query); //clean up query
-    console.log(query2)
 
-    this.find(query, (err, bioDesigns) => {
+    this.find(query2, (err, bioDesigns) => {
 
       if (err) {
         return callback(err);
@@ -75,7 +73,7 @@ class BioDesign extends MongoModels {
     if (bioDesigns.length > 0) {
 
       for (var i = 0; i < bioDesigns.length; ++i) {
-        bioDesignIds.push(bioDesigns[i]['bioDesignId'])
+        bioDesignIds.push(bioDesigns[i]['_id'])
       }
     }
     callback(null, bioDesignIds)
