@@ -66,6 +66,7 @@ const manifest = {
             Annotation: './server/models/annotation',
             Assembly: './server/models/assembly',
             AuthAttempt: './server/models/auth-attempt',
+            Function: './server/models/function',
             BioDesign: './server/models/bio-design',
             Container: './server/models/container',
             ExperimentDesign: './server/models/experiment-design',
@@ -302,7 +303,7 @@ const manifest = {
       plugin: './server/web/account/index'
     },
     {
-      plugin: './server/web/admin/index'
+      plugin: './server/web/function/index'
     },
     {
       plugin: './server/web/delete/index'
