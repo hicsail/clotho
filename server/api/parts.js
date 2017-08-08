@@ -230,7 +230,7 @@ internals.applyRoutes = function (server, next) {
        */
 
       Async.auto({
-        findSequences: function (done) {
+        findPartIdsBySequences: function (done) {
           console.log("findSequences");
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
@@ -239,20 +239,33 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           }
         },
-        findParts: function (done) {
+        findParts: ['findPartIdsBySequences', function (results, done) {
           console.log("findParts");
 
-          if (request.payload.partIds !== undefined && request.payload.partIds !== null) {
-            var partIds = request.payload.partIds;
+          var partIdsFromSequence = []
+          var partIds = []
 
-            if (partIds.length > 0) {
-              Part.getParts(partIds, done);
-            }
+          if (results.findPartIdsBySequences !== null && results.findPartIdsBySequences !== undefined) {
+            partIdsFromSequence = results.findPartIdsBySequences;
           }
+
+          if (request.payload.partIds !== undefined && request.payload.partIds !== null) {
+            partIds = request.payload.partIds;
+          }
+
+          var partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+            return partIdsFromSequence.indexOf(item) < 0;
+          }));
+
+          if (partIdsTotal.length > 0) {
+              Part.getByParts(partIdsTotal, done);
+            }
+
+
           else {
             return done(null, []);
           }
-        },
+        }],
         findParameters: function (done) {
           console.log("findParameters");
 
@@ -275,45 +288,25 @@ internals.applyRoutes = function (server, next) {
             return done(null, []);
           }
         },
-        findNames: function (done) {
-          console.log("findNames");
+        findBioDesigns: ['findParts', 'findParameters', 'findModules', function (results, done) {
+          console.log('findBioDesigns');
 
-          // using part documents from last step, get biodesigns
-          if (request.payload.name !== undefined && request.payload.name !== null) {
-            BioDesign.getByName(request.payload.name, done);
-          }
-          else {
-            return done(null, []);
-          }
-        },
+          var bdParts = results.findParts;
+          var bdParameters = results.findParameters;
+          var bdModules = results.findModules;
 
 
-        findBioDesigns: ['findNames', function (results, done) {
+          //set intersection of unique bioDesigns found so far
+          var partAndParameters = bdParts.concat(bdParameters.filter(function (item) {
+            return bdParts.indexOf(item) < 0;
+          }));
+
+          var intersectBDs = partAndParameters.concat(bdModules.filter(function (item) {
+            return partAndParameters.indexOf(item) < 0;
+          }));
 
 
-          // collect biodesign Ids
-          var moduleArray = results.findModules;
-          var bioDesignIds = [];
-          if (moduleArray != null && moduleArray.length > 0) {
-            for (let module of moduleArray) {
-              if (module['bioDesignId'] !== undefined && module['bioDesignId'] !== null) {
-                bioDesignIds.push(module['bioDesignId'].toString());
-              } else if (typeof module == 'string') {
-                // Prior steps found multiple bd ids, but parameter was undefined.
-                bioDesignIds.push(module);
-              }
-            }
-          }
-
-
-          // No result, no need to search further
-          if ((request.payload.sequence !== undefined || request.payload.parameters != undefined) || (request.payload.role !== undefined && request.payload.role !== null)) {
-            if (bioDesignIds.length === 0) {
-              return done(null, []);
-
-            }
-          }
-
+          //query for all information found within bioDesignId Object, using above bioDesigns if availaible
           var query = {};
           if (request.payload.name !== undefined) {
             query['name'] = request.payload.name;
@@ -327,17 +320,27 @@ internals.applyRoutes = function (server, next) {
             query['userId'] = request.auth.credentials.user._id.toString();
           }
 
+
           // Should return everything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
             && request.payload.sequence === undefined && request.payload.parameters === undefined
             && request.payload.role === undefined) {
-            return BioDesign.getBioDesignIds(bioDesignIds, {}, false, done);
-          } else {
-            // Get full biodesigns.
-            return BioDesign.getBioDesignIds(bioDesignIds, query, false, done);
+            return BioDesign.find(); //change this to a list of bioDesignIds
           }
 
+          else if (Object.keys(query).length === 0) { //if there's no query for the bioDesign object
+            done (null, intersectBDs)
+          }
+          else if (request.payload.sequence === undefined && request.payload.parameters === undefined
+            && request.payload.role === undefined) {
 
+            return BioDesign.getBioDesignIdsByQuery(null, query, done);
+          }
+
+          else {
+            // Get full biodesigns.
+            return BioDesign.getBioDesignIdsByQuery(intersectBDs, query, done);
+          }
         }]
       }, (err, results) => {
 

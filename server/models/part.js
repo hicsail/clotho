@@ -45,6 +45,40 @@ class Part extends MongoModels {
   }
 
 
+  // get biodesignId from partId
+  static getByParts(partIds, callback) {
+
+    for (var i = 0; i < partIds.length; ++i) {
+      partIds[i] = new MongoModels.ObjectID(partIds[i]);
+    }
+
+    const query = {_id: {$in: partIds}};
+
+    this.find(query, (err, partIds) => {
+
+      if (err) {
+        return callback(err);
+      }
+      return this.getBioDesignIdsbyPart(partIds, callback);
+
+    });
+  }
+
+  static getBioDesignIdsbyPart(parts, callback) {
+
+    var bioDesignIds = [];
+
+    if (parts.length > 0) {
+
+      for (var i = 0; i < parts.length; ++i) {
+        bioDesignIds.push(parts[i]['bioDesignId'])
+      }
+    }
+    callback(null, bioDesignIds)
+  }
+
+
+
   static findByBioDesignId(bioDesignId, isDevice, callback) {
 
     if (bioDesignId == null) {
@@ -176,7 +210,7 @@ class Part extends MongoModels {
     if (index == parts.length) {
       return callback(null, parts);
     }
-    
+
     Sequence.findByPartId(parts[index]['_id'].toString(), (err, sequences) => {
 
       if (err) {
