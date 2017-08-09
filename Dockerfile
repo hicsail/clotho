@@ -17,9 +17,11 @@ RUN apt-get install -y ncbi-blast+
 
 COPY . /usr/src/clotho
 
+RUN cd remote-compiler && npm install
 RUN npm install
 RUN npm install -g pm2
 
 EXPOSE 9000
+EXPOSE 8000
 
 CMD sh docker-run.sh
