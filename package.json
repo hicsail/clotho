@@ -9,6 +9,7 @@
     "test": "lab -L",
     "lint": "lab -dL",
     "coverage": "lab -c",
+    "env": "node ./scripts/setup",
     "lint-fix": "lab -dL --lint-fix",
     "minify": "./scripts/minify.sh",
     "docs": "./scripts/generateDocs.sh",
