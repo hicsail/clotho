@@ -82,7 +82,9 @@ internals.applyRoutes = function (server, next) {
           versionNumber: Joi.number(),
           collectionName: Joi.string(),
           time: Joi.date(),
-          replacementVersionId: Joi.string().optional()
+          replacementVersionId: Joi.string().optional(),
+          description: Joi.string().optional,
+          application: Joi.string()
         }
       }
     },
@@ -97,6 +99,8 @@ internals.applyRoutes = function (server, next) {
         request.payload.collectionName,
         request.payload.time,
         request.payload.replacementVersionId,
+        request.payload.description,
+        request.payload.application,
         (err, version) => {
 
           if (err) {
@@ -121,7 +125,9 @@ internals.applyRoutes = function (server, next) {
           versionNumber: Joi.number(),
           collectionName: Joi.string(),
           time: Joi.date(),
-          replacementVersionId: Joi.string().optional()
+          replacementVersionId: Joi.string().optional(),
+          description: Joi.string().optional,
+          application: Joi.string()
         }
       }
     },
@@ -135,7 +141,9 @@ internals.applyRoutes = function (server, next) {
           versionNumber: request.payload.versionNumber,
           collectionName: request.payload.collectionName,
           time: request.payload.time,
-          replacementVersionId: request.payload.replacementVersionId
+          replacementVersionId: request.payload.replacementVersionId,
+          description: request.payload.description,
+          application: request.payload.application
         }
       };
 

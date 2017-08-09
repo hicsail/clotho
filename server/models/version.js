@@ -6,13 +6,15 @@ const ObjectID = require('mongo-models').ObjectID;
 
 class Version extends MongoModels {
 
-  static create(userId, objectId, versionNumber, collectionName, callback) {
+  static create(userId, objectId, versionNumber, collectionName, description, application, callback) {
 
     const document = {
       userId: userId,
       objectId: objectId,
       versionNumber: versionNumber,
       collectionName: collectionName,
+      description: description,
+      application: application,
       time: new Date()
     };
 
@@ -57,7 +59,9 @@ Version.schema = Joi.object().keys({
   versionNumber: Joi.number(),
   collectionName: Joi.string(),
   time: Joi.date(),
-  replacementVersionId: Joi.string()
+  replacementVersionId: Joi.string(),
+  description: Joi.string(),
+  application: Joi.string()
 });
 
 Version.indexes = [
