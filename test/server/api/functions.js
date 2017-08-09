@@ -260,7 +260,7 @@ lab.experiment('Function Plugin Reverse Complement', () => {
     });
   });
 });
-
+/*
 lab.experiment('Function Plugin Languages', () => {
 
   lab.beforeEach((done) => {
@@ -417,3 +417,4 @@ lab.experiment('Function Plugin Create', () => {
     });
   });
 });
+*/
