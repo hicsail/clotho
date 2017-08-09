@@ -12,21 +12,21 @@ Async.auto({
 
     const options = {
       replace: '*'
-    }
+    };
 
     Promptly.password('Password: ', options, callback);
   }],
   WriteFile: ['Password', function (results, callback) {
 
     var path = Path.join(__dirname, '../.env');
-    Fs.writeFile(path,`SMTP_USERNAME=${results.Gmail}\nSMTP_PASSWORD=${results.Password}`, callback)
+    Fs.writeFile(path,`SMTP_USERNAME=${results.Gmail}\nSMTP_PASSWORD=${results.Password}`, callback);
   }]
 }, (err, results) => {
 
   if(err) {
-    console.log(err);
+    console.warn(err);
     return;
   }
 
-  console.log('Env Complete');
+  console.warn('Env Complete');
 });
