@@ -7,24 +7,24 @@ var isHelper = function (left, operator, right, context) {
   }
   var output = false;
   switch (operator) {
-    case '==':
-      output = left == right;
-      break;
-    case '!=':
-      output = left != right;
-      break;
-    case '>':
-      output = left > right;
-      break;
-    case '>=':
-      output = left >= right;
-      break;
-    case '<':
-      output = left < right;
-      break;
-    case '<=':
-      output = left <= right;
-      break;
+  case '==':
+    output = left == right;
+    break;
+  case '!=':
+    output = left != right;
+    break;
+  case '>':
+    output = left > right;
+    break;
+  case '>=':
+    output = left >= right;
+    break;
+  case '<':
+    output = left < right;
+    break;
+  case '<=':
+    output = left <= right;
+    break;
   }
 
   if (output === true) {

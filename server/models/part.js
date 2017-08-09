@@ -98,7 +98,7 @@ class Part extends MongoModels {
     }
   }
 
-//return only part
+  //return only part
   static findByBioDesignIdOnly(i, bioDesignId, callback) {
 
     var query = [];

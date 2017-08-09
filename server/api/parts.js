@@ -1152,42 +1152,43 @@ internals.applyRoutes = function (server, next) {
           }
         }
       },
-        {
-          assign: 'checkBioDesign',
-          method: function (request, reply) {
+      {
+        assign: 'checkBioDesign',
+        method: function (request, reply) {
 
-            // Check that biodesign exists - should not perform update if biodesign does not exist.
-            var bioDesignId = request.params.id;
+          // Check that biodesign exists - should not perform update if biodesign does not exist.
+          var bioDesignId = request.params.id;
 
-            BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
+          BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
 
-                if (err) {
-                  return reply(err);
-                } else if (results === null || results.length === 0) {
-                  return reply(Boom.notFound('Part does not exist.'));
-                } else {
-                  reply(true);
-                }
-              }
-            );
+            if (err) {
+              return reply(err);
+            } else if (results === null || results.length === 0) {
+              return reply(Boom.notFound('Part does not exist.'));
+            } else {
+              reply(true);
+            }
           }
-        },
-        {
-          assign: 'checkVersion',
-          method: function (request, reply) {
+          );
+        }
+      },
+      {
+        assign: 'checkVersion',
+        method: function (request, reply) {
 
-            var bioDesignId = request.params.id;
+          var bioDesignId = request.params.id;
 
-            Version.findNewest(bioDesignId, 0, (err, results) => {
-              if (err) {
-                return err;
-              } else {
-                // This automatically find newest version if it exists, if not returns original
-                reply(results);
-              }
-            });
-          }
-        }],
+          Version.findNewest(bioDesignId, 0, (err, results) => {
+
+            if (err) {
+              return err;
+            } else {
+              // This automatically find newest version if it exists, if not returns original
+              reply(results);
+            }
+          });
+        }
+      }],
       validate: {
         payload: {
           sort: Joi.string().default('_id'),
@@ -1216,6 +1217,7 @@ internals.applyRoutes = function (server, next) {
 
         //get most updated ID
         getOldPart: function (done) {
+
           var versionResults = request.pre.checkVersion;
           var lastUpdatedId = versionResults[0];  //return current id, if no newer version
 
@@ -1301,7 +1303,6 @@ internals.applyRoutes = function (server, next) {
           var lastUpdatedId = versionResults[0];
           var versionNumber = versionResults[1];
 
-          const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
@@ -1518,10 +1519,12 @@ internals.applyRoutes = function (server, next) {
                   Feature.undelete(feature, callback);
 
                 }, (err) => {
+
                   Module.undelete(module, callback);
                 });
               });
             }, (err) => {
+
               callback(err, modules);
             });
           });
@@ -1558,18 +1561,22 @@ internals.applyRoutes = function (server, next) {
 
                           Feature.undelete(feature, callback);
                         }, (err) => {
+
                           Annotation.undelete(annotation, callback);
                         }); //end each feature
                       });// feature find
                     }, (err) => {
+
                       Sequence.undelete(sequence, callback);
                     }); //end each annotation
                   });// annotation find
                 }, (err) => {
+
                   Part.undelete(part, callback);
                 }); //end each sequence
               });// sequence find
             }, (err) => {
+
               callback(err);
             });// end for part
           });//part find

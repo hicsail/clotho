@@ -99,6 +99,7 @@ internals.applyRoutes = function (server, next) {
                 parameter.variable,
                 parameter.units,
                 (err, result) => {
+
                   parameters.push(result);
                   callback();
                 });
@@ -107,7 +108,10 @@ internals.applyRoutes = function (server, next) {
               if( err ) {
                 callback(err);
               } else {
-                callback(null,parameters.map(function(a) {return a._id.toString();}));
+                callback(null,parameters.map(function(a) {
+
+                  return a._id.toString();
+                }));
               }
             });
           } else {
@@ -211,7 +215,10 @@ internals.applyRoutes = function (server, next) {
         parameters: ['sample', function (results, callback) {
 
           if(results.sample.parameterIds) {
-            var ids = results.sample.parameterIds.map(function(id) { return ObjectID(id); });
+            var ids = results.sample.parameterIds.map(function(id) {
+
+              return ObjectID(id);
+            });
             Parameter.find({_id: {$in: ids}}, callback);
           } else {
             callback(null, []);
@@ -235,6 +242,7 @@ internals.applyRoutes = function (server, next) {
           Sample.delete(results.sample, callback);
         }]
       }, (err, results) => {
+
         if(err) {
           reply(err);
         }

@@ -90,7 +90,7 @@ class Sequence extends MongoModels {
 
   }
 
-//get subAnnotations if they exist, then direct to getAnnotations
+  //get subAnnotations if they exist, then direct to getAnnotations
   static getChild(index, sequences, callback) {
 
     this.getSubAnnotations(index, sequences, (err, seqWithSubAnnotations) => {

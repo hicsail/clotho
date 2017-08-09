@@ -536,6 +536,7 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       var input = `["${request.payload.inputs.join(',')}"]`;
       var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
       const runRequest = {
@@ -569,8 +570,8 @@ internals.applyRoutes = function (server, next) {
               false,
               (err, result) => {
 
-              reply(result);
-            });
+                reply(result);
+              });
           }
         } else {
           Function.create(
@@ -584,8 +585,8 @@ internals.applyRoutes = function (server, next) {
             true,
             (err, result) => {
 
-            reply(result);
-          });
+              reply(result);
+            });
         }
       });
 
@@ -604,7 +605,7 @@ internals.applyRoutes = function (server, next) {
         payload: {
           name: Joi.string().required(),
           description: Joi.string().optional(),
-           language: Joi.string().required(),
+          language: Joi.string().required(),
           code: Joi.array().required(),
           inputs: Joi.array().required(),
           outputs: Joi.array().required(),
@@ -650,10 +651,8 @@ internals.applyRoutes = function (server, next) {
             Function.findByIdAndUpdate(id, update, (err, result) => {
 
               if (err) return reply(err);
-              console.log('done');
-              console.log(result);
               reply(result);
-            })
+            });
           }
         } else {
           const update = {name: request.payload.name,
@@ -667,10 +666,8 @@ internals.applyRoutes = function (server, next) {
           Function.findByIdAndUpdate(id, update, (err, result) => {
 
             if (err) return reply(err);
-            console.log('done');
-            console.log(result);
             reply(result);
-          })
+          });
         }
       });
     }
@@ -689,15 +686,17 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       const id = request.payload._id;
 
       Function.findByIdAndDelete(id, (err, result) => {
+
         if (err) {
           return reply(err);
         }
 
         reply(result);
-      })
+      });
     }
   });
 

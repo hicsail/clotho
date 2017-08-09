@@ -110,14 +110,14 @@ internals.applyRoutes = function (server, next) {
         request.auth.credentials.user._id.toString(),
         request.payload.imageURL,
         request.payload.website,
-      (err, application) => {
+        (err, application) => {
 
-        if (err) {
-          return reply(err);
-        }
+          if (err) {
+            return reply(err);
+          }
 
-        reply(application);
-      });
+          reply(application);
+        });
     }
   });
 

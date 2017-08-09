@@ -33,9 +33,12 @@ lab.experiment('Container Class Methods', () => {
   lab.test('it returns a new instance when create succeeds', (done) => {
 
     Container.create(
-      'container',
-      'container description',
-      'userid12test',
+      'name',
+      'description',
+      'userId',
+      'parameterIds',
+      'type',
+      'coordinates',
       (err, result) => {
 
         Code.expect(err).to.not.exist();
@@ -57,9 +60,12 @@ lab.experiment('Container Class Methods', () => {
     };
 
     Container.create(
-      'Container',
-      'Container Description',
-      'userid12test',
+      'name',
+      'description',
+      'userId',
+      'parameterIds',
+      'type',
+      'coordinates',
       (err, result) => {
 
         Code.expect(err).to.be.an.object();

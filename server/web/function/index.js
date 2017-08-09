@@ -39,7 +39,8 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
-      var query = request.params.name.toLowerCase()
+
+      var query = request.params.name.toLowerCase();
 
       Function.find({name: { $regex: query}}, (err, result) => {
 
@@ -70,12 +71,6 @@ internals.applyRoutes = function (server, next) {
       const languageRequest = {
         method: 'GET',
         url: '/api/function/language',
-        credentials: request.auth.credentials
-      };
-
-      const templateRequest = {
-        method: 'GET',
-        url: '/api/function/template/{language*}',
         credentials: request.auth.credentials
       };
 

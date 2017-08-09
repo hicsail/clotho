@@ -9,7 +9,6 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Device = server.plugins['hapi-mongo-models'].Device;
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
   const Part = server.plugins['hapi-mongo-models'].Part;
   const Assembly = server.plugins['hapi-mongo-models'].Assembly;
@@ -74,6 +73,7 @@ internals.applyRoutes = function (server, next) {
           var bioDesignId = request.params.id;
 
           Version.findNewest(bioDesignId, 0, (err, results) => {
+
             if (err) {
               return err;
             } else {
@@ -113,6 +113,7 @@ internals.applyRoutes = function (server, next) {
 
         //get most updated ID
         getOldDevice: function (done) {
+
           var versionResults = request.pre.checkVersion;
           var lastUpdatedId = versionResults[0];  //returns current id, if no newer version
 
@@ -133,7 +134,7 @@ internals.applyRoutes = function (server, next) {
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
               // add if statements for parameters that may not exist (see role)
               if (args[i] === 'sequence') {
-                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null) {
+                if (oldDevice['subparts'][0]['sequences'] !== undefined && oldDevice['subparts'][0]['sequences'] !== null) {
                   newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
                 }
               }
@@ -204,7 +205,6 @@ internals.applyRoutes = function (server, next) {
           var lastUpdatedId = versionResults[0];
           var versionNumber = versionResults[1];
 
-          const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
@@ -219,7 +219,6 @@ internals.applyRoutes = function (server, next) {
               if (err) {
                 return reply(err);
               } else {
-                console.log(results);
                 done(null, results);
               }
             });
@@ -1125,10 +1124,10 @@ internals.applyRoutes = function (server, next) {
                   }
 
                   else {
-                    var key = results[0];
-                    superSequenceArr[key] = results[1][0]['sequence'];
-                    subSequenceIds[key] = results[1][0]['_id'];
-                    subFeatureIds[key] = results[1][0]['featureId'];
+                    var key2 = results[0];
+                    superSequenceArr[key2] = results[1][0]['sequence'];
+                    subSequenceIds[key2] = results[1][0]['_id'];
+                    subFeatureIds[key2] = results[1][0]['featureId'];
 
                     resolve(results);
                   }
@@ -1149,6 +1148,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSequence: ['createSubpart', 'getSequences', function (results, done) {
+
           if (request.payload.sequence === undefined || request.payload.sequence === null) {
 
             //get all subSequences and concatenates them to create the superSequence!
@@ -1156,7 +1156,7 @@ internals.applyRoutes = function (server, next) {
             var sequences = results.getSequences;
 
             var superSequenceArr = sequences[1];
-            var subBioDesignIds = request.payload.partIds;
+            //var subBioDesignIds = request.payload.partIds;
 
             var superSequence = superSequenceArr.join('');
 
@@ -1177,6 +1177,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSubAnnotations: ['createSequence', 'getSequences', function (results, done) {
+
           if (request.payload.sequence === undefined || request.payload.sequence === null) {
 
             // Create subAnnotations for all subBioDesigns connected to subFeatures
@@ -1240,6 +1241,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         updateSubFeaturesSuperAnnotationId: ['getSequences', 'createSubAnnotations', function (results, done) {
+
           if (request.payload.sequence === undefined || request.payload.sequence === null) {
 
             // Update superAnnotationIds in order in all subFeatures
@@ -1280,6 +1282,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSequenceFromPayload: ['createSubpart', function (results, done) {
+
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
 
             var partId = results.createSubpart._id.toString();
@@ -1465,6 +1468,7 @@ internals.applyRoutes = function (server, next) {
           callback(null, '');
         }],
         Parts: ['BioDesign', function (results, callback) {
+
           if(results.BioDesign.subparts) {
             for (var part of results.BioDesign.subparts) {
               if(part.sequences) {
@@ -1479,8 +1483,8 @@ internals.applyRoutes = function (server, next) {
                     });
                   }
                   if(sequence.subannotations) {
-                    for(var annotation of sequence.subannotations) {
-                      Annotation.delete(annotation, (err, callback) => {
+                    for(var subannotations of sequence.subannotations) {
+                      Annotation.delete(subannotations, (err, callback) => {
                       });
                     }
                   }
@@ -1574,10 +1578,12 @@ internals.applyRoutes = function (server, next) {
                   Feature.undelete(feature, callback);
 
                 }, (err) => {
+
                   Module.undelete(module, callback);
                 });
               });
             }, (err) => {
+
               callback(err, modules);
             });
           });
@@ -1632,18 +1638,22 @@ internals.applyRoutes = function (server, next) {
 
                           Feature.undelete(feature, callback);
                         }, (err) => {
+
                           Annotation.undelete(annotation, callback);
                         }); //end each feature
                       });// feature find
                     }, (err) => {
+
                       Sequence.undelete(sequence, callback);
                     }); //end each annotation
                   });// annotation find
                 }, (err) => {
+
                   Part.undelete(part, callback);
                 }); //end each sequence
               });// sequence find
             }, (err) => {
+
               callback(err, parts);
             });// end for part
           });//part find

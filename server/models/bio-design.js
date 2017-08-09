@@ -42,7 +42,6 @@ class BioDesign extends MongoModels {
           //callback(null  , docs[0])
 
         });
-      console.log(docs);
       callback(null, docs[0]);
     });
   }
@@ -205,7 +204,7 @@ class BioDesign extends MongoModels {
 
   }
 
-// based on biodesignId, fetches all children
+  // based on biodesignId, fetches all children
   static getBioDesign(bioDesignId, isDevice, callback) {
 
     Part.findByBioDesignId(bioDesignId, isDevice, (err, subparts) => {
@@ -236,7 +235,7 @@ class BioDesign extends MongoModels {
   }
 
 
-// Search for subdesigns.
+  // Search for subdesigns.
   static getSubDesignByBioDesignId(bioDesignIds, subDesigns, callback) {
 
     var query = {};

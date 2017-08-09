@@ -1,7 +1,7 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
-const AuthenticatedUser = require('../fixtures/credentials-admin');
-const Code = require('code');
+//const AuthenticatedUser = require('../fixtures/credentials-admin');
+//const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
@@ -14,7 +14,7 @@ const Proxyquire = require('proxyquire');
 const DevicePlugin = require('../../../server/api/device');
 
 const lab = exports.lab = Lab.script();
-let request;
+//let request;
 let server;
 let stub;
 

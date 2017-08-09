@@ -6,8 +6,9 @@
   "scripts": {
     "start": "nodemon server.js -e handlebars,js,css",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab -c -L",
+    "test": "lab -L",
     "lint": "lab -dL",
+    "coverage": "lab -c",
     "lint-fix": "lab -dL --lint-fix",
     "minify": "./scripts/minify.sh",
     "docs": "./scripts/generateDocs.sh",
@@ -30,7 +31,6 @@
     "apidoc": "^0.17.6",
     "async": "2.x.x",
     "bcrypt": "1.x.x",
-    "bionode": "^4.0.1",
     "bionode-seq": "^0.1.1",
     "blastjs": "^1.5.3",
     "boom": "5.x.x",

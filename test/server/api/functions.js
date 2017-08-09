@@ -312,7 +312,7 @@ lab.experiment('Function Plugin Versions', () => {
   });
 });
 
-lab.experiment('Function Plugin Versions', () => {
+lab.experiment('Function Plugin Run', () => {
 
   lab.beforeEach((done) => {
 
@@ -375,7 +375,7 @@ lab.experiment('Function Plugin Versions', () => {
   });
 });
 
-lab.experiment('Function Plugin Versions', () => {
+lab.experiment('Function Plugin Create', () => {
 
   lab.beforeEach((done) => {
 
@@ -387,7 +387,7 @@ lab.experiment('Function Plugin Versions', () => {
         name: 'myFunction',
         language: 'node',
         code: ['console.log(\'hello\')'],
-        inputs: [],
+        inputs: ['hello'],
         outputs: ['hello']
       }
     };
@@ -411,7 +411,7 @@ lab.experiment('Function Plugin Versions', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(400);
+      Code.expect(response.statusCode).to.equal(200);
 
       done();
     });
