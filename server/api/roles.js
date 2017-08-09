@@ -10,6 +10,101 @@ internals.applyRoutes = function (server, next) {
 
   const Role = server.plugins['hapi-mongo-models'].Role;
 
+  /**
+   * @api {get} /api/role Get Roles
+   * @apiName  Get Roles
+   * @apiDescription Get all vaild roles
+   * @apiGroup Roles
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} [sort="_id"] Order By
+   * @apiParam {Number} [limit=20] Limit
+   * @apiParam {Number} [page=1] Page Number
+   * @apiParamExample {String} Example Request:
+   * /api/role
+   *
+   * @apiParamExample {String} Example Request:
+   * /api/role?limit=2&sort=name&page=2
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "data": [
+        {
+            "_id": "59847693b904d00eb0d95aca",
+            "name": "BARCODE",
+            "type": [
+                "MODULE",
+                "FEATURE"
+            ],
+            "userId": "000000000000000000000000"
+        },
+        {
+            "_id": "59847693b904d00eb0d95acb",
+            "name": "CDS",
+            "type": [
+                "MODULE",
+                "FEATURE"
+            ],
+            "userId": "000000000000000000000000"
+        },
+    ],
+    "pages": {
+        "current": 1,
+        "prev": 0,
+        "hasPrev": false,
+        "next": 2,
+        "hasNext": false,
+        "total": 1
+    },
+    "items": {
+        "limit": 20,
+        "begin": 1,
+        "end": 16,
+        "total": 16
+    }
+}
+
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "data": [
+        {
+            "_id": "59847693b904d00eb0d95acc",
+            "name": "DEGRADATION_TAG",
+            "type": [
+                "MODULE",
+                "FEATURE"
+            ],
+            "userId": "000000000000000000000000"
+        },
+        {
+            "_id": "59847693b904d00eb0d95ad8",
+            "name": "FP",
+            "type": [
+                "MODULE",
+                "FEATURE"
+            ],
+            "userId": "000000000000000000000000"
+        }
+    ],
+    "pages": {
+        "current": 2,
+        "prev": 1,
+        "hasPrev": true,
+        "next": 3,
+        "hasNext": true,
+        "total": 8
+    },
+    "items": {
+        "limit": 2,
+        "begin": 3,
+        "end": 4,
+        "total": 16
+    }
+}
+   *
+   */
+
   server.route({
     method: 'GET',
     path: '/role',
@@ -44,6 +139,30 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {get} /api/role/:id Get Role by Id
+   * @apiName  Get Role by Id
+   * @apiDescription Get Role by Id
+   * @apiGroup Roles
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Role unique ID.
+   * @apiParamExample {String} id:
+   * 59847693b904d00eb0d95acc
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "_id": "59847693b904d00eb0d95acc",
+    "name": "DEGRADATION_TAG",
+    "type": [
+        "MODULE",
+        "FEATURE"
+    ],
+    "userId": "000000000000000000000000"
+}
+   *
+   */
   server.route({
     method: 'GET',
     path: '/role/{id}',
@@ -69,6 +188,33 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {post} /api/role/ Create Role
+   * @apiName  Create Role
+   * @apiDescription Create Role
+   * @apiGroup Roles
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name Role Name
+   * @apiParam {Array} type=MODULE,FEATURE Role can be applied to a module and or feature
+   * @apiParamExample {JSON} Example-Request:
+   * {
+	"name": "myRole"
+   }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "name": "MYROLE",
+    "userId": "598389688d5c4635fe2e4417",
+    "type": [
+        "MODULE",
+        "FEATURE"
+    ],
+    "_id": "598b69b5c8404e3dd23bf2d4"
+}
+   *
+   */
   server.route({
     method: 'POST',
     path: '/role',
@@ -103,7 +249,34 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {put} /api/role/:id Update Role By Id
+   * @apiName  Update Role By Id
+   * @apiDescription Update Role By Id, Does not find instances of role name and updates module and feature.
+   * @apiGroup Roles
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Role unique ID.
+   * @apiParam {String} name Role Name
+   * @apiParam {Array} type=MODULE,FEATURE Role can be applied to a module and or feature
+   * @apiParamExample {JSON} Example-Request:
+   * {
+	"name": "myNewRole"
+}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "_id": "598b69b5c8404e3dd23bf2d4",
+    "name": "MYNEWROLE",
+    "userId": "598389688d5c4635fe2e4417",
+    "type": [
+        "MODULE",
+        "FEATURE"
+    ]
+}
+   *
+   */
   server.route({
     method: 'PUT',
     path: '/role/{id}',
@@ -174,6 +347,23 @@ internals.applyRoutes = function (server, next) {
     }
 
   });
+
+  /**
+   * @api {delete} /api/role/:id Delete Role by Id
+   * @apiName  Delete Role by Id
+   * @apiDescription Remove Role from database
+   * @apiGroup Roles
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Role unique ID.
+   * @apiParamExample {String} id:
+   * 59847693b904d00eb0d95acc
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
 
   server.route({
     method: 'DELETE',
