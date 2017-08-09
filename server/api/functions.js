@@ -516,7 +516,83 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  var testCheck = true;
+  server.route({
+    method: 'GET',
+    path: '/function/{name}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session']
+      }
+    },
+    handler: function (request, reply) {
+
+      const conditions = {
+        name: request.params.name
+      };
+
+      Function.findOne(conditions, (err, user) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (user) {
+          return reply(Boom.conflict('Function Name already in use.'));
+        }
+
+        reply(true);
+      });
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/function/run/{name}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session']
+      },
+      validate: {
+        payload: {
+          inputs: Joi.array().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const conditions = {
+        name: request.params.name
+      };
+
+      Function.findOne(conditions, (err, task) => {
+
+        if (task) {
+
+          var input = `["${request.payload.inputs.join(',')}"]`;
+          var payload = `${task.language} ${input}\n ${task.code.join('\n')}`;
+          const runRequest = {
+            method: 'POST',
+            url: '/api/function/run',
+            payload: payload,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            credentials: request.auth.credentials
+          };
+
+          server.inject(runRequest, (response) => {
+
+            return reply(response.result);
+          });
+        } else {
+          return reply(Boom.conflict('Function does not exist'));
+        }
+      });
+    }
+  });
+
+
+  var testCheck = false;
   server.route({
     method: 'POST',
     path: '/function',
@@ -533,7 +609,29 @@ internals.applyRoutes = function (server, next) {
           inputs: Joi.array().required(),
           outputs: Joi.array().required()
         }
-      }
+      },
+      pre: [{
+        assign: 'functionNameCheck',
+        method: function (request, reply) {
+
+          const conditions = {
+            name: request.payload.name
+          };
+
+          Function.findOne(conditions, (err, user) => {
+
+            if (err) {
+              return reply(err);
+            }
+
+            if (user) {
+              return reply(Boom.conflict('Function Name already in use.'));
+            }
+
+            reply(true);
+          });
+        }
+      }]
     },
     handler: function (request, reply) {
       var input = `["${request.payload.inputs.join(',')}"]`;
@@ -650,8 +748,6 @@ internals.applyRoutes = function (server, next) {
             Function.findByIdAndUpdate(id, update, (err, result) => {
 
               if (err) return reply(err);
-              console.log('done');
-              console.log(result);
               reply(result);
             })
           }
