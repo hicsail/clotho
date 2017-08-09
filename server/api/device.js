@@ -328,6 +328,268 @@ internals.applyRoutes = function (server, next) {
 
 
   /**
+   * @api {put} /api/put
+   * @apiName Search for Part
+   * @apiDescription Get BioDesignId of Part based on arguments.
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+   "name": "BBa_0123",
+   "displayId": "TetR repressible enhancer",
+   "role": "PROMOTER",
+   "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
+   "parameters": [
+    {
+    "name": "enhancer unbinding rate",
+    "value": 0.03,
+    "variable": "K7",
+    "units": "min-1"
+    },
+    {
+    "name": "mRNA degradation rate",
+    "value": 0.02,
+    "variable": "dmrna",
+    "units": "min-1"
+     }
+   ]
+  }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *
+   [
+   "5989f9e0083e509dff943dde"
+   ]
+   *
+   * @apiErrorExample {json} Error-Response 1:
+   * {
+   * "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+   * }
+   */
+
+
+  server.route({
+    method: 'PUT',
+    path: '/device',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      pre: [{
+        assign: 'checkrole',
+        method: function (request, reply) {
+
+          var role = request.payload.role;
+          if (role !== undefined && role !== null) {
+
+            Role.checkValidRole(role, (err, results) => {
+
+              if (err || !results) {
+                return reply(Boom.badRequest('Role invalid.'));
+              } else {
+                reply(true);
+              }
+            });
+          } else {
+            reply(true);
+          }
+        }
+      }],
+      validate: {
+        payload: {
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1),
+          name: Joi.string().optional(),
+          userId: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          role: Joi.string().optional(),
+          partIds: Joi.array().items(Joi.string().required()).optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(),
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional(),
+          userSpace: Joi.boolean().default(false)
+        }
+      }
+    },
+
+    handler: function (request, reply) {
+
+      Async.auto({
+        findPartIdsBySequences: function (done) {
+          console.log("findSequences");
+
+          if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
+            Sequence.getSequenceBySequenceString(request.payload.sequence, done);
+          } else {
+            return done(null, null);
+          }
+        },
+        findParts: ['findPartIdsBySequences', function (results, done) {
+          console.log("findParts");
+
+          var partIdsFromSequence = [];
+          var partIds = [];
+          var partIdsTotal = [];
+
+          if (results.findPartIdsBySequences !== null && results.findPartIdsBySequences !== undefined) {
+            partIdsFromSequence = results.findPartIdsBySequences;
+          }
+
+          if (request.payload.partIds !== undefined && request.payload.partIds !== null) {
+            partIds = request.payload.partIds;
+          }
+
+          if (partIdsFromSequence.length !== 0 && partIds.length !== 0) {
+            partIdsTotal = partIds.filter(function (item) {
+              return partIdsFromSequence.indexOf(item) != -1;
+            });
+          } else {
+            partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+              return partIdsFromSequence.indexOf(item) < 0;
+            }));
+          }
+
+          if (partIdsTotal.length > 0) {
+            Part.getByParts(partIdsTotal, done);
+          } else {
+            return done(null, null);
+          }
+
+        }],
+        findParameters: function (done) {
+          console.log("findParameters");
+
+          // using part documents from last step, get biodesigns
+          if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
+            Parameter.getByParameter(request.payload.parameters, done);
+          }
+          else {
+            return done(null, null); //null array returned for unsuccesful search, return null if no parameter seached for
+          }
+        },
+        findModules: function (done) {
+          console.log("findModules");
+
+          // using part documents from last step, get biodesigns
+          if (request.payload.role !== undefined && request.payload.role !== null) {
+            Module.getByModule(request.payload.role, done);
+          }
+          else {
+            return done(null, null);
+          }
+        },
+        findBioDesigns: ['findParts', 'findParameters', 'findModules', function (results, done) {
+          console.log('findBioDesigns');
+
+          var intersectBDs = [];
+          var setBDs = [];
+          //set of duplicate bioDesigns found so far
+          if (results.findParts !== null){
+            setBDs.push(results.findParts);
+          }
+          if (results.findParameters !== null){
+            setBDs.push(results.findParameters);
+          }
+          if (results.findModules !== null){
+            setBDs.push(results.findModules);
+          }
+
+          for (var i = 0; i < setBDs.length; ++i) {
+            if (i !== setBDs.length - 1) {                      //if there exists i+1,
+              setBDs[i+1] = setBDs[i].filter(function (item) {  // i+1 equals to the intersect of i and i+1
+                return setBDs[i+1].indexOf(item) != -1;;
+              });
+            } else {
+              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
+            }
+          }
+
+          //query for all information found within bioDesignId Object, using above bioDesigns if availaible
+          var query = {};
+          if (request.payload.name !== undefined) {
+            query['name'] = request.payload.name;
+          }
+
+          if (request.payload.displayId !== undefined) {
+            query['displayId'] = request.payload.displayId;
+          }
+
+          if (request.payload.userSpace) {
+            query['userId'] = request.auth.credentials.user._id.toString();
+          }
+
+          //TODO: add query for subBioDesignIds/partIds
+          //For multiple partIds or single partId - consider array of strings vs string
+
+
+          // Should return everything if all arguments are empty.
+          if (request.payload.name === undefined && request.payload.displayId === undefined
+            && request.payload.sequence === undefined && request.payload.parameters === undefined
+            && request.payload.role === undefined) {
+            return BioDesign.find(); //change this to a list of bioDesignIds
+          }
+
+          else if (Object.keys(query).length === 0) { //if there's no query for the bioDesign object
+            done (null, intersectBDs)
+          }
+          else if (request.payload.sequence === undefined && request.payload.parameters === undefined
+            && request.payload.role === undefined) {
+
+            return BioDesign.getBioDesignIdsByQuery([], query, done);
+          }
+
+          else {
+            // Get full biodesigns.
+            return BioDesign.getBioDesignIdsByQuery(intersectBDs, query, done);
+          }
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (results.findBioDesigns.length === 0) {
+          return reply([]);
+        }
+
+        return reply(results.findBioDesigns);
+      });
+
+    }
+  })
+  ;
+
+
+
+
+
+
+
+
+
+
+
+
+  /**
    * @api {post} /api/device Get Device
    * @apiName Get Device
    * @apiDescription Get device based on bioDesignId
