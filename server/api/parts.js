@@ -414,55 +414,52 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+      Async.auto({
 
-      var newRequest = {
-        url: '/api/part',
-        method: 'PUT',
-        payload: request.payload,
-        credentials: request.auth.credentials
-      };
+        getPut: function (done) {
+          var newRequest = {
+            url: '/api/part',
+            method: 'PUT',
+            payload: request.payload,
+            credentials: request.auth.credentials
+          };
 
-      server.inject(newRequest, (response) => {
+          server.inject(newRequest, (response) => {
+            // Check for error. Includes no document found error.
+            if (response.statusCode !== 200) {
+              return reply(response.result);
+            }
+            done(null, response.result)
+          });
+        },
+        getBioDesign : ['getPut', function (results, done) {
 
-        // Check for error. Includes no document found error.
-        if (response.statusCode !== 200) {
-          return reply(response.result);
-        }
-
-        // Otherwise loop through and remove keys.
-
-        var resultArr = response.result;
-        var filteredArr = [];
-        console.log(resultArr);
-        //get full part for each bioDesignId
-        BioDesign.getBioDesignIds(resultArr, null, false, (err, results) => {
+          var resultArr = results.getPut;
+          BioDesign.getBioDesignIds(resultArr, null, false, (err, results) => {
 
             if (err) {
-            return err;
-          }
+              return err;
+            }
+            done(null, results);
+          });
+        }],
+        getResults: ['getBioDesign', function (results, done) {
 
-          // const bioDesignFilters= ['parameters', 'modules', 'subparts']; //assume 's' is there
-          // const otherFilters= ['sequences', 'annotations', 'features']
-          //
-          //
-          //
-          // const filter = request.params.filter;
-          // console.log(filter)
-          // var test = results[0]
-          // console.log(test['modules'][0]['features'])
-          // delete test['modules'][0]['features']
-          // console.log(test.modules)
+          const filter =  request.params.filter
+          var bioDesigns = results.getBioDesign;
+          var filteredArr = []
 
-
-          for (let bigPart in results) {
+          for (let bigPart in bioDesigns) {
             var filteredObj = [null, null];
+            // console.log("first in for loop")
+            // console.log("first in for loop")
 
             //get filter object
-
             if (filter === 'parameters') {
               filteredObj[1] = bigPart['parameters'][0]
             }
             else if (filter === 'modules') {
+              console.log("MODULES for loop")
               filteredObj[1] = bigPart['modules'][0];
               delete filteredObj[1]['features']
             }
@@ -481,6 +478,7 @@ internals.applyRoutes = function (server, next) {
             else if (filter === 'annotations') {
               filteredObj[1] = bigPart['modules'][0]['features'][0]
             }
+            console.log("in for loop")
 
             //get bioDesign object
             filteredObj[0] = bigPart;
@@ -490,22 +488,18 @@ internals.applyRoutes = function (server, next) {
 
             filteredArr.push(filteredObj);
           }
+          console.log("HERE NOW")
           console.log(filteredArr);
 
-
-        });
-        
-
-        if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
-          return reply(filteredArr.join());
-        } else {
-          return reply(filteredArr);
-        }
-
-      });
-    }
-  })
-  ;
+          if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
+            return reply(filteredArr.join());
+          } else {
+            return reply(filteredArr);
+          }
+        }]
+      })
+      }
+  });
 
   /**
    * @api {get} /api/part/:id Get Part By Id
