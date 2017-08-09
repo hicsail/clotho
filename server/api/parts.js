@@ -306,44 +306,31 @@ internals.applyRoutes = function (server, next) {
  ]
 }
 
-   *
-   * @apiSuccessExample {string} Success-Response 1 (for api/part/_id):
-   5952e539ed2e7c2df88b7f8a,595d5dc4aee74b3680aa647d,595e603d7eb5543624b7778b,595e6f392731b23c04d4dd34
-
-   * @apiSuccessExample {json} Success-Response 2 (for api/part/parameters):
+   * @apiSuccessExample {json} Success-Response (for api/part/parameters):
    *
    * [
+   [
    {
-       "_id": "596c0ddb2ef1192cc8a821af",
-       "name": "BBa_0123",
+       "_id": "598b7d0e222537a996a9758d",
+       "name": "BBa_R0040",
        "description": null,
-       "userId": "5939ba97b8e96112986d3be8",
-       "displayId": "TetR repressible enhancer",
+       "userId": "593f0d81b59d9120de14d897",
+       "displayId": "TetR repressible promoter",
        "imageURL": null,
        "subBioDesignIds": null,
        "superBioDesignId": null,
-       "type": "PART",
-       "parameters": [
-           {
-               "_id": "596c0ddb2ef1192cc8a821b0",
-               "name": "enhancer unbinding rate",
-               "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "596c0ddb2ef1192cc8a821af",
-               "value": 0.03,
-               "variable": "K7",
-               "units": "min-1"
-           },
-           {
-               "_id": "596c0ddb2ef1192cc8a821b1",
-               "name": "mRNA degradation rate",
-               "userId": "5939ba97b8e96112986d3be8",
-               "bioDesignId": "596c0ddb2ef1192cc8a821af",
-               "value": 0.02,
-               "variable": "dmrna",
-               "units": "min-1"
-           }
-       ]
+       "type": "PART"
+   },
+   {
+       "_id": "598b7d0e222537a996a9758f",
+       "name": "promoter unbinding rate",
+       "userId": "593f0d81b59d9120de14d897",
+       "bioDesignId": "598b7d0e222537a996a9758d",
+       "value": 0.03,
+       "variable": "K7",
+       "units": "min-1"
    }
+   ]
    ]
    *
    * @apiErrorExample {json} Error-Response 1 - no parts match:
@@ -376,7 +363,7 @@ internals.applyRoutes = function (server, next) {
           // Check if filter is valid.
           // TODO - update with any new biodesign attributes
           var schema = {
-            filter: Joi.string().valid('parameters', 'modules', 'subparts',
+            filter: Joi.string().valid('parameters', 'modules', 'subparts', 'sequences', 'annotations', 'features',
               '_id', 'name', 'description', 'userId', 'displayId', 'moduleId', 'superBioDesignId').required()
           };
           var filter = {filter: request.params.filter};
@@ -456,40 +443,36 @@ internals.applyRoutes = function (server, next) {
 
             //get filter object
             if (filter === 'parameters') {
-              filteredObj[1] = bigPart['parameters'][0]
+              filteredObj[1] = bioDesigns[bigPart]['parameters'][0]
             }
             else if (filter === 'modules') {
-              console.log("MODULES for loop")
-              filteredObj[1] = bigPart['modules'][0];
+              filteredObj[1] = bioDesigns[bigPart]['modules'][0];
               delete filteredObj[1]['features']
             }
             else if (filter === 'subparts') {
-              filteredObj[1] = bigPart['subparts'][0];
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0];
               delete filteredObj[1]['sequences']
             }
             else if (filter === 'sequences') {
-              filteredObj[1] = bigPart['subparts'][0]['sequences'][0];
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0];
               delete filteredObj[1]['annotations']
             }
             else if (filter === 'annotations') {
-              filteredObj[1] = bigPart['subparts'][0]['sequences'][0]['annotations'][0];
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['annotations'][0];
               delete filteredObj[1]['features']
             }
             else if (filter === 'annotations') {
-              filteredObj[1] = bigPart['modules'][0]['features'][0]
+              filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0]
             }
-            console.log("in for loop")
 
             //get bioDesign object
-            filteredObj[0] = bigPart;
+            filteredObj[0] = bioDesigns[bigPart];
             delete filteredObj[0]['parameters'];
             delete filteredObj[0]['modules'];
             delete filteredObj[0]['subparts'];
 
             filteredArr.push(filteredObj);
           }
-          console.log("HERE NOW")
-          console.log(filteredArr);
 
           if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
             return reply(filteredArr.join());
