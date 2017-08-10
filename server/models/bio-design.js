@@ -12,7 +12,7 @@ const Version = require('./version');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, application, callback) {
 
     const document = {
       name: name,
@@ -30,13 +30,14 @@ class BioDesign extends MongoModels {
       if (err) {
         return callback(err);
       }
+
       Version.create(
         userId,
         docs[0]['_id'],
         0, //versionNumber; set to zero initially, if updating, will be updated later.
         'bioDesign', //collectionName
         description,
-        null,  //application
+        application,  //application
         (err, results) => {
 
           if (err) {
@@ -101,13 +102,16 @@ class BioDesign extends MongoModels {
       query = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
-
     if (extra['name'] !== undefined) {
       query['name'] = {$regex: extra['name'], $options: 'i'};
     }
 
     if (extra['displayId'] !== undefined) {
       query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
+    } else if (extra['userId'] !== undefined) {
+      query['userId'] = {$regex: extra['userId'], $options: 'i'};
+    } else if (extra['subBioDesignIds'] !== undefined) {
+      query['subBioDesignIds'] = {$all: extra['subBioDesignIds']};
     }
 
     // Need to ensure all attributes from query are copied over.
@@ -408,7 +412,8 @@ BioDesign.schema = Joi.object().keys({
   superBioDesignId: Joi.string().optional(),
   versionId: Joi.string().optional(),
   polynucleotides: Joi.array().items(Sequence.schema),
-  type: Joi.string().uppercase().optional()
+  type: Joi.string().uppercase().optional(),
+  application: Joi.string()
 });
 
 BioDesign.indexes = [

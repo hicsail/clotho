@@ -83,7 +83,8 @@ internals.applyRoutes = function (server, next) {
           imageURL: Joi.string().optional(),
           subBioDesignIds: Joi.array().items(Joi.string()).optional(),
           superBioDesignId: Joi.string().optional(),
-          type: Joi.string().uppercase().optional()
+          type: Joi.string().uppercase().optional(),
+          application: Joi.string().optional()
         }
       }
     },

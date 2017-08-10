@@ -128,7 +128,6 @@ internals.applyRoutes = function (server, next) {
 
       Async.auto({
         findPartIdsBySequences: function (done) {
-          console.log("findSequences");
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
 
@@ -143,7 +142,6 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findParts: ['findPartIdsBySequences', function (results, done) {
-          console.log("findParts");
 
           var partIdsFromSequence = []
           var partIds = []
@@ -179,7 +177,6 @@ internals.applyRoutes = function (server, next) {
 
         }],
         findParameters: function (done) {
-          console.log("findParameters");
 
           // using part documents from last step, get biodesigns
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
@@ -195,7 +192,6 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findModules: function (done) {
-          console.log("findModules");
 
           // using part documents from last step, get biodesigns
           if (request.payload.role !== undefined && request.payload.role !== null) {
@@ -210,7 +206,6 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findBioDesigns: ['findParts', 'findParameters', 'findModules', function (results, done) {
-          console.log('findBioDesigns');
 
           var intersectBDs = [];
           var setBDs = [];
@@ -469,8 +464,6 @@ internals.applyRoutes = function (server, next) {
 
           for (let bigPart in bioDesigns) {
             var filteredObj = [null, null];
-            // console.log("first in for loop")
-            // console.log("first in for loop")
 
             //get filter object
             if (filter === 'parameters') {
@@ -492,7 +485,7 @@ internals.applyRoutes = function (server, next) {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['annotations'][0];
               delete filteredObj[1]['features']
             }
-            else if (filter === 'annotations') {
+            else if (filter === 'features') {
               filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0]
             }
 
@@ -776,6 +769,7 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         createBioDesign: function (done) {
 
+
           BioDesign.create(
             request.payload.name,
             null, // description
@@ -784,7 +778,8 @@ internals.applyRoutes = function (server, next) {
             null, //imageURL
             null, //subBioDesignIds
             null, //superBioDesignId
-            'PART',
+            'PART', //type
+            request.auth.credentials.session.application.toString(), //application
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {
