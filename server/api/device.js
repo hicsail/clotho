@@ -518,7 +518,7 @@ internals.applyRoutes = function (server, next) {
                 return setBDs[i+1].indexOf(item) != -1;;
               });
             } else {
-              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
+              intersectBDs = svetBDs[i]   //last in setBDs is the intersect of all inputs
             }
           }
 
@@ -1220,7 +1220,8 @@ internals.applyRoutes = function (server, next) {
             null, //imageUrl
             subBioDesignIds,
             null, //superBioDesignIds
-            'DEVICE',
+            'DEVICE', //type
+            request.auth.credentials.session.application.toString(), //application
             done);
         },
         updateSubBioDesignSuperDesign: ['createBioDesign', function (results, done) {

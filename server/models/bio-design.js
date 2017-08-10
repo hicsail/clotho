@@ -12,7 +12,7 @@ const Version = require('./version');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, application, callback) {
 
     const document = {
       name: name,
@@ -30,13 +30,14 @@ class BioDesign extends MongoModels {
       if (err) {
         return callback(err);
       }
+
       Version.create(
         userId,
         docs[0]['_id'],
         0, //versionNumber; set to zero initially, if updating, will be updated later.
         'bioDesign', //collectionName
-        description, 
-        null,  //application
+        description,
+        application,  //application
         (err, results) => {
 
           if (err) {
@@ -397,7 +398,8 @@ BioDesign.schema = Joi.object().keys({
   superBioDesignId: Joi.string().optional(),
   versionId: Joi.string().optional(),
   polynucleotides: Joi.array().items(Sequence.schema),
-  type: Joi.string().uppercase().optional()
+  type: Joi.string().uppercase().optional(),
+  application: Joi.string()
 });
 
 BioDesign.indexes = [

@@ -745,6 +745,7 @@ internals.applyRoutes = function (server, next) {
       Async.auto({
         createBioDesign: function (done) {
 
+
           BioDesign.create(
             request.payload.name,
             null, // description
@@ -753,7 +754,8 @@ internals.applyRoutes = function (server, next) {
             null, //imageURL
             null, //subBioDesignIds
             null, //superBioDesignId
-            'PART',
+            'PART', //type
+            request.auth.credentials.session.application.toString(), //application
             done);
         },
         createParameters: ['createBioDesign', function (results, done) {
