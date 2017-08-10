@@ -341,6 +341,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   * @apiParam {Boolean} [searchDeleted=false] whether to search for only deleted parts (true) or only non-deleted parts (false).
    *
    * @apiParamExample {json} Request-Example:
    *  {
@@ -425,12 +426,16 @@ internals.applyRoutes = function (server, next) {
               variable: Joi.string()
             })
           ).optional(),
-          userSpace: Joi.boolean().default(false)
+          userSpace: Joi.boolean().default(false),
+          searchDeleted: Joi.boolean().default(false)
+
         }
       }
     },
 
     handler: function (request, reply) {
+
+      const searchDeleted = request.payload.searchDeleted;
 
       Async.auto({
         findPartIdsBySequences: function (done) {
@@ -479,7 +484,11 @@ internals.applyRoutes = function (server, next) {
 
           // using part documents from last step, get biodesigns
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
-            Parameter.getByParameter(request.payload.parameters, done);
+            if (searchDeleted) {
+              Parameter.getByParameter(request.payload.parameters, {toDelete: true}, done);
+            } else {
+              Parameter.getByParameter(request.payload.parameters, {toDelete: null}, done);
+            }
           }
           else {
             return done(null, null); //null array returned for unsuccesful search, return null if no parameter seached for
@@ -490,7 +499,12 @@ internals.applyRoutes = function (server, next) {
 
           // using part documents from last step, get biodesigns
           if (request.payload.role !== undefined && request.payload.role !== null) {
-            Module.getByModule(request.payload.role, done);
+            if (searchDeleted) {
+              Module.getByModule(request.payload.role, {toDelete: true}, done);
+            } else {
+              Module.getByModule(request.payload.role, {toDelete: null}, done);
+            }
+
           }
           else {
             return done(null, null);
@@ -534,6 +548,12 @@ internals.applyRoutes = function (server, next) {
 
           if (request.payload.userSpace) {
             query['userId'] = request.auth.credentials.user._id.toString();
+          }
+
+          if (searchDeleted) {
+            query['toDelete'] = true;
+          } else {
+            query['toDelete'] = null;
           }
 
           //TODO: add query for subBioDesignIds/partIds

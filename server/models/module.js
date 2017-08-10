@@ -27,9 +27,14 @@ class Module extends MongoModels {
 
   }
 
-  static getByModule(role, callback) {
+  static getByModule(role, options, callback) {
 
-    const query = {role: role};
+
+    var query = {role: role};
+    for (var attrname in options) {
+      query[attrname] = options[attrname];
+    }
+
     this.find(query, (err, modules) => {
 
       if (err) {

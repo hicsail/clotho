@@ -35,7 +35,7 @@ class BioDesign extends MongoModels {
         docs[0]['_id'],
         0, //versionNumber; set to zero initially, if updating, will be updated later.
         'bioDesign', //collectionName
-        description, 
+        description,
         null,  //application
         (err, results) => {
 
@@ -104,8 +104,19 @@ class BioDesign extends MongoModels {
 
     if (extra['name'] !== undefined) {
       query['name'] = {$regex: extra['name'], $options: 'i'};
-    } else if (extra['displayId'] !== undefined) {
+    }
+
+    if (extra['displayId'] !== undefined) {
       query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
+    }
+
+    // Need to ensure all attributes from query are copied over.
+
+    var extraAttributes = Object.keys(extra);
+    for (var i = 0; i < extraAttributes.length; i++) {
+      if (extraAttributes[i] !== 'name' && extraAttributes[i] !== 'displayId') {
+        query[extraAttributes[i]] = extra[extraAttributes[i]];
+      }
     }
 
     return query;
