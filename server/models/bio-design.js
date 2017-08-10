@@ -102,11 +102,14 @@ class BioDesign extends MongoModels {
       query = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
-
     if (extra['name'] !== undefined) {
       query['name'] = {$regex: extra['name'], $options: 'i'};
     } else if (extra['displayId'] !== undefined) {
       query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
+    } else if (extra['userId'] !== undefined) {
+      query['userId'] = {$regex: extra['userId'], $options: 'i'};
+    } else if (extra['subBioDesignIds'] !== undefined) {
+      query['subBioDesignIds'] = {$all: extra['subBioDesignIds']};
     }
 
     return query;

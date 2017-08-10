@@ -434,7 +434,6 @@ internals.applyRoutes = function (server, next) {
 
       Async.auto({
         findPartIdsBySequences: function (done) {
-          console.log("findSequences");
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
             Sequence.getSequenceBySequenceString(request.payload.sequence, done);
@@ -443,7 +442,6 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findParts: ['findPartIdsBySequences', function (results, done) {
-          console.log("findParts");
 
           var partIdsFromSequence = [];
           var partIds = [];
@@ -475,7 +473,6 @@ internals.applyRoutes = function (server, next) {
 
         }],
         findParameters: function (done) {
-          console.log("findParameters");
 
           // using part documents from last step, get biodesigns
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
@@ -486,7 +483,6 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findModules: function (done) {
-          console.log("findModules");
 
           // using part documents from last step, get biodesigns
           if (request.payload.role !== undefined && request.payload.role !== null) {
@@ -497,7 +493,6 @@ internals.applyRoutes = function (server, next) {
           }
         },
         findBioDesigns: ['findParts', 'findParameters', 'findModules', function (results, done) {
-          console.log('findBioDesigns');
 
           var intersectBDs = [];
           var setBDs = [];
@@ -518,7 +513,7 @@ internals.applyRoutes = function (server, next) {
                 return setBDs[i+1].indexOf(item) != -1;;
               });
             } else {
-              intersectBDs = svetBDs[i]   //last in setBDs is the intersect of all inputs
+              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
             }
           }
 
@@ -536,14 +531,15 @@ internals.applyRoutes = function (server, next) {
             query['userId'] = request.auth.credentials.user._id.toString();
           }
 
-          //TODO: add query for subBioDesignIds/partIds
-          //For multiple partIds or single partId - consider array of strings vs string
-
+          //For multiple partIds or single partId
+          if (request.payload.partIds !== undefined) {
+            query['subBioDesignIds'] = request.payload.partIds;
+          }
 
           // Should return everything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
             && request.payload.sequence === undefined && request.payload.parameters === undefined
-            && request.payload.role === undefined) {
+            && request.payload.role === undefined && request.payload.partIds === undefined) {
             return BioDesign.find(); //change this to a list of bioDesignIds
           }
 
