@@ -23,13 +23,6 @@ internals.applyRoutes = function (server, next) {
 
 
 
-
-
-
-
-
-
-
   /**
    * @api {put} /api/device/update/:id Update Device by Id
    * @apiName  Update Device by Id
@@ -329,46 +322,35 @@ internals.applyRoutes = function (server, next) {
 
   /**
    * @api {put} /api/put
-   * @apiName Search for Part
-   * @apiDescription Get BioDesignId of Part based on arguments.
+   * @apiName Search for Device
+   * @apiDescription Get BioDesignId of Device based on arguments.
    * @apiGroup Convenience Methods
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [name]  name of device.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
    * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String} [createSeqFromParts]  boolean to differentiate device from part - may not be necessary
+   * @apiParam (Object) [partIds]  list of partIds
+   *
    *
    * @apiParamExample {json} Request-Example:
    *  {
-   "name": "BBa_0123",
-   "displayId": "TetR repressible enhancer",
-   "role": "PROMOTER",
-   "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
-   "parameters": [
-    {
-    "name": "enhancer unbinding rate",
-    "value": 0.03,
-    "variable": "K7",
-    "units": "min-1"
-    },
-    {
-    "name": "mRNA degradation rate",
-    "value": 0.02,
-    "variable": "dmrna",
-    "units": "min-1"
-     }
-   ]
-  }
+      "name": "findDeviceTest",
+      "partIds": ["598c9bfd7484ecafae736f7f","598c95e9573864af4720caec","597a0b98155a0466a37731ee"]
+    }
    *
    * @apiSuccessExample {json} Success-Response:
    *
    [
-   "5989f9e0083e509dff943dde"
-   ]
+   "598c9c157484ecafae736f88",
+   "598c9c217484ecafae736f9b"
+   ]s
    *
    * @apiErrorExample {json} Error-Response 1:
    * {
@@ -575,10 +557,107 @@ internals.applyRoutes = function (server, next) {
   ;
 
 
+  /**
+   * @api {put} /api/device/:filter Get Device With Filter
+   * @apiName Get Device With Filter
+   * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts,
+   * sequences, annotations, features, assemblies, subdesigns, subannotations. Note that using the filters will return
+   *  the bioDesign object as well.
+   * @apiGroup Convenience Methods
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} [name]  name of device.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String} [createSeqFromParts]  boolean to differentiate device from part - may not be necessary
+   * @apiParam (Object) [partIds]  list of partIds
+   *
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+       "name": "findDeviceTest"
+       }
 
+   * @apiSuccessExample {json} Success-Response (for api/part/parameters):
+   *
+   * [
+     [
+     {
+         "_id": "598c9c157484ecafae736f88",
+         "name": "findDeviceTest0",
+         "description": null,
+         "userId": "593f0d81b59d9120de14d897",
+         "displayId": null,
+         "imageURL": null,
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c95e9573864af4720caec",
+             "597a0b98155a0466a37731ee"
+         ],
+         "superBioDesignId": null,
+         "type": "DEVICE"
+     },
+     {
+         "_id": "598c9c157484ecafae736f8b",
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c95e9573864af4720caec",
+             "597a0b98155a0466a37731ee"
+         ],
+         "userId": "593f0d81b59d9120de14d897",
+         "superSubPartId": "598c9c157484ecafae736f8a"
+     }
+     ],
+     [
+     {
+         "_id": "598c9c217484ecafae736f9b",
+         "name": "findDeviceTest1",
+         "description": null,
+         "userId": "593f0d81b59d9120de14d897",
+         "displayId": null,
+         "imageURL": null,
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c9c1b7484ecafae736f92",
+             "597a0b98155a0466a37731ee"
+         ],
+         "superBioDesignId": null,
+         "type": "DEVICE"
+     },
+     {
+         "_id": "598c9c217484ecafae736f9e",
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c9c1b7484ecafae736f92",
+             "597a0b98155a0466a37731ee"
+         ],
+         "userId": "593f0d81b59d9120de14d897",
+         "superSubPartId": "598c9c217484ecafae736f9d"
+     }
+     ]
+     ]
+  *
+  * @apiErrorExample {json} Error-Response 1 - no parts match:
+  * {
+  * "statusCode": 404,
+  "error": "Not Found",
+  "message": "Document not found."
+  * }
+  *
+  * @apiErrorExample {json} Error-Response 2 - invalid role:
+  * {
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "Role invalid."
+  }
+   */
 
-
-
+  
 
   server.route({
     method: 'PUT',

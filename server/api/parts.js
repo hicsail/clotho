@@ -262,8 +262,8 @@ internals.applyRoutes = function (server, next) {
   /**
    * @api {put} /api/part/:filter Get Part With Filter
    * @apiName Get Part With Filter
-   * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts, _id,
-   * name, description, userId, displayId, and superBioDesignId. Note that using the filters for
+   * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts,
+   * sequences, annotations, features, subdesigns. Note that using the filters for
    * parameters, modules, and subparts will return bioDesign-specific attributes as well.
    * @apiGroup Convenience Methods
    * @apiVersion 4.0.0
