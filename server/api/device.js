@@ -580,6 +580,151 @@ internals.applyRoutes = function (server, next) {
 
 
 
+  server.route({
+    method: 'PUT',
+    path: '/device/{filter}',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      pre: [{
+        assign: 'checkfilter',
+        method: function (request, reply) {
+
+          // Check if filter is valid.
+          // TODO - update with any new biodesign attributes
+          var schema = {
+            filter: Joi.string().valid('parameters', 'modules', 'subparts', 'sequences', 'annotations', 'features',
+              'assemblies', 'subdesigns', 'subannotations').required()
+          };
+          var filter = {filter: request.params.filter};
+
+          Joi.validate(filter, schema, (err, result) => {
+
+            if (err === null) {
+              reply(true);
+            } else {
+              return reply(Boom.badRequest(err));
+            }
+          });
+
+        }
+      }],
+      validate: {
+        payload: {
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1),
+          name: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          role: Joi.string().optional(),
+          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          parameters: Joi.array().items(
+            Joi.object().keys({
+              name: Joi.string().optional(),
+              units: Joi.string(), // These should be updated.
+              value: Joi.number(),
+              variable: Joi.string()
+            })
+          ).optional(),
+          userSpace: Joi.boolean().default(false)
+        }
+      }
+    },
+    handler: function (request, reply) {
+      Async.auto({
+
+        getPut: function (done) {
+          var newRequest = {
+            url: '/api/device',
+            method: 'PUT',
+            payload: request.payload,
+            credentials: request.auth.credentials
+          };
+
+          server.inject(newRequest, (response) => {
+            // Check for error. Includes no document found error.
+            if (response.statusCode !== 200) {
+              return reply(response.result);
+            }
+            done(null, response.result)
+          });
+        },
+        getBioDesign : ['getPut', function (results, done) {
+
+          var resultArr = results.getPut;
+          BioDesign.getBioDesignIds(resultArr, null, false, (err, results) => {
+
+            if (err) {
+              return err;
+            }
+            done(null, results);
+          });
+        }],
+        getResults: ['getBioDesign', function (results, done) {
+
+          const filter =  request.params.filter
+          var bioDesigns = results.getBioDesign;
+          var filteredArr = []
+
+          for (let bigPart in bioDesigns) {
+            var filteredObj = [null, null];
+
+            //get filter object
+            if (filter === 'parameters') {
+              filteredObj[1] = bioDesigns[bigPart]['parameters'][0]
+            }
+            else if (filter === 'subdesigns') {
+              filteredObj[1] = bioDesigns[bigPart]['subdesigns'];
+            }
+            else if (filter === 'modules') {
+              filteredObj[1] = bioDesigns[bigPart]['modules'][0];
+              delete filteredObj[1]['features']
+            }
+            else if (filter === 'subparts') {
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0];
+              delete filteredObj[1]['assemblies']
+              delete filteredObj[1]['sequences']
+            }
+            else if (filter === 'assemblies') {
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['assemblies'][0];
+            }
+            else if (filter === 'sequences') {
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0];
+              delete filteredObj[1]['subannotations']
+              delete filteredObj[1]['annotations']
+            }
+            else if (filter === 'subannotations') {
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['subannotations'];
+            }
+            else if (filter === 'annotations') {
+              filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['annotations'][0];
+              delete filteredObj[1]['features']
+            }
+            else if (filter === 'features') {
+              filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0]
+            }
+
+            //get bioDesign object
+            filteredObj[0] = bioDesigns[bigPart];
+            delete filteredObj[0]['parameters'];
+            delete filteredObj[0]['modules'];
+            delete filteredObj[0]['subparts'];
+            delete filteredObj[0]['subdesigns'];
+
+            filteredArr.push(filteredObj);
+          }
+
+          if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
+            return reply(filteredArr.join());
+          } else {
+            return reply(filteredArr);
+          }
+        }]
+      })
+    }
+  });
+
 
 
 
