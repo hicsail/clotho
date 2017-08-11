@@ -441,7 +441,13 @@ internals.applyRoutes = function (server, next) {
         findPartIdsBySequences: function (done) {
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
-            Sequence.getSequenceBySequenceString(request.payload.sequence, done);
+
+            if (searchDeleted) {
+              Sequence.getSequenceBySequenceString(request.payload.sequence, {toDelete: true}, done);
+            } else {
+              Sequence.getSequenceBySequenceString(request.payload.sequence, {toDelete: null}, done);
+            }
+
           } else {
             return done(null, null);
           }

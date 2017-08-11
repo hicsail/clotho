@@ -167,9 +167,9 @@ internals.applyRoutes = function (server, next) {
 
           if (partIdsTotal.length > 0) {
             if (searchDeleted) {
-              Part.getParts(partIdsTotal, {toDelete: true}, done);
+              Part.getByParts(partIdsTotal, {toDelete: true}, done);
             } else {
-              Part.getParts(partIdsTotal, {toDelete: null}, done);
+              Part.getByParts(partIdsTotal, {toDelete: null}, done);
             }
           } else {
             return done(null, null);
@@ -266,6 +266,11 @@ internals.applyRoutes = function (server, next) {
             return BioDesign.getBioDesignIdsByQuery([], query, done);
           }
 
+          // If prior steps have yielded nothing but at least one argument has been non-null, should return.
+          else if (((request.payload.sequence !== undefined) || (request.payload.parameters !== undefined) || (request.payload.role !== undefined) ) && intersectBDs.length === 0) {
+            done(null, []);
+
+          }
           else {
             // Get full biodesigns.
             return BioDesign.getBioDesignIdsByQuery(intersectBDs, query, done);
@@ -442,7 +447,7 @@ internals.applyRoutes = function (server, next) {
             if (response.statusCode !== 200) {
               return reply(response.result);
             }
-            done(null, response.result)
+            done(null, response.result);
           });
         },
         getBioDesign : ['getPut', function (results, done) {

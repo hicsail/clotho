@@ -27,13 +27,17 @@ class Part extends MongoModels {
   }
 
   // helper method for strings query
-  static getParts(partIds, callback) {
+  static getParts(partIds, options, callback) {
 
     for (var i = 0; i < partIds.length; ++i) {
       partIds[i] = new MongoModels.ObjectID(partIds[i]);
     }
 
-    const query = {_id: {$in: partIds}};
+    var query = {_id: {$in: partIds}};
+
+    for (var attrname in options) {
+      query[attrname] = options[attrname];
+    }
 
     this.find(query, (err, partIds) => {
 
@@ -46,13 +50,17 @@ class Part extends MongoModels {
 
 
   // get biodesignId from partId
-  static getByParts(partIds, callback) {
+  static getByParts(partIds, options, callback) {
 
     for (var i = 0; i < partIds.length; ++i) {
       partIds[i] = new MongoModels.ObjectID(partIds[i]);
     }
 
-    const query = {_id: {$in: partIds}};
+    var query = {_id: {$in: partIds}};
+
+    for (var attrname in options) {
+      query[attrname] = options[attrname];
+    }
 
     this.find(query, (err, partIds) => {
 

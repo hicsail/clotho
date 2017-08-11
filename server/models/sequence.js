@@ -33,9 +33,14 @@ class Sequence extends MongoModels {
     });
   }
 
-  static getSequenceBySequenceString(seq, callback) {
+  static getSequenceBySequenceString(seq, options, callback) {
 
-    const query = {sequence: seq};
+    var query = {sequence: seq};
+
+    for (var option in options) {
+      query[option] = options[option];
+    }
+
     this.find(query, (err, sequences) => {
 
       if (err) {
@@ -62,7 +67,7 @@ class Sequence extends MongoModels {
 
   }
 
-  
+
   static findByUserId(userId, callback) {
 
     const query = {userId: userId};

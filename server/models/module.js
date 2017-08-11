@@ -40,6 +40,7 @@ class Module extends MongoModels {
       if (err) {
         return callback(err);
       }
+
       this.getBioDesignIdsbyModule(modules, callback)
     });
 

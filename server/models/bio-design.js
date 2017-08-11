@@ -53,6 +53,7 @@ class BioDesign extends MongoModels {
 
   static getBioDesignIdsByQuery(bioDesignIds, query, callback) {
 
+
     if (query == null) {
       query = {};
     }
