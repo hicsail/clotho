@@ -28,23 +28,21 @@ class Version extends MongoModels {
   }
 
 
-//finds newest version and returns it
-  static findNewest(bioDesignId, collectionName, callback) {
+  //finds newest version and returns it
+  static findNewest(bioDesignId, index, callback) {
 
-    this.find({objectId: ObjectID(bioDesignId), collectionName: collectionName}, (err, results) => {
+    this.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
 
       if (err) {
         return callback(err);
 
-      } else if (results[0]['replacementVersionId'] === null || results[0]['replacementVersionId'] === undefined || results.length === 0) {
+      } else if (results === null || results.length === 0) {
+        callback(null, [bioDesignId, index]);
 
-        callback(null, [bioDesignId, results[0]['versionNumber']])
-
-
-      } else {
-        this.findNewest(results[0]['replacementVersionId'], callback)
+      }else {
+        this.findNewest(results.replacementVersionId, results.versionNumber, callback);
       }
-    })
+    });
   }
 
 }
