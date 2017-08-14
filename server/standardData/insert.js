@@ -38,9 +38,3 @@ const insertData = {
 
 module.exports = insertData;
 
-
-/*
-
-
- }*/
-

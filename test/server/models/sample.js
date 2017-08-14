@@ -33,10 +33,13 @@ lab.experiment('Sample Class Methods', () => {
   lab.test('it returns a new instance when create succeeds', (done) => {
 
     Sample.create(
-      'sample',
-      'sample description',
-      'userid12test',
+      'name',
+      'description',
+      'userId',
       'containerId',
+      'bioDesignId',
+      'parameterIds',
+      'parentSampleIds',
       (err, result) => {
 
         Code.expect(err).to.not.exist();
@@ -58,10 +61,13 @@ lab.experiment('Sample Class Methods', () => {
     };
 
     Sample.create(
-      'Sample',
-      'Sample Description',
-      'userid12test',
+      'name',
+      'description',
+      'userId',
       'containerId',
+      'bioDesignId',
+      'parameterIds',
+      'parentSampleIds',
       (err, result) => {
 
         Code.expect(err).to.be.an.object();

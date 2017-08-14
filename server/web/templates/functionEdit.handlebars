@@ -1,0 +1,273 @@
+{{> nav}}
+<section class="hero is-fullheight">
+  <div class="hero-heading">
+    {{> alert}}
+  </div>
+  <div class="hero-body">
+    <div class="container">
+      <div class="container" style="padding: 10px">
+        <label class="label is-medium">Function Name</label>
+        <input id="name" class="input is-medium" type="text" value={{functions.name}}>
+      </div>
+      <div class="box">
+        <div class="columns">
+          <div class="column is-2">
+            <label class="label">Language</label><br>
+            <div class="select">
+              <select id="language">
+                <option value="" disabled selected>Languages</option>
+                {{#each languages}}
+                  <option>{{this}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          <div class="column is-5">
+            <label class="label">Inputs</label><br>
+            <textarea id="inputs" class="textarea" placeholder="Write test inputs line by line">{{#each functions.inputs}}{{this}}
+{{/each}}</textarea>
+          </div>
+          <div class="column is-5">
+            <label class="label">Outputs</label><br>
+            <textarea id="outputs" class="textarea" placeholder="Write each expected output line by line">{{#each functions.outputs}}{{this}}
+{{/each}}</textarea>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-12">
+            <label class="label">Function</label>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column box is-paddingless is-12" style="height: 300px">
+            <div id="editor">{{#each functions.code}}{{this}}
+{{/each}}</div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-2">
+            <span id="tag" class="tag is-medium is-light">Test status</span>
+          </div>
+          <div class="column is-2 is-offset-8 has-text-right">
+            <div id="run" class="button is-primary">Run</div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-1">
+            <label class="label">Console</label>
+          </div>
+          <div class="column is-11">
+            <textarea class="textarea" id="console" disabled placeholder="Function Output"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column is-2 is-offset-10 has-text-right">
+          <div id="remove" class="button is-danger">Delete</div>
+          <div id="create" class="button is-primary">Update</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style type="text/css" media="screen">
+  #editor {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<script src="/public/ace/ace.js"></script>
+<script src="/public/ace/ext-language_tools.js"></script>
+<script src="/public/ace/ext-spellcheck.js"></script>
+<script src="/public/ace/mode-javascript.js"></script>
+<script src="/public/ace/mode-java.js"></script>
+<script src="/public/ace/mode-python.js"></script>
+<script>
+  $('#language').val('{{functions.language}}');
+
+  var tag = $('#tag');
+  if ({{functions.working}}) {
+    tag.removeClass('is-danger');
+    tag.removeClass('is-light');
+    tag.addClass('is-success');
+    tag.html('Test Passed')
+  }
+
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true
+  });
+  switch ('{{functions.language}}') {
+    case 'node':
+      editor.getSession().setMode("ace/mode/javascript");
+      break;
+    case 'java':
+      editor.getSession().setMode("ace/mode/java");
+      break;
+    case 'python':
+      editor.getSession().setMode("ace/mode/python");
+      break;
+  }
+  $('#language').on('change', function() {
+    var language = $(this).find(":selected").val();
+    $.get(`/api/function/template/${language}`,(response) => {
+      editor.setValue(response);
+      switch(language) {
+        case 'node':
+          editor.getSession().setMode("ace/mode/javascript");
+          break;
+        case 'java':
+          editor.getSession().setMode("ace/mode/java");
+          break;
+        case 'python':
+          editor.getSession().setMode("ace/mode/python");
+          break;
+      }
+    });
+  });
+  editor.setShowPrintMargin(false);
+</script>
+<script>
+  $('#run').click(() => {
+    if(!$('#language').val()) {
+    $('#console').val('Please select a language');
+    failureAlert('Please select a language');
+    return;
+  }
+  if(!$('#inputs').val()) {
+    $('#console').val('Please provide at lease one input');
+    failureAlert('Please provide at lease one input');
+    return;
+  }
+  if(!editor.getValue()) {
+    $('#console').val('Function can not be blank');
+    failureAlert('Function can not be blank');
+    return;
+  }
+  var button = $('#run');
+  var tag = $('#tag');
+  $('#console').val('');
+  button.addClass('is-loading');
+  tag.removeClass('is-danger');
+  tag.removeClass('is-success');
+  tag.addClass('is-light');
+  tag.html('Running')
+  var language = $('#language').val();
+  var code = editor.getValue();
+  var inputs = JSON.stringify($('#inputs').val().split('\n'));
+  var data = `${language} ${inputs}\n${code}`;
+  var done = false;
+  $.ajax({
+    type: 'POST',
+    url: '/api/function/run',
+    dataType: 'text',
+    data: data,
+    headers: {'Content-Type':'text/plain'},
+    success: function (response) {
+      done = true;
+      tag.removeClass('is-light');
+      $('#console').val(response);
+      var outputs = $('#outputs').val().split('\n');
+      var functionOutputs = response.split('\n').slice(0,-1);
+      if(JSON.stringify(functionOutputs) == JSON.stringify(outputs)) {
+        tag.addClass('is-success');
+        tag.html('Test Passed');
+      } else {
+        tag.addClass('is-danger');
+        tag.html('Test Failed');
+      }
+      button.removeClass('is-loading');
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      done = true;
+      tag.addClass('is-danger');
+      tag.html('Test Failed');
+      $('#console').val(textStatus);
+      button.removeClass('is-loading');
+    }
+  });
+  setTimeout(function () {
+    if(!done){
+      tag.addClass('is-danger');
+      tag.html('Test Failed');
+      button.removeClass('is-loading');
+      $('#console').val('Process timed out');
+    }
+  },8000);
+  });
+</script>
+<script>
+
+  $('#create').click( () => {
+    if(!$('#language').val()) {
+      $('#console').val('Please select a language');
+      failureAlert('Please select a language');
+      return;
+    }
+    if(!$('#inputs').val()) {
+      $('#console').val('Please provide at lease one input');
+      failureAlert('Please provide at lease one input');
+      return;
+    }
+    if(!editor.getValue()) {
+      $('#console').val('Function can not be blank');
+      failureAlert('Function can not be blank');
+      return;
+    }
+    if(!$('#name').val()) {
+      $('#console').val('Please add a Function Name');
+      failureAlert('Please add a Function Name');
+      return;
+    }
+
+    var language;
+    if ($('#language').val()) {
+      language = $('#language').val();
+    } else {
+      language = {{functions.language}}
+    }
+    var data = {
+      name: $('#name').val(),
+      language: $('#language').val(),
+      inputs: JSON.stringify($('#inputs').val().split('\n')),
+      outputs: JSON.stringify($('#outputs').val().split('\n')),
+      code: JSON.stringify(editor.getValue().split('\n')),
+      _id: '{{functions._id}}'
+    };
+    $.ajax({
+      type: 'PUT',
+      url: '/api/function',
+      data: data,
+      dataType: 'json',
+      success: (response) => {
+        window.location.pathname = '/function';
+      }
+    });
+
+  });
+</script>
+<script>
+  $('#remove').click( () => {
+    // Show an alert box confirming if they are sure
+   if (confirm('Are you sure you want to delete this function?') == true) {
+
+     $.ajax({
+       type: 'DELETE',
+       url: '/api/function/delete',
+       data: {_id: '{{functions._id}}'},
+       dataType: 'json',
+       fail: () => {
+         console.log('it failed');
+       },
+       success: (response) => {
+         window.location.pathname = '/function';
+       }
+     })
+
+   }
+  });
+</script>

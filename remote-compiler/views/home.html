@@ -1,0 +1,157 @@
+<section class="hero is-info is-bold is-fullheight">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-offset-1">
+          <h1 class="title">Remote Compile</h1>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column is-10 is-offset-1 box">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <label>Language</label>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <div class="select">
+                  <select id="language">
+                    {{#each languages}}
+                    <option>{{this}}</option>
+                    {{/each}}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <label>Inputs</label>
+          <textarea id="inputs" class="textarea" placeholder="Write test inputs line by line"></textarea><br>
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <label>Editor</label>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <div id="run" class="button is-info">Run</div>
+              </div>
+            </div>
+          </div>
+          <div id="editor" style="height: 500px"></div><br>
+          <label>Console</label>
+          <textarea class="textarea" id="console" disabled placeholder="Function Output"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style type="text/css" media="screen">
+  #editor {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<script>
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true,
+    printMargin: false
+  });
+  $('#inputs').val('Hello\nWorld');
+  $.ajax({
+    url: '/public/templates/node.txt',
+    success: (data) => {
+      editor.setValue(data);
+    }
+  });
+  $('#inputs')
+  switch ('node') {
+    case 'node':
+      editor.getSession().setMode("ace/mode/javascript");
+      break;
+    case 'java':
+      editor.getSession().setMode("ace/mode/java");
+      break;
+    case 'python':
+      editor.getSession().setMode("ace/mode/python");
+      break;
+  }
+  $('#language').on('change', function() {
+    var language = $(this).find(":selected").val();
+    $.get(`/public/templates/${language}.txt`,(response) => {
+      editor.setValue(response);
+      switch(language) {
+        case 'node':
+          editor.getSession().setMode("ace/mode/javascript");
+          break;
+        case 'java':
+          editor.getSession().setMode("ace/mode/java");
+          break;
+        case 'python':
+          editor.getSession().setMode("ace/mode/python");
+          break;
+      }
+    });
+  });
+  $('#run').click(() => {
+    if(!$('#language').val()) {
+      $('#console').val('Please select a language');
+      failureAlert('Please select a language');
+      return;
+    }
+    if(!$('#inputs').val()) {
+      $('#console').val('Please provide at lease one input');
+      failureAlert('Please provide at lease one input');
+      return;
+    }
+    if(!editor.getValue()) {
+      $('#console').val('Function can not be blank');
+      failureAlert('Function can not be blank');
+      return;
+    }
+    var button = $('#run');
+    var tag = $('#tag');
+    $('#console').val('');
+    button.addClass('is-loading');
+    tag.removeClass('is-danger');
+    tag.removeClass('is-success');
+    tag.addClass('is-light');
+    tag.html('Running')
+    var language = $('#language').val();
+    var code = editor.getValue();
+    var inputs = JSON.stringify($('#inputs').val().split('\n'));
+    var data = `${language} ${inputs}\n${code}`;
+    var done = false;
+    $.ajax({
+      type: 'POST',
+      url: '/compile',
+      dataType: 'text',
+      data: data,
+      headers: {'Content-Type':'text/plain'},
+      success: function (response) {
+        done = true;
+        $('#console').val(response);
+        button.removeClass('is-loading');
+      },
+      error: function (XMLHttpRequest, textStatus, errorThrown) {
+        done = true;
+        $('#console').val(textStatus);
+        button.removeClass('is-loading');
+      }
+    });
+    setTimeout(function () {
+      if(!done){
+        button.removeClass('is-loading');
+        $('#console').val('Process timed out');
+      }
+    },8000);
+  });
+</script>
+

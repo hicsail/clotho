@@ -457,6 +457,211 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/admins/promote',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: 'admin'
+      },
+      validate: {
+        payload: {
+          username: Joi.string().lowercase().required()
+        }
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root'),
+        {
+          assign: 'user',
+          method: function (request, reply) {
+
+            User.findByUsername(request.payload.username, (err, user) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              if (!user) {
+                return reply(Boom.notFound('User document not found.'));
+              }
+
+              reply(user);
+            });
+          }
+        }
+      ]
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+
+        findAdmin: function (callback) {
+
+          Admin.findByUsername(request.payload.username, callback);
+
+        },
+        createAdmin: ['findAdmin', function (results, callback) {
+
+          if(!results.findAdmin) {
+
+            const createRequest = {
+              url: '/api/admins',
+              method: 'POST',
+              payload: {
+                name: request.pre.user.name
+              },
+              credentials: request.auth.credentials
+            };
+
+            server.inject(createRequest, (response) => {
+
+              if(response.statusCode != 200) {
+                return callback(response.result);
+              }
+              callback(null,response.result);
+            });
+          }
+        }],
+        addUser:[ 'createAdmin', function (results,callback) {
+
+          const createRequest = {
+            url: `/api/admins/${results.createAdmin._id}/user`,
+            method: 'PUT',
+            payload: {
+              username: request.pre.user.username
+            },
+            credentials: request.auth.credentials
+          };
+
+          server.inject(createRequest, (response) => {
+
+            if(response.statusCode != 200) {
+              return callback(response.result);
+            }
+            callback(null,response.result);
+          });
+        }],
+        addPermissions: ['addUser', function (results,callback) {
+
+          const createRequest = {
+            url: `/api/admins/${results.createAdmin._id}/groups`,
+            method: 'PUT',
+            payload: {
+              groups: {
+                Root: 'root'
+              }
+            },
+            credentials: request.auth.credentials
+          };
+
+          server.inject(createRequest, (response) => {
+
+            if(response.statusCode != 200) {
+              return callback(response.result);
+            }
+            callback(null,response.result);
+          });
+        }]
+      }, (err, result) => {
+
+        if(err) {
+          return reply(err);
+        }
+        reply(result.addPermissions);
+      });
+    }
+  });
+
+
+  server.route({
+    method: 'POST',
+    path: '/admins/demote',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: 'admin'
+      },
+      validate: {
+        payload: {
+          username: Joi.string().lowercase().required()
+        }
+      },
+      pre: [
+        AuthPlugin.preware.ensureAdminGroup('root'),
+        {
+          assign: 'user',
+          method: function (request, reply) {
+
+            User.findByUsername(request.payload.username, (err, user) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              if (!user) {
+                return reply(Boom.notFound('User document not found.'));
+              }
+
+              reply(user);
+            });
+          }
+        }
+      ]
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+
+        Admin: function (callback) {
+
+          Admin.findByUsername(request.payload.username, callback);
+
+        },
+        removeUser: ['Admin', function (results,callback) {
+
+          if(results.Admin) {
+
+            const createRequest = {
+              url: `/api/admins/${results.Admin._id}/user?id=${request.pre.user._id}`,
+              method: 'DELETE',
+              credentials: request.auth.credentials
+            };
+
+            server.inject(createRequest, (response) => {
+
+              if(response.statusCode != 200) {
+                return callback(response.result);
+              }
+              callback(null,response.result);
+            });
+          }
+        }],
+        deleteAdmin: ['removeUser', function (results,callback) {
+
+          if(results.Admin) {
+            Admin.findByIdAndDelete(results.Admin._id, callback);
+          }
+        }],
+        unlinkUser: ['removeUser', function (results,callback) {
+
+          if(results.Admin) {
+
+            delete request.pre.user.roles.admin;
+
+            User.findByIdAndUpdate(request.pre.user._id,request.pre.user, callback);
+          }
+        }]
+      }, (err, result) => {
+
+        if(err) {
+          return reply(err);
+        }
+        reply({message:'Success'});
+      });
+    }
+  });
+
 
   server.route({
     method: 'DELETE',

@@ -23,10 +23,12 @@ let stub;
 lab.before((done) => {
 
   stub = {
+    AuthAttempt: MakeMockModel(),
     User: MakeMockModel()
   };
 
   const proxy = {};
+  proxy[Path.join(process.cwd(), './server/models/auth-attempt')] = stub.AuthAttempt;
   proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
   const ModelsPlugin = {
@@ -292,7 +294,7 @@ lab.experiment('Users Plugin Create', () => {
       url: '/users',
       payload: {
         username: 'muddy',
-        password: 'dirtandwater',
+        password: 'dirtandWater1',
         email: 'mrmud@mudmail.mud',
         name: 'mr muddy'
       },
@@ -424,6 +426,85 @@ lab.experiment('Users Plugin Create', () => {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Users Plugin Create Password Check', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/users',
+      payload: {
+        username: 'muddy',
+        email: 'mrmud@mudmail.mud',
+        name: 'mr muddy'
+      },
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when password is too short', (done) => {
+
+    request.payload.password = 'test';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password is too long', (done) => {
+
+    request.payload.password = 'KnAshbUDNBVaekNJquALBQVTMMutRszua';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain lowercase letter', (done) => {
+
+    request.payload.password = 'ABCDEFGHIJK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain uppercase letter', (done) => {
+
+    request.payload.password = 'abcdefghijk';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain a number', (done) => {
+
+    request.payload.password = 'abcdefghijK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
 
       done();
     });
@@ -761,7 +842,7 @@ lab.experiment('Users Plugin Set Password', () => {
       method: 'PUT',
       url: '/users/420000000000000000000000/password',
       payload: {
-        password: 'fromdirt'
+        password: 'fromDirt2'
       },
       credentials: AuthenticatedUser
     };
@@ -806,6 +887,25 @@ lab.experiment('Users Plugin Set Password', () => {
     });
   });
 
+  lab.test('it returns an error when there is no user fails', (done) => {
+
+    stub.User.generatePasswordHash = function (password, callback) {
+
+      callback(null, {password: '', hash: ''});
+    };
+
+    stub.User.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(null, null);
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(404);
+
+      done();
+    });
+  });
 
   lab.test('it sets the password successfully', (done) => {
 
@@ -828,6 +928,81 @@ lab.experiment('Users Plugin Set Password', () => {
   });
 });
 
+lab.experiment('Users Plugin Set Password Check', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'PUT',
+      url: '/users/420000000000000000000000/password',
+      payload: {},
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when password is too short', (done) => {
+
+    request.payload.password = 'test';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password is too long', (done) => {
+
+    request.payload.password = 'KnAshbUDNBVaekNJquALBQVTMMutRszua';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain lowercase letter', (done) => {
+
+    request.payload.password = 'ABCDEFGHIJK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain uppercase letter', (done) => {
+
+    request.payload.password = 'abcdefghijk';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain a number', (done) => {
+
+    request.payload.password = 'abcdefghijK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+});
+
 
 lab.experiment('Users Plugin (My) Set Password', () => {
 
@@ -837,7 +1012,7 @@ lab.experiment('Users Plugin (My) Set Password', () => {
       method: 'PUT',
       url: '/users/my/password',
       payload: {
-        password: 'fromdirt'
+        password: 'fromDirt42'
       },
       credentials: AuthenticatedUser
     };
@@ -904,6 +1079,81 @@ lab.experiment('Users Plugin (My) Set Password', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Users Plugin (My) Set Password Check', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'PUT',
+      url: '/users/my/password',
+      payload: {},
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when password is too short', (done) => {
+
+    request.payload.password = 'test';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password is too long', (done) => {
+
+    request.payload.password = 'KnAshbUDNBVaekNJquALBQVTMMutRszua';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain lowercase letter', (done) => {
+
+    request.payload.password = 'ABCDEFGHIJK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain uppercase letter', (done) => {
+
+    request.payload.password = 'abcdefghijk';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain a number', (done) => {
+
+    request.payload.password = 'abcdefghijK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
 
       done();
     });

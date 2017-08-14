@@ -2,14 +2,18 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const Parameter = require('./parameter');
 
 class Container extends MongoModels {
-  static create(name, description, userId, callback) {
+  static create(name, description, userId, parameterIds, type, coordinates, callback) {
 
     const document = {
       name: name,
       description: description,
-      userId: userId
+      userId: userId,
+      parameterIds: parameterIds,
+      type: type,
+      coordinates: coordinates
     };
 
     this.insertOne(document, (err, docs) => {
@@ -20,6 +24,12 @@ class Container extends MongoModels {
       callback(null, docs[0]);
     });
   }
+
+  static delete(document, callback) {
+
+    document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
 }
 
 
@@ -28,12 +38,18 @@ Container.collection = 'containers';
 Container.schema = Joi.object().keys({
   _id: Joi.object(),
   name: Joi.string().required(),
-  description: Joi.string(),
-  userId: Joi.string().required(),
+  description: Joi.string().optional(),
   type: Joi.string().valid('BEAKER', 'BOX', 'FLASK', 'FRIDGE', 'INCUBATOR', 'PLATE', 'RACK', 'TUBE', 'WELL'),
   parameterIds: Joi.array().items(Joi.string()),
-  container: Joi.object(), // ?
-  coordinates: Joi.array().items(Joi.number().integer())
+  coordinates: Joi.array().items(Joi.number())
+});
+
+Container.payload = Joi.object().keys({
+  name: Joi.string().required(),
+  description: Joi.string().optional(),
+  type: Joi.string().valid('BEAKER', 'BOX', 'FLASK', 'FRIDGE', 'INCUBATOR', 'PLATE', 'RACK', 'TUBE', 'WELL').optional(),
+  parameters: Joi.array().items(Parameter.payload).optional(),
+  coordinates: Joi.array().items(Joi.number()).optional()
 });
 
 Container.indexes = [
@@ -41,26 +57,3 @@ Container.indexes = [
 ];
 
 module.exports = Container;
-
-/*
-
- public void addCoordinate(Integer coordinate) {
- if (coordinates == null) {
- coordinates = new ArrayList<Integer>();
- }
- coordinates.add(coordinate);
- }
-
- public Parameter createParameter(double value, Variable variable) {
- Parameter parameter = new Parameter(value, variable);
- addParameter(parameter);
- return parameter;
- }
-
- public void addParameter(Parameter parameter) {
- if (parameters == null) {
- parameters = new HashSet<Parameter>();
- }
- parameters.add(parameter);
- }
- */

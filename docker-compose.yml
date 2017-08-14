@@ -6,5 +6,6 @@ app:
     - mongo
   ports:
     - "9000:9000"
+    - "8000:8000"
   environment:
     - NODE_ENV='docker'

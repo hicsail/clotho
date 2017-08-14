@@ -49,7 +49,7 @@ const manifest = {
           layout: 'layout',
           layoutPath: './server/web/layouts',
           partialsPath: './server/web/partials',
-          //helpersPath: './server/web/helpers',
+          helpersPath: './server/web/helpers',
         }
       }
     },
@@ -62,9 +62,11 @@ const manifest = {
             Account: './server/models/account',
             AdminGroup: './server/models/admin-group',
             Admin: './server/models/admin',
+            Application: './server/models/application',
             Annotation: './server/models/annotation',
             Assembly: './server/models/assembly',
             AuthAttempt: './server/models/auth-attempt',
+            Function: './server/models/function',
             BioDesign: './server/models/bio-design',
             Container: './server/models/container',
             ExperimentDesign: './server/models/experiment-design',
@@ -226,12 +228,6 @@ const manifest = {
       }
     },
     {
-      plugin: './server/api/strains',
-      options: {
-        routes: {prefix: '/api'}
-      }
-    },
-    {
       plugin: './server/api/subparts',
       options: {
         routes: {prefix: '/api'}
@@ -256,7 +252,31 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/delete',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/applications',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/api/blast',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/containers',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
+      plugin: './server/api/samples',
       options: {
         routes: {prefix: '/api'}
       }
@@ -277,7 +297,22 @@ const manifest = {
       plugin: './server/web/signup/index'
     },
     {
+      plugin: './server/web/setup/index'
+    },
+    {
       plugin: './server/web/account/index'
+    },
+    {
+      plugin: './server/web/function/index'
+    },
+    {
+      plugin: './server/web/delete/index'
+    },
+    {
+      plugin: './server/web/application/index'
+    },
+    {
+      plugin: './server/web/apps/index'
     }
   ]
 };

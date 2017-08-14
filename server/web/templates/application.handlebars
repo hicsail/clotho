@@ -1,0 +1,104 @@
+{{> nav}}
+<div class="hero-body">
+    <div class="container">
+        <h1 class="content">This page adding, updating, or removing applications on the <a href="../apps">/apps</a> page
+        </h1>
+        {{#each apps}}
+            <div class="columns">
+                {{#each this}}
+                <div class="column">
+                    {{#if this}}
+                        <div class="card" style="height: 100%" id="{{this._id}}">
+                            <div class="card-image">
+                                <figure class="image">
+                                    <img src="{{this.imageURL}}" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <h2 class="title">{{this.name}}</h2>
+
+                                <div class="content">{{this.description}}</div>
+                                <br>
+                                <a href="{{this.website}}" target="_blank" class="webLink card-footer-item">Visit {{this.name}}</a>
+                            </div>
+                            <footer class="card-footer">
+                                <a class="card-footer-item" onclick="editCard('{{this._id}}','{{this.name}}','{{this.description}}','{{this.imageURL}}','{{this.website}}')">Edit</a>
+                                <a class="card-footer-item" onclick="deleteCard('{{this._id}}')">Delete</a>
+                            </footer>
+                        </div>
+                    {{/if}}
+                </div>
+            {{/each}}
+        </div>
+        {{/each}}
+        <hr>
+        {{> alert}}
+        <div class="columns">
+            <div class="column is-6">
+                <form id="createApp" class="box">
+                    <h1 id="title" class="title">Add Application</h1>
+                    <label class="label"><b>Name</b></label>
+                    <input class="input" id="name" type="text" placeholder="Application Name" name="name"
+                           value="Application Name" required>
+
+                    <label class="label"><b>Image URL</b></label>
+                    <input class="input" id="imageURL" type="text"
+                           placeholder="http://bulma.io/images/placeholders/1280x960.png" name="imageURL"
+                           value="http://bulma.io/images/placeholders/1280x960.png" required>
+
+                    <label class="label"><b>Website URL</b></label>
+                    <input class="input" id="website" type="text" placeholder="http://github.com" name="website"
+                           value="http://github.com" required>
+
+                    <label class="label"><b>Description</b></label>
+                    <textarea id="description" class="textarea">Example Description Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.</textarea>
+
+                    <input class="input" id="ID" type="hidden" placeholder="ID" name="id">
+                    <br>
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <input class="button is-primary" id="submit" type="submit" value="Submit">
+                            </div>
+                            <div class="level-item">
+                                <div class="button is-light" id="cancel" >Cancel</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="column is-4 is-offset-2">
+                <h1 class="title">Example Card</h1>
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image">
+                            <img id="exampleImageUrl" src="http://bulma.io/images/placeholders/1280x960.png"
+                                 alt="Image">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <h2 class="title" id="exampleName">Application Name</h2>
+
+                        <div id="exampleDescription" class="content">
+                            Example Description Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Phasellus nec iaculis mauris.
+                        </div>
+                        <br>
+                        <a href="http://github.com" target="_blank" id="exampleWebsite" class="webLink2 card-footer-item">Visit Application Name</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .webLink {
+        bottom: 50px;
+        position: absolute;
+    }
+    .webLink2 {
+        bottom: 0px;
+        position: absolute;
+    }
+</style>
+<script type="text/javascript" src="../public/mini-js/application.min.js"></script>

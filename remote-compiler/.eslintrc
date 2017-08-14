@@ -1,0 +1,22 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "extends": [
+      "hapi",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "indent": ["error",2],
+      "linebreak-style": ["error","unix"],
+      "quotes": ["error","single"],
+      "semi": 2,
+      "strict": 0,
+      "no-console": "off"
+    }
+}
