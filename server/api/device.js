@@ -349,7 +349,7 @@ internals.applyRoutes = function (server, next) {
    [
    "598c9c157484ecafae736f88",
    "598c9c217484ecafae736f9b"
-   ]s
+   ]
    *
    * @apiErrorExample {json} Error-Response 1:
    * {
@@ -441,6 +441,7 @@ internals.applyRoutes = function (server, next) {
           if (results.findPartIdsBySequences !== null && results.findPartIdsBySequences !== undefined) {
             partIdsFromSequence = results.findPartIdsBySequences;
           }
+          
 
           if (request.payload.partIds !== undefined && request.payload.partIds !== null) {
             partIds = request.payload.partIds;
@@ -505,7 +506,7 @@ internals.applyRoutes = function (server, next) {
           //set of duplicate bioDesigns found so far
           if (results.findParts !== null){
             setBDs.push(results.findParts);
-          } else if (results.findParts === null && request.payload.sequence !== undefined) {
+          } else if (results.findParts === null && (request.payload.sequence !== undefined || request.payload.partIds !== undefined)) {
             setBDs.push([]);
           }
 
