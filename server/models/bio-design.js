@@ -65,7 +65,7 @@ class BioDesign extends MongoModels {
       if (err) {
         return callback(err);
       }
-      return this.getIds(bioDesigns, callback)
+      return this.getIds(bioDesigns, callback);
     });
   }
 
@@ -77,14 +77,14 @@ class BioDesign extends MongoModels {
     if (bioDesigns.length > 0) {
 
       for (var i = 0; i < bioDesigns.length; ++i) {
-        bioDesignIds.push(bioDesigns[i]['_id'])
+        bioDesignIds.push(bioDesigns[i]['_id']);
       }
     }
-    callback(null, bioDesignIds)
+    callback(null, bioDesignIds);
   }
 
 
-    // Helper function to clean up query
+  // Helper function to clean up query
   static convertBD(bioDesignIds, extra) {
 
     var query = {};

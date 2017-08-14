@@ -22,18 +22,11 @@ internals.applyRoutes = function (server, next) {
 
 
 
-
-
-
-
-
-
-
   /**
    * @api {put} /api/device/update/:id Update Device by Id
    * @apiName  Update Device by Id
    * @apiDescription Include arguments in payload to update device.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -144,9 +137,7 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-
-          Version.findNewest(bioDesignId, 0, (err, results) => {
-
+          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
 
             if (err) {
               return err;
@@ -291,10 +282,7 @@ internals.applyRoutes = function (server, next) {
 
               if (err) {
                 return reply(err);
-              } else {
-                done(null, results);
               }
-
 
               Version.updateMany({
                 objectId: ObjectID(oldId), //update old replacement id
@@ -333,47 +321,35 @@ internals.applyRoutes = function (server, next) {
 
   /**
    * @api {put} /api/put
-   * @apiName Search for Part
-   * @apiDescription Get BioDesignId of Part based on arguments.
-   * @apiGroup Convenience Methods
+   * @apiName Search for Device
+   * @apiDescription Get BioDesignId of Device based on arguments.
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String} [name]  name of part.
+   * @apiParam {String} [name]  name of device.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
    * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    * @apiParam {Boolean} [searchDeleted=false] whether to search for only deleted parts (true) or only non-deleted parts (false).
+   * @apiParam {String} [createSeqFromParts]  boolean to differentiate device from part - may not be necessary
+   * @apiParam (Object) [partIds]  list of partIds
+   *
    *
    * @apiParamExample {json} Request-Example:
    *  {
-   "name": "BBa_0123",
-   "displayId": "TetR repressible enhancer",
-   "role": "PROMOTER",
-   "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
-   "parameters": [
-    {
-    "name": "enhancer unbinding rate",
-    "value": 0.03,
-    "variable": "K7",
-    "units": "min-1"
-    },
-    {
-    "name": "mRNA degradation rate",
-    "value": 0.02,
-    "variable": "dmrna",
-    "units": "min-1"
-     }
-   ]
-  }
+      "name": "findDeviceTest",
+      "partIds": ["598c9bfd7484ecafae736f7f","598c95e9573864af4720caec","597a0b98155a0466a37731ee"]
+    }
    *
    * @apiSuccessExample {json} Success-Response:
    *
    [
-   "5989f9e0083e509dff943dde"
-   ]
+   "598c9c157484ecafae736f88",
+   "598c9c217484ecafae736f9b"
+   ]s
    *
    * @apiErrorExample {json} Error-Response 1:
    * {
@@ -472,10 +448,12 @@ internals.applyRoutes = function (server, next) {
 
           if (partIdsFromSequence.length !== 0 && partIds.length !== 0) {
             partIdsTotal = partIds.filter(function (item) {
+
               return partIdsFromSequence.indexOf(item) != -1;
             });
           } else {
             partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+
               return partIdsFromSequence.indexOf(item) < 0;
             }));
           }
@@ -546,10 +524,11 @@ internals.applyRoutes = function (server, next) {
           for (var i = 0; i < setBDs.length; ++i) {
             if (i !== setBDs.length - 1) {                      //if there exists i+1,
               setBDs[i+1] = setBDs[i].filter(function (item) {  // i+1 equals to the intersect of i and i+1
-                return setBDs[i+1].indexOf(item) != -1;;
+
+                return setBDs[i+1].indexOf(item) != -1;
               });
             } else {
-              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
+              intersectBDs = setBDs[i];   //last in setBDs is the intersect of all inputs
             }
           }
 
@@ -587,7 +566,7 @@ internals.applyRoutes = function (server, next) {
           }
 
           else if (Object.keys(query).length === 0) { //if there's no query for the bioDesign object
-            done (null, intersectBDs)
+            done (null, intersectBDs);
           }
 
           else if (request.payload.sequence === undefined && request.payload.parameters === undefined
@@ -625,8 +604,105 @@ internals.applyRoutes = function (server, next) {
   ;
 
 
+  /**
+   * @api {put} /api/device/:filter Get Device With Filter
+   * @apiName Get Device With Filter
+   * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts,
+   * sequences, annotations, features, assemblies, subdesigns, subannotations. Note that using the filters will return
+   *  the bioDesign object as well.
+   * @apiGroup Convenience Methods Device
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} [name]  name of device.
+   * @apiParam {String} [displayId]  displayId of part.
+   * @apiParam {String} [role]  role of the feature
+   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String} [createSeqFromParts]  boolean to differentiate device from part - may not be necessary
+   * @apiParam (Object) [partIds]  list of partIds
+   *
+   *
+   * @apiParamExample {json} Request-Example:
+   *  {
+       "name": "findDeviceTest"
+       }
 
-
+   * @apiSuccessExample {json} Success-Response (for api/part/parameters):
+   *
+   * [
+     [
+     {
+         "_id": "598c9c157484ecafae736f88",
+         "name": "findDeviceTest0",
+         "description": null,
+         "userId": "593f0d81b59d9120de14d897",
+         "displayId": null,
+         "imageURL": null,
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c95e9573864af4720caec",
+             "597a0b98155a0466a37731ee"
+         ],
+         "superBioDesignId": null,
+         "type": "DEVICE"
+     },
+     {
+         "_id": "598c9c157484ecafae736f8b",
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c95e9573864af4720caec",
+             "597a0b98155a0466a37731ee"
+         ],
+         "userId": "593f0d81b59d9120de14d897",
+         "superSubPartId": "598c9c157484ecafae736f8a"
+     }
+     ],
+     [
+     {
+         "_id": "598c9c217484ecafae736f9b",
+         "name": "findDeviceTest1",
+         "description": null,
+         "userId": "593f0d81b59d9120de14d897",
+         "displayId": null,
+         "imageURL": null,
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c9c1b7484ecafae736f92",
+             "597a0b98155a0466a37731ee"
+         ],
+         "superBioDesignId": null,
+         "type": "DEVICE"
+     },
+     {
+         "_id": "598c9c217484ecafae736f9e",
+         "subBioDesignIds": [
+             "598c9bfd7484ecafae736f7f",
+             "598c9c1b7484ecafae736f92",
+             "597a0b98155a0466a37731ee"
+         ],
+         "userId": "593f0d81b59d9120de14d897",
+         "superSubPartId": "598c9c217484ecafae736f9d"
+     }
+     ]
+     ]
+  *
+  * @apiErrorExample {json} Error-Response 1 - no parts match:
+  * {
+  * "statusCode": 404,
+  "error": "Not Found",
+  "message": "Document not found."
+  * }
+  *
+  * @apiErrorExample {json} Error-Response 2 - invalid role:
+  * {
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "Role invalid."
+  }
+   */
 
 
 
@@ -682,9 +758,11 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       Async.auto({
 
         getPut: function (done) {
+
           var newRequest = {
             url: '/api/device',
             method: 'PUT',
@@ -693,11 +771,12 @@ internals.applyRoutes = function (server, next) {
           };
 
           server.inject(newRequest, (response) => {
+
             // Check for error. Includes no document found error.
             if (response.statusCode !== 200) {
               return reply(response.result);
             }
-            done(null, response.result)
+            done(null, response.result);
           });
         },
         getBioDesign : ['getPut', function (results, done) {
@@ -713,46 +792,46 @@ internals.applyRoutes = function (server, next) {
         }],
         getResults: ['getBioDesign', function (results, done) {
 
-          const filter =  request.params.filter
+          const filter =  request.params.filter;
           var bioDesigns = results.getBioDesign;
-          var filteredArr = []
+          var filteredArr = [];
 
           for (let bigPart in bioDesigns) {
             var filteredObj = [null, null];
 
             //get filter object
             if (filter === 'parameters') {
-              filteredObj[1] = bioDesigns[bigPart]['parameters'][0]
+              filteredObj[1] = bioDesigns[bigPart]['parameters'][0];
             }
             else if (filter === 'subdesigns') {
               filteredObj[1] = bioDesigns[bigPart]['subdesigns'];
             }
             else if (filter === 'modules') {
               filteredObj[1] = bioDesigns[bigPart]['modules'][0];
-              delete filteredObj[1]['features']
+              delete filteredObj[1]['features'];
             }
             else if (filter === 'subparts') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0];
-              delete filteredObj[1]['assemblies']
-              delete filteredObj[1]['sequences']
+              delete filteredObj[1]['assemblies'];
+              delete filteredObj[1]['sequences'];
             }
             else if (filter === 'assemblies') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['assemblies'][0];
             }
             else if (filter === 'sequences') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0];
-              delete filteredObj[1]['subannotations']
-              delete filteredObj[1]['annotations']
+              delete filteredObj[1]['subannotations'];
+              delete filteredObj[1]['annotations'];
             }
             else if (filter === 'subannotations') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['subannotations'];
             }
             else if (filter === 'annotations') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['annotations'][0];
-              delete filteredObj[1]['features']
+              delete filteredObj[1]['features'];
             }
             else if (filter === 'features') {
-              filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0]
+              filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0];
             }
 
             //get bioDesign object
@@ -771,7 +850,7 @@ internals.applyRoutes = function (server, next) {
             return reply(filteredArr);
           }
         }]
-      })
+      });
     }
   });
 
@@ -1265,6 +1344,7 @@ internals.applyRoutes = function (server, next) {
           var bioDesignId = request.params.id;
 
           Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
+
             if (err) {
               return err;
             } else {
@@ -1278,7 +1358,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       var versionResults = request.pre.checkVersion;
-      var lastUpdatedId = versionResults[0]  //returns current id, if no newer version
+      var lastUpdatedId = versionResults[0];  //returns current id, if no newer version
 
       BioDesign.getBioDesignIds(lastUpdatedId, null, null, (err, bioDesign) => {
 

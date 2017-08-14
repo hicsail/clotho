@@ -79,10 +79,10 @@ class Part extends MongoModels {
     if (parts.length > 0) {
 
       for (var i = 0; i < parts.length; ++i) {
-        bioDesignIds.push(parts[i]['bioDesignId'])
+        bioDesignIds.push(parts[i]['bioDesignId']);
       }
     }
-    callback(null, bioDesignIds)
+    callback(null, bioDesignIds);
   }
 
 

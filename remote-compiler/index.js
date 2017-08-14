@@ -1,7 +1,7 @@
 'use strict';
 const Async = require('async');
 const Hapi = require('hapi');
-const Joi = require('joi');
+//const Joi = require('joi');
 const UUIDv4 = require('uuid/v4');
 const { exec } = require('child_process');
 const Fs = require('fs');
@@ -121,8 +121,10 @@ server.route({
         Fs.writeFile(results.file, results.payload.code,callback);
       }],
       runCode: ['makeFile', function (results,callback) {
+
         var done = false;
         var process = exec(`sh ./scripts/${results.payload.language}.sh ${results.file} ${results.payload.inputs}`, (err, stdout, stderr) => {
+
           done = true;
           if(stderr) {
             return callback(stderr);
@@ -133,6 +135,7 @@ server.route({
           return callback(null,stdout);
         });
         setTimeout(function () {
+
           if(!done){
             process.kill();
             return callback(null,'Process Timed Out');

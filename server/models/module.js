@@ -40,8 +40,8 @@ class Module extends MongoModels {
       if (err) {
         return callback(err);
       }
+      this.getBioDesignIdsbyModule(modules, callback);
 
-      this.getBioDesignIdsbyModule(modules, callback)
     });
 
   }
@@ -53,10 +53,10 @@ class Module extends MongoModels {
     if (modules.length > 0) {
 
       for (var i = 0; i < modules.length; ++i) {
-        bioDesignIds.push(modules[i]['bioDesignId'])
+        bioDesignIds.push(modules[i]['bioDesignId']);
       }
     }
-    callback(null, bioDesignIds)
+    callback(null, bioDesignIds);
   }
 
 
