@@ -3,7 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
-const Part = require('./part');
+const BioNode = require('bionode-seq');
 
 
 class Sequence extends MongoModels {
@@ -19,7 +19,8 @@ class Sequence extends MongoModels {
       partId: partId,
       sequence: sequence,
       isLinear: isLinear,
-      isSingleStranded: isSingleStranded
+      isSingleStranded: isSingleStranded,
+      type: BioNode.checkType(sequence)
     };
 
     this.insertOne(document, (err, docs) => {
@@ -110,7 +111,7 @@ class Sequence extends MongoModels {
 
   }
 
-//get subAnnotations if they exist, then direct to getAnnotations
+  //get subAnnotations if they exist, then direct to getAnnotations
   static getChild(index, sequences, callback) {
 
     this.getSubAnnotations(index, sequences, (err, seqWithSubAnnotations) => {
@@ -286,6 +287,12 @@ class Sequence extends MongoModels {
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
+  static undelete(document, callback) {
+
+    delete document.toDelete;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
+
   // Original Java.
   /*
    public Annotation createAnnotation(String name, int start, int end, boolean isForwardStrand,
@@ -328,7 +335,7 @@ Sequence.schema = Joi.object().keys({
   accession: Joi.string().optional(), // Polynucleotide-specific attributes start here.
   isLinear: Joi.boolean().optional(),
   isSingleStranded: Joi.boolean().optional(),
-  sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive(), // Case-insensitive.
+  sequence: Joi.string(), // Case-insensitive.
   submissionDate: Joi.date() // also ignores parentPolynucleotideId
 });
 

@@ -9,7 +9,6 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Device = server.plugins['hapi-mongo-models'].Device;
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
   const Part = server.plugins['hapi-mongo-models'].Part;
   const Assembly = server.plugins['hapi-mongo-models'].Assembly;
@@ -129,14 +128,14 @@ internals.applyRoutes = function (server, next) {
 
           BioDesign.find({_id: ObjectID(bioDesignId), type: 'DEVICE'}, (err, results) => {
 
-              if (err) {
-                return reply(err);
-              } else if (results === null || results.length === 0) {
-                return reply(Boom.notFound('Device does not exist.'));
-              } else {
-                reply(true);
-              }
-            });
+            if (err) {
+              return reply(err);
+            } else if (results === null || results.length === 0) {
+              return reply(Boom.notFound('Device does not exist.'));
+            } else {
+              reply(true);
+            }
+          });
         }
       },
       {
@@ -145,7 +144,10 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
+
+          Version.findNewest(bioDesignId, 0, (err, results) => {
+
+
             if (err) {
               return err;
             } else {
@@ -160,7 +162,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           partIds: Joi.array().items(Joi.string().required()).optional(),
           createSeqFromParts: Joi.boolean().required(),
           parts: Joi.array().items(Joi.object().keys({
@@ -185,8 +187,9 @@ internals.applyRoutes = function (server, next) {
 
         //get most updated ID
         getOldDevice: function (done) {
+
           var versionResults = request.pre.checkVersion;
-          var lastUpdatedId = versionResults[0]  //returns current id, if no newer version
+          var lastUpdatedId = versionResults[0];  //returns current id, if no newer version
 
           BioDesign.getBioDesignIds(lastUpdatedId, null, 'DEVICE', done);
         },
@@ -205,10 +208,10 @@ internals.applyRoutes = function (server, next) {
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
               // add if statements for parameters that may not exist (see role)
               if (args[i] === 'sequence') {
-                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null) {
+                if (oldDevice['subparts'][0]['sequences'] !== undefined && oldDevice['subparts'][0]['sequences'] !== null) {
                   newPayload.sequence = oldDevice['subparts'][0]['sequences'][0]['sequence'];
                 }
-             }
+              }
               else if (args[i] === 'role') {
                 if (oldDevice['modules'] !== undefined && oldDevice['modules'] !== null && oldDevice['modules'].length !== 0) {
                   newPayload.role = oldDevice['modules'][0]['role'];
@@ -275,7 +278,6 @@ internals.applyRoutes = function (server, next) {
           var lastUpdatedId = versionResults[0];
           var versionNumber = versionResults[1];
 
-          const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
@@ -289,6 +291,8 @@ internals.applyRoutes = function (server, next) {
 
               if (err) {
                 return reply(err);
+              } else {
+                done(null, results);
               }
 
 
@@ -320,7 +324,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return err;
         }
-        return reply(result['createNewPart']) //returns new bioDesginId
+        return reply(result['createNewPart']); //returns new bioDesginId
       });
     }
   });
@@ -760,7 +764,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/device Get Device
    * @apiName Get Device
    * @apiDescription Get device based on bioDesignId
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1277,7 +1281,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/device Create Device
    * @apiName Create Device
    * @apiDescription Create device based on arguments and part ids
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1353,7 +1357,7 @@ internals.applyRoutes = function (server, next) {
           displayId: Joi.string().optional(),
           role: Joi.string().uppercase().optional(),
           partIds: Joi.array().items(Joi.string().required()).required(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           createSeqFromParts: Joi.boolean().required(),
           parameters: Joi.array().items(
             Joi.object().keys({
@@ -1655,10 +1659,10 @@ internals.applyRoutes = function (server, next) {
                   }
 
                   else {
-                    var key = results[0];
-                    superSequenceArr[key] = results[1][0]['sequence'];
-                    subSequenceIds[key] = results[1][0]['_id'];
-                    subFeatureIds[key] = results[1][0]['featureId'];
+                    var key2 = results[0];
+                    superSequenceArr[key2] = results[1][0]['sequence'];
+                    subSequenceIds[key2] = results[1][0]['_id'];
+                    subFeatureIds[key2] = results[1][0]['featureId'];
 
                     resolve(results);
                   }
@@ -1679,6 +1683,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSequence: ['createSubpart', 'getSequences', function (results, done) {
+
           if (request.payload.sequence === undefined || request.payload.sequence === null) {
 
             //get all subSequences and concatenates them to create the superSequence!
@@ -1686,7 +1691,7 @@ internals.applyRoutes = function (server, next) {
             var sequences = results.getSequences;
 
             var superSequenceArr = sequences[1];
-            var subBioDesignIds = request.payload.partIds;
+            //var subBioDesignIds = request.payload.partIds;
 
             var superSequence = superSequenceArr.join('');
 
@@ -1707,6 +1712,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSubAnnotations: ['createSequence', 'getSequences', function (results, done) {
+
           if (request.payload.sequence === undefined || request.payload.sequence === null) {
 
             // Create subAnnotations for all subBioDesigns connected to subFeatures
@@ -1770,6 +1776,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         updateSubFeaturesSuperAnnotationId: ['getSequences', 'createSubAnnotations', function (results, done) {
+
           if (request.payload.sequence === undefined || request.payload.sequence === null) {
 
             // Update superAnnotationIds in order in all subFeatures
@@ -1810,6 +1817,7 @@ internals.applyRoutes = function (server, next) {
           }
         }],
         createSequenceFromPayload: ['createSubpart', function (results, done) {
+
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
 
             var partId = results.createSubpart._id.toString();
@@ -1924,7 +1932,22 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
+  /**
+   * @api {delete} /api/device/undelete/:id Un-Delete Device by Id
+   * @apiName  Un-Delete Device by Id
+   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @apiGroup Convenience Methods Device
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Device unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/device/{id}',
@@ -1981,35 +2004,194 @@ internals.applyRoutes = function (server, next) {
         }],
         Parts: ['BioDesign', function (results, callback) {
 
-          for (var part of results.BioDesign.subparts) {
-            for (var sequence of part.sequences) {
-              for (var annotation of sequence.annotations) {
-                for (var feature of annotation.features) {
-                  Feature.delete(feature, (err, callback) => {
+          if(results.BioDesign.subparts) {
+            for (var part of results.BioDesign.subparts) {
+              if(part.sequences) {
+                for (var sequence of part.sequences) {
+                  for (var annotation of sequence.annotations) {
+                    for (var feature of annotation.features) {
+                      Feature.delete(feature, (err, callback) => {
+                      });
+                    }
+                    delete annotation.features;
+                    Annotation.delete(annotation, (err, callback) => {
+                    });
+                  }
+                  if(sequence.subannotations) {
+                    for(var subannotations of sequence.subannotations) {
+                      Annotation.delete(subannotations, (err, callback) => {
+                      });
+                    }
+                  }
+                  delete sequence.subannotations;
+                  delete sequence.annotations;
+                  Sequence.delete(sequence, (err, callback) => {
                   });
                 }
-                delete annotation.features;
-                Annotation.delete(annotation, (err, callback) => {
-                });
               }
-              for(var annotation of sequence.subannotations) {
-                Annotation.delete(annotation, (err, callback) => {
-                });
+              if(part.assemblies) {
+                for(var assembly of part.assemblies) {
+                  Assembly.delete(assembly, (err, callback) => {});
+                }
               }
-              delete sequence.subannotations;
-              delete sequence.annotations;
-              Sequence.delete(sequence, (err, callback) => {
+              delete part.assemblies;
+              delete part.sequences;
+              Part.delete(part, (err, callback) => {
               });
             }
-            for(var assembly of part.assemblies) {
-              Assembly.delete(assembly, (err, callback) => {});
+          }
+          callback(null, results.BioDesign.subparts);
+        }]
+      }, (err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply({message: 'Success.'});
+      });
+    }
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/device/undelete/{id}',
+    config: {
+      auth: {
+        strategy: 'simple',
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        BioDesign: function (callback) {
+
+          BioDesign.findOne({
+            _id: ObjectID(request.params.id),
+            toDelete: true
+          }, (err, document) => {
+
+            if(document) {
+              BioDesign.undelete(document, callback);
+            } else {
+              callback(Boom.notFound('No BioDesign Found to undelete'));
             }
-            delete part.assemblies;
-            delete part.sequences;
-            Part.delete(part, (err, callback) => {
+          });
+        },
+        Parameters: ['BioDesign', function (results, callback) {
+
+          Parameter.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, documents) => {
+
+            Async.each(documents, function (parameter, callback) {
+
+              Parameter.undelete(parameter, callback);
+            }, (err) => {
+
+              callback(err);
+            });
+          });
+        }],
+        Modules: ['BioDesign', function (results, callback) {
+
+          Module.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, modules) => {
+
+            Async.each(modules, function (module, callback) {
+
+              Feature.find({
+                moduleId: module._id.toString(),
+                toDelete: true
+              }, (err, features) => {
+
+                Async.each(features, function (feature, callback) {
+
+                  Feature.undelete(feature, callback);
+
+                }, (err) => {
+
+                  Module.undelete(module, callback);
+                });
+              });
+            }, (err) => {
+
+              callback(err, modules);
+            });
+          });
+        }],
+        Assembly: ['Parts', function (results, callback) {
+
+          for(let part of results.Parts) {
+            Assembly.find({
+              superSubPartId: part._id.toString(),
+              toDelete: true
+            }, (err, assemblies) => {
+
+              for(let assembly of assemblies) {
+
+                Assembly.undelete(assembly, (err) => {
+
+                });
+              }
+              callback(null, assemblies);
             });
           }
-          callback(null, '');
+        }],
+        Parts: ['BioDesign', function (results, callback) {
+
+          Part.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, parts) => {
+
+            Async.each(parts, function (part, callback) {
+
+              Sequence.find({
+                partId: part._id.toString(),
+                toDelete: true
+              }, (err, sequences) => {
+
+                Async.each(sequences, function (sequence, callback) {
+
+                  Annotation.find({
+                    sequenceId: sequence._id.toString(),
+                    toDelete: true
+                  }, (err, annotations) => {
+
+                    Async.each(annotations, function (annotation, callback) {
+
+                      Feature.find({
+                        annotationId: annotation._id.toString(),
+                        toDelete: true
+                      }, (err, features) => {
+
+                        Async.each(features, function (feature, callback) {
+
+                          Feature.undelete(feature, callback);
+                        }, (err) => {
+
+                          Annotation.undelete(annotation, callback);
+                        }); //end each feature
+                      });// feature find
+                    }, (err) => {
+
+                      Sequence.undelete(sequence, callback);
+                    }); //end each annotation
+                  });// annotation find
+                }, (err) => {
+
+                  Part.undelete(part, callback);
+                }); //end each sequence
+              });// sequence find
+            }, (err) => {
+
+              callback(err, parts);
+            });// end for part
+          });//part find
         }]
       }, (err, result) => {
 

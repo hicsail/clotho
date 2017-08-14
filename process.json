@@ -1,0 +1,16 @@
+{
+  "apps" : [
+    {
+      "name"        : "remote-compiler",
+      "script"      : "./remote-compiler/index.js",
+      "watch"       : false,
+      "instances"   : 1
+    },
+    {
+      "name"        : "clotho",
+      "script"      : "./server.js",
+      "watch"       : false,
+      "instances"   : 2
+    }
+  ]
+}

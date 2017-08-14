@@ -9,12 +9,12 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Strain = server.plugins['hapi-mongo-models'].Strain;
+  const Application = server.plugins['hapi-mongo-models'].Application;
 
 
   server.route({
     method: 'GET',
-    path: '/strains',
+    path: '/application',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -40,7 +40,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      Strain.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Application.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -54,7 +54,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/strains/{id}',
+    path: '/application/{id}',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -66,17 +66,17 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Strain.findById(request.params.id, (err, strain) => {
+      Application.findById(request.params.id, (err, application) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!strain) {
+        if (!application) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(strain);
+        reply(application);
       });
     }
   });
@@ -84,7 +84,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'POST',
-    path: '/strains',
+    path: '/application',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -92,8 +92,10 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          pivot: Joi.string().required(),
-          name: Joi.string().required()
+          name: Joi.string().required(),
+          description: Joi.string().required(),
+          imageURL: Joi.string().required(),
+          website: Joi.string().required()
         }
       },
       pre: [
@@ -102,32 +104,41 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const pivot = request.payload.pivot;
-      const name = request.payload.name;
+      Application.create(
+        request.payload.name,
+        request.payload.description,
+        request.auth.credentials.user._id.toString(),
+        request.payload.imageURL,
+        request.payload.website,
+        (err, application) => {
 
-      Strain.create(pivot, name, (err, strains) => {
+          if (err) {
+            return reply(err);
+          }
 
-        if (err) {
-          return reply(err);
-        }
-
-        reply(strains);
-      });
+          reply(application);
+        });
     }
   });
 
 
   server.route({
     method: 'PUT',
-    path: '/strains/{id}',
+    path: '/application/{id}',
     config: {
       auth: {
         strategies: ['simple', 'session'],
         scope: 'admin'
       },
       validate: {
+        params: {
+          id: Joi.string().invalid('root')
+        },
         payload: {
-          name: Joi.string().required()
+          name: Joi.string().required(),
+          description: Joi.string().required(),
+          imageURL: Joi.string().required(),
+          website: Joi.string().required()
         }
       },
       pre: [
@@ -139,33 +150,40 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          name: request.payload.name
+          name: request.payload.name,
+          description: request.payload.description,
+          imageURL: request.payload.imageURL,
+          website: request.payload.website
         }
       };
 
-      Strain.findByIdAndUpdate(id, update, (err, strains) => {
+      Application.findByIdAndUpdate(id, update, (err, application) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!strains) {
+        if (!application) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(strains);
+        reply(application);
       });
     }
   });
 
-
   server.route({
     method: 'DELETE',
-    path: '/strains/{id}',
+    path: '/application/{id}',
     config: {
       auth: {
         strategies: ['simple', 'session'],
         scope: 'admin'
+      },
+      validate: {
+        params: {
+          id: Joi.string().invalid('root')
+        }
       },
       pre: [
         AuthPlugin.preware.ensureAdminGroup('root')
@@ -173,13 +191,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Strain.findByIdAndDelete(request.params.id, (err, strains) => {
+      Application.findByIdAndDelete(request.params.id, (err, application) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!strains) {
+        if (!application) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -202,5 +220,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'strains'
+  name: 'applications'
 };

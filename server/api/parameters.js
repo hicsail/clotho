@@ -80,7 +80,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().required(),
           bioDesignId: Joi.string().optional(),
           value: Joi.number().required(),
-          variable: Joi.string().required(), // This was originally a Variable object/a ShareableObjBase.
+          variable: Joi.string().required(),
           units: Joi.string().required()
         }
       }

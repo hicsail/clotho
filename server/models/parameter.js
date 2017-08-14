@@ -184,6 +184,11 @@ class Parameter extends MongoModels {
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 
+  static undelete(document, callback) {
+
+    delete document.toDelete;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
 
 }
 
@@ -199,6 +204,13 @@ Parameter.schema = Joi.object().keys({
   units: Joi.string().required(), // These should be updated.
   value: Joi.number().required(),
   variable: Joi.string().required() // This was originally a Variable object/a ShareableObjBase.
+});
+
+Parameter.payload = Joi.object().keys({
+  name: Joi.string().required(),
+  units: Joi.string().required(),
+  value: Joi.number().required(),
+  variable: Joi.string().required()
 });
 
 Parameter.indexes = [

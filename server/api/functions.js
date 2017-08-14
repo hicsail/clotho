@@ -1,6 +1,10 @@
 'use strict';
 const Bionode = require('bionode-seq');
+const Boom = require('boom');
 const Joi = require('joi');
+const Request = require('request');
+const Rp = require('request-promise');
+const Function = require('../models/function');
 
 const internals = {};
 
@@ -27,6 +31,11 @@ internals.applyRoutes = function (server, next) {
    *    "sequence":"AUGACCCUGAAGGUGAAUGAA"
    *  }
    *
+   * @apiParamExample {json} Protein:
+   *  {
+   *    "sequence":"MAYKSGKRPTFFEVFKAHCSDS"
+   *  }
+   *
    *
    * @apiParamExample {json} Ambiguous DNA:
    *  {
@@ -48,6 +57,11 @@ internals.applyRoutes = function (server, next) {
    *    "type":"rna"
    *  }
    *
+   * @apiSuccessExample {json} Protein:
+   *  {
+   *    "type":"protein"
+   *  }
+   *
    * @apiSuccessExample {json} Ambiguous DNA:
    *  {
    *    "type":"ambiguousDna"
@@ -67,7 +81,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -108,7 +122,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -148,7 +162,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -189,7 +203,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -243,7 +257,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required(),
+          sequence: Joi.string().required(),
           exons: Joi.array().items(
             Joi.array().items(
               Joi.number().min(0)
@@ -301,7 +315,7 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required(),
+          sequence: Joi.string().required(),
           exons: Joi.array().items(
             Joi.array().items(
               Joi.number().min(0)
@@ -352,11 +366,11 @@ internals.applyRoutes = function (server, next) {
     path: '/transcribe',
     config: {
       auth: {
-        strategy: 'simple'
+        strategies: ['simple','session']
       },
       validate: {
         payload: {
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').required()
+          sequence: Joi.string().required()
         }
       }
     },
@@ -366,10 +380,328 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {get} /api/function/language Get Languages
+   * @apiName Get Languages
+   * @apiDescription Get available languages to write custom function
+   * @apiGroup Custom Functions
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response-1:
+   *  ["node","java","python"]
+   *
+   */
+  server.route({
+    method: 'GET',
+    path: '/function/language',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+    },
+    handler: function (request, reply) {
+
+      Request('http://localhost:8000/language', (error, response, body) => {
+
+        reply(JSON.parse(body));
+      });
+    }
+  });
+
+  /**
+   * @api {get} /api/function/version Get Versions
+   * @apiName Get Versions
+   * @apiDescription Get available languages version
+   * @apiGroup Custom Functions
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiSuccessExample {json} Success-Response-1:
+   *  {"java":"1.8.0_102","node":"v7.9.0","python":"Python 2.7.10"}
+   *
+   */
+  server.route({
+    method: 'GET',
+    path: '/function/version',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+    },
+    handler: function (request, reply) {
+
+      Request('http://localhost:8000/version', (error, response, body) => {
+
+        reply(JSON.parse(body));
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/function/template/{language*}',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+    },
+    handler: function (request, reply) {
+
+      Request(`http://localhost:8000/public/templates/${request.params.language}.txt`, (error, response, body) => {
+
+        reply(body);
+      });
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/function/run',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+      pre: [{
+        assign: 'validInput',
+        method: function (request, reply) {
+
+          if(!request.payload) {
+            return reply(Boom.badRequest('Request must have body'));
+          }
+
+          Request.get('http://localhost:8000/language', (err, httpResponse, body) => {
+
+            var payload = {};
+            var data = request.payload.split('\n');
+            var firstLine = data[0].split(' ');
+            payload.language = firstLine[0];
+            payload.inputs = JSON.parse(firstLine.slice(1).join(' '));
+            payload.code = data.slice(1).join('\n');
+            var languages = JSON.parse(body);
+
+            const schema = {
+              language: Joi.string().allow(languages).required(),
+              inputs: Joi.array().required(),
+              code: Joi.string().required()
+            };
+
+            var validate = Joi.validate(payload,schema);
+
+            if(validate.error) {
+              return reply(Boom.badRequest(validate.err));
+            }
+
+            if(languages.indexOf(payload.language) == -1) {
+              return reply(Boom.badRequest('invalid language'));
+            }
+
+            reply(true);
+          });
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      Rp({
+        method: 'POST',
+        uri: 'http://localhost:8000/compile',
+        body: request.payload,
+        headers: {'Content-Type':'text/plain'},
+        json: false
+      }).then(function (parsedBody) {
+
+        return reply(parsedBody);
+      });
+    }
+  });
+
+  var testCheck = true;
+  server.route({
+    method: 'POST',
+    path: '/function',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          language: Joi.string().required(),
+          code: Joi.array().required(),
+          inputs: Joi.array().required(),
+          outputs: Joi.array().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      var input = `["${request.payload.inputs.join(',')}"]`;
+      var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
+      const runRequest = {
+        method: 'POST',
+        url: '/api/function/run',
+        payload: payload,
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        credentials: request.auth.credentials
+      };
+
+      server.inject(runRequest, (response) => {
+
+        if(response.statusCode != 200) {
+          return reply(response.result);
+        }
+        var output = response.result.split('\n').slice(0,-1);
+        if(output.toString() != request.payload.outputs.toString()) {
+          if (testCheck) {
+            return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
+          } else {
+            Function.create(
+              request.payload.name,
+              request.payload.description,
+              request.auth.credentials.user._id.toString(),
+              request.payload.language,
+              request.payload.code,
+              request.payload.inputs,
+              request.payload.outputs,
+              false,
+              (err, result) => {
+
+                reply(result);
+              });
+          }
+        } else {
+          Function.create(
+            request.payload.name,
+            request.payload.description,
+            request.auth.credentials.user._id.toString(),
+            request.payload.language,
+            request.payload.code,
+            request.payload.inputs,
+            request.payload.outputs,
+            true,
+            (err, result) => {
+
+              reply(result);
+            });
+        }
+      });
+
+    }
+  });
+
+
+  server.route({
+    method: 'PUT',
+    path: '/function',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().optional(),
+          language: Joi.string().required(),
+          code: Joi.array().required(),
+          inputs: Joi.array().required(),
+          outputs: Joi.array().required(),
+          _id: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      var input = `["${request.payload.inputs.join(',')}"]`;
+      var payload = `${request.payload.language} ${input}\n ${request.payload.code.join('\n')}`;
+
+      const runRequest = {
+        method: 'POST',
+        url: '/api/function/run',
+        payload: payload,
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        credentials: request.auth.credentials
+      };
+
+      server.inject(runRequest, (response) => {
+
+        if(response.statusCode != 200) {
+          return reply(response.result);
+        }
+        var output = response.result.split('\n').slice(0,-1);
+        if(output.toString() != request.payload.outputs.toString()) {
+          if (testCheck){
+            return reply(Boom.badRequest(`Inputs don't produce outputs\n ${request.result}`));
+          } else {
+
+            const update = {name: request.payload.name,
+              language: request.payload.language,
+              inputs: request.payload.inputs,
+              outputs: request.payload.outputs,
+              code: request.payload.code,
+              working: false
+            };
+
+            const id = request.payload._id;
+            Function.findByIdAndUpdate(id, update, (err, result) => {
+
+              if (err) return reply(err);
+              reply(result);
+            });
+          }
+        } else {
+          const update = {name: request.payload.name,
+            language: request.payload.language,
+            inputs: request.payload.inputs,
+            outputs: request.payload.outputs,
+            code: request.payload.code,
+            working: true
+          };
+          const id = request.payload._id;
+          Function.findByIdAndUpdate(id, update, (err, result) => {
+
+            if (err) return reply(err);
+            reply(result);
+          });
+        }
+      });
+    }
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/function/delete',
+    config: {
+      auth: {
+        strategies: ['simple','session']
+      },
+      validate: {
+        payload: {_id: Joi.string().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.payload._id;
+
+      Function.findByIdAndDelete(id, (err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply(result);
+      });
+    }
+  });
 
   next();
 };
-
 
 exports.register = function (server, options, next) {
 

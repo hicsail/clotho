@@ -13,7 +13,7 @@ class Module extends MongoModels {
       userId: userId,
       displayId: displayId,
       bioDesignId: bioDesignId,
-      role: role,
+      role: role.toUpperCase(),
       submoduleIds: submoduleIds
     };
 
@@ -164,6 +164,12 @@ class Module extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
+
+  static undelete(document, callback) {
+
+    delete document.toDelete;
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 

@@ -21,17 +21,17 @@ internals.applyRoutes = function (server, next) {
   const Version = server.plugins['hapi-mongo-models'].Version;
 
   /**
-   * @api {put} /api/put
-   * @apiName Search for Part
-   * @apiDescription Get BioDesignId of Part based on arguments.
-   * @apiGroup Convenience Methods
+   * @api {put} /api/part Get Part
+   * @apiName Get Part
+   * @apiDescription Get part based on arguments.
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
    * @apiParam {String} [name]  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
-   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    * @apiParam {Boolean} [searchDeleted=false] whether to search for only deleted parts (true) or only non-deleted parts (false).
@@ -108,7 +108,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -223,10 +223,11 @@ internals.applyRoutes = function (server, next) {
           for (var i = 0; i < setBDs.length; ++i) {
             if (i !== setBDs.length - 1) {                      //if there exists i+1,
               setBDs[i+1] = setBDs[i].filter(function (item) {  // i+1 equals to the intersect of i and i+1
-                return setBDs[i+1].indexOf(item) != -1;;
+
+                return setBDs[i+1].indexOf(item) != -1;
               });
             } else {
-              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
+              intersectBDs = setBDs[i];   //last in setBDs is the intersect of all inputs
             }
           }
 
@@ -299,7 +300,7 @@ internals.applyRoutes = function (server, next) {
    * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts, _id,
    * name, description, userId, displayId, and superBioDesignId. Note that using the filters for
    * parameters, modules, and subparts will return bioDesign-specific attributes as well.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -308,7 +309,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [name]  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
-   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    * @apiParam {Boolean} [searchDeleted=false] whether to search for only deleted parts (true) or only non-deleted parts (false).
@@ -417,7 +418,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -517,7 +518,7 @@ internals.applyRoutes = function (server, next) {
    * @api {get} /api/part/:id Get Part By Id
    * @apiName Get Part By Id
    * @apiDescription Get complete Part by ID
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -680,7 +681,7 @@ internals.applyRoutes = function (server, next) {
    * @api {post} /api/part Create Part
    * @apiName Create Part
    * @apiDescription Create part based on arguments
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -688,7 +689,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
-   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    *
    * @apiParamExample {json} Request-Example:
    *
@@ -750,6 +751,25 @@ internals.applyRoutes = function (server, next) {
             reply(true);
           }
         }
+        // },
+        // {
+        //   assign: 'checkVersion',
+        //   method: function (request, reply) {
+        //
+        //     var bioDesignId = request.params.id;
+        //
+        //     Version.findNewest(bioDesignId, (err, results) => {
+        //       if (err) {
+        //         return err;
+        //       } else {
+        //         // Prior version exists.
+        //         // Update this to either automatically find newest version
+        //         // of design, or to at least specify id of new object.
+        //         console.log(results);
+        //         return reply(Boom.badRequest('Newer version of Part exists.'));
+        //       }
+        //     });
+        //   }
       }],
       validate: {
         payload: {
@@ -764,7 +784,7 @@ internals.applyRoutes = function (server, next) {
               variable: Joi.string()
             })
           ).optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional()
+          sequence: Joi.string().insensitive().optional()
         }
       }
     },
@@ -977,7 +997,7 @@ internals.applyRoutes = function (server, next) {
    * @api {put} /api/part/update/:id Update Part by Id
    * @apiName  Update Part by Id
    * @apiDescription Include arguments in payload to update part.
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -985,7 +1005,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
-   * @apiParam {String=ATUCGRYKMSWBDHVN} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
+   * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
    *
    * @apiParamExample {json} Request-Example:
@@ -1057,7 +1077,7 @@ internals.applyRoutes = function (server, next) {
         assign: 'checkBioDesign',
         method: function (request, reply) {
 
-            // Check that biodesign exists - should not perform update if biodesign does not exist.
+          // Check that biodesign exists - should not perform update if biodesign does not exist.
           var bioDesignId = request.params.id;
 
           BioDesign.find({_id: ObjectID(bioDesignId), type: 'PART'}, (err, results) => {
@@ -1070,7 +1090,7 @@ internals.applyRoutes = function (server, next) {
               reply(true);
             }
           }
-            );
+          );
         }
       },
       {
@@ -1079,12 +1099,13 @@ internals.applyRoutes = function (server, next) {
 
           var bioDesignId = request.params.id;
 
-          Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
+
+          Version.findNewest(bioDesignId, 0, (err, results) => {
             if (err) {
               return err;
             } else {
               // This automatically find newest version if it exists, if not returns original
-              reply (results);
+              reply(results);
             }
           });
         }
@@ -1097,7 +1118,7 @@ internals.applyRoutes = function (server, next) {
           name: Joi.string().optional(),
           displayId: Joi.string().optional(),
           role: Joi.string().optional(),
-          sequence: Joi.string().regex(/^[ATUCGRYKMSWBDHVNatucgrykmswbdhvn]+$/, 'DNA sequence').insensitive().optional(),
+          sequence: Joi.string().insensitive().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
               name: Joi.string().optional(),
@@ -1117,8 +1138,9 @@ internals.applyRoutes = function (server, next) {
 
         //get most updated ID
         getOldPart: function (done) {
+
           var versionResults = request.pre.checkVersion;
-          var lastUpdatedId = versionResults[0]  //return current id, if no newer version
+          var lastUpdatedId = versionResults[0];  //return current id, if no newer version
 
           BioDesign.getBioDesignIds(lastUpdatedId, null, 'PART', done);
         },
@@ -1136,7 +1158,7 @@ internals.applyRoutes = function (server, next) {
             if (request.payload[args[i]] === undefined || request.payload[args[i]] === null) {
 
               if (args[i] === 'sequence') {
-                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null){
+                if (oldPart['subparts'][0]['sequences'] !== undefined && oldPart['subparts'][0]['sequences'] !== null) {
                   newPayload.sequence = oldPart['subparts'][0]['sequences'][0]['sequence'];
                 }
               } else if (args[i] === 'role') {
@@ -1157,8 +1179,7 @@ internals.applyRoutes = function (server, next) {
                   for (var oldParameter of oldParameters) {
                     var p = {};
 
-                    for (var paraKey of parameterKeys)
-                    {
+                    for (var paraKey of parameterKeys) {
                       if (oldParameter[paraKey] !== undefined && oldParameter[paraKey] !== null) {
                         p[paraKey] = oldParameter[paraKey];
                       }
@@ -1203,13 +1224,11 @@ internals.applyRoutes = function (server, next) {
           var lastUpdatedId = versionResults[0];
           var versionNumber = versionResults[1];
 
-          const userId = request.auth.credentials.user._id.toString();
           const oldId = lastUpdatedId;
           const partId = results.createNewPart;  // id of new Part.
 
           //change this to just updating the version --> because biodesign is creating the version
-          if (lastUpdatedId !== null)
-          {
+          if (lastUpdatedId !== null) {
             Version.updateMany({
               objectId: ObjectID(partId), //update new version number
               $isolated: 1
@@ -1248,7 +1267,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return err;
         }
-        return reply(result['createNewPart']) //returns new bioDesginId
+        return reply(result['createNewPart']); //returns new bioDesginId
       });
 
     }
@@ -1258,7 +1277,7 @@ internals.applyRoutes = function (server, next) {
    * @api {delete} /api/part/:id Delete Part by Id
    * @apiName  Delete Part by Id
    * @apiDescription Marks Part to be delete, removes it from being searched
-   * @apiGroup Convenience Methods
+   * @apiGroup Convenience Methods Part
    * @apiVersion 4.0.0
    * @apiPermission user
    *
@@ -1317,11 +1336,13 @@ internals.applyRoutes = function (server, next) {
         Modules: ['BioDesign', function (results, callback) {
 
           for (var module of results.BioDesign.modules) {
-            for(var feature of module.features) {
-              Feature.delete(feature, (err, results) => {});
+            for (var feature of module.features) {
+              Feature.delete(feature, (err, results) => {
+              });
             }
             delete module.features;
-            Module.delete(module, (err, results) => {});
+            Module.delete(module, (err, results) => {
+            });
           }
           callback(null, '');
         }],
@@ -1347,6 +1368,152 @@ internals.applyRoutes = function (server, next) {
             });
           }
           callback(null, '');
+        }]
+      }, (err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply({message: 'Success.'});
+      });
+    }
+  });
+
+
+  /**
+   * @api {delete} /api/part/undelete/:id Un-Delete Part by Id
+   * @apiName  Un-Delete Part by Id
+   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @apiGroup Convenience Methods Part
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Part unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
+  server.route({
+    method: 'DELETE',
+    path: '/part/undelete/{id}',
+    config: {
+      auth: {
+        strategy: 'simple',
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        BioDesign: function (callback) {
+
+          BioDesign.findOne({
+            _id: ObjectID(request.params.id),
+            toDelete: true
+          }, (err, document) => {
+
+            BioDesign.undelete(document, callback);
+          });
+        },
+        Parameters: ['BioDesign', function (results, callback) {
+
+          Parameter.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, documents) => {
+
+            Async.each(documents, function (parameter, callback) {
+
+              Parameter.undelete(parameter, callback);
+            }, (err) => {
+
+              callback(err);
+            });
+          });
+        }],
+        Modules: ['BioDesign', function (results, callback) {
+
+          Module.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, modules) => {
+
+            Async.each(modules, function (module, callback) {
+
+              Feature.find({
+                moduleId: module._id.toString(),
+                toDelete: true
+              }, (err, features) => {
+
+                Async.each(features, function (feature, callback) {
+
+                  Feature.undelete(feature, callback);
+
+                }, (err) => {
+
+                  Module.undelete(module, callback);
+                });
+              });
+            }, (err) => {
+
+              callback(err, modules);
+            });
+          });
+        }],
+        Parts: ['BioDesign', function (results, callback) {
+
+          Part.find({
+            bioDesignId: request.params.id,
+            toDelete: true
+          }, (err, parts) => {
+
+            Async.each(parts, function (part, callback) {
+
+              Sequence.find({
+                partId: part._id.toString(),
+                toDelete: true
+              }, (err, sequences) => {
+
+                Async.each(sequences, function (sequence, callback) {
+
+                  Annotation.find({
+                    sequenceId: sequence._id.toString(),
+                    toDelete: true
+                  }, (err, annotations) => {
+
+                    Async.each(annotations, function (annotation, callback) {
+
+                      Feature.find({
+                        annotationId: annotation._id.toString(),
+                        toDelete: true
+                      }, (err, features) => {
+
+                        Async.each(features, function (feature, callback) {
+
+                          Feature.undelete(feature, callback);
+                        }, (err) => {
+
+                          Annotation.undelete(annotation, callback);
+                        }); //end each feature
+                      });// feature find
+                    }, (err) => {
+
+                      Sequence.undelete(sequence, callback);
+                    }); //end each annotation
+                  });// annotation find
+                }, (err) => {
+
+                  Part.undelete(part, callback);
+                }); //end each sequence
+              });// sequence find
+            }, (err) => {
+
+              callback(err);
+            });// end for part
+          });//part find
         }]
       }, (err, result) => {
 

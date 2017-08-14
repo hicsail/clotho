@@ -12,7 +12,7 @@ class Feature extends MongoModels {
       description: description,
       userId: userId,
       displayId: displayId,
-      role: role,
+      role: role.toUpperCase(),
       annotationId: annotationId,
       superAnnotationId: superAnnotationId,
       moduleId: moduleId
@@ -91,6 +91,12 @@ class Feature extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
+
+  static undelete(document, callback) {
+
+    delete document.toDelete;
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 

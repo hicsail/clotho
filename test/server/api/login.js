@@ -83,7 +83,7 @@ lab.experiment('Login Plugin (Create Session)', () => {
       url: '/login',
       payload: {
         username: 'ren',
-        password: 'baddog',
+        password: 'badDog',
         application: 'App1'
       }
     };
@@ -380,7 +380,7 @@ lab.experiment('Login Plugin Reset Password', () => {
       payload: {
         key: 'abcdefgh-ijkl-mnop-qrst-uvwxyz123456',
         email: 'ren@stimpy.show',
-        password: 'letmein'
+        password: 'letmeinN0W'
       }
     };
 
@@ -516,4 +516,83 @@ lab.experiment('Login Plugin Reset Password', () => {
       done();
     });
   });
+});
+
+
+lab.experiment('Login Plugin Reset Password Check', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/login/reset',
+      payload: {
+        key: 'abcdefgh-ijkl-mnop-qrst-uvwxyz123456',
+        email: 'ren@stimpy.show',
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when password is too short', (done) => {
+
+    request.payload.password = 'test';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password is too long', (done) => {
+
+    request.payload.password = 'KnAshbUDNBVaekNJquALBQVTMMutRszua';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain lowercase letter', (done) => {
+
+    request.payload.password = 'ABCDEFGHIJK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain uppercase letter', (done) => {
+
+    request.payload.password = 'abcdefghijk';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when password dose not contain a number', (done) => {
+
+    request.payload.password = 'abcdefghijK';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
 });

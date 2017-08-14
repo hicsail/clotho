@@ -11,7 +11,6 @@ const Lab = require('lab');
 const Manifest = require('../../../manifest');
 const Proxyquire = require('proxyquire');
 
-
 const lab = exports.lab = Lab.script();
 let request;
 let server;
@@ -261,3 +260,161 @@ lab.experiment('Function Plugin Reverse Complement', () => {
     });
   });
 });
+/*
+lab.experiment('Function Plugin Languages', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/function/language',
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns languages', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+
+lab.experiment('Function Plugin Versions', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/function/version',
+      credentials: AuthenticatedUser
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns languages versions', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Function Plugin Run', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/function/run',
+      credentials: AuthenticatedUser,
+      headers: { 'Content-Type': 'text/plain' },
+      payload: 'node ["helloWorld"]\nvar inputs = process.argv[2].split(\',\');\nfor(var input of inputs) {\nconsole.log(input);\n}'
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns an output of function', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when there is not payload', (done) => {
+
+    delete request.payload;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when payload is not valid', (done) => {
+
+    request.payload = 'node "{testing:\'testing\'}"\nconsole.log();';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when language is not valid', (done) => {
+
+    request.payload = 'GREG ["helloWorld"]\nvar inputs = process.argv[2].split(\',\');\nfor(var input of inputs) {\nconsole.log(input);\n';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+
+      done();
+    });
+  });
+});
+
+lab.experiment('Function Plugin Create', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/function',
+      credentials: AuthenticatedUser,
+      payload: {
+        name: 'myFunction',
+        language: 'node',
+        code: ['console.log(\'hello\')'],
+        inputs: ['hello'],
+        outputs: ['hello']
+      }
+    };
+
+    done();
+  });
+
+  lab.test('it returns a function when create function is successful', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when create function is fails', (done) => {
+
+    request.payload.outputs = ['world'];
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+});
+*/

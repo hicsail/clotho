@@ -1,0 +1,37 @@
+{
+  "name": "remote-compiler",
+  "version": "0.0.0",
+  "description": "Restful API to run code",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js -e html",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "lab -dL --lint-fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gregfrasco@github.com/hicsail/remote-compiler.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hicsail/remote-compiler/issues"
+  },
+  "homepage": "https://github.com/hicsail/remote-compiler#readme",
+  "dependencies": {
+    "async": "^2.5.0",
+    "boom": "^5.1.0",
+    "child_process": "^1.0.2",
+    "handlebars": "^4.0.10",
+    "hapi": "^16.4.3",
+    "inert": "^4.2.0",
+    "joi": "^10.6.0",
+    "uuid": "^3.1.0",
+    "vision": "^4.1.1"
+  },
+  "devDependencies": {
+    "code": "4.x.x",
+    "lab": "14.x.x",
+    "nodemon": "^1.11.0"
+  }
+}

@@ -140,7 +140,7 @@ class Part extends MongoModels {
     }
   }
 
-//return only part
+  //return only part
   static findByBioDesignIdOnly(i, bioDesignId, callback) {
 
     var query = [];
@@ -298,6 +298,12 @@ class Part extends MongoModels {
   static delete(document, callback) {
 
     document.toDelete = true;
+    this.findByIdAndUpdate(document._id.toString(), document, callback);
+  }
+
+  static undelete(document, callback) {
+
+    delete document.toDelete;
     this.findByIdAndUpdate(document._id.toString(), document, callback);
   }
 

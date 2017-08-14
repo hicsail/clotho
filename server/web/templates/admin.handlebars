@@ -1,0 +1,71 @@
+{{> nav}}
+<div class="hero-body">
+    <div class="container">
+        {{> alert}}
+        <h1 class="content">This page is for promoting and demoting admin users.</h1>
+        <div class="columns">
+            <div class="column is-6">
+                <div class="box">
+                    <div class="title has-text-right">Users</div>
+                    {{#each users}}
+                        {{#if this.roles.admin}}
+                        {{else}}
+                            <hr>
+                            <div class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        {{this.username}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.name}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.email}}
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <a class="button is-light" id="{{this.username}}"
+                                           onclick="promote('{{this.username}}')">Promote</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/if}}
+                    {{/each}}
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="box">
+                    <div class="title has-text-right">Admins</div>
+                    {{#each users}}
+                        {{#if this.roles.admin}}
+                            <hr>
+                            <div class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        {{this.username}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.name}}
+                                    </div>
+                                    <div class="level-item">
+                                        {{this.email}}
+                                    </div>
+                                </div>
+                                {{#is this.username '!=' 'root'}}
+                                    <div class="level-right">
+                                        <div class="level-item">
+                                            <a class="button is-danger" id="{{this.username}}"
+                                               onclick="demote('{{this.username}}')">Demote</a>
+                                        </div>
+                                    </div>
+                                {{/is}}
+                            </div>
+                        {{/if}}
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../public/mini-js/admin.min.js"></script>
