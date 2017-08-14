@@ -27,7 +27,7 @@ class Version extends MongoModels {
     });
   }
 
-//finds newest version and returns it
+  //finds newest version and returns it
   static findNewest(bioDesignId, collectionName, callback) {
 
     this.find({objectId: ObjectID(bioDesignId), collectionName: collectionName}, (err, results) => {
@@ -37,11 +37,11 @@ class Version extends MongoModels {
 
       } else if (results[0]['replacementVersionId'] === null || results[0]['replacementVersionId'] === undefined || results.length === 0) {
 
-        callback(null, [bioDesignId, results[0]['versionNumber']])
+        callback(null, [bioDesignId, results[0]['versionNumber']]);
 
 
       } else {
-        this.findNewest(results[0]['replacementVersionId'], callback)
+        this.findNewest(results[0]['replacementVersionId'], callback);
       }
     });
   }

@@ -133,9 +133,9 @@ internals.applyRoutes = function (server, next) {
         },
         findParts: ['findPartIdsBySequences', function (results, done) {
 
-          var partIdsFromSequence = []
-          var partIds = []
-          var partIdsTotal = []
+          var partIdsFromSequence = [];
+          var partIds = [];
+          var partIdsTotal = [];
 
           if (results.findPartIdsBySequences !== null && results.findPartIdsBySequences !== undefined) {
             partIdsFromSequence = results.findPartIdsBySequences;
@@ -146,17 +146,19 @@ internals.applyRoutes = function (server, next) {
           }
 
           if (partIdsFromSequence.length !== 0 && partIds.length !== 0) {
-              partIdsTotal = partIds.filter(function (item) {
+            partIdsTotal = partIds.filter(function (item) {
+
               return partIdsFromSequence.indexOf(item) != -1;
             });
           } else {
-              partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+            partIdsTotal = partIdsFromSequence.concat(partIds.filter(function (item) {
+
               return partIdsFromSequence.indexOf(item) < 0;
             }));
           }
 
           if (partIdsTotal.length > 0) {
-              Part.getByParts(partIdsTotal, done);
+            Part.getByParts(partIdsTotal, done);
           } else {
             return done(null, null);
           }
@@ -200,10 +202,11 @@ internals.applyRoutes = function (server, next) {
           for (var i = 0; i < setBDs.length; ++i) {
             if (i !== setBDs.length - 1) {                      //if there exists i+1,
               setBDs[i+1] = setBDs[i].filter(function (item) {  // i+1 equals to the intersect of i and i+1
-                return setBDs[i+1].indexOf(item) != -1;;
+
+                return setBDs[i+1].indexOf(item) != -1;
               });
             } else {
-              intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
+              intersectBDs = setBDs[i];   //last in setBDs is the intersect of all inputs
             }
           }
 
@@ -229,7 +232,7 @@ internals.applyRoutes = function (server, next) {
           }
 
           else if (Object.keys(query).length === 0) { //if there's no query for the bioDesign object
-            done (null, intersectBDs)
+            done (null, intersectBDs);
           }
           else if (request.payload.sequence === undefined && request.payload.parameters === undefined
             && request.payload.role === undefined) {
@@ -396,9 +399,11 @@ internals.applyRoutes = function (server, next) {
       }
     },
     handler: function (request, reply) {
+
       Async.auto({
 
         getPut: function (done) {
+
           var newRequest = {
             url: '/api/part',
             method: 'PUT',
@@ -411,7 +416,7 @@ internals.applyRoutes = function (server, next) {
             if (response.statusCode !== 200) {
               return reply(response.result);
             }
-            done(null, response.result)
+            done(null, response.result);
           });
         },
         getBioDesign : ['getPut', function (results, done) {
@@ -427,35 +432,35 @@ internals.applyRoutes = function (server, next) {
         }],
         getResults: ['getBioDesign', function (results, done) {
 
-          const filter =  request.params.filter
+          const filter =  request.params.filter;
           var bioDesigns = results.getBioDesign;
-          var filteredArr = []
+          var filteredArr = [];
 
           for (let bigPart in bioDesigns) {
             var filteredObj = [null, null];
 
             //get filter object
             if (filter === 'parameters') {
-              filteredObj[1] = bioDesigns[bigPart]['parameters'][0]
+              filteredObj[1] = bioDesigns[bigPart]['parameters'][0];
             }
             else if (filter === 'modules') {
               filteredObj[1] = bioDesigns[bigPart]['modules'][0];
-              delete filteredObj[1]['features']
+              delete filteredObj[1]['features'];
             }
             else if (filter === 'subparts') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0];
-              delete filteredObj[1]['sequences']
+              delete filteredObj[1]['sequences'];
             }
             else if (filter === 'sequences') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0];
-              delete filteredObj[1]['annotations']
+              delete filteredObj[1]['annotations'];
             }
             else if (filter === 'annotations') {
               filteredObj[1] = bioDesigns[bigPart]['subparts'][0]['sequences'][0]['annotations'][0];
-              delete filteredObj[1]['features']
+              delete filteredObj[1]['features'];
             }
             else if (filter === 'features') {
-              filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0]
+              filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0];
             }
 
             //get bioDesign object
@@ -473,8 +478,8 @@ internals.applyRoutes = function (server, next) {
             return reply(filteredArr);
           }
         }]
-      })
-      }
+      });
+    }
   });
 
   /**
@@ -608,6 +613,7 @@ internals.applyRoutes = function (server, next) {
           var bioDesignId = request.params.id;
 
           Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
+
             if (err) {
               return err;
             } else {
@@ -621,7 +627,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       var versionResults = request.pre.checkVersion;
-      var lastUpdatedId = versionResults[0]  //returns current id, if no newer version
+      var lastUpdatedId = versionResults[0];  //returns current id, if no newer version
 
       BioDesign.getBioDesignIds(lastUpdatedId, null, false, (err, bioDesign) => {
 
@@ -1044,6 +1050,7 @@ internals.applyRoutes = function (server, next) {
           var bioDesignId = request.params.id;
 
           Version.findNewest(bioDesignId, 'bioDesign', (err, results) => {
+
             if (err) {
               return err;
             } else {

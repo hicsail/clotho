@@ -38,9 +38,10 @@ lab.experiment('BioDesign Class Methods', () => {
       'userid12test',
       'displayId',
       'imageURL',
-      null,
-      null,
-      null,
+      null, //subBioDesigns
+      null, //superBioDesignId
+      null, //type
+      null, //application
       (err, result) => {
 
         Code.expect(err).to.not.exist();
@@ -67,9 +68,10 @@ lab.experiment('BioDesign Class Methods', () => {
       'userid12test',
       'displayId',
       'imageURL',
-      null,
-      null,
-      null,
+      null, //subBioDesigns
+      null, //superBioDesignId
+      null, //type
+      null, //application
       (err, result) => {
 
         Code.expect(err).to.be.an.object();

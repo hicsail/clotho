@@ -3,7 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
-const Part = require('./part');
+//const Part = require('./part');
 const BioNode = require('bionode-seq');
 
 
@@ -57,10 +57,10 @@ class Sequence extends MongoModels {
     if (sequences.length > 0) {
 
       for (var i = 0; i < sequences.length; ++i) {
-        partIds.push(sequences[i]['partId'])
+        partIds.push(sequences[i]['partId']);
       }
     }
-    callback(null, partIds)
+    callback(null, partIds);
 
   }
 
