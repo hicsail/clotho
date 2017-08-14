@@ -212,13 +212,22 @@ internals.applyRoutes = function (server, next) {
           //set of duplicate bioDesigns found so far
           if (results.findParts !== null){
             setBDs.push(results.findParts);
+          } else if (results.findParts === null && request.payload.sequence !== undefined) {
+            setBDs.push([]);
           }
+
           if (results.findParameters !== null){
             setBDs.push(results.findParameters);
+          } else if (results.findParameters === null && request.payload.parameters !== undefined) {
+            setBDs.push([]);
           }
-          if (results.findModules !== null){
+
+          if (results.findModules !== null) {
             setBDs.push(results.findModules);
+          } else if (results.findModules === null && request.payload.role !== undefined) {
+            setBDs.push([]);
           }
+
 
           for (var i = 0; i < setBDs.length; ++i) {
             if (i !== setBDs.length - 1) {                      //if there exists i+1,

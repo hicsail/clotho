@@ -481,7 +481,11 @@ internals.applyRoutes = function (server, next) {
           }
 
           if (partIdsTotal.length > 0) {
-            Part.getByParts(partIdsTotal, done);
+            if (searchDeleted) {
+              Part.getByParts(partIdsTotal, {toDelete: true}, done);
+            } else {
+              Part.getByParts(partIdsTotal, {toDelete: null}, done);
+            }
           } else {
             return done(null, null);
           }
@@ -523,12 +527,20 @@ internals.applyRoutes = function (server, next) {
           //set of duplicate bioDesigns found so far
           if (results.findParts !== null){
             setBDs.push(results.findParts);
+          } else if (results.findParts === null && request.payload.sequence !== undefined) {
+            setBDs.push([]);
           }
+
           if (results.findParameters !== null){
             setBDs.push(results.findParameters);
+          } else if (results.findParameters === null && request.payload.parameters !== undefined) {
+            setBDs.push([]);
           }
+
           if (results.findModules !== null){
             setBDs.push(results.findModules);
+          } else if (results.findModules === null && request.payload.role !== undefined) {
+            setBDs.push([]);
           }
 
           for (var i = 0; i < setBDs.length; ++i) {
@@ -540,6 +552,7 @@ internals.applyRoutes = function (server, next) {
               intersectBDs = setBDs[i]   //last in setBDs is the intersect of all inputs
             }
           }
+
 
           //query for all information found within bioDesignId Object, using above bioDesigns if availaible
           var query = {};
@@ -576,10 +589,17 @@ internals.applyRoutes = function (server, next) {
           else if (Object.keys(query).length === 0) { //if there's no query for the bioDesign object
             done (null, intersectBDs)
           }
+
           else if (request.payload.sequence === undefined && request.payload.parameters === undefined
             && request.payload.role === undefined) {
 
             return BioDesign.getBioDesignIdsByQuery([], query, done);
+          }
+
+          // If prior steps have yielded nothing but at least one argument has been non-null, should return.
+          else if (((request.payload.sequence !== undefined) || (request.payload.parameters !== undefined) || (request.payload.role !== undefined) ) && intersectBDs.length === 0) {
+            done(null, []);
+
           }
 
           else {
