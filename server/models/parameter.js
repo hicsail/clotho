@@ -26,6 +26,34 @@ class Parameter extends MongoModels {
     });
   }
 
+
+  static getByParameter(parameters, callback) {
+
+    const query = parameters[0];
+    this.find(query, (err, parameters) => {
+
+      if (err) {
+        return callback(err);
+      }
+      this.getBioDesignIdsbyParameter(parameters, callback);
+    });
+
+  }
+
+  static getBioDesignIdsbyParameter(parameters, callback) {
+
+    var bioDesignIds = [];
+
+    if (parameters.length > 0) {
+
+      for (var i = 0; i < parameters.length; ++i) {
+        bioDesignIds.push(parameters[i]['bioDesignId']);
+      }
+    }
+    callback(null, bioDesignIds);
+
+  }
+
   // Can pass in biodesignids, parameters, or both.
   static getParameterByBioDesignId(bioDesignIds, parameters, callback) {
 

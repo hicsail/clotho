@@ -7,11 +7,11 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
+  const Version = server.plugins['hapi-mongo-models'].Version;
 
   server.route({
     method: 'GET',
-    path: '/bio-design',
+    path: '/version',
     config: {
       auth: {
         strategy: 'simple'
@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      BioDesign.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Version.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         if (err) {
           return reply(err);
@@ -45,7 +45,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/bio-design/{id}',
+    path: '/version/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -53,78 +53,81 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findById(request.params.id, (err, bioDesign) => {
+      Version.findById(request.params.id, (err, version) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bioDesign) {
+        if (!version) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(bioDesign);
+        reply(version);
       });
     }
   });
 
   server.route({
     method: 'POST',
-    path: '/bio-design',
+    path: '/version',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          description: Joi.string().optional(),
-          displayId: Joi.string().optional(),
-          imageURL: Joi.string().optional(),
-          subBioDesignIds: Joi.array().items(Joi.string()).optional(),
-          superBioDesignId: Joi.string().optional(),
-          type: Joi.string().uppercase().optional(),
-          application: Joi.string().optional()
+          userId: Joi.string().required(),
+          objectId: Joi.string().required(),
+          versionNumber: Joi.number(),
+          collectionName: Joi.string(),
+          time: Joi.date(),
+          replacementVersionId: Joi.string().optional(),
+          description: Joi.string().optional,
+          application: Joi.string()
         }
       }
     },
 
     handler: function (request, reply) {
 
-      BioDesign.create(
-        request.payload.name,
-        request.payload.description,
+      Version.create(
+        request.payload.userId,
+        request.payload.objectId,
         request.auth.credentials.user._id.toString(),
-        request.payload.displayId,
-        request.payload.imageURL,
-        request.payload.subBioDesignIds,
-        request.payload.superBioDesignId,
-        request.payload.type,
-        (err, bioDesign) => {
+        request.payload.versionNumber,
+        request.payload.collectionName,
+        request.payload.time,
+        request.payload.replacementVersionId,
+        request.payload.description,
+        request.payload.application,
+        (err, version) => {
 
           if (err) {
             return reply(err);
           }
-          return reply(bioDesign);
+          return reply(version);
         });
     }
   });
 
   server.route({
     method: 'PUT',
-    path: '/bio-design/{id}',
+    path: '/version/{id}',
     config: {
       auth: {
         strategy: 'simple'
       },
       validate: {
         payload: {
-          name: Joi.string().required(),
-          description: Joi.string().optional(),
-          displayId: Joi.string().optional(),
-          imageURL: Joi.string().optional(),
-          subBioDesignIds: Joi.array().items(Joi.string()).optional(),
-          superBioDesignId: Joi.string().optional()
+          userId: Joi.string().required(),
+          objectId: Joi.string().required(),
+          versionNumber: Joi.number(),
+          collectionName: Joi.string(),
+          time: Joi.date(),
+          replacementVersionId: Joi.string().optional(),
+          description: Joi.string().optional,
+          application: Joi.string()
         }
       }
     },
@@ -133,33 +136,35 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          name: request.payload.name,
+          userId: request.payload.userId,
+          objectId: request.payload.objectId,
+          versionNumber: request.payload.versionNumber,
+          collectionName: request.payload.collectionName,
+          time: request.payload.time,
+          replacementVersionId: request.payload.replacementVersionId,
           description: request.payload.description,
-          displayId: request.payload.displayId,
-          imageURL: request.payload.imageURL,
-          subBioDesignIds: request.payload.subBioDesignIds,
-          superBioDesignId: request.payload.superBioDesignId
+          application: request.payload.application
         }
       };
 
-      BioDesign.findByIdAndUpdate(id, update, (err, bio_design) => {
+      Version.findByIdAndUpdate(id, update, (err, version) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bio_design) {
-          return reply(Boom.notFound('Bio Design not found.'));
+        if (!version) {
+          return reply(Boom.notFound('Version not found.'));
         }
 
-        return reply(bio_design);
+        reply(version);
       });
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/bio-design/{id}',
+    path: '/version/{id}',
     config: {
       auth: {
         strategy: 'simple',
@@ -167,13 +172,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      BioDesign.findByIdAndDelete(request.params.id, (err, bioDesign) => {
+      Version.findByIdAndDelete(request.params.id, (err, version) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!bioDesign) {
+        if (!version) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -195,5 +200,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'bio-design'
+  name: 'version'
 };

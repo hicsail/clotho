@@ -12,7 +12,7 @@ const Version = require('./version');
 
 class BioDesign extends MongoModels {
 
-  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, callback) {
+  static create(name, description, userId, displayId, imageURL, subBioDesignIds, superBioDesignId, type, application, callback) {
 
     const document = {
       name: name,
@@ -30,10 +30,14 @@ class BioDesign extends MongoModels {
       if (err) {
         return callback(err);
       }
+
       Version.create(
         userId,
         docs[0]['_id'],
         0, //versionNumber; set to zero initially, if updating, will be updated later.
+        'bioDesign', //collectionName
+        description,
+        application,  //application
         (err, results) => {
 
           if (err) {
@@ -44,6 +48,38 @@ class BioDesign extends MongoModels {
         });
       callback(null, docs[0]);
     });
+  }
+
+
+  static getBioDesignIdsByQuery(bioDesignIds, query, callback) {
+
+    if (query == null) {
+      query = {};
+    }
+
+    var query2 = this.convertBD(bioDesignIds, query); //clean up query
+
+    this.find(query2, (err, bioDesigns) => {
+
+      if (err) {
+        return callback(err);
+      }
+      return this.getIds(bioDesigns, callback);
+    });
+  }
+
+
+  static getIds(bioDesigns, callback) {
+
+    var bioDesignIds = [];
+
+    if (bioDesigns.length > 0) {
+
+      for (var i = 0; i < bioDesigns.length; ++i) {
+        bioDesignIds.push(bioDesigns[i]['_id']);
+      }
+    }
+    callback(null, bioDesignIds);
   }
 
 
@@ -66,11 +102,14 @@ class BioDesign extends MongoModels {
       query = {_id: new MongoModels.ObjectID(bioDesignIds)};
     }
 
-
     if (extra['name'] !== undefined) {
       query['name'] = {$regex: extra['name'], $options: 'i'};
     } else if (extra['displayId'] !== undefined) {
       query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
+    } else if (extra['userId'] !== undefined) {
+      query['userId'] = {$regex: extra['userId'], $options: 'i'};
+    } else if (extra['subBioDesignIds'] !== undefined) {
+      query['subBioDesignIds'] = {$all: extra['subBioDesignIds']};
     }
 
     return query;
@@ -368,7 +407,8 @@ BioDesign.schema = Joi.object().keys({
   superBioDesignId: Joi.string().optional(),
   versionId: Joi.string().optional(),
   polynucleotides: Joi.array().items(Sequence.schema),
-  type: Joi.string().uppercase().optional()
+  type: Joi.string().uppercase().optional(),
+  application: Joi.string()
 });
 
 BioDesign.indexes = [

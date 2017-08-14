@@ -27,6 +27,32 @@ class Module extends MongoModels {
 
   }
 
+  static getByModule(role, callback) {
+
+    const query = {role: role};
+    this.find(query, (err, modules) => {
+
+      if (err) {
+        return callback(err);
+      }
+      this.getBioDesignIdsbyModule(modules, callback);
+    });
+
+  }
+
+  static getBioDesignIdsbyModule(modules, callback) {
+
+    var bioDesignIds = [];
+
+    if (modules.length > 0) {
+
+      for (var i = 0; i < modules.length; ++i) {
+        bioDesignIds.push(modules[i]['bioDesignId']);
+      }
+    }
+    callback(null, bioDesignIds);
+  }
+
 
   static getModuleByBioDesignId(bioDesignId, query, callback) {
 

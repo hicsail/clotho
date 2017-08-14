@@ -2,15 +2,19 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
+const ObjectID = require('mongo-models').ObjectID;
 
 class Version extends MongoModels {
 
-  static create(userId, objectId, versionNumber, callback) {
+  static create(userId, objectId, versionNumber, collectionName, description, application, callback) {
 
     const document = {
       userId: userId,
       objectId: objectId,
       versionNumber: versionNumber,
+      collectionName: collectionName,
+      description: description,
+      application: application,
       time: new Date()
     };
 
@@ -23,24 +27,24 @@ class Version extends MongoModels {
     });
   }
 
-
   //finds newest version and returns it
-  static findNewest(bioDesignId, index, callback) {
+  static findNewest(bioDesignId, collectionName, callback) {
 
-    this.findOne({objectId: bioDesignId, replacementVersionId: {$ne: null}}, (err, results) => {
+    this.find({objectId: ObjectID(bioDesignId), collectionName: collectionName}, (err, results) => {
 
       if (err) {
         return callback(err);
 
-      } else if (results === null || results.length === 0) {
-        callback(null, [bioDesignId, index]);
+      } else if (results[0]['replacementVersionId'] === null || results[0]['replacementVersionId'] === undefined || results.length === 0) {
 
-      }else {
-        this.findNewest(results.replacementVersionId, results.versionNumber, callback);
+        callback(null, [bioDesignId, results[0]['versionNumber']]);
+
+
+      } else {
+        this.findNewest(results[0]['replacementVersionId'], callback);
       }
     });
   }
-
 }
 
 
@@ -51,8 +55,11 @@ Version.schema = Joi.object().keys({
   userId: Joi.string(),
   objectId: Joi.string(),
   versionNumber: Joi.number(),
+  collectionName: Joi.string(),
   time: Joi.date(),
-  replacementVersionId: Joi.string()
+  replacementVersionId: Joi.string(),
+  description: Joi.string(),
+  application: Joi.string()
 });
 
 Version.indexes = [

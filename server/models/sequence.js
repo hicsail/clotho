@@ -3,6 +3,7 @@
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Annotation = require('./annotation');
+//const Part = require('./part');
 const BioNode = require('bionode-seq');
 
 
@@ -43,10 +44,26 @@ class Sequence extends MongoModels {
         return callback(err);
       }
 
-      this.getAnnotations(0, sequences, callback);
+      return this.getPartIdsbySequence(sequences, callback);
 
     });
   }
+
+
+  static getPartIdsbySequence(sequences, callback) {
+
+    var partIds = [];
+
+    if (sequences.length > 0) {
+
+      for (var i = 0; i < sequences.length; ++i) {
+        partIds.push(sequences[i]['partId']);
+      }
+    }
+    callback(null, partIds);
+
+  }
+
 
   static findByUserId(userId, callback) {
 

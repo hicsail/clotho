@@ -43,7 +43,7 @@ lab.experiment('Sequence Class Methods', () => {
       TestSequences[testCase].description,
       'userId',
       'displayId',
-      null,
+      null, //featureId
       'partId',
       TestSequences[testCase].sequence,
       TestSequences[testCase].isLinear,
@@ -226,7 +226,7 @@ lab.experiment('Sequence Class Methods', () => {
     Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence, (err, usersSeqences) => {
 
       Code.expect(err).to.not.exist();
-      Code.expect(usersSeqences[0]).to.be.an.instanceOf(Sequence);
+      Code.expect(usersSeqences[0]).to.equal('partId');
 
       done();
     });
