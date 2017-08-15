@@ -45,6 +45,46 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
+  /**
+   * @api {get} /api/sample/:id Get Sample By Id
+   * @apiName Get Sample By Id
+   * @apiDescription Get Sample by ID
+   * @apiGroup Sample
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Sample unique ID.
+   * @apiParamExample {string} Example-Request:
+   *59936768b33f2a43dc4254eb
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *
+   * {
+    "_id": "59936768b33f2a43dc4254eb",
+    "name": "sample001",
+    "description": "Initial sample",
+    "userId": "5940442869431c24a06da157",
+    "containerId": null,
+    "bioDesignId": "5991f31409380a0f58ed92d9",
+    "parameterIds": [
+        "59936768b33f2a43dc4254ea"
+    ],
+    "parentSampleIds": [
+        "5993674eb33f2a43dc4254e9"
+    ]
+}
+   *
+   @apiErrorExample {json} Error-Response:
+   {
+       "statusCode": 404,
+       "error": "Not Found",
+       "message": "Document not found."
+   }
+
+   */
+
+
   server.route({
     method: 'GET',
     path: '/sample/{id}',
@@ -69,6 +109,91 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+
+
+/**
+* @api {post} /api/sample Create Sample
+  * @apiName Create Sample
+  * @apiDescription Create Sample
+  * @apiGroup Sample
+  * @apiVersion 4.0.0
+  * @apiPermission user
+ *
+  *
+  * @apiParam {String} name Sample name
+  * @apiParam {String} [description] Sample description
+  * @apiParam {String} bioDesignId Sample bioDesignId
+ * @apiParam {Object[]} [parameters] An array of parameters for the sample.
+ * A parameter object includes these required attributes: name (string), value (number), variable (string), and units (string).
+ * @apiParam {String} [containerId] Sample containerId
+ * @apiParam {String[]} [parentSampleIds] Ids corresponding to parent samples.
+  *
+  * @apiParamExample {json} Example-Request:
+*{
+	"name": "sample001",
+	"description": "Initial sample",
+	"bioDesignId": "5991f31409380a0f58ed92d9",
+	"parameters": [{
+		"name": "Na+ concentration",
+		"value": 0.05,
+		"variable": "Na",
+		"units": "mM"
+	}],
+	"containerId": "598cd760d74bab2678e99324",
+	"parentSampleIds": ["5993674eb33f2a43dc4254e9"]
+}
+
+*
+*
+* @apiSuccessExample {json} Success-Response:
+*
+ *
+ * {
+    "name": "sample001",
+    "description": "Initial sample",
+    "userId": "5940442869431c24a06da157",
+    "bioDesignId": "5991f31409380a0f58ed92d9",
+    "parameterIds": [
+        "59936768b33f2a43dc4254ea"
+    ],
+    containerId": "598cd760d74bab2678e99324",
+    "parentSampleIds": [
+        "5993674eb33f2a43dc4254e9"
+    ],
+    "_id": "59936768b33f2a43dc4254eb"
+}
+
+*
+  @apiErrorExample {json} Error-Response Name argument omitted:
+
+ {
+    "statusCode": 400,
+    "error": "Bad Request",
+    "message": "child \"name\" fails because [\"name\" is required]",
+    "validation": {
+        "source": "payload",
+        "keys": [
+            "name"
+        ]
+    }
+}
+
+ @apiErrorExample {json} Error-Response BioDesignId argument omitted:
+
+ {
+     "statusCode": 400,
+     "error": "Bad Request",
+     "message": "child \"bioDesignId\" fails because [\"bioDesignId\" is required]",
+     "validation": {
+         "source": "payload",
+         "keys": [
+             "bioDesignId"
+         ]
+     }
+ }
+*/
+
 
   server.route({
     method: 'POST',
@@ -140,6 +265,92 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {put} /api/sample/:id Update Sample
+   * @apiName Update Sample
+   * @apiDescription Update Sample By Id
+   * @apiGroup Sample
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} name Sample name
+   * @apiParam {String} [description] Sample description
+   * @apiParam {String} bioDesignId Sample bioDesignId
+   * @apiParam {Object[]} [parameters] An array of parameters for the sample.
+   * A parameter object includes these required attributes: name (string), value (number), variable (string), and units (string).
+   * @apiParam {String} [containerId] Sample containerId
+   * @apiParam {String[]} [parentSampleIds] Ids corresponding to parent samples.
+   * @apiParamExample {json} Example-Request:
+   *
+   *
+   * {
+	"name": "sample-2017",
+	"description": "first sample",
+	"bioDesignId": "5991f31409380a0f58ed92d9",
+	"parameters": [{
+		"name": "potassium",
+		"value": 0.0001,
+		"variable": "K+",
+		"units": "mM"
+	}],
+	"parentSampleIds": ["5993674eb33f2a43dc4254e9"]
+}
+   *
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *
+   * {
+    "_id": "59936768b33f2a43dc4254eb",
+    "name": "sample-2017",
+    "description": "first sample",
+    "userId": "5940442869431c24a06da157",
+    "containerId": null,
+    "bioDesignId": "5991f31409380a0f58ed92d9",
+    "parameterIds": [
+        "59936768b33f2a43dc4254ea"
+    ],
+    "parentSampleIds": [
+        "5993674eb33f2a43dc4254e9"
+    ],
+    "parameters": [
+        {
+            "name": "potassium",
+            "value": 0.0001,
+            "variable": "K+",
+            "units": "mM"
+        }
+    ]
+}
+
+   @apiErrorExample {json} Error-Response - Name argument omitted:
+   {
+       "statusCode": 400,
+       "error": "Bad Request",
+       "message": "child \"name\" fails because [\"name\" is required]",
+       "validation": {
+           "source": "payload",
+           "keys": [
+               "name"
+           ]
+       }
+   }
+
+   @apiErrorExample {json} Error-Response BioDesignId argument omitted:
+
+   {
+     "statusCode": 400,
+     "error": "Bad Request",
+     "message": "child \"bioDesignId\" fails because [\"bioDesignId\" is required]",
+     "validation": {
+         "source": "payload",
+         "keys": [
+             "bioDesignId"
+         ]
+     }
+ }
+
+   */
+
   server.route({
     method: 'PUT',
     path: '/sample/{id}',
@@ -153,14 +364,16 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
+
       const id = request.params.id;
       const update = {
         $set: {
           name: request.payload.name,
           description: request.payload.description,
-          type: request.payload.type,
+          bioDesignId: request.payload.bioDesignId,
           parameters: request.payload.parameters,
-          coordinates: request.payload.coordinates,
+          containerId: request.payload.containerId,
+          parentSampleIds: request.payload.parentSampleIds
         }
       };
 
@@ -178,6 +391,32 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+
+  /**
+   * @api {delete} /api/sample/:id Delete Sample By Id
+   * @apiName Delete Sample By Id
+   * @apiDescription Delete Sample by ID
+   * @apiGroup Sample
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Sample unique ID.
+   * @apiParamExample {string} Example-Request:
+   * 59936768b33f2a43dc4254ed
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "message": "Success."
+}
+
+   @apiErrorExample {json} Error-Response Incorrect id:
+   {
+    "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+}
+   */
 
   server.route({
     method: 'DELETE',

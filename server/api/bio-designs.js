@@ -71,7 +71,7 @@ internals.applyRoutes = function (server, next) {
     "type": "DEVICE"
 }
 
-   @apiErrorExample {json} Error-Response
+   @apiErrorExample {json} Error-Response:
    {
     "statusCode": 404,
     "error": "Not Found",
@@ -105,21 +105,21 @@ internals.applyRoutes = function (server, next) {
   });
 
   /**
-   * @api {post} /api/bio-design/ Create BioDesign
+   * @api {post} /api/bio-design Create BioDesign
    * @apiName Create BioDesign
    * @apiDescription Create BioDesign
    * @apiGroup BioDesign
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {string} name BioDesign name
-   * @apiParam {string} [description] BioDesign description
-   * @apiParam {string} [displayId] BioDesign displayId.
-   * @apiParam {string} [imageURL] BioDesign url
-   * @apiParam {object} [subBioDesignIds] Array of strings with ids of subBioDesigns.
-   * @apiParam {string} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
-   * @apiParam {string} [type] Uppercase string representing design type.
-   * @apiParam {string} [application] Application
+   * @apiParam {String} name BioDesign name
+   * @apiParam {String} [description] BioDesign description
+   * @apiParam {String} [displayId] BioDesign displayId.
+   * @apiParam {String} [imageURL] BioDesign url
+   * @apiParam {String[]} [subBioDesignIds] Array of strings with ids of subBioDesigns.
+   * @apiParam {String} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
+   * @apiParam {String} [type] Uppercase string representing design type.
+   * @apiParam {String} [application] Application
    *
    * @apiParamExample {json} Example-Request:
    *
@@ -218,12 +218,12 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {string} name BioDesign name
-   * @apiParam {string} [description] BioDesign description
-   * @apiParam {string} [displayId] BioDesign displayId.
-   * @apiParam {string} [imageURL] BioDesign url
-   * @apiParam {object} [subBioDesignIds] Array of strings with ids of subBioDesigns.
-   * @apiParam {string} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
+   * @apiParam {String} name BioDesign name
+   * @apiParam {String} [description] BioDesign description
+   * @apiParam {String} [displayId] BioDesign displayId.
+   * @apiParam {String} [imageURL] BioDesign url
+   * @apiParam {String[]} [subBioDesignIds] Array of strings with ids of subBioDesigns.
+   * @apiParam {String} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
    *
    * @apiParamExample {json} Example-Request:
    *
@@ -310,7 +310,7 @@ internals.applyRoutes = function (server, next) {
 
 
   /**
-   * @api {delete} /api/bio-design/:id Get BioDesign By Id
+   * @api {delete} /api/bio-design/:id Delete BioDesign By Id
    * @apiName Delete BioDesign By Id
    * @apiDescription Delete BioDesign by ID
    * @apiGroup BioDesign
