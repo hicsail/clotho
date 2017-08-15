@@ -124,8 +124,7 @@ internals.applyRoutes = function (server, next) {
   * @apiParam {String} name Sample name
   * @apiParam {String} [description] Sample description
   * @apiParam {String} bioDesignId Sample bioDesignId
- * @apiParam {Object[]} [parameters] An array of parameters for the sample.
- * A parameter object includes these required attributes: name (string), value (number), variable (string), and units (string).
+ * @apiParam {String[]} [parameterIds] An array of parameter ids for the sample.
  * @apiParam {String} [containerId] Sample containerId
  * @apiParam {String[]} [parentSampleIds] Ids corresponding to parent samples.
   *
@@ -134,12 +133,7 @@ internals.applyRoutes = function (server, next) {
 	"name": "sample001",
 	"description": "Initial sample",
 	"bioDesignId": "5991f31409380a0f58ed92d9",
-	"parameters": [{
-		"name": "Na+ concentration",
-		"value": 0.05,
-		"variable": "Na",
-		"units": "mM"
-	}],
+	"parameterIds": ["59936768b33f2a43dc4254ea"],
 	"containerId": "598cd760d74bab2678e99324",
 	"parentSampleIds": ["5993674eb33f2a43dc4254e9"]
 }
@@ -210,40 +204,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        parameters: function (callback) {
-
-          if(request.payload.parameters) {
-            var parameters = [];
-            Async.each(request.payload.parameters, function(parameter, callback) {
-
-              Parameter.create(
-                parameter.name,
-                request.auth.credentials.user._id.toString(),
-                null, //bio-design ID
-                parameter.value,
-                parameter.variable,
-                parameter.units,
-                (err, result) => {
-
-                  parameters.push(result);
-                  callback();
-                });
-            }, function(err) {
-
-              if( err ) {
-                callback(err);
-              } else {
-                callback(null,parameters.map(function(a) {
-
-                  return a._id.toString();
-                }));
-              }
-            });
-          } else {
-            return callback();
-          }
-        },
-        sample: ['parameters', function (results, callback) {
+        sample: function (callback) {
 
           Sample.create(
             request.payload.name,
@@ -251,10 +212,10 @@ internals.applyRoutes = function (server, next) {
             request.auth.credentials.user._id.toString(),
             request.payload.containerId,
             request.payload.bioDesignId,
-            results.parameters,
+            request.payload.parameterIds,
             request.payload.parentSampleIds,
             callback);
-        }]
+        }
       }, (err, results) => {
 
         if (err) {
@@ -276,23 +237,17 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} name Sample name
    * @apiParam {String} [description] Sample description
    * @apiParam {String} bioDesignId Sample bioDesignId
-   * @apiParam {Object[]} [parameters] An array of parameters for the sample.
-   * A parameter object includes these required attributes: name (string), value (number), variable (string), and units (string).
+   * @apiParam {String[]} [parameterIds] An array of parameter ids for the sample.
    * @apiParam {String} [containerId] Sample containerId
    * @apiParam {String[]} [parentSampleIds] Ids corresponding to parent samples.
    * @apiParamExample {json} Example-Request:
    *
    *
    * {
-	"name": "sample-2017",
+	"name": "sample 001",
 	"description": "first sample",
 	"bioDesignId": "5991f31409380a0f58ed92d9",
-	"parameters": [{
-		"name": "potassium",
-		"value": 0.0001,
-		"variable": "K+",
-		"units": "mM"
-	}],
+	"parameterIds": ["59936768b33f2a43dc4254ea"],
 	"parentSampleIds": ["5993674eb33f2a43dc4254e9"]
 }
    *
@@ -300,8 +255,8 @@ internals.applyRoutes = function (server, next) {
    * @apiSuccessExample {json} Success-Response:
    *
    * {
-    "_id": "59936768b33f2a43dc4254eb",
-    "name": "sample-2017",
+    "_id": "59937c97b87b4503805804cb",
+    "name": "sample 001",
     "description": "first sample",
     "userId": "5940442869431c24a06da157",
     "containerId": null,
@@ -311,14 +266,6 @@ internals.applyRoutes = function (server, next) {
     ],
     "parentSampleIds": [
         "5993674eb33f2a43dc4254e9"
-    ],
-    "parameters": [
-        {
-            "name": "potassium",
-            "value": 0.0001,
-            "variable": "K+",
-            "units": "mM"
-        }
     ]
 }
 
@@ -371,7 +318,7 @@ internals.applyRoutes = function (server, next) {
           name: request.payload.name,
           description: request.payload.description,
           bioDesignId: request.payload.bioDesignId,
-          parameters: request.payload.parameters,
+          parameterIds: request.payload.parameterIds,
           containerId: request.payload.containerId,
           parentSampleIds: request.payload.parentSampleIds
         }

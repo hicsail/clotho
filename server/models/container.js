@@ -48,7 +48,7 @@ Container.payload = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().optional(),
   type: Joi.string().valid('BEAKER', 'BOX', 'FLASK', 'FRIDGE', 'INCUBATOR', 'PLATE', 'RACK', 'TUBE', 'WELL').optional(),
-  parameters: Joi.array().items(Parameter.payload).optional(),
+  parameterIds: Joi.array().items(Joi.string()).optional(),
   coordinates: Joi.array().items(Joi.number()).optional()
 });
 

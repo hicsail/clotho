@@ -51,7 +51,7 @@ Sample.payload = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().optional(),
   bioDesignId: Joi.string().required(),
-  parameters: Joi.array().items(Parameter.payload).optional(),
+  parameterIds: Joi.array().items(Joi.string()).optional(),
   containerId: Joi.string().optional(),
   parentSampleIds: Joi.array().items(Joi.string())
 });

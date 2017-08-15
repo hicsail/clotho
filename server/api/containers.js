@@ -113,21 +113,15 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [description] Container description
    * @apiParam {String=BEAKER,BOX,FLASK,INCUBATOR,PLATE,RACK,TUBE,WELL} [type] Container type
    * @apiParam {Array} [coordinates] Container location, number array
-   * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
+   * @apiParam {String[]} [parameterIds] Array of parameterIds.
    *
    * @apiParamExample {json} Example-Request:
    * {
 	"name": "myContainer",
 	"description": "test container",
 	"type": "FLASK",
-	"parameters":
-    [
-      {
-        "name": "test parameters",
-        "value": 7,
-        "units": "mm",
-        "variable": "length"
-      }
+	"parameterIds": [
+        "5988a74da16d369e56953cf2"
     ],
     "coordinates": [12,3,307,5]
   }
@@ -166,50 +160,18 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        parameters: function (callback) {
 
-          if(request.payload.parameters) {
-            var parameters = [];
-            Async.each(request.payload.parameters, function(parameter, callback) {
-
-              Parameter.create(
-                parameter.name,
-                request.auth.credentials.user._id.toString(),
-                null, //bio-design ID
-                parameter.value,
-                parameter.variable,
-                parameter.units,
-                (err, result) => {
-
-                  parameters.push(result);
-                  callback();
-                });
-            }, function(err) {
-
-              if( err ) {
-                callback(err);
-              } else {
-                callback(null,parameters.map(function(a) {
-
-                  return a._id.toString();
-                }));
-              }
-            });
-          } else {
-            return callback();
-          }
-        },
-        container: ['parameters', function (results, callback) {
+        container: function (callback) {
 
           Container.create(
             request.payload.name,
             request.payload.description,
             request.auth.credentials.user._id.toString(),
-            results.parameters,
+            request.payload.parameterIds,
             request.payload.type,
             request.payload.coordinates,
             callback);
-        }]
+        }
       }, (err, results) => {
 
         if (err) {
@@ -234,17 +196,8 @@ internals.applyRoutes = function (server, next) {
    * "name": "myContainer",
    * "description": "test container",
    * "type": "BOX",
-   * "parameters":
-   [
-   {
-     "name": "test parameters",
-     "value": 7,
-     "units": "mm",
-     "variable": "length"
-   }
-   ],
-   "coordinates": [12,3,307,5]
-   }
+   * "parameterIds": ["5988a74da16d369e56953cf2"]
+   *
    *
    * @apiSuccessExample {json} Success-Response:
    * {
@@ -261,14 +214,6 @@ internals.applyRoutes = function (server, next) {
         3,
         307,
         5
-    ],
-    "parameters": [
-        {
-            "name": "test parameters",
-            "value": 7,
-            "units": "mm",
-            "variable": "length"
-        }
     ]
 }
    */
@@ -291,7 +236,7 @@ internals.applyRoutes = function (server, next) {
           name: request.payload.name,
           description: request.payload.description,
           type: request.payload.type,
-          parameters: request.payload.parameters,
+          parameterIds: request.payload.parameterIds,
           coordinates: request.payload.coordinates,
         }
       };
@@ -310,6 +255,32 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+
+  /**
+   * @api {delete} /api/container/:id Delete Container By Id
+   * @apiName Delete Container By Id
+   * @apiDescription Delete Container by ID
+   * @apiGroup Container
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Container unique ID.
+   * @apiParamExample {string} Example-Request:
+   * 5988a74da16d369e56953cf3
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "message": "Success."
+}
+
+   @apiErrorExample {json} Error-Response Incorrect id:
+   {
+    "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+}
+   */
 
   server.route({
     method: 'DELETE',
