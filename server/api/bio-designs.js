@@ -43,6 +43,42 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {get} /api/bio-design/:id Get BioDesign By Id
+   * @apiName Get BioDesign By Id
+   * @apiDescription Get BioDesign by ID
+   * @apiGroup BioDesign
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id BioDesign unique ID.
+   * @apiParamExample {string} Example-Request:
+   * 5992346bab9a6349c82e0d2a
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "_id": "5992346bab9a6349c82e0d2a",
+    "name": "BBa_0124",
+    "description": "Operon for lactose metabolism",
+    "userId": "5940442869431c24a06da157",
+    "displayId": "Lac operon",
+    "imageURL": "example.png",
+    "subBioDesignIds": [
+        "5991f34209380a0f58ed92dd",
+        "5991f31409380a0f58ed92d4"
+    ],
+    "superBioDesignId": null,
+    "type": "DEVICE"
+}
+
+   @apiErrorExample {json} Error-Response
+   {
+    "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+}
+   */
+
   server.route({
     method: 'GET',
     path: '/bio-design/{id}',
@@ -67,6 +103,68 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+  /**
+   * @api {post} /api/bio-design/ Create BioDesign
+   * @apiName Create BioDesign
+   * @apiDescription Create BioDesign
+   * @apiGroup BioDesign
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {string} name BioDesign name
+   * @apiParam {string} [description] BioDesign description
+   * @apiParam {string} [displayId] BioDesign displayId.
+   * @apiParam {string} [imageURL] BioDesign url
+   * @apiParam {object} [subBioDesignIds] Array of strings with ids of subBioDesigns.
+   * @apiParam {string} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
+   * @apiParam {string} [type] Uppercase string representing design type.
+   * @apiParam {string} [application] Application
+   *
+   * @apiParamExample {json} Example-Request:
+   *
+   * {
+	"name": "BBa_0124",
+	"description": "Operon for lactose metabolism",
+	"displayId": "Lac operon",
+	"imageURL": "example.png",
+	"subBioDesignIds": ["5991f34209380a0f58ed92dd", "5991f31409380a0f58ed92d4"],
+	"type": "DEVICE",
+	"application": "clotho"
+}
+   *
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *
+   * {
+    "name": "BBa_0124",
+    "description": "Operon for lactose metabolism",
+    "userId": "5940442869431c24a06da157",
+    "displayId": "Lac operon",
+    "imageURL": "example.png",
+    "subBioDesignIds": [
+        "5991f34209380a0f58ed92dd",
+        "5991f31409380a0f58ed92d4"
+    ],
+    "type": "DEVICE",
+    "_id": "5992346bab9a6349c82e0d2a"
+}
+
+   @apiErrorExample {json} Error-Response Name argument omitted:
+
+   {
+    "statusCode": 400,
+    "error": "Bad Request",
+    "message": "child \"name\" fails because [\"name\" is required]",
+    "validation": {
+        "source": "payload",
+        "keys": [
+            "name"
+        ]
+    }
+}
+   */
+
 
   server.route({
     method: 'POST',
@@ -100,6 +198,7 @@ internals.applyRoutes = function (server, next) {
         request.payload.subBioDesignIds,
         request.payload.superBioDesignId,
         request.payload.type,
+        request.payload.application,
         (err, bioDesign) => {
 
           if (err) {
@@ -109,6 +208,58 @@ internals.applyRoutes = function (server, next) {
         });
     }
   });
+
+
+  /**
+   * @api {put} /api/bio-design/:id Update BioDesign
+   * @apiName Update BioDesign
+   * @apiDescription Update BioDesign By Id
+   * @apiGroup BioDesign
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {string} name BioDesign name
+   * @apiParam {string} [description] BioDesign description
+   * @apiParam {string} [displayId] BioDesign displayId.
+   * @apiParam {string} [imageURL] BioDesign url
+   * @apiParam {object} [subBioDesignIds] Array of strings with ids of subBioDesigns.
+   * @apiParam {string} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
+   *
+   * @apiParamExample {json} Example-Request:
+   *
+   * {{
+	"name": "BBa_0124",
+	"description": "Lac Op",
+	"displayId": "LacABC",
+	"imageURL": "example2.png",
+	"subBioDesignIds": ["5991f34209380a0f58ed92dd", "5991f31409380a0f58ed92d4"]
+}
+   *
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *{
+    "_id": "5992346bab9a6349c82e0d2a",
+    "name": "BBa_0124",
+    "description": "Lac Op",
+    "userId": "5940442869431c24a06da157",
+    "displayId": "LacABC",
+    "imageURL": "example2.png",
+    "subBioDesignIds": [
+        "5991f34209380a0f58ed92dd",
+        "5991f31409380a0f58ed92d4"
+    ],
+    "superBioDesignId": null,
+    "type": "DEVICE"
+}
+
+   @apiErrorExample {json} Error-Response:
+   {
+       "statusCode": 404,
+       "error": "Not Found",
+       "message": "Bio Design not found."
+   }
+   */
+
 
   server.route({
     method: 'PUT',
@@ -156,6 +307,32 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+
+  /**
+   * @api {delete} /api/bio-design/:id Get BioDesign By Id
+   * @apiName Delete BioDesign By Id
+   * @apiDescription Delete BioDesign by ID
+   * @apiGroup BioDesign
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id BioDesign unique ID.
+   * @apiParamExample {string} Example-Request:
+   * 5988a74da16d369e56953cf3
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {
+    "message": "Success."
+}
+
+   @apiErrorExample {json} Error-Response Incorrect id:
+   {
+    "statusCode": 404,
+    "error": "Not Found",
+    "message": "Document not found."
+}
+   */
 
   server.route({
     method: 'DELETE',
