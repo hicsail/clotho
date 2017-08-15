@@ -116,7 +116,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [description] BioDesign description
    * @apiParam {String} [displayId] BioDesign displayId.
    * @apiParam {String} [imageURL] BioDesign url
-   * @apiParam {String[]} [subBioDesignIds] Array of strings with ids of subBioDesigns.
+   * @apiParam {Array} [subBioDesignIds] Array of strings with ids of subBioDesigns.
    * @apiParam {String} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
    * @apiParam {String} [type] Uppercase string representing design type.
    * @apiParam {String} [application] Application
@@ -222,7 +222,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [description] BioDesign description
    * @apiParam {String} [displayId] BioDesign displayId.
    * @apiParam {String} [imageURL] BioDesign url
-   * @apiParam {String[]} [subBioDesignIds] Array of strings with ids of subBioDesigns.
+   * @apiParam {Array} [subBioDesignIds] Array of strings with ids of subBioDesigns.
    * @apiParam {String} [superBioDesignId] Id of superBioDesign (e.g. as would occur in a Convenience Device).
    *
    * @apiParamExample {json} Example-Request:

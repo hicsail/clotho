@@ -124,9 +124,9 @@ internals.applyRoutes = function (server, next) {
   * @apiParam {String} name Sample name
   * @apiParam {String} [description] Sample description
   * @apiParam {String} bioDesignId Sample bioDesignId
- * @apiParam {String[]} [parameterIds] An array of parameter ids for the sample.
+ * @apiParam {Array} [parameterIds] An array of parameter ids (as strings) for the sample.
  * @apiParam {String} [containerId] Sample containerId
- * @apiParam {String[]} [parentSampleIds] Ids corresponding to parent samples.
+ * @apiParam {Array} [parentSampleIds] Ids (as strings) corresponding to parent samples.
   *
   * @apiParamExample {json} Example-Request:
 *{
@@ -151,7 +151,7 @@ internals.applyRoutes = function (server, next) {
     "parameterIds": [
         "59936768b33f2a43dc4254ea"
     ],
-    containerId": "598cd760d74bab2678e99324",
+    "containerId": "598cd760d74bab2678e99324",
     "parentSampleIds": [
         "5993674eb33f2a43dc4254e9"
     ],
@@ -237,9 +237,9 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} name Sample name
    * @apiParam {String} [description] Sample description
    * @apiParam {String} bioDesignId Sample bioDesignId
-   * @apiParam {String[]} [parameterIds] An array of parameter ids for the sample.
+   * @apiParam {Array} [parameterIds] An array of parameter ids (as strings) for the sample.
    * @apiParam {String} [containerId] Sample containerId
-   * @apiParam {String[]} [parentSampleIds] Ids corresponding to parent samples.
+   * @apiParam {Array} [parentSampleIds] Array of ids as strings corresponding to parent samples.
    * @apiParamExample {json} Example-Request:
    *
    *

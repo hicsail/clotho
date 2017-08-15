@@ -113,7 +113,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [description] Container description
    * @apiParam {String=BEAKER,BOX,FLASK,INCUBATOR,PLATE,RACK,TUBE,WELL} [type] Container type
    * @apiParam {Array} [coordinates] Container location, number array
-   * @apiParam {String[]} [parameterIds] Array of parameterIds.
+   * @apiParam {Array} [parameterIds] Array of parameterIds as strings.
    *
    * @apiParamExample {json} Example-Request:
    * {
@@ -190,13 +190,20 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String} id Container unique ID.
+   * @apiParam {String} name Container Name
+   * @apiParam {String} [description] Container description
+   * @apiParam {String=BEAKER,BOX,FLASK,INCUBATOR,PLATE,RACK,TUBE,WELL} [type] Container type
+   * @apiParam {Array} [coordinates] Container location, number array
+   * @apiParam {Array} [parameterIds] Array of parameterIds as string
+   *
    * @apiParamExample {json} Example-Request:
    * {
    * "name": "myContainer",
    * "description": "test container",
    * "type": "BOX",
-   * "parameterIds": ["5988a74da16d369e56953cf2"]
+   * "parameterIds": ["5988a74da16d369e56953cf2"],
+   * "coordinates": [12, 3, 307, 5]
+   * }
    *
    *
    * @apiSuccessExample {json} Success-Response:
