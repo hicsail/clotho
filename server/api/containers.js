@@ -324,8 +324,8 @@ internals.applyRoutes = function (server, next) {
         },
         parameters: ['container', function (results, callback) {
 
-          if(results.container.parameterIds) {
-            var ids = results.container.parameterIds.map(function(id) {
+          if (results.container.parameterIds) {
+            var ids = results.container.parameterIds.map(function (id) {
 
               return ObjectID(id);
             });
@@ -336,15 +336,15 @@ internals.applyRoutes = function (server, next) {
         }],
         deleteParameters: ['parameters', function (results, callback) {
 
-          Async.each(results.parameters, function(parameter, callback) {
+          Async.each(results.parameters, function (parameter, callback) {
 
-            Parameter.delete(parameter,callback);
+            Parameter.delete(parameter, callback);
           }, (err) => {
 
-            if(err) {
+            if (err) {
               callback(err);
             }
-            callback(null,null);
+            callback(null, null);
           });
         }],
         deleteContainer: ['parameters', function (results, callback) {
@@ -353,7 +353,7 @@ internals.applyRoutes = function (server, next) {
         }]
       }, (err, results) => {
 
-        if(err) {
+        if (err) {
           reply(err);
         }
         reply({message: 'success'});

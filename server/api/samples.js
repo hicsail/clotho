@@ -111,25 +111,24 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-
-/**
-* @api {post} /api/sample Create Sample
-  * @apiName Create Sample
-  * @apiDescription Create Sample
-  * @apiGroup Sample
-  * @apiVersion 4.0.0
-  * @apiPermission user
- *
-  *
-  * @apiParam {String} name Sample name
-  * @apiParam {String} [description] Sample description
-  * @apiParam {String} bioDesignId Sample bioDesignId
- * @apiParam {Array} [parameterIds] An array of parameter ids (as strings) for the sample.
- * @apiParam {String} [containerId] Sample containerId
- * @apiParam {Array} [parentSampleIds] Ids (as strings) corresponding to parent samples.
-  *
-  * @apiParamExample {json} Example-Request:
-*{
+  /**
+   * @api {post} /api/sample Create Sample
+   * @apiName Create Sample
+   * @apiDescription Create Sample
+   * @apiGroup Sample
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   *
+   * @apiParam {String} name Sample name
+   * @apiParam {String} [description] Sample description
+   * @apiParam {String} bioDesignId Sample bioDesignId
+   * @apiParam {Array} [parameterIds] An array of parameter ids (as strings) for the sample.
+   * @apiParam {String} [containerId] Sample containerId
+   * @apiParam {Array} [parentSampleIds] Ids (as strings) corresponding to parent samples.
+   *
+   * @apiParamExample {json} Example-Request:
+   *{
 	"name": "sample001",
 	"description": "Initial sample",
 	"bioDesignId": "5991f31409380a0f58ed92d9",
@@ -138,12 +137,12 @@ internals.applyRoutes = function (server, next) {
 	"parentSampleIds": ["5993674eb33f2a43dc4254e9"]
 }
 
-*
-*
-* @apiSuccessExample {json} Success-Response:
-*
- *
- * {
+   *
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *
+   *
+   * {
     "name": "sample001",
     "description": "Initial sample",
     "userId": "5940442869431c24a06da157",
@@ -158,35 +157,35 @@ internals.applyRoutes = function (server, next) {
     "_id": "59936768b33f2a43dc4254eb"
 }
 
-*
-  @apiErrorExample {json} Error-Response Name argument omitted:
+   *
+   @apiErrorExample {json} Error-Response Name argument omitted:
 
- {
-    "statusCode": 400,
-    "error": "Bad Request",
-    "message": "child \"name\" fails because [\"name\" is required]",
-    "validation": {
-        "source": "payload",
-        "keys": [
-            "name"
-        ]
-    }
-}
+   {
+      "statusCode": 400,
+      "error": "Bad Request",
+      "message": "child \"name\" fails because [\"name\" is required]",
+      "validation": {
+          "source": "payload",
+          "keys": [
+              "name"
+          ]
+      }
+  }
 
- @apiErrorExample {json} Error-Response BioDesignId argument omitted:
+   @apiErrorExample {json} Error-Response BioDesignId argument omitted:
 
- {
-     "statusCode": 400,
-     "error": "Bad Request",
-     "message": "child \"bioDesignId\" fails because [\"bioDesignId\" is required]",
-     "validation": {
-         "source": "payload",
-         "keys": [
-             "bioDesignId"
-         ]
-     }
- }
-*/
+   {
+       "statusCode": 400,
+       "error": "Bad Request",
+       "message": "child \"bioDesignId\" fails because [\"bioDesignId\" is required]",
+       "validation": {
+           "source": "payload",
+           "keys": [
+               "bioDesignId"
+           ]
+       }
+   }
+   */
 
 
   server.route({
@@ -400,8 +399,8 @@ internals.applyRoutes = function (server, next) {
         },
         parameters: ['sample', function (results, callback) {
 
-          if(results.sample.parameterIds) {
-            var ids = results.sample.parameterIds.map(function(id) {
+          if (results.sample.parameterIds) {
+            var ids = results.sample.parameterIds.map(function (id) {
 
               return ObjectID(id);
             });
@@ -412,15 +411,15 @@ internals.applyRoutes = function (server, next) {
         }],
         deleteParameters: ['parameters', function (results, callback) {
 
-          Async.each(results.parameters, function(parameter, callback) {
+          Async.each(results.parameters, function (parameter, callback) {
 
-            Parameter.delete(parameter,callback);
+            Parameter.delete(parameter, callback);
           }, (err) => {
 
-            if(err) {
+            if (err) {
               callback(err);
             }
-            callback(null,null);
+            callback(null, null);
           });
         }],
         deleteSample: ['parameters', function (results, callback) {
@@ -429,7 +428,7 @@ internals.applyRoutes = function (server, next) {
         }]
       }, (err, results) => {
 
-        if(err) {
+        if (err) {
           reply(err);
         }
         reply({message: 'success'});

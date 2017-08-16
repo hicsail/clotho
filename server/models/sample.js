@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-const Parameter = require('./parameter');
+//const Parameter = require('./parameter');
 
 class Sample extends MongoModels {
   static create(name, description, userId, containerId, bioDesignId, parameterIds, parentSampleIds, callback) {
