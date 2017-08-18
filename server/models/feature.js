@@ -7,12 +7,16 @@ class Feature extends MongoModels {
 
   static create(name, description, userId, displayId, role, annotationId, superAnnotationId, moduleId, callback) {
 
+    if(role) {
+      role = role.toUpperCase();
+    }
+
     const document = {
       name: name,
       description: description,
       userId: userId,
       displayId: displayId,
-      role: role.toUpperCase(),
+      role: role,
       annotationId: annotationId,
       superAnnotationId: superAnnotationId,
       moduleId: moduleId
