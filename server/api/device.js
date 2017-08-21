@@ -569,6 +569,7 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
+   * @apiParam {String=parameters modules subparts sequences annotations features assemblies subdesigns subannotations} filter
    * @apiParam {String} [name]  name of device.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
@@ -1988,9 +1989,9 @@ internals.applyRoutes = function (server, next) {
   });
 
   /**
-   * @api {delete} /api/device/undelete/:id Un-Delete Device by Id
-   * @apiName  Un-Delete Device by Id
-   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @api {delete} /api/device/delete/:id Delete Device by Id
+   * @apiName  Delete Device by Id
+   * @apiDescription Adds Marks for deletion on part, not searchable
    * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
@@ -2108,6 +2109,22 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  /**
+   * @api {delete} /api/device/undelete/:id Un-Delete Device by Id
+   * @apiName  Un-Delete Device by Id
+   * @apiDescription Removes Marks for deletion on part, becomes searchable again
+   * @apiGroup Convenience Methods Device
+   * @apiVersion 4.0.0
+   * @apiPermission user
+   *
+   * @apiParam {String} id Device unique ID. (BioDesign ID)
+   * @apiParamExample {String} id:
+   * 596f9356be72299b8b10310e
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * {"message": "Success."}
+   *
+   */
   server.route({
     method: 'DELETE',
     path: '/device/undelete/{id}',
