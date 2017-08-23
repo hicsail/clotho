@@ -677,7 +677,7 @@ internals.applyRoutes = function (server, next) {
           // TODO - update with any new biodesign attributes
           var schema = {
             filter: Joi.string().valid('parameters', 'modules', 'subparts', 'sequences', 'annotations', 'features',
-              'assemblies', 'subdesigns', 'subannotations').required()
+              'assemblies', 'subdesigns', 'subannotations','name', '_id').required()
           };
           var filter = {filter: request.params.filter};
 
@@ -788,16 +788,25 @@ internals.applyRoutes = function (server, next) {
             }
             else if (filter === 'features') {
               filteredObj[1] = bioDesigns[bigPart]['modules'][0]['features'][0];
+            } else if (filter === 'name') {
+              filteredObj[1] = bioDesigns[bigPart]['name'];
+            } else if (filter === '_id') {
+              filteredObj[1] = bioDesigns[bigPart]['_id'].toString();
             }
 
-            //get bioDesign object
-            filteredObj[0] = bioDesigns[bigPart];
-            delete filteredObj[0]['parameters'];
-            delete filteredObj[0]['modules'];
-            delete filteredObj[0]['subparts'];
-            delete filteredObj[0]['subdesigns'];
+            if(filter !== 'name' && filter !== '_id') {
+              //get bioDesign object
+              filteredObj[0] = bioDesigns[bigPart];
+              delete filteredObj[0]['parameters'];
+              delete filteredObj[0]['modules'];
+              delete filteredObj[0]['subparts'];
+              delete filteredObj[0]['subdesigns'];
 
-            filteredArr.push(filteredObj);
+              filteredArr.push(filteredObj);
+            } else {
+              filteredArr.push(filteredObj[1]);
+            }
+
           }
 
           if (filteredArr.length > 0 && typeof filteredArr[0] === 'string') {
