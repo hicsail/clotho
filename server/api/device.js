@@ -564,12 +564,12 @@ internals.applyRoutes = function (server, next) {
    * @apiName Get Device With Filter
    * @apiDescription Get attribute of a part based on arguments. Valid filters include parameters, modules, subparts,
    * sequences, annotations, features, assemblies, subdesigns, subannotations. Note that using the filters will return
-   *  the bioDesign object as well.
+   *  the bioDesign object as well, unless using name or _id.
    * @apiGroup Convenience Methods Device
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String=parameters modules subparts sequences annotations features assemblies subdesigns subannotations} filter
+   * @apiParam {String=parameters modules subparts sequences annotations features assemblies subdesigns subannotations name _id} filter
    * @apiParam {String} [name]  name of device.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
@@ -586,7 +586,7 @@ internals.applyRoutes = function (server, next) {
        "name": "findDeviceTest"
        }
 
-   * @apiSuccessExample {json} Success-Response (for api/part/parameters):
+   * @apiSuccessExample {json} Success-Response (for api/device/parameters):
    *
    * [
      [
@@ -644,6 +644,12 @@ internals.applyRoutes = function (server, next) {
      }
      ]
      ]
+  *
+  * @apiSuccessExample {json} name:
+  *  device1,device2,device3
+   *
+  * @apiSuccessExample {json} name:
+  *  598c9c217484ecafae736f9e,597a0b98155a0466a37731ee,598c9bfd7484ecafae736f7f
   *
   * @apiErrorExample {json} Error-Response 1 - no parts match:
   * {
