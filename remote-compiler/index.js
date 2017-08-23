@@ -123,7 +123,7 @@ server.route({
       runCode: ['makeFile', function (results,callback) {
 
         var done = false;
-        var process = exec(`sh ./scripts/${results.payload.language}.sh ${results.file} ${results.payload.inputs}`, (err, stdout, stderr) => {
+        var process = exec(`sh ${__dirname}/scripts/${results.payload.language}.sh ${results.file} ${results.payload.inputs}`, (err, stdout, stderr) => {
 
           done = true;
           if(stderr) {
