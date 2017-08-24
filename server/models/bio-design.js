@@ -53,6 +53,7 @@ class BioDesign extends MongoModels {
 
   static getBioDesignIdsByQuery(bioDesignIds, query, callback) {
 
+
     if (query == null) {
       query = {};
     }
@@ -104,12 +105,23 @@ class BioDesign extends MongoModels {
 
     if (extra['name'] !== undefined) {
       query['name'] = {$regex: extra['name'], $options: 'i'};
-    } else if (extra['displayId'] !== undefined) {
+    }
+
+    if (extra['displayId'] !== undefined) {
       query['displayId'] = {$regex: extra['displayId'], $options: 'i'};
     } else if (extra['userId'] !== undefined) {
       query['userId'] = {$regex: extra['userId'], $options: 'i'};
     } else if (extra['subBioDesignIds'] !== undefined) {
       query['subBioDesignIds'] = {$all: extra['subBioDesignIds']};
+    }
+
+    // Need to ensure all attributes from query are copied over.
+
+    var extraAttributes = Object.keys(extra);
+    for (var i = 0; i < extraAttributes.length; i++) {
+      if (extraAttributes[i] !== 'name' && extraAttributes[i] !== 'displayId') {
+        query[extraAttributes[i]] = extra[extraAttributes[i]];
+      }
     }
 
     return query;

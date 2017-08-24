@@ -27,9 +27,15 @@ class Parameter extends MongoModels {
   }
 
 
-  static getByParameter(parameters, callback) {
+  static getByParameter(parameters, options, callback) {
 
-    const query = parameters[0];
+    var query = parameters[0];
+
+    for (var attrname in options)  {
+      query[attrname] = options[attrname];
+    }
+
+
     this.find(query, (err, parameters) => {
 
       if (err) {

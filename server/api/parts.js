@@ -34,6 +34,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   * @apiParam {Boolean} [searchDeleted=false] whether to search for only deleted parts (true) or only non-deleted parts (false).
    *
    * @apiParamExample {json} Request-Example:
    *  {
@@ -116,17 +117,26 @@ internals.applyRoutes = function (server, next) {
               variable: Joi.string()
             })
           ).optional(),
-          userSpace: Joi.boolean().default(false)
+          userSpace: Joi.boolean().default(false),
+          searchDeleted: Joi.boolean().default(false)
         }
       }
     },
     handler: function (request, reply) {
 
+      const searchDeleted = request.payload.searchDeleted;
+
       Async.auto({
         findPartIdsBySequences: function (done) {
 
           if (request.payload.sequence !== undefined && request.payload.sequence !== null) {
-            Sequence.getSequenceBySequenceString(request.payload.sequence, done);
+
+            if (searchDeleted) {
+              Sequence.getSequenceBySequenceString(request.payload.sequence, {toDelete: true}, done);
+            } else {
+              Sequence.getSequenceBySequenceString(request.payload.sequence, {toDelete: null}, done);
+            }
+
           } else {
             return done(null, null);
           }
@@ -158,7 +168,11 @@ internals.applyRoutes = function (server, next) {
           }
 
           if (partIdsTotal.length > 0) {
-            Part.getByParts(partIdsTotal, done);
+            if (searchDeleted) {
+              Part.getByParts(partIdsTotal, {toDelete: true}, done);
+            } else {
+              Part.getByParts(partIdsTotal, {toDelete: null}, done);
+            }
           } else {
             return done(null, null);
           }
@@ -168,7 +182,12 @@ internals.applyRoutes = function (server, next) {
 
           // using part documents from last step, get biodesigns
           if (request.payload.parameters !== undefined && request.payload.parameters !== null) {
-            Parameter.getByParameter(request.payload.parameters, done);
+            if (searchDeleted) {
+              Parameter.getByParameter(request.payload.parameters, {toDelete: true}, done);
+            } else {
+              Parameter.getByParameter(request.payload.parameters, {toDelete: null}, done);
+            }
+
           }
           else {
             return done(null, null); //null array returned for unsuccesful search, return null if no parameter seached for
@@ -178,7 +197,11 @@ internals.applyRoutes = function (server, next) {
 
           // using part documents from last step, get biodesigns
           if (request.payload.role !== undefined && request.payload.role !== null) {
-            Module.getByModule(request.payload.role, done);
+            if (searchDeleted) {
+              Module.getByModule(request.payload.role, {toDelete: true}, done);
+            } else {
+              Module.getByModule(request.payload.role, {toDelete: null}, done);
+            }
           }
           else {
             return done(null, null);
@@ -191,13 +214,22 @@ internals.applyRoutes = function (server, next) {
           //set of duplicate bioDesigns found so far
           if (results.findParts !== null){
             setBDs.push(results.findParts);
+          } else if (results.findParts === null && request.payload.sequence !== undefined) {
+            setBDs.push([]);
           }
+
           if (results.findParameters !== null){
             setBDs.push(results.findParameters);
+          } else if (results.findParameters === null && request.payload.parameters !== undefined) {
+            setBDs.push([]);
           }
-          if (results.findModules !== null){
+
+          if (results.findModules !== null) {
             setBDs.push(results.findModules);
+          } else if (results.findModules === null && request.payload.role !== undefined) {
+            setBDs.push([]);
           }
+
 
           for (var i = 0; i < setBDs.length; ++i) {
             if (i !== setBDs.length - 1) {                      //if there exists i+1,
@@ -224,6 +256,12 @@ internals.applyRoutes = function (server, next) {
             query['userId'] = request.auth.credentials.user._id.toString();
           }
 
+          if (searchDeleted) {
+            query['toDelete'] = true;
+          } else {
+            query['toDelete'] = null;
+          }
+
           // Should return everything if all arguments are empty.
           if (request.payload.name === undefined && request.payload.displayId === undefined
             && request.payload.sequence === undefined && request.payload.parameters === undefined
@@ -240,6 +278,11 @@ internals.applyRoutes = function (server, next) {
             return BioDesign.getBioDesignIdsByQuery([], query, done);
           }
 
+          // If prior steps have yielded nothing but at least one argument has been non-null, should return.
+          else if (((request.payload.sequence !== undefined) || (request.payload.parameters !== undefined) || (request.payload.role !== undefined) ) && intersectBDs.length === 0) {
+            done(null, []);
+
+          }
           else {
             // Get full biodesigns.
             return BioDesign.getBioDesignIdsByQuery(intersectBDs, query, done);
@@ -280,6 +323,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
+   * @apiParam {Boolean} [searchDeleted=false] whether to search for only deleted parts (true) or only non-deleted parts (false).
    *
    * @apiParamExample {json} Request-Example:
    *  {
@@ -394,7 +438,8 @@ internals.applyRoutes = function (server, next) {
               variable: Joi.string()
             })
           ).optional(),
-          userSpace: Joi.boolean().default(false)
+          userSpace: Joi.boolean().default(false),
+          searchDeleted: Joi.boolean().default(false)
         }
       }
     },

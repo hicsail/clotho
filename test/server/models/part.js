@@ -212,7 +212,7 @@ lab.experiment('Part Class Methods', () => {
       callback(Error('failed'));
     };
 
-    Part.getParts(['123456789012'], (err, results) => {
+    Part.getParts(['123456789012'], {}, (err, results) => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(results).to.not.exist();
@@ -225,7 +225,7 @@ lab.experiment('Part Class Methods', () => {
 
   lab.test('it returns an instance when getParts succeeds', (done) => {
 
-    Part.getParts(['123456789012'], (err, results) => {
+    Part.getParts(['123456789012'], {}, (err, results) => {
 
       Code.expect(err).to.not.exist();
       Code.expect(results).to.equal([]);

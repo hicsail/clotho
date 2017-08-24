@@ -27,6 +27,7 @@ class Version extends MongoModels {
     });
   }
 
+
   //finds newest version and returns it
   static findNewest(bioDesignId, collectionName, callback) {
 
@@ -34,6 +35,7 @@ class Version extends MongoModels {
 
       if (err) {
         return callback(err);
+
 
       } else if (results[0]['replacementVersionId'] === null || results[0]['replacementVersionId'] === undefined || results.length === 0) {
 
