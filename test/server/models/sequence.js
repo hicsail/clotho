@@ -223,7 +223,7 @@ lab.experiment('Sequence Class Methods', () => {
 
     var testCase = 0;
 
-    Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence, (err, usersSeqences) => {
+    Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence, {}, (err, usersSeqences) => {
 
       Code.expect(err).to.not.exist();
       Code.expect(usersSeqences[0]).to.equal('partId');
@@ -245,7 +245,7 @@ lab.experiment('Sequence Class Methods', () => {
       callback(Error('failed'));
     };
 
-    Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence, (err, usersSeqences) => {
+    Sequence.getSequenceBySequenceString(TestSequences[testCase].sequence,  {}, (err, usersSeqences) => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(usersSeqences).to.not.exist();

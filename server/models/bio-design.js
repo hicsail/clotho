@@ -118,9 +118,9 @@ class BioDesign extends MongoModels {
     // Need to ensure all attributes from query are copied over.
 
     var extraAttributes = Object.keys(extra);
-    for (var i = 0; i < extraAttributes.length; i++) {
-      if (extraAttributes[i] !== 'name' && extraAttributes[i] !== 'displayId') {
-        query[extraAttributes[i]] = extra[extraAttributes[i]];
+    for (var j = 0; j < extraAttributes.length; ++j) {
+      if (extraAttributes[j] !== 'name' && extraAttributes[j] !== 'displayId') {
+        query[extraAttributes[j]] = extra[extraAttributes[j]];
       }
     }
 
