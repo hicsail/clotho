@@ -60,6 +60,8 @@ npm run pm2
 Now you should be able to point your browser to [localhost:9000](http://localhost:9000/) and
 see the home page.
 
+* If running for the first time, please go to [/setup](http://localhost:9000/setup) and create a root user
+
 ## Stopping the app
 
 ```bash
