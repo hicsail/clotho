@@ -91,8 +91,9 @@ class BioDesign extends MongoModels {
 
     if (typeof bioDesignIds !== 'string') {
       // Convert strings to mongo ids.
-      for (var index = 0; index < bioDesignIds.length; ++index) {
-        bioDesignIds[index] = new MongoModels.ObjectID(bioDesignIds[index].toString());
+      var i;
+      for (i = 0; i < bioDesignIds.length; ++i) {
+        bioDesignIds[i] = new MongoModels.ObjectID(bioDesignIds[i].toString());
       }
 
       if (bioDesignIds.length > 0) {
@@ -118,7 +119,7 @@ class BioDesign extends MongoModels {
     // Need to ensure all attributes from query are copied over.
 
     var extraAttributes = Object.keys(extra);
-    for (var i = 0; i < extraAttributes.length; ++i) {
+    for (i = 0; i < extraAttributes.length; ++i) {
       if (extraAttributes[i] !== 'name' && extraAttributes[i] !== 'displayId') {
         query[extraAttributes[i]] = extra[extraAttributes[i]];
       }
