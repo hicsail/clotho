@@ -113,6 +113,7 @@ internals.applyRoutes = function (server, next) {
 
           //get sequences from parts
           BioDesign.getBioDesignIds(results.PartId, null, null, (err, results) => {
+
             if (err) {
               return callback(err);
             }
@@ -324,7 +325,7 @@ internals.applyRoutes = function (server, next) {
 }
    **/
 
-  
+
   server.route({
     method: 'POST',
     path: '/blast',
@@ -360,6 +361,7 @@ internals.applyRoutes = function (server, next) {
           callback(null, UUID());
         },
         fastaFile: function (callback) {
+          
           var fastaRequest = {
             method: 'POST',
             url: '/api/blast/fasta',
@@ -411,10 +413,12 @@ internals.applyRoutes = function (server, next) {
         }],
         blastMakeDB: ['writeFile', function (results, callback) {
 
+          var type = '';
+          var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
+          var outPath = `./server/blast/${results.ID}/`;
+
           if (request.payload.type == 'n') {    //makeDB for blastN (nucleotides)
-            var type = 'nucl';
-            var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
-            var outPath = `./server/blast/${results.ID}/`;
+            type = 'nucl';
 
             // Make DB
             Blast.makeDB(type, fileIn, outPath, null, (err) => {
@@ -423,9 +427,7 @@ internals.applyRoutes = function (server, next) {
             });
           }
           else {                                //makeDB for blastP (proteins)
-            var type = 'prot';
-            var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
-            var outPath = `./server/blast/${results.ID}/`;
+            type = 'prot';
 
             // Make DB
             Blast.makeDB(type, fileIn, outPath, null, (err) => {
@@ -436,18 +438,15 @@ internals.applyRoutes = function (server, next) {
         }],
         blast: ['blastMakeDB', function (results, callback) {
 
-          if (request.payload.type == 'n') {
-            var dbPath = results.blastMakeDB + '/sequences';
-            var query = '> Query Sequence\n' + request.payload.BLASTsequence;
+          var dbPath = results.blastMakeDB + '/sequences';
+          var query = '> Query Sequence\n' + request.payload.BLASTsequence;
 
+          if (request.payload.type == 'n') {
             // blastN
             Blast.blastN(dbPath, query, callback);
           }
 
           else {
-            var dbPath = results.blastMakeDB + '/sequences';
-            var query = '> Query Sequence\n' + request.payload.BLASTsequence;
-
             // blastP
             Blast.blastP(dbPath, query, callback);
           }
