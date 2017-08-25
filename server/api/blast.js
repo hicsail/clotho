@@ -13,6 +13,9 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
+  const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
+
+
   /**
    * @api {post} /api/blast/fasta Get Fasta File
    * @apiName Get Fasta File
@@ -86,7 +89,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        Parts: function (callback) {
+        PartId: function (callback) {
 
           //get parts based upon payload
           request.payload.role = request.payload.role.toUpperCase();
@@ -106,6 +109,16 @@ internals.applyRoutes = function (server, next) {
 
           });
         },
+        Parts: ['PartId', function (results, callback) {
+
+          //get sequences from parts
+          BioDesign.getBioDesignIds(results.PartId, null, null, (err, results) => {
+            if (err) {
+              return callback(err);
+            }
+            callback(null, results);
+          });
+        }],
         sequences: ['Parts', function (results, callback) {
 
           //get sequences from parts
@@ -160,7 +173,7 @@ internals.applyRoutes = function (server, next) {
  *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
  * }
    *
-   * @apiParamExample {json} Request-Example:
+   * @apiParamExample {json} Request-Example (blastN):
    * {
  *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
  *  "name": "BBa_0123",
@@ -174,9 +187,10 @@ internals.applyRoutes = function (server, next) {
  *      "variable": "K7",
  *      "units": "min-1"
  *    }
- *  ]
+ *  ],
+ *  "type": "n"
  *}
-   * @apiSuccessExample {json} Success-Response:
+   * @apiSuccessExample {json} Success-Response (blastN):
    *{
     "59789dbc5bafe95ffd4dd51b": {
         "name": " B001",
@@ -257,7 +271,60 @@ internals.applyRoutes = function (server, next) {
         ]
     }
 }
+
+   * @apiParamExample {json} Request-Example-2 (blastP):
+   * {
+ *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
+ *  "name": "BBa_0123",
+ *  "displayId": "TetR repressible enhancer",
+ *  "role": "PROMOTER",
+ *  "sequence": "tccctatcagtgatagagattgacatccctatcagtgc",
+ *  "parameters": [
+ *    {
+ *      "name": "enhancer unbinding rate",
+ *      "value": 0.03,
+ *      "variable": "K7",
+ *      "units": "min-1"
+ *    }
+ *  ],
+ *  "type": "p"
+ *}
+   * @apiSuccessExample {json} Success-Response-2 (blastP):
+   * {
+    "59a06df2616f381e7c87501c": {
+        "name": " BBa_0123",
+        "description": "",
+        "hits": [
+            {
+                "number": 1,
+                "score": 56.9954,
+                "from": 1,
+                "to": 38,
+                "gaps": 0,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGC",
+                "midline": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGC"
+            }
+        ]
+    },
+    "5989f9e0083e509dff943dde": {
+        "name": " BBa_0123",
+        "description": "",
+        "hits": [
+            {
+                "number": 1,
+                "score": 56.9954,
+                "from": 1,
+                "to": 38,
+                "gaps": 0,
+                "sequence": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGC",
+                "midline": "TCCCTATCAGTGATAGAGATTGACATCCCTATCAGTGC"
+            }
+        ]
+    }
+}
    **/
+
+  
   server.route({
     method: 'POST',
     path: '/blast',
@@ -280,7 +347,8 @@ internals.applyRoutes = function (server, next) {
             })
           ).optional(),
           BLASTsequence: Joi.string().required(),
-          userSpace: Joi.boolean().default(false)
+          userSpace: Joi.boolean().default(false),
+          type: Joi.string().required()
         }
       }
     },
@@ -292,7 +360,6 @@ internals.applyRoutes = function (server, next) {
           callback(null, UUID());
         },
         fastaFile: function (callback) {
-
           var fastaRequest = {
             method: 'POST',
             url: '/api/blast/fasta',
@@ -344,23 +411,46 @@ internals.applyRoutes = function (server, next) {
         }],
         blastMakeDB: ['writeFile', function (results, callback) {
 
-          var type = 'nucl';
-          var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
-          var outPath = `./server/blast/${results.ID}/`;
+          if (request.payload.type == 'n') {    //makeDB for blastN (nucleotides)
+            var type = 'nucl';
+            var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
+            var outPath = `./server/blast/${results.ID}/`;
 
-          // Make DB
-          Blast.makeDB(type, fileIn, outPath, null, (err) => {
+            // Make DB
+            Blast.makeDB(type, fileIn, outPath, null, (err) => {
 
-            callback(err, outPath);
-          });
+              callback(err, outPath);
+            });
+          }
+          else {                                //makeDB for blastP (proteins)
+            var type = 'prot';
+            var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
+            var outPath = `./server/blast/${results.ID}/`;
+
+            // Make DB
+            Blast.makeDB(type, fileIn, outPath, null, (err) => {
+
+              callback(err, outPath);
+            });
+          }
         }],
-        blastN: ['blastMakeDB', function (results, callback) {
+        blast: ['blastMakeDB', function (results, callback) {
 
-          var dbPath = results.blastMakeDB + '/sequences';
-          var query = '> Query Sequence\n' + request.payload.BLASTsequence;
+          if (request.payload.type == 'n') {
+            var dbPath = results.blastMakeDB + '/sequences';
+            var query = '> Query Sequence\n' + request.payload.BLASTsequence;
 
-          // blastN
-          Blast.blastN(dbPath, query, callback);
+            // blastN
+            Blast.blastN(dbPath, query, callback);
+          }
+
+          else {
+            var dbPath = results.blastMakeDB + '/sequences';
+            var query = '> Query Sequence\n' + request.payload.BLASTsequence;
+
+            // blastP
+            Blast.blastP(dbPath, query, callback);
+          }
         }],
       }, (err, results) => {
 
@@ -368,7 +458,7 @@ internals.applyRoutes = function (server, next) {
         if (err) {
           return reply(err);
         }
-        var result = parse(results.blastN);
+        var result = parse(results.blast);
         reply(result);
       });
     }
