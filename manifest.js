@@ -319,7 +319,10 @@ const manifest = {
     },
     {
       plugin: './server/web/apps/index'
-    }
+    },
+    {
+      plugin: './server/web/admin/index'
+    },
   ]
 };
 

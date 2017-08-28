@@ -6,7 +6,7 @@ Clotho is a framework for engineering synthetic biological systems and managing 
 ## Live Demo
 
 We have continuous integration set up with [CircleCI](http://circleci.com) which deploys the master branch onto our server.
-Check it out at [34.212.107.145:9000](http://34.212.107.145:9000/)
+Check it out at [alpha.clothocad.org](http://alpha.clothocad.org)
 
 ## Technology
 
