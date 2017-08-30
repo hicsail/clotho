@@ -168,7 +168,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
-   * @apiParam {String N,P} [userSpace=N] Run Blast on Nucleotide(N) or Proteins(P)
+   * @apiParam {String="N","P"} [type=N] Run Blast on Nucleotide(N) or Proteins(P)
    * @apiParamExample {json} Request-Example:
    * {
  *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
