@@ -168,7 +168,7 @@ internals.applyRoutes = function (server, next) {
    * @apiParam {String} [sequence]  nucleotide sequence using nucleic acid abbreviation. Case-insensitive.
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
    * @apiParam {Boolean} [userSpace=false] If userspace is true, it will only filter by your bioDesigns
-   *
+   * @apiParam {String N,P} [userSpace=N] Run Blast on Nucleotide(N) or Proteins(P)
    * @apiParamExample {json} Request-Example:
    * {
  *  "BLASTsequence": "tccctatcagtgatagagattgacatccctatcagtgc"
@@ -188,8 +188,7 @@ internals.applyRoutes = function (server, next) {
  *      "variable": "K7",
  *      "units": "min-1"
  *    }
- *  ],
- *  "type": "n"
+ *  ]
  *}
    * @apiSuccessExample {json} Success-Response (blastN):
    *{
@@ -288,7 +287,7 @@ internals.applyRoutes = function (server, next) {
  *      "units": "min-1"
  *    }
  *  ],
- *  "type": "p"
+ *  "type": "P"
  *}
    * @apiSuccessExample {json} Success-Response-2 (blastP):
    * {
@@ -349,7 +348,7 @@ internals.applyRoutes = function (server, next) {
           ).optional(),
           BLASTsequence: Joi.string().required(),
           userSpace: Joi.boolean().default(false),
-          type: Joi.string().required()
+          type: Joi.string().valid(['N','P']).default('N'),
         }
       }
     },
@@ -361,7 +360,7 @@ internals.applyRoutes = function (server, next) {
           callback(null, UUID());
         },
         fastaFile: function (callback) {
-          
+
           var fastaRequest = {
             method: 'POST',
             url: '/api/blast/fasta',
@@ -413,40 +412,24 @@ internals.applyRoutes = function (server, next) {
         }],
         blastMakeDB: ['writeFile', function (results, callback) {
 
-          var type = '';
+          var type = request.payload.type === 'N'?'nucl':'prot';
           var fileIn = `./server/blast/${results.ID}/sequences.fasta`;
           var outPath = `./server/blast/${results.ID}/`;
 
-          if (request.payload.type == 'n') {    //makeDB for blastN (nucleotides)
-            type = 'nucl';
+          Blast.makeDB(type, fileIn, outPath, null, (err) => {
 
-            // Make DB
-            Blast.makeDB(type, fileIn, outPath, null, (err) => {
-
-              callback(err, outPath);
-            });
-          }
-          else {                                //makeDB for blastP (proteins)
-            type = 'prot';
-
-            // Make DB
-            Blast.makeDB(type, fileIn, outPath, null, (err) => {
-
-              callback(err, outPath);
-            });
-          }
+            callback(err, outPath);
+          });
         }],
         blast: ['blastMakeDB', function (results, callback) {
 
           var dbPath = results.blastMakeDB + '/sequences';
           var query = '> Query Sequence\n' + request.payload.BLASTsequence;
 
-          if (request.payload.type == 'n') {
+          if (request.payload.type == 'N') {
             // blastN
             Blast.blastN(dbPath, query, callback);
-          }
-
-          else {
+          } else {
             // blastP
             Blast.blastP(dbPath, query, callback);
           }
