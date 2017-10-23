@@ -37,14 +37,14 @@ class Version extends MongoModels {
         return callback(err);
       }
 
-      if(!results) {
-        return callback();
+      if(results.length == 0) {
+        return callback(null,[bioDesignId]);
       }
 
       if (results[0]['replacementVersionId'] === null || results[0]['replacementVersionId'] === undefined || results.length === 0) {
         return callback(null, [bioDesignId, results[0]['versionNumber']]);
       }
-      
+
       this.findNewest(results[0]['replacementVersionId'], callback);
     });
   }
