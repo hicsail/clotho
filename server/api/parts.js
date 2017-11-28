@@ -769,7 +769,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         payload: {
           name: Joi.string().required(),
-          displayId: Joi.string().optional(),
+          displayId: Joi.string().optional().allow(null),
           role: Joi.string().optional(),
           parameters: Joi.array().items(
             Joi.object().keys({
@@ -996,7 +996,7 @@ internals.applyRoutes = function (server, next) {
    * @apiVersion 4.0.0
    * @apiPermission user
    *
-   * @apiParam {String} name  name of part.
+   * @apiParam {String} [name]  name of part.
    * @apiParam {String} [displayId]  displayId of part.
    * @apiParam {String} [role]  role of the feature
    * @apiParam (Object) [parameters] can include "name", "units", "value", "variable"
