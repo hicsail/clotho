@@ -288,6 +288,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/deviceparts',
+      options: {
+        routes: {prefix: '/api'}
+      }
+    },
+    {
       plugin: './server/web/index'
     },
     {
