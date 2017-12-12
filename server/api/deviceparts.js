@@ -1,8 +1,6 @@
 'use strict';
-const Boom = require('boom');
 const Joi = require('joi');
 const Async = require('async');
-const ObjectID = require('mongo-models').ObjectID;
 
 const internals = {};
 
@@ -10,7 +8,6 @@ internals.applyRoutes = function (server, next) {
 
 
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
-  const Part = server.plugins['hapi-mongo-models'].Part;
 
   server.route({
     method: 'PUT',
@@ -89,11 +86,74 @@ internals.applyRoutes = function (server, next) {
             }
           },(err) => {
 
-            results.bioDesign.data = biodesigns;
+            if(err) {
+              reply(err);
+            }
 
             return reply(results.bioDesign)
           });
         }]
+      });
+    }
+  });
+
+
+  server.route({
+    method: 'PUT',
+    path: '/device/search/contains',
+    config: {
+      auth: {
+        strategy: 'simple'
+      },
+      validate: {
+        payload: {
+          name: Joi.string().optional(),
+          displayId: Joi.string().optional(),
+          type: Joi.string().allow('PART','DEVICE').optional(),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1),
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const query = {type: 'PART'};
+      const limit = request.query.limit;
+      const page = request.query.page;
+
+      if(request.payload.type) {
+        query.type = request.payload.type
+      }
+
+      if(request.payload.name) {
+        query.name = { $regex: request.payload.name, $options: 'i'}
+      }
+
+      if(request.payload.displayId) {
+        query.displayId = { $regex: request.payload.displayId, $options: 'i'}
+      }
+
+      Async.auto({
+        bioDesign: function (done) {
+
+          BioDesign.pagedFind(query, null, null, limit, page, done);
+        },
+        devices: ['bioDesign', function (results,done) {
+
+          let ids = [];
+          for( let part of results.bioDesign.data) {
+            ids.push(part._id.toString());
+          }
+
+          BioDesign.find({
+            subBioDesignIds: {
+              $in: ids
+            }
+          }, done);
+        }]
+      }, (err, results) => {
+
+        reply(results.devices);
       });
     }
   });
