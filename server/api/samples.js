@@ -215,7 +215,6 @@ internals.applyRoutes = function (server, next) {
               Parameter.create(parameter.name,userId, request.payload.bioDesignId, parameter.value, parameter.variable, parameter.units, (err, p) => {
 
                 parameterIds.push(p._id.toString());
-                console.log(parameterIds);
                 done();
               });
             }, (err) => {
