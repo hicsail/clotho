@@ -203,7 +203,27 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       Async.auto({
-        sample: function (callback) {
+        parameters: function (callback) {
+
+          let parameterIds = [];
+
+          if(request.payload.parameters) {
+            Async.each(request.payload.parameters, (parameter, done) => {
+
+              const userId = request.auth.credentials.user._id.toString();
+
+              Parameter.create(parameter.name,userId, request.payload.bioDesignId, parameter.value, parameter.variable, parameter.units, (err, p) => {
+
+                parameterIds.push(p._id.toString());
+                done();
+              });
+            });
+          } else {
+            parameterIds = request.payload.parameterIds;
+          }
+          callback(null,parameterIds);
+        },
+        sample: ['parameters', function (results, callback) {
 
           Sample.create(
             request.payload.name,
@@ -211,10 +231,10 @@ internals.applyRoutes = function (server, next) {
             request.auth.credentials.user._id.toString(),
             request.payload.containerId,
             request.payload.bioDesignId,
-            request.payload.parameterIds,
+            results.parameters,
             request.payload.parentSampleIds,
             callback);
-        }
+        }]
       }, (err, results) => {
 
         if (err) {

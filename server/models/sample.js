@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
-//const Parameter = require('./parameter');
+const Parameter = require('./parameter');
 
 class Sample extends MongoModels {
   static create(name, description, userId, containerId, bioDesignId, parameterIds, parentSampleIds, callback) {
@@ -53,6 +53,7 @@ Sample.payload = Joi.object().keys({
   bioDesignId: Joi.string().required(),
   parameterIds: Joi.array().items(Joi.string()).optional(),
   containerId: Joi.string().optional(),
+  parameters: Joi.array().items(Parameter.payload).optional(),
   parentSampleIds: Joi.array().items(Joi.string())
 });
 
