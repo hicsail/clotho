@@ -441,7 +441,6 @@ internals.applyRoutes = function (server, next) {
           if (results.findPartIdsBySequences !== null && results.findPartIdsBySequences !== undefined) {
             partIdsFromSequence = results.findPartIdsBySequences;
           }
-          
 
           if (request.payload.partIds !== undefined && request.payload.partIds !== null) {
             partIds = request.payload.partIds;
@@ -2125,14 +2124,16 @@ internals.applyRoutes = function (server, next) {
             for (var part of results.BioDesign.subparts) {
               if(part.sequences) {
                 for (var sequence of part.sequences) {
-                  for (var annotation of sequence.annotations) {
-                    for (var feature of annotation.features) {
-                      Feature.delete(feature, (err, callback) => {
+                  if(sequence.annotations) {
+                    for (var annotation of sequence.annotations) {
+                      for (var feature of annotation.features) {
+                        Feature.delete(feature, (err, callback) => {
+                        });
+                      }
+                      delete annotation.features;
+                      Annotation.delete(annotation, (err, callback) => {
                       });
                     }
-                    delete annotation.features;
-                    Annotation.delete(annotation, (err, callback) => {
-                    });
                   }
                   if(sequence.subannotations) {
                     for(var subannotations of sequence.subannotations) {
