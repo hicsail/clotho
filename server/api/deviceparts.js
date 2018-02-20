@@ -8,6 +8,7 @@ internals.applyRoutes = function (server, next) {
 
 
   const BioDesign = server.plugins['hapi-mongo-models'].BioDesign;
+  const User = server.plugins['hapi-mongo-models'].User;
 
   server.route({
     method: 'PUT',
@@ -90,7 +91,50 @@ internals.applyRoutes = function (server, next) {
               reply(err);
             }
 
-            return reply(results.bioDesign)
+            done(null, results.bioDesign)
+          });
+        }],
+        usernames: ['parts', function (results, done) {
+
+          let partData = results.parts.data;
+
+          Async.auto({
+            objectIds: function (callback) {
+
+              const objectID = [];
+              partData.map((document) => {
+
+                objectID.push(User.ObjectID(document['userId']));
+              });
+              callback(null, objectID);
+
+            },
+            foreignDocuments: ['objectIds', function (results, callback) {
+
+              User.find({ _id: { $in: results.objectIds } }, User.fieldsAdapter('username name'), callback);
+            }],
+            map: ['foreignDocuments', function (results, done) {
+
+              //create map to avoid n^2 loop
+              const map = {};
+              for (const document of results.foreignDocuments) {
+                map[document._id.toString()] = document;
+              }
+              done(null, map);
+            }],
+            match: ['map', function (results, done) {
+
+              for (const document of partData) {
+                document['user'] = results.map[document['userId']];
+              }
+              done(null, partData);
+            }]
+          },(err, res) => {
+
+            results.parts.data = res.match;
+
+            return reply(results.parts.data)
+
           });
         }]
       });

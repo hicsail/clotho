@@ -19,6 +19,7 @@ internals.applyRoutes = function (server, next) {
   const Annotation = server.plugins['hapi-mongo-models'].Annotation;
   const Role = server.plugins['hapi-mongo-models'].Role;
   const Version = server.plugins['hapi-mongo-models'].Version;
+  const User = server.plugins['hapi-mongo-models'].User;
 
 
 
@@ -1386,8 +1387,15 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        return reply(bioDesign);
+        let id = bioDesign[0].userId;
 
+        User.findById(id, User.fieldsAdapter('username name'),(err, user) => {
+
+          bioDesign[0].user = user;
+
+          return reply(bioDesign);
+
+        });
       });
     }
   });
